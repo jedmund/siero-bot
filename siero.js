@@ -101,6 +101,9 @@ function checkAmount(amount) {
 }
 
 function checkCurrency(currency) {
+    // Set the currencies for sparking
+    let currencies = ["crystals", "tickets", "10tickets"]
+
     // Check if the specified currency is accepted
     if (!currencies.includes(currency) && !currencies.includes(currency + "s")) {
         receivedMessage.channel.send(`\`${currency}\` isn't a valid currency. The valid currencies are \`crystal ticket 10ticket\` as well as their pluralized forms.`)
@@ -108,11 +111,22 @@ function checkCurrency(currency) {
     }
 }
 
-
+function setSpark(id, server_id, amount, currency) {
+    postgresClient.query(
+        `UPDATE users SET ${currency}=($1) WHERE id = '($2)' AND server_id = '($3)'`,
+        [amount, id, server_id],
+        (err, res) => {
+            if (err) {
+                console.log(err)
+            }
+        }
+    )
+}
 
 function sparkCommand(arguments, receivedMessage) {
-    // Set the currencies for sparking
-    let currencies = ["crystals", "tickets", "10tickets"]
+    // Save convenience variables for the amount and currency
+    let userId = receivedMessage.author.id
+    let serverId = receivedMessage.guild.id
 
     // Save convenience variables for the amount and currency
     let amount = arguments[1]
@@ -123,6 +137,7 @@ function sparkCommand(arguments, receivedMessage) {
 
     if (arguments[0] == "set") {
         checkParameters(amount, currency)
+        setSpark(userId, serverId, amount, currency)
         channel.send(`Setting ${amount} ${currency}`)
     }
 
