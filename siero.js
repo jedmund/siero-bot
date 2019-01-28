@@ -3,17 +3,22 @@ require('dotenv').config()
 
 // Set up Discord
 const Discord = require('discord.js')
-const client = new Discord.Client()
+const discordClient = new Discord.Client()
+
+// Set up Postgres
+const pg = require('pg')
+const postgresClient = new pg.Client(process.env.DATABASE_URL)
+postgresClient.connect()
 
 // Let us know when Siero has connected to a server
-client.on('ready', () => {
-    console.log("Connected as " + client.user.tag)
+discordClient.on('ready', () => {
+    console.log("Connected as " + discordClient.user.tag)
 })
 
 // Respond to messages
-client.on('message', (receivedMessage) => {
+discordClient.on('message', (receivedMessage) => {
     // Siero shouldn't respond to her own messages
-    if (receivedMessage.author == client.user) {
+    if (receivedMessage.author == discordClient.user) {
         return
     }
 
@@ -35,8 +40,11 @@ function processCommand(receivedMessage) {
     // Separate all other arguments or parameters
     let arguments = splitCommand.slice(1)
 
+    console.log(`Command received from ${receivedMessage.author.id} on ${receivedMessage.guild.id}`)
     console.log("Command received: " + primaryCommand)
     console.log("Arguments: " + arguments)
+
+    authenticate(receivedMessage)
 
     if (primaryCommand == "spark") {
         sparkCommand(arguments, receivedMessage)
@@ -47,36 +55,89 @@ function isInt(value) {
   return !isNaN(value) && (function(x) { return (x | 0) === x; })(parseFloat(value))
 }
 
-function sparkCommand(arguments, receivedMessage) {
-    // Set the currencies for sparking
-    let currencies = ["crystal", "ticket", "10ticket"]
-
+function authenticate(receivedMessage) {
     // Save convenience variables for the amount and currency
-    let amount = arguments[1]
-    let currency = arguments[2]
+    let userId = receivedMessage.author.id
+    let serverId = receivedMessage.guild.id
 
+    postgresClient.query(
+        'SELECT * FROM users WHERE id=($1) AND server_id=($2)',
+        [userId, serverId],
+        (err, res) => {
+            if (err) {
+                console.log(err)
+            }
+
+            if (res.rows.length == 0) {
+                register(userId, serverId)
+            }
+        }
+    )
+}
+
+function register(userId, serverId) {
+    postgresClient.query(
+        'INSERT INTO users(id, server_id) values($1, $2)',
+        [userId, serverId],
+        (err, res) => {
+            if (err) {
+                console.log(err)
+            }
+        }
+    )
+}
+
+function checkParameters(amount, currency) {
+    checkAmount(amount)
+    checkCurrency(currency)
+}
+
+function checkAmount(amount) {
     // Check if the specified amount is numeric
     if (!isInt(amount)) {
         receivedMessage.channel.send(`\`${amount}\` isn't a numeric amount.`)
         return
     }
+}
 
+function checkCurrency(currency) {
     // Check if the specified currency is accepted
-    if (!currencies.includes(currency) && !currencies.includes(currency.slice(0, -1))) {
+    if (!currencies.includes(currency) && !currencies.includes(currency + "s")) {
         receivedMessage.channel.send(`\`${currency}\` isn't a valid currency. The valid currencies are \`crystal ticket 10ticket\` as well as their pluralized forms.`)
         return
     }
+}
 
-    if (arguments[0] == "save") {
-        receivedMessage.channel.send(`Saving ${amount} ${currency}`)
+
+
+function sparkCommand(arguments, receivedMessage) {
+    // Set the currencies for sparking
+    let currencies = ["crystals", "tickets", "10tickets"]
+
+    // Save convenience variables for the amount and currency
+    let amount = arguments[1]
+    let currency = arguments[2]
+
+    // Save convenience variable for the current channel
+    let channel = receivedMessage.channel
+
+    if (arguments[0] == "set") {
+        checkParameters(amount, currency)
+        channel.send(`Setting ${amount} ${currency}`)
+    }
+
+    else if (arguments[0] == "save") {
+        checkParameters(amount, currency)
+        channel.send(`Saving ${amount} ${currency}`)
     }
 
     else if (arguments[0] == "spend") {
-        receivedMessage.channel.send(`Spending ${amount} ${currency}`)
+        checkParameters(amount, currency)
+        channel.send(`Spending ${amount} ${currency}`)
     }
 
     else if (arguments[0] == null) {
-        receivedMessage.channel.send("Fetch operation")
+        channel.send("Fetch")
     }
 
     else {
@@ -90,4 +151,4 @@ function sparkCommand(arguments, receivedMessage) {
 // !spark spend 100 crystals
 
 // Log in to Discord with the secret token
-client.login(process.env.DISCORD_SECRET)
+discordClient.login(process.env.DISCORD_SECRET)
