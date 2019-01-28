@@ -43,5 +43,51 @@ function processCommand(receivedMessage) {
     }
 }
 
+function isInt(value) {
+  return !isNaN(value) && (function(x) { return (x | 0) === x; })(parseFloat(value))
+}
+
+function sparkCommand(arguments, receivedMessage) {
+    // Set the currencies for sparking
+    let currencies = ["crystal", "ticket", "10ticket"]
+
+    // Save convenience variables for the amount and currency
+    let amount = arguments[1]
+    let currency = arguments[2]
+
+    // Check if the specified amount is numeric
+    if (!isInt(amount)) {
+        receivedMessage.channel.send(`\`${amount}\` isn't a numeric amount.`)
+        return
+    }
+
+    // Check if the specified currency is accepted
+    if (!currencies.includes(currency) && !currencies.includes(currency.slice(0, -1))) {
+        receivedMessage.channel.send(`\`${currency}\` isn't a valid currency. The valid currencies are \`crystal ticket 10ticket\` as well as their pluralized forms.`)
+        return
+    }
+
+    if (arguments[0] == "save") {
+        receivedMessage.channel.send(`Saving ${amount} ${currency}`)
+    }
+
+    else if (arguments[0] == "spend") {
+        receivedMessage.channel.send(`Spending ${amount} ${currency}`)
+    }
+
+    else if (arguments[0] == null) {
+        receivedMessage.channel.send("Fetch operation")
+    }
+
+    else {
+        receivedMessage.channel.send("That isn't a valid operation for `spark`")
+    }
+}
+
+
+// Syntax
+// !spark save 100 crystals
+// !spark spend 100 crystals
+
 // Log in to Discord with the secret token
 client.login(process.env.DISCORD_SECRET)
