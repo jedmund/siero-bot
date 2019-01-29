@@ -95,25 +95,25 @@ function checkParameters(amount, currency) {
 function checkAmount(amount) {
     // Check if the specified amount is numeric
     if (!isInt(amount)) {
-        receivedMessage.channel.send(`\`${amount}\` isn't a numeric amount.`)
+        // receivedMessage.channel.send(`\`${amount}\` isn't a numeric amount.`)
         return
     }
 }
 
-function checkCurrency(currency) {
+function checkCurrency(currency, channel) {
     // Set the currencies for sparking
     let currencies = ["crystals", "tickets", "10tickets"]
 
     // Check if the specified currency is accepted
     if (!currencies.includes(currency) && !currencies.includes(currency + "s")) {
-        receivedMessage.channel.send(`\`${currency}\` isn't a valid currency. The valid currencies are \`crystal ticket 10ticket\` as well as their pluralized forms.`)
+        // receivedMessage.channel.send(`\`${currency}\` isn't a valid currency. The valid currencies are \`crystal ticket 10ticket\` as well as their pluralized forms.`)
         return
     }
 }
 
 function setSpark(id, server_id, amount, currency) {
     postgresClient.query(
-        `UPDATE users SET ${currency}=($1) WHERE id = '($2)' AND server_id = '($3)'`,
+        'UPDATE users SET ' + currency + '=($1) WHERE id = ($2) AND server_id = ($3)',
         [amount, id, server_id],
         (err, res) => {
             if (err) {
