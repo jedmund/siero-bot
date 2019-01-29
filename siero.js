@@ -3,22 +3,22 @@ require('dotenv').config()
 
 // Set up Discord
 const Discord = require('discord.js')
-const discordClient = new Discord.Client()
+const discord = new Discord.Client()
 
 // Set up Postgres
 const pg = require('pg')
-const postgresClient = new pg.Client(process.env.DATABASE_URL)
-postgresClient.connect()
+const postgres = new pg.Client(process.env.DATABASE_URL)
+postgres.connect()
 
 // Let us know when Siero has connected to a server
-discordClient.on('ready', () => {
-    console.log("Connected as " + discordClient.user.tag)
+discord.on('ready', () => {
+    console.log("Connected as " + discord.user.tag)
 })
 
 // Respond to messages
-discordClient.on('message', (receivedMessage) => {
+discord.on('message', (receivedMessage) => {
     // Siero shouldn't respond to her own messages
-    if (receivedMessage.author == discordClient.user) {
+    if (receivedMessage.author == discord.user) {
         return
     }
 
@@ -60,7 +60,7 @@ function authenticate(receivedMessage) {
     let userId = receivedMessage.author.id
     let serverId = receivedMessage.guild.id
 
-    postgresClient.query(
+    postgres.query(
         'SELECT * FROM users WHERE id=($1) AND server_id=($2)',
         [userId, serverId],
         (err, res) => {
@@ -76,7 +76,7 @@ function authenticate(receivedMessage) {
 }
 
 function register(userId, serverId) {
-    postgresClient.query(
+    postgres.query(
         'INSERT INTO users(id, server_id) values($1, $2)',
         [userId, serverId],
         (err, res) => {
@@ -112,7 +112,7 @@ function checkCurrency(currency, channel) {
 }
 
 function setSpark(id, server_id, amount, currency) {
-    postgresClient.query(
+    postgres.query(
         'UPDATE users SET ' + currency + '=($1) WHERE id = ($2) AND server_id = ($3)',
         [amount, id, server_id],
         (err, res) => {
@@ -156,7 +156,7 @@ function sparkCommand(arguments, receivedMessage) {
     }
 
     else {
-        receivedMessage.channel.send("That isn't a valid operation for `spark`")
+        channel.send("That isn't a valid operation for `spark`")
     }
 }
 
@@ -166,4 +166,4 @@ function sparkCommand(arguments, receivedMessage) {
 // !spark spend 100 crystals
 
 // Log in to Discord with the secret token
-discordClient.login(process.env.DISCORD_SECRET)
+discord.login(process.env.DISCORD_SECRET)
