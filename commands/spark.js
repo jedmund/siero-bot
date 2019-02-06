@@ -81,6 +81,8 @@ function add(message, args) {
 
         let sum = row['currency'] + args.amount
         updateCurrency(sum, transposedCurrency, message)
+
+        closeDatabase(db)
     })
 }
 
@@ -124,6 +126,8 @@ function remove(message, args) {
 
         let sum = row['currency'] - args.amount
         updateCurrency(sum, transposedCurrency, message)
+
+        closeDatabase(db)
     })
 }
 
@@ -175,7 +179,7 @@ function closeDatabase(db) {
           return console.error(err.message)
         }
 
-        console.log('Close the database connection.')
+        console.log('Closing the database connection.')
     });
 }
 
