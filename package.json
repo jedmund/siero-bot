@@ -1,0 +1,29 @@
+{
+  "name": "siero-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bot.js",
+  "dependencies": {
+    "discord-akairo": "^7.5.5",
+    "discord.js": "^11.4.2",
+    "sqlite": "^3.0.1",
+    "typescript": "^3.3.1"
+  },
+  "devDependencies": {
+    "dotenv": "^6.2.0",
+    "nodemon": "^1.18.9"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jedmund/siero-bot.git"
+  },
+  "author": "Justin Edmund",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jedmund/siero-bot/issues"
+  },
+  "homepage": "https://github.com/jedmund/siero-bot#readme"
+}
