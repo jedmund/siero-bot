@@ -1,6 +1,16 @@
-const sqlite3 = require('sqlite3').verbose();
-const pluralize = require('pluralize')
+const { Client } = require('pg')
 const { Command } = require('discord-akairo')
+
+const client = new Client({
+    user: process.env.PG_USER,
+    host: process.env.PG_HOST,
+    database: process.env.PG_DB,
+    password: process.env.PG_PASSWORD,
+    port: 5432,
+})
+const pluralize = require('pluralize')
+
+client.connect()
 
 class SparkCommand extends Command {
     constructor() {
@@ -41,18 +51,14 @@ function add(message, args) {
 
     let transposedCurrency = transposeCurrency(args.currency)
 
-    let db = openDatabase()
-    let sql = `SELECT ${transposedCurrency} AS currency FROM sparks WHERE user_id = ?`
-
-    db.get(sql, [message.author.id], (err, row) => {
+    let sql = `SELECT ${transposedCurrency} AS currency FROM sparks WHERE user_id = $1`
+    client.query(sql, [message.author.id], (err, res) => {
         if (err) {
             console.log(err.message)
         }
 
-        let sum = row['currency'] + args.amount
+        let sum = res.rows[0].currency + args.amount
         updateCurrency(sum, transposedCurrency, message)
-
-        closeDatabase(db)
     })
 }
 
@@ -82,33 +88,27 @@ function remove(message, args) {
 
     let transposedCurrency = transposeCurrency(args.currency)
 
-    let db = openDatabase()
-    let sql = `SELECT ${transposedCurrency} AS currency FROM sparks WHERE user_id = ?`
+    let sql = `SELECT ${transposedCurrency} AS currency FROM sparks WHERE user_id = $1`
 
-    db.get(sql, [message.author.id], (err, row) => {
+    client.query(sql, [message.author.id], (err, res) => {
         if (err) {
             console.log(err.message)
         }
 
-        let sum = row['currency'] - args.amount
+        let sum = res.rows[0].currency - args.amount
         updateCurrency(sum, transposedCurrency, message)
-
-        closeDatabase(db)
     })
 }
 
 function reset(message) {
-    let db = openDatabase()
-    let sql = `UPDATE sparks SET crystals = 0, tickets = 0, ten_tickets = 0 WHERE user_id = ?`
+    let sql = `UPDATE sparks SET crystals = 0, tickets = 0, ten_tickets = 0 WHERE user_id = $1`
 
-    db.run(sql, [message.author.id], (err) => {
+    client.query(sql, [message.author.id], (err) => {
         if (err) {
             console.log(err.message)
         }
 
         message.reply("Your spark has been reset!")
-
-        closeDatabase(db)
     })
 }
 
@@ -117,32 +117,11 @@ function set(message, args) {
         return
     }
     
-    updateCurrency(args.amount, transposedCurrency(args.currency), message)
+    updateCurrency(args.amount, transposeCurrency(args.currency), message)
 }
 
 function status(message) {
     getProgress(message)
-}
-
-// Database methods
-function openDatabase() {
-    return new sqlite3.Database('./db/siero.db', (err) => {
-        if (err) {
-            console.error(err.message)
-        }
-
-        console.log('Connected to the Knickknack Shack.')
-    });
-}
-
-function closeDatabase(db) {
-    db.close((err) => {
-        if (err) {
-          return console.error(err.message)
-        }
-
-        console.log('Closing the database connection.')
-    });
 }
 
 // Helper methods
@@ -167,32 +146,27 @@ function checkCurrency(message, currency) {
 }
 
 function checkIfUserExists(userId, callback) {
-    let db = openDatabase()
-    let sql = 'SELECT COUNT(*) AS count FROM sparks WHERE user_id = ?'
+    let sql = 'SELECT COUNT(*) AS count FROM sparks WHERE user_id = $1'
 
-    db.get(sql, [userId], (err, row) => {
-        if (row['count'] == 0) {
+    client.query(sql, [userId], (err, res) => {
+        console.log(res)
+        if (res.rows[0].count == 0) {
             createEntryForUser(userId, callback)
         } else {
             callback()
         }
-
-        closeDatabase(db)
     })
 }
 
 function createEntryForUser(userId, callback) {
-    let db = openDatabase()
-    let sql = 'INSERT INTO sparks (user_id) VALUES (?)'
-
-    db.run(sql, [userId], function(err) {
+    let sql = 'INSERT INTO sparks (user_id) VALUES ($1)'
+    
+    client.query(sql, [userId], function(err, res) {
         if (err) {
             console.log(err.message)
         }
 
         callback()
-
-        closeDatabase(db)
     })
 }
 
@@ -219,17 +193,14 @@ function generateProgressString(message, crystals, tickets, tenTickets) {
 }
 
 function getProgress(message) {
-    let db = openDatabase()
-    let sql = 'SELECT crystals, tickets, ten_tickets FROM sparks WHERE user_id = ?'
+    let sql = 'SELECT crystals, tickets, ten_tickets FROM sparks WHERE user_id = $1'
 
-    db.get(sql, [message.author.id], (err, row) => {
-        let crystals = row['crystals']
-        let tickets = row['tickets']
-        let tenTickets = row['ten_tickets']
+    client.query(sql, [message.author.id], (err, res) => {
+        let crystals = res.rows[0].crystals
+        let tickets = res.rows[0].tickets
+        let tenTickets = res.rows[0].ten_tickets
 
         generateProgressString(message, crystals, tickets, tenTickets)
-
-        closeDatabase(db)
     })
 }
 
@@ -284,34 +255,28 @@ function transposeCurrency(currency) {
 }
 
 function updateCurrency(amount, currency, message) {
-    let db = openDatabase()
-    let sql = `UPDATE sparks SET ${currency} = ? WHERE user_id = ?`
+    let sql = `UPDATE sparks SET ${currency} = $1 WHERE user_id = $2`
     let data = [amount, message.author.id]
 
-    db.run(sql, data, (err) => {
+    client.query(sql, data, (err) => {
         if (err) {
             console.log(err.message)
         }
 
         getProgress(message)
-
-        closeDatabase(db)
     })
 }
 
 function updateSpark(crystals, tickets, tenTickets, message) {
-    let db = openDatabase()
-    let sql = `UPDATE sparks SET crystals = ?, tickets = ?, ten_tickets = ? WHERE user_id = ?`
+    let sql = `UPDATE sparks SET crystals = $1, tickets = $2, ten_tickets = $3 WHERE user_id = $4`
     let data = [crystals, tickets, tenTickets, message.author.id]
 
-    db.run(sql, data, (err) => {
+    client.query(sql, data, (err) => {
         if (err) {
             console.log(err.message)
         }
 
         getProgress(message)
-
-        closeDatabase(db)
     })
 }
 
