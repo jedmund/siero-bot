@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const sqlite = require('sqlite');
 const { AkairoClient, SQLiteProvider } = require('discord-akairo')
 

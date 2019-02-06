@@ -7,9 +7,7 @@
     "discord-akairo": "^7.5.5",
     "discord.js": "^11.4.2",
     "sqlite": "^3.0.1",
-    "typescript": "^3.3.1"
-  },
-  "devDependencies": {
+    "typescript": "^3.3.1",
     "dotenv": "^6.2.0",
     "nodemon": "^1.18.9",
     "pluralize": "^7.0.0"
