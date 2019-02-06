@@ -33,10 +33,10 @@ class SparkCommand extends Command {
         }
 
         if (args.operation == "set") {
-            return message.reply(set(message, args))
+            set(message, args)
         }
 
-        return message.reply(`${args.operation} ${args.currency} ${args.amount}`)
+        // return message.reply(`${args.operation} ${args.currency} ${args.amount}`)
     }
 }
 
@@ -143,13 +143,11 @@ function set(message, args) {
 
             let draws = calculateDraws(crystals, tickets, tenTickets)
             
-            console.log(`You have ${crystals} crystals, ${tickets} tickets, and ${tenTickets} 10-tickets for a total of ${draws} draws.`)
+            message.reply(`You now have ${crystals} crystals, ${tickets} tickets, and ${tenTickets} 10-tickets for a total of ${draws} draws.`)
         })
 
         closeDatabase(db)
     })
-
-    return "Set spark"
 }
 
 module.exports = SparkCommand
