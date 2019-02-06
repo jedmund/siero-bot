@@ -11,7 +11,8 @@
   },
   "devDependencies": {
     "dotenv": "^6.2.0",
-    "nodemon": "^1.18.9"
+    "nodemon": "^1.18.9",
+    "pluralize": "^7.0.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
