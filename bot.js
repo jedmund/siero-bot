@@ -15,13 +15,5 @@ class SieroClient extends AkairoClient {
     }
 }
 
-let db = sqlite.open('./db/siero.db', (err) => {
-    if (err) {
-        console.log(err.message)
-    }
-
-    console.log('Connected to the Knickknack Shack')
-})
-
 const client = new SieroClient()
 client.login(process.env.DISCORD_SECRET)
