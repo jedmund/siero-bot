@@ -27,44 +27,14 @@ class SparkCommand extends Command {
     }
 
     exec(message, args) {
-        switch(args.operation) {
-            case "add":
-                add(message, args)
-                break
-            case "help":
-                help(message)
-                break
-            case "quicksave":
-                quicksave(message)
-                break
-            case "remove":
-                remove(message, args)
-                break
-            case "reset":
-                reset(message)
-                break
-            case "save":
-                add(message, args)
-                break
-            case "set":
-                set(message, args)
-                break
-            case "spend":
-                remove(message, args)
-                break
-            case "status":
-                status(message)
-                break
-            default:
-                break
-        }
+        checkIfUserExists(message.author.id, () => {
+            switchOperation(message, args)
+        })
     }
 }
 
 // Command methods
 function add(message, args) {
-    checkIfUserExists(message.author.id)
-
     if (!checkCurrency(message, args.currency)) {
         return
     }
@@ -98,8 +68,6 @@ function help(message) {
 }
 
 function quicksave(message) {
-    checkIfUserExists(message.author.id)
-
     let prefix = "$spark quicksave "
     let valueString = message.content.slice(prefix.length)
     let values = valueString.split(" ")
@@ -108,8 +76,6 @@ function quicksave(message) {
 }
 
 function remove(message, args) {
-    checkIfUserExists(message.author.id)
-
     if (!checkCurrency(message, args.currency)) {
         return
     }
@@ -132,8 +98,6 @@ function remove(message, args) {
 }
 
 function reset(message) {
-    checkIfUserExists(message.author.id)
-
     let db = openDatabase()
     let sql = `UPDATE sparks SET crystals = 0, tickets = 0, ten_tickets = 0 WHERE user_id = ?`
 
@@ -149,8 +113,6 @@ function reset(message) {
 }
 
 function set(message, args) {
-    checkIfUserExists(message.author.id)
-
     if (!checkCurrency(message, args.currency)) {
         return
     }
@@ -204,23 +166,23 @@ function checkCurrency(message, currency) {
     return valid
 }
 
-function checkIfUserExists(userId) {
+function checkIfUserExists(userId, callback) {
     let db = openDatabase()
-
     let sql = 'SELECT COUNT(*) AS count FROM sparks WHERE user_id = ?'
 
     db.get(sql, [userId], (err, row) => {
         if (row['count'] == 0) {
-            createEntryForUser(userId)
+            createEntryForUser(userId, callback)
+        } else {
+            callback()
         }
 
         closeDatabase(db)
     })
 }
 
-function createEntryForUser(userId) {
+function createEntryForUser(userId, callback) {
     let db = openDatabase()
-
     let sql = 'INSERT INTO sparks (user_id) VALUES (?)'
 
     db.run(sql, [userId], function(err) {
@@ -228,7 +190,7 @@ function createEntryForUser(userId) {
             console.log(err.message)
         }
 
-        console.log(this)
+        callback()
 
         closeDatabase(db)
     })
@@ -269,6 +231,40 @@ function getProgress(message) {
 
         closeDatabase(db)
     })
+}
+
+function switchOperation(message, args) {
+    switch(args.operation) {
+        case "add":
+            add(message, args)
+            break
+        case "help":
+            help(message)
+            break
+        case "quicksave":
+            quicksave(message)
+            break
+        case "remove":
+            remove(message, args)
+            break
+        case "reset":
+            reset(message)
+            break
+        case "save":
+            add(message, args)
+            break
+        case "set":
+            set(message, args)
+            break
+        case "spend":
+            remove(message, args)
+            break
+        case "status":
+            status(message)
+            break
+        default:
+            break
+    }
 }
 
 function transposeCurrency(currency) {
