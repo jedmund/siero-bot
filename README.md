@@ -1,15 +1,38 @@
 # Siero
+Siero is a Discord bot for Granblue Fantasy crews.
 
-## Usage
-1. Install packages from NPM
-```npm install```
+## Installation
+First, install the dependencies from [NPM](https://www.npmjs.com/get-npm).
+```
+npm install
+```
 
-2. Create `.env`
+Next, create a file called `.env` to store the following secret keys
 ```
 DISCORD_SECRET={your secret here} 
 ```
 
-3. Run with Nodemon
-```npx nodemon```
+After that, run the setup script to configure the SQLite database
+```
+node connect.js
+```
 
+Finally, run Siero with [nodemon](https://nodemon.io)
+```
+npx nodemon
+```
 
+## Usage
+Siero can help you save your sparks. You can access the commands any time in Discord with `$spark help`.
+
+`$spark status`: See how much you've saved
+
+`$spark set {amount} {currency}`: Save an absolute value for a currency
+
+`$spark add/save {amount} {currency}`: Add an amount of currency to your total
+
+`$spark remove/spend {amount} {currency}`: Remove an amount of currency from your total
+
+`$spark reset`: Reset your spark
+
+`$spark quicksave {crystals} {tickets} {10tickets}`: Quickly save all currencies
