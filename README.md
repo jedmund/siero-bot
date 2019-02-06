@@ -25,14 +25,32 @@ npx nodemon
 ## Usage
 Siero can help you save your sparks. You can access the commands any time in Discord with `$spark help`.
 
-`$spark status`: See how much you've saved
+See how much you've saved
+```
+$spark status
+``` 
 
-`$spark set {amount} {currency}`: Save an absolute value for a currency
+Save an absolute value for a currency
+```
+$spark set {amount} {currency}
+```
 
-`$spark add/save {amount} {currency}`: Add an amount of currency to your total
+Add an amount of currency to your total
+```
+$spark add/save {amount} {currency}
+```
 
-`$spark remove/spend {amount} {currency}`: Remove an amount of currency from your total
+Remove an amount of currency from your total
+```
+$spark remove/spend {amount} {currency}
+```
 
-`$spark reset`: Reset your spark
+Reset your spark
+```
+$spark reset
+```
 
-`$spark quicksave {crystals} {tickets} {10tickets}`: Quickly save all currencies
+Quickly save all currencies
+```
+$spark quicksave {crystals} {tickets} {10tickets}
+```
