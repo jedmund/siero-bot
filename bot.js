@@ -1,7 +1,7 @@
 require('dotenv').config()
 
 const sqlite = require('sqlite');
-const { AkairoClient, SQLiteProvider } = require('discord-akairo')
+const { AkairoClient } = require('discord-akairo')
 
 class SieroClient extends AkairoClient {
     constructor() {

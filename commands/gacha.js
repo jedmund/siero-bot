@@ -1,5 +1,6 @@
 const { Client } = require('pg')
 const { Command } = require('discord-akairo')
+const { RichEmbed } = require('discord.js')
 
 const client = new Client({
     user: process.env.PG_USER,
@@ -95,37 +96,61 @@ function ten_pull(message, args) {
             console.log(err.message)
         }
 
-        var string = "You got these 10 things: ```"
-        for (row in res.rows) {
-            string += responseString(res.rows[row], true) + "\n"
-        }
-        string += "```"
+        var string = `You got these 10 things! \`\`\`html\n${multilineResponseString(res.rows)}\n\`\`\``
 
         message.reply(string)
     })
-
-
-
-
-    // return count
 }
 
 function spark(message, args) {
+    // Create an object to store counts
     var count = { 
-        'R': 0, 
-        'SR': 0, 
-        'SSR': 0 
+        R: 0, 
+        SR: 0, 
+        SSR: 0 
     }
 
     for (var i = 0; i < 30; i++) {
-        var result = pull(message, args)
+        // Determine which pull will guarantee an SR or above
+        let guaranteedRateUpPull = randomIntFromInterval(1, 10)
 
-        count.R = count.R + result.R
-        count.SR = count.SR + result.SR
-        count.SSR = count.SSR + result.SSR
+        // Determine how many items of each rarity to retrieve
+        for (var j = 0; j < 10; j++) {
+            if (i == guaranteedRateUpPull) {
+                var rarity = determineRarity(args.gala, true)
+            } else {
+                var rarity = determineRarity(args.gala, false)
+            }
+
+            count[rarity.string] += 1
+        }
     }
+    
+    var sql = multiSqlString(count, args.gala, args.season, true)
+    client.query(sql, (err, res) => {
+        if (err) {
+            console.log(err.message)
+        }
 
-    message.reply(`You got ${count.SSR} SSRs, ${count.SR} SRs and ${count.R} Rs.`)
+        var embed = new RichEmbed()
+        embed.setColor(0xb58900)
+        
+        var result = ""
+        for (i in res.rows) {
+            result += responseString(res.rows[i], true)
+        }
+        
+        let rate = Math.floor((count.SSR / 300) * 100)
+
+        
+        embed.setDescription("```html\n" + result + "\n```")
+        embed.addField("Summary", `\`\`\`${summaryString(res.rows, count)}\`\`\``)
+        embed.setFooter(`Your SSR rate is ${rate}%`)
+        
+        result += `\nYour SSR rate is ${rate}%!`
+
+        message.channel.send(embed)
+    })
 }
 
 function help(message) {
@@ -172,12 +197,19 @@ function sqlString(times, gala, season) {
     return `SELECT * FROM gacha WHERE rarity = $1 ${limitBanner(gala, season)} ORDER BY RANDOM() LIMIT ${times};`
 }
 
-function multiSqlString(counts, gala, season) {
-    rSql = `(SELECT * FROM gacha WHERE rarity = 1 ${limitBanner(gala, season)} ORDER BY RANDOM() LIMIT ${counts.R})`
-    srSql = `(SELECT * FROM gacha WHERE rarity = 2 ${limitBanner(gala, season)} ORDER BY RANDOM() LIMIT ${counts.SR})`
-    ssrSql = `(SELECT * FROM gacha WHERE rarity = 3 ${limitBanner(gala, season)} ORDER BY RANDOM() LIMIT ${counts.SSR})`
+function multiSqlString(counts, gala, season, isSpark = false) {
+    var sql = ""
+    let ssrSql = `(SELECT * FROM gacha WHERE rarity = 3 ${limitBanner(gala, season)} ORDER BY RANDOM() LIMIT ${counts.SSR})`
 
-    return [rSql, srSql, ssrSql].join(" UNION ALL ")
+    if (!isSpark) {
+        let rSql = `(SELECT * FROM gacha WHERE rarity = 1 ${limitBanner(gala, season)} ORDER BY RANDOM() LIMIT ${counts.R})`
+        let srSql = `(SELECT * FROM gacha WHERE rarity = 2 ${limitBanner(gala, season)} ORDER BY RANDOM() LIMIT ${counts.SR})`
+        sql = [rSql, srSql, ssrSql].join(" UNION ALL ")
+    } else {
+        sql = ssrSql
+    }
+
+    return sql
 }
 
 function responseString(result, combined = false) {
@@ -193,21 +225,119 @@ function responseString(result, combined = false) {
     }
 
     if (result.recruits != null) {
-        var response = response + `[${rarityString}] ${result.name} – You recruited ${result.recruits.trim()}!`
+        var response = response + `<${rarityString}> ${result.name} – You recruited ${result.recruits.trim()}!`
     } else {
         if (result.item_type == 0) {
-            var response = response + `[${rarityString}] ${result.name}`
+            var response = response + `<${rarityString}> ${result.name}`
         } else {
-            var response = response + `[${rarityString} Summon] ${result.name}`
+            var response = response + `<${rarityString} Summon> ${result.name}`
         }
     }
 
     if (!combined) {
-        response = `\`\`\`${response}\`\`\``
+        response = `\`\`\`html\n${response}\n\`\`\``
+    } else {
+        response = `${response}\n`
     }
 
     return response
 }
+
+function multilineResponseString(results) {
+    let characterWeapons = sortCharacterWeapons(results)
+    var gachaItems = results.filter(x => !characterWeapons.includes(x)).concat(characterWeapons.filter(x => !results.includes(x)))
+
+    let items = shuffle(gachaItems).concat(characterWeapons)
+
+    var string = ""
+    for (item in items) {
+        string += responseString(items[item], true)
+    }
+
+    return string
+}
+
+function summaryString(results, count) {
+    let ssrWeapons = results.filter(filterSSRWeapons)
+    let ssrSummons = results.filter(filterSSRSummons)
+
+    var ssrWeaponString = `SSR Weapons: ${ssrWeapons.length}`
+    var ssrSummonString = `SSR Summons: ${ssrSummons.length}`
+    var srString = `SR: ${count.SR}`
+    var rString = `R: ${count.R}`
+
+    return [ssrWeaponString, ssrSummonString, srString, rString].join("\n")
+}
+
+function filterSSRWeapons(el) {
+    return el.rarity == 3 && el.item_type == 0
+}
+
+function filterSSRSummons(el) {
+    return el.rarity == 3 && el.item_type == 1
+}
+
+function sortCharacterWeapons(results) {
+    var characterWeapons = []
+
+    for (item in results) {
+        var hasPlacedSR = false
+        var lastSRPos = 0
+        var placedSSRCount = 0
+
+        if (results[item].recruits != null) {
+            // If you get an R, put it at the front of the list
+            if (results[item].rarity == 1) {
+                characterWeapons.unshift(results[item])
+
+                if (!hasPlacedSR) {
+                    lastSRPos = characterWeapons.length
+                }
+            }
+
+            // If you get an SR, put it at the last SR position and record a new position
+            if (results[item].rarity == 2) {
+                characterWeapons.splice(lastSRPos, 0, results[item])
+
+                if (!hasPlacedSR) {
+                    hasPlacedSR = true
+                }
+            }
+
+            // If you get an SSR, put it at the end of the list
+            if (results[item].rarity == 3) {
+                characterWeapons.push(results[item])
+
+                if (!hasPlacedSR) {
+                    placedSSRCount += 1
+                    lastSRPos = characterWeapons.length - placedSSRCount
+                }
+            }
+        }
+    }
+
+    return characterWeapons
+}
+
+// https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+function shuffle(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex
+  
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+  
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex)
+      currentIndex -= 1
+  
+      // And swap it with the current element.
+      temporaryValue = array[currentIndex]
+      array[currentIndex] = array[randomIndex]
+      array[randomIndex] = temporaryValue
+    }
+  
+    return array
+  }
 
 function currentRates(gala) {
     var rates = {}
@@ -250,7 +380,7 @@ function limitBanner(gala, season) {
     }
 
     else if (season == "halloween") {
-        additionalSQL += " OR halloween = 1"
+        additionalSql += " OR halloween = 1"
     }
 
     else if (season == "holiday") {
