@@ -39,7 +39,7 @@ class GachaCommand extends Command {
             case "yolo":
                 yolo(message, args)
                 break
-            case "pull":
+            case "ten":
                 ten_pull(message, args)
                 break
             case "spark":
