@@ -34,7 +34,7 @@ class GachaCommand extends Command {
             case "yolo":
                 yolo(message, args)
                 break
-            case "pull":
+            case "ten":
                 ten_pull(message, args)
                 break
             case "spark":
@@ -155,7 +155,7 @@ function help(message) {
     embed.setColor(0xdc322f)
     embed.addField("Command syntax", "```gacha spark <gala> <season>```")
     embed.addField("Gacha options", `\`\`\`yolo: A single Premium Draw pull
-pull: A 10-part Premium Draw pull
+ten: A 10-part Premium Draw pull
 spark: A whole spark\`\`\``)
     embed.addField("Galas and Seasons", `\`\`\`premium/flash/legend/ff/lf: The <gala> you choose will determine the SSR rate
 
