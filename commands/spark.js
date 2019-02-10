@@ -146,7 +146,6 @@ function checkIfUserExists(userId, callback) {
     let sql = 'SELECT COUNT(*) AS count FROM sparks WHERE user_id = $1'
 
     client.query(sql, [userId], (err, res) => {
-        console.log(res)
         if (res.rows[0].count == 0) {
             createEntryForUser(userId, callback)
         } else {
