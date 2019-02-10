@@ -45,6 +45,9 @@ class GachaCommand extends Command {
             case "spark":
                 spark(message, args)
                 break
+            case "help":
+                help(message)
+                break
             default:
                 break
         }
@@ -151,14 +154,19 @@ function spark(message, args) {
 }
 
 function help(message) {
-    return message.reply(`Welcome! I can help you save your money!
+    var embed = new RichEmbed()
+    embed.setTitle("Gacha")
+    embed.setDescription("Welcome! I can help you save your money!")
+    embed.setColor(0xdc322f)
+    embed.addField("Command syntax", "```gacha spark <gala> <season>```")
+    embed.addField("Gacha options", `\`\`\`yolo: A single Premium Draw pull
+pull: A 10-part Premium Draw pull
+spark: A whole spark\`\`\``)
+    embed.addField("Galas and Seasons", `\`\`\`premium/flash/legend/ff/lf: The <gala> you choose will determine the SSR rate
 
-\`status\`: See how much you've saved
-\`set\`: Save an absolute value for a currency
-\`add\` \`save\`: Add an amount of currency to your total
-\`remove\` \`spend\`: Remove an amount of currency from your total
-\`reset\`: Reset your spark
-\`quicksave\`: Quickly save all currencies in this order: \`crystals\` \`tickets\` \`10 tickets\``)
+valentime/summer/halloween/holiday: The <season> you choose adds seasonal SSRs to the pool\`\`\``)
+
+    message.channel.send(embed)
 }
 
 // Helper methods

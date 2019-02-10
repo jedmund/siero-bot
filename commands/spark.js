@@ -1,5 +1,6 @@
 const { Client } = require('pg')
 const { Command } = require('discord-akairo')
+const { RichEmbed } = require('discord.js')
 
 const client = new Client({
     connectionString: process.env.DATABASE_URL,
@@ -12,7 +13,7 @@ client.connect()
 class SparkCommand extends Command {
     constructor() {
         super('spark', {
-            aliases: ['spark'],
+            aliases: ['spark', 's'],
             args: [
                 {
                     id: 'operation',
@@ -68,6 +69,26 @@ function help(message) {
 \`remove\` \`spend\`: Remove an amount of currency from your total
 \`reset\`: Reset your spark
 \`quicksave\`: Quickly save all currencies in this order: \`crystals\` \`tickets\` \`10 tickets\``)
+}
+
+function help(message) {
+    var embed = new RichEmbed()
+    embed.setTitle("Spark")
+    embed.setDescription("Welcome! I can help you save your spark!")
+    embed.setColor(0xdc322f)
+    embed.addField("Command syntax", "```spark <option> <amount> <currency>```")
+    embed.addField("Spark options", `\`\`\`status: See how much you've saved
+set: Save an absolute value for a currency
+add/save: Add an amount of currency to your total
+remove/spend: Remove an amount of currency from your total
+reset: Reset your spark
+quicksave: Quickly save all currencies\`\`\``)
+    embed.addField("Currencies", `You can use both singular and plural words for currencies
+\`\`\`crystals tickets tenticket\`\`\``)
+    embed.addField("Quicksave", `This is the proper formatting for quicksave:
+\`\`\`spark quicksave <crystals> <tickets> <tentickets>\`\`\``)
+
+    message.channel.send(embed)
 }
 
 function quicksave(message) {
