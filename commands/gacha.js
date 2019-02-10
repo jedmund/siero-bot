@@ -2,12 +2,7 @@ const { Client } = require('pg')
 const { Command } = require('discord-akairo')
 const { RichEmbed } = require('discord.js')
 
-const client = new Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: true
-})
-const pluralize = require('pluralize')
-
+const client = getClient()
 client.connect()
 
 class GachaCommand extends Command {
@@ -39,7 +34,7 @@ class GachaCommand extends Command {
             case "yolo":
                 yolo(message, args)
                 break
-            case "ten":
+            case "pull":
                 ten_pull(message, args)
                 break
             case "spark":
@@ -164,7 +159,7 @@ pull: A 10-part Premium Draw pull
 spark: A whole spark\`\`\``)
     embed.addField("Galas and Seasons", `\`\`\`premium/flash/legend/ff/lf: The <gala> you choose will determine the SSR rate
 
-valentime/summer/halloween/holiday: The <season> you choose adds seasonal SSRs to the pool\`\`\``)
+valentine/summer/halloween/holiday: The <season> you choose adds seasonal SSRs to the pool\`\`\``)
 
     message.channel.send(embed)
 }
@@ -397,6 +392,26 @@ function limitBanner(gala, season) {
 
 function randomIntFromInterval(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+function getClient() {
+    var c
+    if (process.env.NODE_ENV == "development") {
+        c = new Client({
+            user: process.env.PG_USER,
+            host: process.env.PG_HOST,
+            database: process.env.PG_DB,
+            password: process.env.PG_PASSWORD,
+            port: 5432,
+        })
+    } else {
+        c = new Client({
+            connectionString: process.env.DATABASE_URL,
+            ssl: true
+        })
+    }
+
+    return c
 }
 
 module.exports = GachaCommand

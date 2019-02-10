@@ -1,13 +1,9 @@
 const { Client } = require('pg')
 const { Command } = require('discord-akairo')
 const { RichEmbed } = require('discord.js')
-
-const client = new Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: true
-})
 const pluralize = require('pluralize')
 
+const client = getClient()
 client.connect()
 
 class SparkCommand extends Command {
@@ -295,6 +291,26 @@ function updateSpark(crystals, tickets, tenTickets, message) {
 
         getProgress(message)
     })
+}
+
+function getClient() {
+    var c
+    if (process.env.NODE_ENV == "development") {
+        c = new Client({
+            user: process.env.PG_USER,
+            host: process.env.PG_HOST,
+            database: process.env.PG_DB,
+            password: process.env.PG_PASSWORD,
+            port: 5432,
+        })
+    } else {
+        c = new Client({
+            connectionString: process.env.DATABASE_URL,
+            ssl: true
+        })
+    }
+
+    return c
 }
 
 module.exports = SparkCommand
