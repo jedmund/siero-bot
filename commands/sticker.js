@@ -1,7 +1,5 @@
-const { Client } = require('pg')
 const { Command } = require('discord-akairo')
 const { RichEmbed } = require('discord.js')
-const pluralize = require('pluralize')
 
 class StickerCommand extends Command {
     constructor() {
@@ -88,6 +86,20 @@ function listStickers() {
     let aliases = Object.keys(stickers).join("\n")
 
     return `\`\`\`${aliases}\`\`\``
+}
+
+function exportListForGithub() {
+    let stickers = getStickers()
+    
+    var list = ""
+
+    for (i in stickers) {
+        var sticker = stickers[i]
+        var row = `|![${i}](${sticker})|\`${i}\`|\n`
+        list += row
+    }
+
+    console.log(list)
 }
 
 module.exports = StickerCommand
