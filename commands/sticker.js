@@ -12,23 +12,29 @@ class StickerCommand extends Command {
                     id: 'alias',
                     type: 'string'
                 }
-            ]
+            ],
+            trigger: ['(?<=\:)(.*?)(?=\:)']
         })
     }
 
-    exec(message, args) {
-        if (args.alias == "list") {
+    exec(message, match, args) {
+        var alias
+        if (match[0] != null) {
+            alias = match[0]
+        } else if (match['alias'] != null) {
+            alias = match['alias']
+        }
+
+        if (alias == "list") {
             message.reply(listStickers())
         } else {
             let stickers = getStickers()
 
-            if (stickers[args.alias] != null) {
+            if (stickers[alias] != null ) {
                 var embed = new RichEmbed()
                 embed.setColor(0xb58900)
-                embed.setImage(stickers[args.alias])
+                embed.setImage(stickers[alias])
                 message.channel.send(embed)
-            } else {
-                message.reply("I couldn't find a sticker with that alias!")
             }
         }
     }
