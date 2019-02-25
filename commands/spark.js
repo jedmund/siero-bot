@@ -103,7 +103,14 @@ class SparkCommand extends Command {
     }
 
     status(message) {
-        getProgress(message)
+        var id = 0
+        if (message.mentions.users.values().next().value != undefined) {
+            id = message.mentions.users.values().next().value.id
+        } else {
+            id = message.author.id
+        }
+
+        this.getProgress(message, id)
     }
 
     help(message) {
