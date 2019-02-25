@@ -31,18 +31,18 @@ class SparkCommand extends Command {
     }
 
     exec(message, args) {
-        checkIfUserExists(message.author.id, () => {
-            switchOperation(message, args)
+        this.checkIfUserExists(message.author.id, () => {
+            this.switchOperation(message, args)
         })
     }
 
     // Command methods
     add(message, args) {
-        if (!checkCurrency(message, args.currency)) {
+        if (!this.checkCurrency(message, args.currency)) {
             return
         }
     
-        let transposedCurrency = transposeCurrency(args.currency)
+        let transposedCurrency = this.transposeCurrency(args.currency)
     
         let sql = `SELECT ${transposedCurrency} AS currency FROM sparks WHERE user_id = $1`
         client.query(sql, [message.author.id], (err, res) => {
@@ -51,16 +51,16 @@ class SparkCommand extends Command {
             }
     
             let sum = res.rows[0].currency + args.amount
-            updateCurrency(sum, transposedCurrency, message)
+            this.updateCurrency(sum, transposedCurrency, message)
         })
     }
 
     remove(message, args) {
-        if (!checkCurrency(message, args.currency)) {
+        if (!this.checkCurrency(message, args.currency)) {
             return
         }
     
-        let transposedCurrency = transposeCurrency(args.currency)
+        let transposedCurrency = this.transposeCurrency(args.currency)
     
         let sql = `SELECT ${transposedCurrency} AS currency FROM sparks WHERE user_id = $1`
     
@@ -70,7 +70,7 @@ class SparkCommand extends Command {
             }
     
             let sum = res.rows[0].currency - args.amount
-            updateCurrency(sum, transposedCurrency, message)
+            this.updateCurrency(sum, transposedCurrency, message)
         })
     }
 
@@ -79,7 +79,7 @@ class SparkCommand extends Command {
         let valueString = message.content.slice(prefix.length)
         let values = valueString.split(" ")
     
-        updateSpark(values[0], values[1], values[2], message)
+        this.updateSpark(values[0], values[1], values[2], message)
     }
     
     reset(message) {
@@ -95,11 +95,11 @@ class SparkCommand extends Command {
     }
 
     set(message, args) {
-        if (!checkCurrency(message, args.currency)) {
+        if (!this.checkCurrency(message, args.currency)) {
             return
         }
         
-        updateCurrency(args.amount, transposeCurrency(args.currency), message)
+        this.updateCurrency(args.amount, this.transposeCurrency(args.currency), message)
     }
 
     status(message) {
@@ -172,31 +172,31 @@ class SparkCommand extends Command {
     switchOperation(message, args) {
         switch(args.operation) {
             case "add":
-                add(message, args)
+                this.add(message, args)
                 break
             case "help":
-                help(message)
+                this.help(message)
                 break
             case "quicksave":
-                quicksave(message)
+                this.quicksave(message)
                 break
             case "remove":
-                remove(message, args)
+                this.remove(message, args)
                 break
             case "reset":
-                reset(message)
+                this.reset(message)
                 break
             case "save":
-                add(message, args)
+                this.add(message, args)
                 break
             case "set":
-                set(message, args)
+                this.set(message, args)
                 break
             case "spend":
-                remove(message, args)
+                this.remove(message, args)
                 break
             case "status":
-                status(message)
+                this.status(message)
                 break
             default:
                 break
@@ -225,7 +225,7 @@ class SparkCommand extends Command {
     
         client.query(sql, [userId], (err, res) => {
             if (res.rows[0].count == 0) {
-                createEntryForUser(userId, callback)
+                this.createEntryForUser(userId, callback)
             } else {
                 callback()
             }
@@ -252,7 +252,7 @@ class SparkCommand extends Command {
             let tickets = res.rows[0].tickets
             let tenTickets = res.rows[0].ten_tickets
     
-            generateProgressString(message, crystals, tickets, tenTickets)
+            this.generateProgressString(message, crystals, tickets, tenTickets)
         })
     }
     
@@ -265,7 +265,7 @@ class SparkCommand extends Command {
                 console.log(err.message)
             }
     
-            getProgress(message)
+            this.getProgress(message)
         })
     }
     
@@ -278,7 +278,7 @@ class SparkCommand extends Command {
                 console.log(err.message)
             }
     
-            getProgress(message)
+            this.getProgress(message)
         })
     }
 }
