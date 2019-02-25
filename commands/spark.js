@@ -155,7 +155,7 @@ class SparkCommand extends Command {
     }
 
     generateProgressString(message, crystals, tickets, tenTickets) {
-        let draws = calculateDraws(crystals, tickets, tenTickets)
+        let draws = this.calculateDraws(crystals, tickets, tenTickets)
         let drawPercentage = Math.floor((draws / 300) * 100)
         
         let statusString = `You have ${crystals} ${pluralize('crystal', crystals)}, ${tickets} ${pluralize('ticket', tickets)}, and ${tenTickets} ${pluralize('10-ticket', tenTickets)} for a total of **${draws} draws.**`
