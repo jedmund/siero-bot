@@ -103,13 +103,11 @@ class SparkCommand extends Command {
     }
 
     status(message) {
-        var id = 0
-        if (message.mentions.users.values().next().value != undefined) {
-            id = message.mentions.users.values().next().value.id
-        } else {
-            id = message.author.id
-        }
+        // var id = 0
+        // if (message.mentions.users.values().next().value != undefined) {
+        //     id = message.mentions.users.values().next().value.id
 
+        var id = message.author.id
         this.getProgress(message, id)
     }
 
@@ -154,7 +152,7 @@ class SparkCommand extends Command {
         return valid
     }
 
-    generateProgressString(message, crystals, tickets, tenTickets) {
+    generateProgressString2(message, crystals, tickets, tenTickets) {
         let draws = this.calculateDraws(crystals, tickets, tenTickets)
         let drawPercentage = Math.floor((draws / 300) * 100)
 
@@ -163,7 +161,7 @@ class SparkCommand extends Command {
         message.channel.send(embed)
     }
 
-    generateProgressStringz(message, crystals, tickets, tenTickets) {
+    generateProgressString(message, crystals, tickets, tenTickets) {
         let draws = this.calculateDraws(crystals, tickets, tenTickets)
         let drawPercentage = Math.floor((draws / 300) * 100)
 
@@ -302,7 +300,7 @@ class SparkCommand extends Command {
         let sql = 'SELECT crystals, tickets, ten_tickets FROM sparks WHERE user_id = $1'
 
         client.query(sql, [userId], (err, res) => {
-
+            console.log(res)
             if (res.rowCount > 0) {
                 let crystals = res.rows[0].crystals
                 let tickets = res.rows[0].tickets
