@@ -105,7 +105,7 @@ class SparkCommand extends Command {
     status(message) {
         // var id = 0
         // if (message.mentions.users.values().next().value != undefined) {
-        //     id = message.mentions.users.values().next().value.id
+        // id = message.mentions.users.values().next().value.id
 
         var id = message.author.id
         this.getProgress(message, id)
@@ -205,7 +205,7 @@ class SparkCommand extends Command {
         var tenTicketsRow = `| 10 tickets  | ${this.createStringWithRemainder(tenTickets)} |`
         var totalsRow = `| Total draws | ${this.createStringWithRemainder(draws)} |`
 
-        console.log("```\n" + bookends + "\n" + crystalsRow + "\n" + bookends + "\n" + ticketsRow + "\n" + bookends + "\n" + tenTicketsRow + "\n" + separator + "\n" + totalsRow + "\n" + bookends + "\n```")
+        // console.log("```\n" + bookends + "\n" + crystalsRow + "\n" + bookends + "\n" + ticketsRow + "\n" + bookends + "\n" + tenTicketsRow + "\n" + separator + "\n" + totalsRow + "\n" + bookends + "\n```")
         return "```\n" + bookends + "\n" + crystalsRow + "\n" + bookends + "\n" + ticketsRow + "\n" + bookends + "\n" + tenTicketsRow + "\n" + separator + "\n" + totalsRow + "\n" + bookends + "\n```"
     }
 
@@ -300,7 +300,6 @@ class SparkCommand extends Command {
         let sql = 'SELECT crystals, tickets, ten_tickets FROM sparks WHERE user_id = $1'
 
         client.query(sql, [userId], (err, res) => {
-            console.log(res)
             if (res.rowCount > 0) {
                 let crystals = res.rows[0].crystals
                 let tickets = res.rows[0].tickets
