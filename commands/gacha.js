@@ -6,7 +6,7 @@ const client = getClient()
 client.connect()
 
 class GachaCommand extends Command {
-    constructor() {
+    constructor(gala, season) {
         super('gacha', {
             aliases: ['gacha', 'g'],
             args: [
@@ -30,18 +30,20 @@ class GachaCommand extends Command {
     }
 
     exec(message, args) {
+        this.storeBanner(args)
+
         switch(args.operation) {
             case "yolo":
-                yolo(message, args)
+                this.yolo(message, args)
                 break
             case "ten":
-                ten_pull(message, args)
+                this.ten_pull(message)
                 break
             case "spark":
-                spark(message, args)
+                this.spark(message)
                 break
             case "help":
-                help(message)
+                this.help(message)
                 break
             default:
                 break
@@ -50,101 +52,94 @@ class GachaCommand extends Command {
 
     // Command methods
     yolo(message, args) {
-        var rarity = determineRarity(args.gala, false)
+        var rarity = this.determineRarity(false)
 
-        let sql = sqlString(1, args.gala, args.season)
+        let sql = this.sqlString(1)
         client.query(sql, [rarity.int], (err, res) => {
             if (err) {
                 console.log(err.message)
             }
 
-            message.reply(responseString(res.rows[0]))
+            let response = this.responseString(res.rows[0])
+            message.reply(response)
         })
     }
 
-    ten_pull(message, args) {
+    ten_pull(message) {
         // Determine which pull will guarantee an SR or above
-        let guaranteedRateUpPull = randomIntFromInterval(1, 10)
+        let guaranteedRateUpPull = this.randomIntFromInterval(1, 10)
 
-        // Create an object to store counts
-        var count = { 
-            R: 0, 
-            SR: 0, 
-            SSR: 0 
-        }
-
-        // Determine how many items of each rarity to retrieve
-        for (var i = 0; i < 10; i++) {
-            if (i == guaranteedRateUpPull) {
-                var rarity = determineRarity(args.gala, true)
-            } else {
-                var rarity = determineRarity(args.gala, false)
-            }
-
-            count[rarity.string] += 1
-        }
+        // Roll the gacha to determine rarity
+        var roll = this.tenPartRoll()
         
-        var sql = multiSqlString(count, args.gala, args.season)
+        var sql = this.multiSqlString(roll)
         client.query(sql, (err, res) => {
             if (err) {
                 console.log(err.message)
             }
 
-            var string = `You got these 10 things! \`\`\`html\n${multilineResponseString(res.rows)}\n\`\`\``
+            var string = `You got these 10 things! \`\`\`html\n${this.multilineResponseString(res.rows)}\n\`\`\``
 
             message.reply(string)
         })
     }
 
-    spark(message, args) {
-        // Create an object to store counts
-        var count = { 
-            R: 0, 
-            SR: 0, 
-            SSR: 0 
-        }
-
-        for (var i = 0; i < 30; i++) {
-            // Determine which pull will guarantee an SR or above
-            let guaranteedRateUpPull = randomIntFromInterval(1, 10)
-
-            // Determine how many items of each rarity to retrieve
-            for (var j = 0; j < 10; j++) {
-                if (i == guaranteedRateUpPull) {
-                    var rarity = determineRarity(args.gala, true)
-                } else {
-                    var rarity = determineRarity(args.gala, false)
-                }
-
-                count[rarity.string] += 1
-            }
-        }
+    spark(message) {
+        // Roll the gacha to determine rarity
+        let rollsInSpark = 30
+        var rolls = this.tenPartRoll(rollsInSpark)
         
-        var sql = multiSqlString(count, args.gala, args.season, true)
+        var sql = this.multiSqlString(rolls, true)
         client.query(sql, (err, res) => {
             if (err) {
                 console.log(err.message)
-            }
+           }
 
             var embed = new RichEmbed()
             embed.setColor(0xb58900)
             
             var result = ""
-            for (i in res.rows) {
-                result += responseString(res.rows[i], true)
+            for (var i in res.rows) {
+                result += this.responseString(res.rows[i], true)
             }
             
-            let rate = Math.floor((count.SSR / 300) * 100)
-
+            let rate = Math.floor((rolls.SSR / 300) * 100)
             
             embed.setDescription("```html\n" + result + "\n```")
-            embed.addField("Summary", `\`\`\`${summaryString(res.rows, count)}\`\`\``)
+            embed.addField("Summary", `\`\`\`${this.summaryString(res.rows, rolls)}\`\`\``)
             embed.setFooter(`Your SSR rate is ${rate}%`)
             
             result += `\nYour SSR rate is ${rate}%!`
 
             message.channel.send(embed)
         })
+    }
+
+    tenPartRoll(times = 1) {
+        // Create an object to store counts
+        var count = { 
+            R: 0, 
+            SR: 0, 
+            SSR: 0 
+        }
+
+        for (var i = 0; i < times; i++) {
+            // Determine which pull will guarantee an SR or above
+            let guaranteedRateUpPull = this.randomIntFromInterval(1, 10)
+
+            // Determine how many items of each rarity to retrieve
+            for (var j = 0; j < 10; j++) {
+                if (i == guaranteedRateUpPull) {
+                    var rarity = this.determineRarity(true)
+                } else {
+                    var rarity = this.determineRarity(false)
+                }
+
+                count[rarity.string] += 1
+            }
+        }
+
+        return count
     }
 
     help(message) {
@@ -164,9 +159,9 @@ class GachaCommand extends Command {
     }
 
     // Gacha methods
-    currentRates(gala) {
+    currentRates() {
         var rates = {}
-        if (["flash", "ff", "legend", "lf"].includes(gala)) {
+        if (["flash", "ff", "legend", "lf"].includes(this.gala)) {
             rates = {
                 "R":   0.76,
                 "SR":  0.15,
@@ -183,8 +178,8 @@ class GachaCommand extends Command {
         return rates
     }
 
-    determineRarity(gala, isRateUp = false) {
-        let rates = currentRates(gala)
+    determineRarity(isRateUp = false) {
+        let rates = this.currentRates()
         var rNum = Math.random()
 
         var rarity = {
@@ -219,32 +214,32 @@ class GachaCommand extends Command {
         return el.rarity == 3 && el.item_type == 1
     }
 
-    limitBanner(gala, season) {
+    limitBanner() {
         var additionalSql = "AND (premium = 1"
     
         // Test the gala
-        if (["flash", "ff"].includes(gala)) {
+        if (["flash", "ff"].includes(this.gala)) {
             additionalSql += " OR flash = 1"
         } 
         
-        else if (["legend", "lf"].includes(gala)) {
+        else if (["legend", "lf"].includes(this.gala)) {
             additionalSql += " OR legend = 1"
         }
     
         // Test the season
-        if (season == "valentine") {
+        if (this.season == "valentine") {
             additionalSql += " OR valentine = 1"
         }
     
-        else if (season == "summer") {
+        else if (this.season == "summer") {
             additionalSql += " OR summer = 1"
         }
     
-        else if (season == "halloween") {
+        else if (this.season == "halloween") {
             additionalSql += " OR halloween = 1"
         }
     
-        else if (season == "holiday") {
+        else if (this.season == "holiday") {
             additionalSql += " OR holiday = 1"
         }
     
@@ -254,7 +249,7 @@ class GachaCommand extends Command {
     sortCharacterWeapons(results) {
         var characterWeapons = []
     
-        for (item in results) {
+        for (var item in results) {
             var hasPlacedSR = false
             var lastSRPos = 0
             var placedSSRCount = 0
@@ -294,17 +289,20 @@ class GachaCommand extends Command {
     }
 
     // String methods
-    sqlString(times, gala, season) {
-        return `SELECT * FROM gacha WHERE rarity = $1 ${limitBanner(gala, season)} ORDER BY RANDOM() LIMIT ${times};`
+    sqlString(times) {
+        let constraints = this.limitBanner()
+        return `SELECT * FROM gacha WHERE rarity = $1 ${constraints} ORDER BY RANDOM() LIMIT ${times};`
     }
     
-    multiSqlString(counts, gala, season, isSpark = false) {
+    multiSqlString(counts, isSpark = false) {
         var sql = ""
-        let ssrSql = `(SELECT * FROM gacha WHERE rarity = 3 ${limitBanner(gala, season)} ORDER BY RANDOM() LIMIT ${counts.SSR})`
+        var constraints = this.limitBanner()
+
+        let ssrSql = `(SELECT * FROM gacha WHERE rarity = 3 ${constraints} ORDER BY RANDOM() LIMIT ${counts.SSR})`
     
         if (!isSpark) {
-            let rSql = `(SELECT * FROM gacha WHERE rarity = 1 ${limitBanner(gala, season)} ORDER BY RANDOM() LIMIT ${counts.R})`
-            let srSql = `(SELECT * FROM gacha WHERE rarity = 2 ${limitBanner(gala, season)} ORDER BY RANDOM() LIMIT ${counts.SR})`
+            let rSql = `(SELECT * FROM gacha WHERE rarity = 1 ${constraints} ORDER BY RANDOM() LIMIT ${counts.R})`
+            let srSql = `(SELECT * FROM gacha WHERE rarity = 2 ${constraints} ORDER BY RANDOM() LIMIT ${counts.SR})`
             sql = [rSql, srSql, ssrSql].join(" UNION ALL ")
         } else {
             sql = ssrSql
@@ -345,22 +343,22 @@ class GachaCommand extends Command {
     }
     
     multilineResponseString(results) {
-        let characterWeapons = sortCharacterWeapons(results)
+        let characterWeapons = this.sortCharacterWeapons(results)
         var gachaItems = results.filter(x => !characterWeapons.includes(x)).concat(characterWeapons.filter(x => !results.includes(x)))
     
-        let items = shuffle(gachaItems).concat(characterWeapons)
+        let items = this.shuffle(gachaItems).concat(characterWeapons)
     
         var string = ""
-        for (item in items) {
-            string += responseString(items[item], true)
+        for (var item in items) {
+            string += this.responseString(items[item], true)
         }
     
         return string
     }
     
     summaryString(results, count) {
-        let ssrWeapons = results.filter(filterSSRWeapons)
-        let ssrSummons = results.filter(filterSSRSummons)
+        let ssrWeapons = results.filter(this.filterSSRWeapons)
+        let ssrSummons = results.filter(this.filterSSRSummons)
     
         var ssrWeaponString = `SSR Weapons: ${ssrWeapons.length}`
         var ssrSummonString = `SSR Summons: ${ssrSummons.length}`
@@ -393,6 +391,11 @@ class GachaCommand extends Command {
         }
       
         return array
+    }
+
+    storeBanner(args) {
+        this.gala = args.gala
+        this.season = args.season
     }
 }
 
