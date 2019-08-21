@@ -10,7 +10,7 @@ const pgp = pgPromise(initOptions)
 const client = pgp(getConnection())
 
 class GachaCommand extends Command {
-  constructor(gala, season) {
+  constructor(gala, season, message, userId) {
     super('gacha', {
       aliases: ['gacha', 'g'],
       args: [
@@ -35,6 +35,8 @@ class GachaCommand extends Command {
 
   exec(message, args) {
     this.storeBanner(args)
+    this.storeMessage(message)
+    this.storeUser(message.author.id)
 
     switch(args.operation) {
       case "yolo":
@@ -58,7 +60,7 @@ class GachaCommand extends Command {
     }
 
   // Command methods
-    yolo(message, args) {
+  yolo(message, args) {
     var rarity = this.determineRarity(false)
 
     let sql = this.sqlString(1)
@@ -124,6 +126,56 @@ class GachaCommand extends Command {
     return embed
   }
 
+  tenPartRoll(times = 1) {
+    // Create an object to store counts
+    var count = { 
+      R: 0, 
+      SR: 0, 
+      SSR: 0 
+    }
+
+    for (var roll = 0; roll < times; roll++) {
+      // Determine which pull will guarantee an SR or above
+      let guaranteedRateUpPull = this.randomIntFromInterval(1, 10)
+
+      // Determine how many items of each rarity to retrieve
+      for (var position = 0; position < 10; position++) {
+        var rarity
+
+        if (position == guaranteedRateUpPull) {
+            rarity = this.determineRarity(true)
+        } else {
+            rarity = this.determineRarity(false)
+        }
+
+        if (rarity.int == 3) {
+          var rateup = this.determineRateUp()
+        }
+
+        count[rarity.string] += 1
+      }
+    }
+
+    return count
+  }
+
+  help(message) {
+    var embed = new RichEmbed()
+    embed.setTitle("Gacha")
+    embed.setDescription("Welcome! I can help you save your money!")
+    embed.setColor(0xdc322f)
+    embed.addField("Command syntax", "```gacha spark <gala> <season>```")
+    embed.addField("Gacha options", `\`\`\`yolo: A single Premium Draw pull
+    ten: A 10-part Premium Draw pull
+    spark: A whole spark\`\`\``)
+    embed.addField("Galas and Seasons", `\`\`\`premium/flash/legend/ff/lf: The <gala> you choose will determine the SSR rate
+
+    valentine/summer/halloween/holiday: The <season> you choose adds seasonal SSRs to the pool\`\`\``)
+
+    message.channel.send(embed)
+  }
+
+  // Rate-up methods
   rateup(message, args) {
     let command = message.content.substring("$g rateup ".length)
 
@@ -132,12 +184,12 @@ class GachaCommand extends Command {
     }
 
     if (command == "clear") {
-      this.clearRateUp(message)
+      this.clearRateUp()
       message.reply("Your rate-up has been cleared.")
     }
 
     if (command.includes("set")) {
-      this.setRateUp(command, message)
+      this.setRateUp(command)
     }
   }
 
@@ -159,7 +211,7 @@ class GachaCommand extends Command {
             rateUpDict.push(dict)
           }
 
-          let embed = this.generateRateUpString(rateUpDict, message)
+          let embed = this.generateRateUpString(rateUpDict)
           message.channel.send(embed)
         } else {
           message.reply("It looks like you don't have any rate-ups set right now!")
@@ -170,7 +222,7 @@ class GachaCommand extends Command {
       })
   }
 
-  generateRateUpString(rateups, message) {
+  generateRateUpString(rateups) {
     var embed = new RichEmbed()
     embed.setColor(0xb58900)
 
@@ -194,10 +246,10 @@ class GachaCommand extends Command {
 
     // Then, save the new rate up
     var rateups = this.extractRateUp(command)
-    this.saveRateUps(rateups, message)
+    this.saveRateUps(rateups)
   }
 
-  saveRateUps(dictionary, message) {
+  saveRateUps(dictionary) {
     let list = dictionary.map(rateup => rateup.item)
 
     let sql = 'SELECT id, name, recruits FROM gacha WHERE name IN ($1:csv) OR recruits IN ($1:csv)'
@@ -209,7 +261,7 @@ class GachaCommand extends Command {
           let rateup = this.joinRateUpData(data[i], dictionary)
 
           // Save the rate up data
-          this.saveRateUp(rateup.id, message.author.id, rateup.rate)
+          this.saveRateUp(rateup.id, rateup.rate)
 
           // Push to array
           rateups.push(rateup)
@@ -220,9 +272,9 @@ class GachaCommand extends Command {
         let missing = this.findMissingRateUpData(list, data)
 
         // Create the embed displaying rate-up data
-        let embed = this.generateRateUpString(rateups, message)
+        let embed = this.generateRateUpString(rateups)
         embed.addField('The following items could not be found and were not added to your rateup',  `\`\`\`${missing.join("\n")}\`\`\``)
-        message.channel.send(embed)
+        this.message.channel.send(embed)
       })
       .catch(error => {
         console.log(error)
@@ -254,19 +306,16 @@ class GachaCommand extends Command {
     return original.filter(e => !resultNames.includes(e) && !resultRecruits.includes(e))
   }
 
-  saveRateUp(id, user_id, rate) {
+  saveRateUp(id, rate) {
     let sql = 'INSERT INTO rateup (gacha_id, user_id, rate) VALUES ($1, $2, $3)'
-    client.query(sql, [id, user_id, rate])
-      .then(data => {
-
-      })
+    client.query(sql, [id, this.userId, rate])
       .catch(error => {
         console.log(error)
       })
   }
 
-  extractRateUp(message) {
-    let rateupString = message.substring("set ".length)
+  extractRateUp() {
+    let rateupString = this.message.content.substring("$g rateup set ".length)
     let rawRateUps = rateupString.split(",").map(item => item.trim())
     
     var rateups = []
@@ -283,55 +332,12 @@ class GachaCommand extends Command {
     return rateups
   }
 
-  clearRateUp(message) {
+  clearRateUp() {
     let sql = 'DELETE FROM rateup WHERE user_id = $1'
-    client.any(sql, [message.author.id])
+    client.any(sql, [this.userId])
       .catch(error => {
         console.log(error)
       })
-  }
-
-  tenPartRoll(times = 1) {
-    // Create an object to store counts
-    var count = { 
-      R: 0, 
-      SR: 0, 
-      SSR: 0 
-    }
-
-    for (var roll = 0; roll < times; roll++) {
-      // Determine which pull will guarantee an SR or above
-      let guaranteedRateUpPull = this.randomIntFromInterval(1, 10)
-
-      // Determine how many items of each rarity to retrieve
-      for (var position = 0; position < 10; position++) {
-        if (position == guaranteedRateUpPull) {
-            var rarity = this.determineRarity(true)
-        } else {
-            var rarity = this.determineRarity(false)
-        }
-
-        count[rarity.string] += 1
-      }
-    }
-
-    return count
-  }
-
-  help(message) {
-    var embed = new RichEmbed()
-    embed.setTitle("Gacha")
-    embed.setDescription("Welcome! I can help you save your money!")
-    embed.setColor(0xdc322f)
-    embed.addField("Command syntax", "```gacha spark <gala> <season>```")
-    embed.addField("Gacha options", `\`\`\`yolo: A single Premium Draw pull
-    ten: A 10-part Premium Draw pull
-    spark: A whole spark\`\`\``)
-    embed.addField("Galas and Seasons", `\`\`\`premium/flash/legend/ff/lf: The <gala> you choose will determine the SSR rate
-
-    valentine/summer/halloween/holiday: The <season> you choose adds seasonal SSRs to the pool\`\`\``)
-
-    message.channel.send(embed)
   }
 
   // Gacha methods
@@ -357,8 +363,6 @@ class GachaCommand extends Command {
   determineRarity(isRateUp = false) {
     let rates = this.currentRates()
     var rNum = Math.random()
-    var rNum2 = Math.random()
-    console.log(rNum2 * 100)
 
     var rarity = {
       integer: 0,
@@ -574,6 +578,14 @@ class GachaCommand extends Command {
   storeBanner(args) {
     this.gala = args.gala
     this.season = args.season
+  }
+
+  storeUser(id) {
+    this.userId = id
+  }
+
+  storeMessage(message) {
+    this.message = message
   }
 }
 
