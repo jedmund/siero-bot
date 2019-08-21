@@ -1,3 +1,12 @@
+// NOTES: Individual item percentages add up to their rarity's total
+// So then if you have 221 items at 3%, 16 with 0.018% rate and 24 with 0.050% rate,
+// the rest of the pool has 0.008% rate. 
+//
+// This all adds up to 3%.
+//
+// If you normalize the rate to be out of 100% (which is what we would need since we 
+// calculate rarity then rate up), then the rate is 1.66% (repeating)
+
 const { Command } = require('discord-akairo')
 const { RichEmbed } = require('discord.js')
 
@@ -149,7 +158,7 @@ class GachaCommand extends Command {
         }
 
         if (rarity.int == 3) {
-          var rateup = this.determineRateUp()
+          var rateup = this.determineRateUp(rarity.int)
         }
 
         count[rarity.string] += 1
@@ -194,7 +203,7 @@ class GachaCommand extends Command {
   }
 
   checkRateUp(message) {
-    let sql = 'SELECT rateup.gacha_id, rateup.rate, gacha.name, gacha.recruits FROM rateup LEFT JOIN gacha ON rateup.gacha_id = gacha.id WHERE rateup.user_id = $1'
+    let sql = 'SELECT rateup.gacha_id, rateup.rate, gacha.name, gacha.recruits FROM rateup LEFT JOIN gacha ON rateup.gacha_id = gacha.id WHERE rateup.user_id = $1 ORDER BY rateup.rate DESC'
     client.any(sql, [message.author.id])
       .then(data => {
         if (data.length > 0) {
@@ -386,6 +395,34 @@ class GachaCommand extends Command {
     }
 
     return rarity
+  }
+
+  determineRateUp(rarity) {
+    let sql = 'SELECT rateup.gacha_id, rateup.rate, gacha.name, gacha.recruits FROM rateup LEFT JOIN gacha ON rateup.gacha_id = gacha.id WHERE rateup.user_id = $1 AND gacha.rarity = $2 ORDER BY rateup.rate ASC'
+    client.any(sql, [this.userId, rarity])
+      .then(data => {
+        console.log("Determining rate up...")
+        if (data.length > 0) {
+          let currentRates = this.currentRates()
+          let rateForRarity = currentRates[Object.keys(currentRates)[rarity - 1]]
+          let rNum = Math.random() * 100
+
+          for (var i in data) {
+            let rateup = data[i]
+            let rate = (rateup.rate * (100 / rateForRarity)) / 100
+
+            console.log(`Rate: ${rate}%, Random: ${rNum}`)
+            if (rNum < rate) {
+              console.log("Rate up hit!!!")
+              break
+            }
+          }
+          console.log("\n")
+        }
+      })
+      .catch(error => {
+        console.log(error)
+      })
   }
 
   filterSSRWeapons(el) {
