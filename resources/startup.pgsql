@@ -23,3 +23,10 @@ CREATE TABLE IF NOT EXISTS gacha (
     halloween INTEGER,
     holiday INTEGER
 );
+
+CREATE TABLE IF NOT EXISTS rateup (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    gacha_id UUID,
+    user_id TEXT,
+    rate DECIMAL
+);
