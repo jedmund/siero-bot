@@ -133,6 +133,7 @@ class GachaCommand extends Command {
 
     if (command == "clear") {
       this.clearRateUp(message)
+      message.reply("Your rate-up has been cleared.")
     }
 
     if (command.includes("set")) {
@@ -142,29 +143,31 @@ class GachaCommand extends Command {
 
   checkRateUp(message) {
     let sql = 'SELECT rateup.gacha_id, rateup.rate, gacha.name, gacha.recruits FROM rateup LEFT JOIN gacha ON rateup.gacha_id = gacha.id WHERE rateup.user_id = $1'
+    client.any(sql, [message.author.id])
+      .then(data => {
+        if (data.length > 0) {
+          var rateUpDict = []
+          for (var i = 0; i < data.count; i++) {
+            var dict = {}
+            var result = data[i]
 
-    client.query(sql, [message.author.id], (err, res) => {
-      if (err) {
-        console.log(err.message)
-      }
+            dict.gacha_id = result.gacha_id
+            dict.name = result.name
+            dict.recruits = result.recruits
+            dict.rate = result.rate
 
-      if (res.rowCount > 0) {
-        var rateUpDict = []
-        for (var i = 0; i < res.rowCount; i++) {
-          var dict = {}
-          dict.gacha_id = res.rows[i].gacha_id
-          dict.name = res.rows[i].name
-          dict.recruits = res.rows[i].recruits
-          dict.rate = res.rows[i].rate
+            rateUpDict.push(dict)
+          }
 
-          rateUpDict.push(dict)
+          let embed = this.generateRateUpString(rateUpDict, message)
+          message.channel.send(embed)
+        } else {
+          message.reply("It looks like you don't have any rate-ups set right now!")
         }
-
-        this.generateRateUpString(rateUpDict, message)
-      } else {
-        message.reply(`It looks like ${message.author} hasn't saved a rate up yet.`)
-      }
-    })
+      })
+      .catch(error => {
+        console.log(error)
+      })
   }
 
   generateRateUpString(rateups, message) {
@@ -175,47 +178,91 @@ class GachaCommand extends Command {
 
     for (var i in rateups) {
       let rateup = rateups[i]
-      string += `${rateup.name} (${rateup.recruits}): ${rateup.rate}\n`
+      string += `${rateup.name} - ${rateup.recruits}: ${rateup.rate}%\n`
     }
 
     embed.setTitle("Your current rate-up")
     embed.setDescription("```html\n" + string + "\n```")
     embed.setFooter(`These rate ups will only take effect on your gacha simulations.`)
-    message.channel.send(embed)
+    
+    return embed
   }
 
   setRateUp(command, message) {
+    // First, clear the existing rate up
+    this.clearRateUp(message)
+
+    // Then, save the new rate up
     var rateups = this.extractRateUp(command)
     this.saveRateUps(rateups, message)
-    message.channel.send("Your rate-up has been updated")
   }
 
   saveRateUps(dictionary, message) {
-    for (var i in dictionary) {
-      let rateup = dictionary[i]
+    let list = dictionary.map(rateup => rateup.item)
 
-      let sql = 'SELECT id FROM gacha WHERE name = $1 OR recruits = $1'
-      client.query(sql, [rateup.item], (err, res) => {
-        if (err) {
-          console.log(err.message)
+    let sql = 'SELECT id, name, recruits FROM gacha WHERE name IN ($1:csv) OR recruits IN ($1:csv)'
+    client.any(sql, [list])
+      .then(data => {
+        var rateups = []
+        for (var i in data) {
+          // Fetch the rateup from the passed-in dictionary
+          let rateup = this.joinRateUpData(data[i], dictionary)
+
+          // Save the rate up data
+          this.saveRateUp(rateup.id, message.author.id, rateup.rate)
+
+          // Push to array
+          rateups.push(rateup)
         }
 
-        if (res.rowCount > 0) {
-          this.saveRateUp(res.rows[0].id, message.author.id, rateup.rate)
-        } else {
-          message.reply(`The desired item couldn't be found: ${rateup.item}`)
-        }
+        // Fetch the data for missing rate-ups
+        // These will be items that don't exist in the game or typos
+        let missing = this.findMissingRateUpData(list, data)
+
+        // Create the embed displaying rate-up data
+        let embed = this.generateRateUpString(rateups, message)
+        embed.addField('The following items could not be found and were not added to your rateup',  `\`\`\`${missing.join("\n")}\`\`\``)
+        message.channel.send(embed)
       })
+      .catch(error => {
+        console.log(error)
+      })
+  }
+
+  joinRateUpData(dict1, dict2) {
+    var rateup = {}
+
+    rateup.id = dict1.id
+    rateup.name = dict1.name
+    rateup.recruits = dict1.recruits
+
+    for (var i in dict2) {
+      let entry = dict2[i]
+
+      if (entry.item == rateup.name || entry.item == rateup.recruits) {
+        rateup.rate = entry.rate
+      }
     }
+
+    return rateup
+  }
+
+  findMissingRateUpData(original, result) {
+    let resultNames = result.map(result => result.name)
+    let resultRecruits = result.map(result => result.recruits)
+      
+    return original.filter(e => !resultNames.includes(e) && !resultRecruits.includes(e))
   }
 
   saveRateUp(id, user_id, rate) {
     let sql = 'INSERT INTO rateup (gacha_id, user_id, rate) VALUES ($1, $2, $3)'
-    client.query(sql, [id, user_id, rate], (err, res) => {
-      if (err) {
-        console.log(err.message)
-      }
-    })
+    client.query(sql, [id, user_id, rate])
+      .then(data => {
+
+      })
+      .catch(error => {
+        console.log(error)
+      })
   }
 
   extractRateUp(message) {
@@ -238,15 +285,10 @@ class GachaCommand extends Command {
 
   clearRateUp(message) {
     let sql = 'DELETE FROM rateup WHERE user_id = $1'
-    client.query(sql, [message.author.id], (err, res) => {
-      if (err) {
-        console.log(err.message)
-      }
-
-      if (res.rowCount > 0) {
-        message.reply("Your rate-up has been cleared.")
-      }
-    })
+    client.any(sql, [message.author.id])
+      .catch(error => {
+        console.log(error)
+      })
   }
 
   tenPartRoll(times = 1) {
@@ -315,6 +357,8 @@ class GachaCommand extends Command {
   determineRarity(isRateUp = false) {
     let rates = this.currentRates()
     var rNum = Math.random()
+    var rNum2 = Math.random()
+    console.log(rNum2 * 100)
 
     var rarity = {
       integer: 0,
