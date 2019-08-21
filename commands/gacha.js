@@ -1,9 +1,13 @@
-const { Client } = require('pg')
 const { Command } = require('discord-akairo')
 const { RichEmbed } = require('discord.js')
 
-const client = getClient()
-client.connect()
+const pgPromise = require('pg-promise')
+const initOptions = {
+  promiseLib: Promise
+}
+
+const pgp = pgPromise(initOptions)
+const client = pgp(getConnection())
 
 class GachaCommand extends Command {
   constructor(gala, season) {
@@ -58,14 +62,14 @@ class GachaCommand extends Command {
     var rarity = this.determineRarity(false)
 
     let sql = this.sqlString(1)
-    client.query(sql, [rarity.int], (err, res) => {
-      if (err) {
-        console.log(err.message)
-      }
-
-      let response = this.responseString(res.rows[0])
-      message.reply(response)
-    })
+    client.one(sql, [rarity.int])
+      .then(data => {
+        let response = this.responseString(data)
+        message.reply(response)
+      })
+      .catch(error => {
+        console.log(error)
+      })
   }
 
   ten_pull(message) {
@@ -75,16 +79,15 @@ class GachaCommand extends Command {
     // Roll the gacha to determine rarity
     var roll = this.tenPartRoll()
 
-    var sql = this.multiSqlString(roll)
-    client.query(sql, (err, res) => {
-      if (err) {
-        console.log(err.message)
-      }
-
-      var string = `You got these 10 things! \`\`\`html\n${this.multilineResponseString(res.rows)}\n\`\`\``
-
-      message.reply(string)
-    })
+    let sql = this.multiSqlString(roll)
+    client.any(sql)
+      .then(data => {
+        var string = `You got these 10 things! \`\`\`html\n${this.multilineResponseString(data)}\n\`\`\``
+        message.reply(string)
+      })
+      .catch(error => {
+        console.log(error)
+      })
   }
 
   spark(message) {
@@ -93,29 +96,32 @@ class GachaCommand extends Command {
     var rolls = this.tenPartRoll(rollsInSpark)
 
     var sql = this.multiSqlString(rolls, true)
-    client.query(sql, (err, res) => {
-      if (err) {
-        console.log(err.message)
-      }
+    client.any(sql)
+      .then(data => {
+        let response = this.buildSparkResponse(rolls, data)
+        message.channel.send(response)
+      })
+      .catch(error => {
+        console.log(error)
+      })
+  }
 
-      var embed = new RichEmbed()
-      embed.setColor(0xb58900)
+  buildSparkResponse(rolls, data) {
+    var embed = new RichEmbed()
+    embed.setColor(0xb58900)
 
-      var result = ""
-      for (var i in res.rows) {
-        result += this.responseString(res.rows[i], true)
-      }
+    var result = ""
+    for (var i in data) {
+      result += this.responseString(data[i], true)
+    }
 
-      let rate = Math.floor((rolls.SSR / 300) * 100)
+    embed.setDescription("```html\n" + result + "\n```")
+    embed.addField("Summary", `\`\`\`${this.summaryString(data, rolls)}\`\`\``)
 
-      embed.setDescription("```html\n" + result + "\n```")
-      embed.addField("Summary", `\`\`\`${this.summaryString(res.rows, rolls)}\`\`\``)
-      embed.setFooter(`Your SSR rate is ${rate}%`)
+    let rate = Math.floor((rolls.SSR / 300) * 100)
+    embed.setFooter(`Your SSR rate is ${rate}%`)
 
-      result += `\nYour SSR rate is ${rate}%!`
-
-      message.channel.send(embed)
-    })
+    return embed
   }
 
   rateup(message, args) {
@@ -237,7 +243,6 @@ class GachaCommand extends Command {
         console.log(err.message)
       }
 
-      console.log(res)
       if (res.rowCount > 0) {
         message.reply("Your rate-up has been cleared.")
       }
@@ -252,13 +257,13 @@ class GachaCommand extends Command {
       SSR: 0 
     }
 
-    for (var i = 0; i < times; i++) {
+    for (var roll = 0; roll < times; roll++) {
       // Determine which pull will guarantee an SR or above
       let guaranteedRateUpPull = this.randomIntFromInterval(1, 10)
 
       // Determine how many items of each rarity to retrieve
-      for (var j = 0; j < 10; j++) {
-        if (i == guaranteedRateUpPull) {
+      for (var position = 0; position < 10; position++) {
+        if (position == guaranteedRateUpPull) {
             var rarity = this.determineRarity(true)
         } else {
             var rarity = this.determineRarity(false)
@@ -528,24 +533,22 @@ class GachaCommand extends Command {
   }
 }
 
-function getClient() {
-    var c
-    if (process.env.NODE_ENV == "development") {
-      c = new Client({
-        user: process.env.PG_USER,
-        host: process.env.PG_HOST,
-        database: process.env.PG_DB,
-        password: process.env.PG_PASSWORD,
-        port: 5432,
-      })
+function getConnection() {
+  var connection
+
+  if (process.env.NODE_ENV == "development") {
+    connection = {
+      host: process.env.PG_HOST,
+      port: 5432,
+      database: process.env.PG_DB,
+      user: process.env.PG_USER,
+      password: process.env.PG_PASSWORD
+    }
   } else {
-    c = new Client({
-      connectionString: process.env.DATABASE_URL,
-      ssl: true
-    })
+    connection = process.env.DATABASE_URL
   }
 
-  return c
+  return connection
 }
 
 module.exports = GachaCommand
