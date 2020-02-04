@@ -1,642 +1,642 @@
-name, rarity, type, recruits, premium, flash, legend, valentine, summer, halloween, holiday
-Dainsleif, 3, 0, Altair, 1, 1, 1, 1, 1, 1, 1
-Lohengrin, 3, 0, Percival, 1, 1, 1, 1, 1, 1, 1
-Claíomh Solais, 3, 0, Charlotta (Water), 1, 1, 1, 1, 1, 1, 1
-Gottfried, 3, 0, Aglovale, 1, 1, 1, 1, 1, 1, 1
-Nagelring, 3, 0, Izmir, 1, 1, 1, 1, 1, 1, 1
-Ascalon, 3, 0, Siegfried, 1, 1, 1, 1, 1, 1, 1
-Greatsword Andalius, 3, 0, Aletheia, 1, 1, 1, 1, 1, 1, 1
-Heiliges Schwert, 3, 0, Lancelot (Wind), 1, 1, 1, 1, 1, 1, 1
-Yyrkoon, 3, 0, Yuisis, 1, 1, 1, 1, 1, 1, 1
-Caladbolg, 3, 0, Jeanne d'Arc, 1, 1, 1, 1, 1, 1, 1
-Ethereal Lasher, 3, 0, Ferry, 1, 1, 1, 1, 1, 1, 1
-Hauteclaire, 3, 0, Albert, 1, 1, 1, 1, 1, 1, 1
-Hrotti, 3, 0, Seruel, 1, 1, 1, 1, 1, 1, 1
-Symbol of Justice, 3, 0, Baotorda, 1, 1, 1, 1, 1, 1, 1
-Disparia, 3, 0, Jeanne d'Arc (Dark), 1, 1, 1, 1, 1, 1, 1
-Gram, 3, 0, Beatrix, 1, 1, 1, 1, 1, 1, 1
-Lyst Sin, 3, 0, Vira, 1, 1, 1, 1, 1, 1, 1
-Mistilteinn, 3, 0, Vaseraga (Dark), 1, 1, 1, 1, 1, 1, 1
-Hoarfrost Blade Persius, 3, 0, Lancelot (Water), 1, 1, 1, 1, 1, 1, 1
-Phantom Thief Blade, 3, 0, Chat Noir, 1, 1, 1, 1, 1, 1, 1
-Arsene, 3, 0, Catherine, 1, 1, 1, 1, 1, 1, 1
-Heaven's Cloud, 3, 0, Petra, 1, 1, 1, 1, 1, 1, 1
-Thunder Dirk Jove, 3, 0, Agielba, 1, 1, 1, 1, 1, 1, 1
-Twin Helix, 3, 0, Rosamia, 1, 1, 1, 1, 1, 1, 1
-Azoth, 3, 0, Vania, 1, 1, 1, 1, 1, 1, 1
-Bloody Scar, 3, 0, Veight, 1, 1, 1, 1, 1, 1, 1
-Gandring, 3, 0, Tanya, 1, 1, 1, 1, 1, 1, 1
-Brionac, 3, 0, Zeta (Fire), 1, 1, 1, 1, 1, 1, 1
-Feendrache Pennant, 3, 0, Lancelot and Vane, 1, 1, 1, 1, 1, 1, 1
-Luin, 3, 0, Heles, 1, 1, 1, 1, 1, 1, 1
-Pilum, 3, 0, Nezahualpilli, 1, 1, 1, 1, 1, 1, 1
-Sacred Lance, 3, 0, Athena, 1, 1, 1, 1, 1, 1, 1
-Daemon's Spine, 3, 0, Anne, 1, 1, 1, 1, 1, 1, 1
-Gae Derg, 3, 0, Razia, 1, 1, 1, 1, 1, 1, 1
-Gargantua, 3, 0, Arulumaya, 1, 1, 1, 1, 1, 1, 1
-Galactic Impact, 3, 0, Sen, 1, 1, 1, 1, 1, 1, 1
-Turpin Spear, 3, 0, Carmelina, 1, 1, 1, 1, 1, 1, 1
-Shadow Viperlance, 3, 0, Azazel, 1, 1, 1, 1, 1, 1, 1
-Skyrend Spear, 3, 0, Forte, 1, 1, 1, 1, 1, 1, 1
-Sunspot Spear, 3, 0, Zeta (Dark), 1, 1, 1, 1, 1, 1, 1
-Scarlet Crest Axe, 3, 0, Yuel, 1, 1, 1, 1, 1, 1, 1
-Two-by-Four, 3, 0, Tsubasa, 1, 1, 1, 1, 1, 1, 1
-Way Flyer, 3, 0, Aoidos, 1, 1, 1, 1, 1, 1, 1
-Blossom Axe, 3, 0, Vane, 1, 1, 1, 1, 1, 1, 1
-Mettle, 3, 0, Nemone, 1, 1, 1, 1, 1, 1, 1
-Wurtzite Scythe, 3, 0, Vaseraga (Earth), 1, 1, 1, 1, 1, 1, 1
-Split End, 3, 0, Melissabelle, 1, 1, 1, 1, 1, 1, 1
-Windflash, 3, 0, Gawain, 1, 1, 1, 1, 1, 1, 1
-Claidheamh Soluis, 3, 0, Charlotta (Light), 1, 1, 1, 1, 1, 1, 1
-Full Metal Recoil, 3, 0, Silva (Light), 1, 1, 1, 1, 1, 1, 1
-Ukonvasara, 3, 0, Lady Grey, 1, 1, 1, 1, 1, 1, 1
-Master Key, 3, 0, Wulf and Renie, 1, 1, 1, 1, 1, 1, 1
-Soul Eater, 3, 0, Hallessena, 1, 1, 1, 1, 1, 1, 1
-Vassago, 3, 0, Melleau, 1, 1, 1, 1, 1, 1, 1
-Forbidden Inferno, 3, 0, Anthuria, 1, 1, 1, 1, 1, 1, 1
-Illusion Scepter, 3, 0, Magisa, 1, 1, 1, 1, 1, 1, 1
-Starblaze Rings, 3, 0, Zahlhamelina, 1, 1, 1, 1, 1, 1, 1
-Ice Crystal Staff, 3, 0, Lily, 1, 1, 1, 1, 1, 1, 1
-Montague's Oath, 3, 0, Romeo, 1, 1, 1, 1, 1, 1, 1
-Ouroboros, 3, 0, Cagliostro (Earth), 1, 1, 1, 1, 1, 1, 1
-Thrysus, 3, 0, De La Fille (Earth), 1, 1, 1, 1, 1, 1, 1
-Kerykeion, 3, 0, De La Fille (Light), 1, 1, 1, 1, 1, 1, 1
-Wing of the Pure, 3, 0, Korwa, 1, 1, 1, 1, 1, 1, 1
-Capulet's Oath, 3, 0, Juliet, 1, 1, 1, 1, 1, 1, 1
-Sealed Claustrum, 3, 0, Sarunan (Light), 1, 1, 1, 1, 1, 1, 1
-Black Ouroboros, 3, 0, Cagliostro (Dark), 1, 1, 1, 1, 1, 1, 1
-Gridarvor, 3, 0, Marquiares, 1, 1, 1, 1, 1, 1, 1
-Kalaurops, 3, 0, Sarunan (Dark), 1, 1, 1, 1, 1, 1, 1
-Meteora, 3, 0, Yngwie, 1, 1, 1, 1, 1, 1, 1
-Vlisragna, 3, 0, Silva (Water), 1, 1, 1, 1, 1, 1, 1
-White Hawk, 3, 0, Cucouroux, 1, 1, 1, 1, 1, 1, 1
-Stratomizer, 3, 0, Eustace (Earth), 1, 1, 1, 1, 1, 1, 1
-Far Away, 3, 0, Lennah, 1, 1, 1, 1, 1, 1, 1
-Tiamat Bolt Prime, 3, 0, Tiamat, 1, 1, 1, 1, 1, 1, 1
-Railgun, 3, 0, Robomi, 1, 1, 1, 1, 1, 1, 1
-Ruler of Fate, 3, 0, Zooey, 1, 1, 1, 1, 1, 1, 1
-Arachne, 3, 0, Freezie, 1, 1, 1, 1, 1, 1, 1
-Ishtar, 3, 0, Eustace (Dark), 1, 1, 1, 1, 1, 1, 1
-Blushing Blossom Pin, 3, 0, Societte (Fire), 1, 1, 1, 1, 1, 1, 1
-Brahma Gauntlet, 3, 0, Ghandagoza, 1, 1, 1, 1, 1, 1, 1
-Draco Claw, 3, 0, Grea, 1, 1, 1, 1, 1, 1, 1
-Magma Gauntlet, 3, 0, Aliza, 1, 1, 1, 1, 1, 1, 1
-Metal Hand, 3, 0, Lady Katapillar and Vira, 1, 1, 1, 1, 1, 1, 1
-Scarlet Vane, 3, 0, Societte (Water), 1, 1, 1, 1, 1, 1, 1
-Ancient Bandages, 3, 0, Ayer, 1, 1, 1, 1, 1, 1, 1
-Neko Punch Pro, 3, 0, Dante and Freiheit, 1, 1, 1, 1, 1, 1, 1
-Wyrmtiger Claw, 3, 0, Soriz, 1, 1, 1, 1, 1, 1, 1
-Deirdre's Claws, 3, 0, Scathacha, 1, 1, 1, 1, 1, 1, 1
-Gothic Cutlery, 3, 0, Dorothy and Claudia, 1, 1, 1, 1, 1, 1, 1
-Coco & Mimi, 3, 0, Cerberus, 1, 1, 1, 1, 1, 1, 1
-Ruling Pen, 3, 0, Lunalu, 1, 1, 1, 1, 1, 1, 1
-Roseate Aetherial Bow, 3, 0, Metera (Fire), 1, 1, 1, 1, 1, 1, 1
-Gandiva, 3, 0, Ilsa, 1, 1, 1, 1, 1, 1, 1
-Aetherial Bow, 3, 0, Metera (Wind), 1, 1, 1, 1, 1, 1, 1
-Heroic Bow, 3, 0, Feena, 1, 1, 1, 1, 1, 1, 1
-Levin Shooter, 3, 0, Levin Sisters, 1, 1, 1, 1, 1, 1, 1
-Mobius Strip, 3, 0, Clarisse (Fire), 1, 1, 1, 1, 1, 1, 1
-Melodic Sphere, 3, 0, Lilele, 1, 1, 1, 1, 1, 1, 1
-Ocean Harp, 3, 0, Sophia, 1, 1, 1, 1, 1, 1, 1
-Bella Aeterna, 3, 0, Yggdrasil, 1, 1, 1, 1, 1, 1, 1
-Sandcastle Song-Lume, 3, 0, Sara, 1, 1, 1, 1, 1, 1, 1
-Cords of Heaven Lillah, 3, 0, Arriet, 1, 1, 1, 1, 1, 1, 1
-Cythara Anglica, 3, 0, Selfira, 1, 1, 1, 1, 1, 1, 1
-Fusion Mobius, 3, 0, Clarisse (Light), 1, 1, 1, 1, 1, 1, 1
-Tanzanite Blade, 3, 0, Therese, 1, 1, 1, 1, 1, 1, 1
-Izayoi, 3, 0, Yuel (Water), 1, 1, 1, 1, 1, 1, 1
-Venustas, 3, 0, Narmaya, 1, 1, 1, 1, 1, 1, 1
-Dragon Slayer, 3, 0, Amira, 1, 1, 1, 1, 1, 1, 1
-Fudo-Kuniyuki, 3, 0, Yodarha, 1, 1, 1, 1, 1, 1, 1
-Gigante Slicer, 3, 0, Nicholas, 1, 1, 1, 1, 1, 1, 1
-Agni, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Athena, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Michael, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Prometheus, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Satyr, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Sethlans, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Shiva, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-"Sylph, Flutterspirit of Purity", 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Twin Elements, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Zaoshen, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Bonito, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Ca Ong, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Europa, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Gabriel, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Grani, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Kaguya, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Macula Marius, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Neptune, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Oceanus, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-"Poseidon, the Tide Father", 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Snow White, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Varuna, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Ankusha, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Baal, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Cybele, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Gilgamesh, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Godsworn Alexiel, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Gorilla, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Medusa, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Tezcatlipoca, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Titan, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Uriel, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-"Anat, for Love and War", 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Freyr, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Garuda, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-"Garula, Shining Hawk", 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Grimnir, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Hamsa, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Morrigna, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Nezha, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Quetzalcoatl, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Raphael, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Rose Queen, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Setekh, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Zephyrus, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Adramelech, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Aphrodite, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Apollo, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Grand Order, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Halluel and Malluel, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Hector, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Lucifer, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-"Magus, Triad of Wisdom", 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Odin, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Thor, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Vortex Dragon, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Zeus, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Anubis, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Bahamut, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-"Cerberus, Hellhound Trifecta", 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Dark Angel Olivia, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Hades, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Lich, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Nacht, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Satan, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Tsukuyomi, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Typhon, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Ember Blade, 2, 0, Carren, 1, 1, 1, 1, 1, 1, 1
-Ram-Dao, 2, 0, Gayne, 1, 1, 1, 1, 1, 1, 1
-Tanzanite Sword Mikoh, 2, 0, Therese, 1, 1, 1, 1, 1, 1, 1
-Time-Tested Iron, 2, 0, Rosine, 1, 1, 1, 1, 1, 1, 1
-Aquablade, 2, 0, Mina, 1, 1, 1, 1, 1, 1, 1
-Bottle o' Blossoms, 2, 0, Lamretta, 1, 1, 1, 1, 1, 1, 1
-Royal Rapier, 2, 0, Ange, 1, 1, 1, 1, 1, 1, 1
-Sword of Sorcery, 2, 0, Owen, 1, 1, 1, 1, 1, 1, 1
-Frying Pan, 2, 0, Yaia, 1, 1, 1, 1, 1, 1, 1
-Grand Edge, 2, 0, Herja, 1, 1, 1, 1, 1, 1, 1
-Prideful Sword, 2, 0, Beatrix, 1, 1, 1, 1, 1, 1, 1
-Balisarde, 2, 0, Arthur and Mordred, 1, 1, 1, 1, 1, 1, 1
-Kilij, 2, 0, Juri, 1, 1, 1, 1, 1, 1, 1
-White Flag, 2, 0, Mimlemel and Stumpeye, 1, 1, 1, 1, 1, 1, 1
-Arondight, 2, 0, Baotorda, 1, 1, 1, 1, 1, 1, 1
-True Teardrop, 2, 0, Vermeil, 1, 1, 1, 1, 1, 1, 1
-Lyst, 2, 0, Vira, 1, 1, 1, 1, 1, 1, 1
-Purity Blade, 2, 0, Lucius (Dark), 1, 1, 1, 1, 1, 1, 1
-Silver Shotel, 2, 0, Randall, 1, 1, 1, 1, 1, 1, 1
-Tilvung, 2, 0, Helnar, 1, 1, 1, 1, 1, 1, 1
-Soulbond Dirk, 2, 0, Teena, 1, 1, 1, 1, 1, 1, 1
-Shrike's Beak, 2, 0, Jamil, 1, 1, 1, 1, 1, 1, 1
-Sword of Lisblanc, 2, 0, Farrah, 1, 1, 1, 1, 1, 1, 1
-Soul Edge, 2, 0, Ferry, 1, 1, 1, 1, 1, 1, 1
-Katzbalger, 2, 0, Jamil, 1, 1, 1, 1, 1, 1, 1
-Puppet Knife, 2, 0, Danua, 1, 1, 1, 1, 1, 1, 1
-Scalpel, 2, 0, Shao, 1, 1, 1, 1, 1, 1, 1
-Wyrm Claw, 2, 0, Tanya, 1, 1, 1, 1, 1, 1, 1
-Flare Glaive, 2, 0, Mariah, 1, 1, 1, 1, 1, 1, 1
-Raging Halberd, 2, 0, Vane, 1, 1, 1, 1, 1, 1, 1
-Narval, 2, 0, Ulamnuran, 1, 1, 1, 1, 1, 1, 1
-Titanium Harpoon, 2, 0, Sig, 1, 1, 1, 1, 1, 1, 1
-Divine Spear, 2, 0, Razia, 1, 1, 1, 1, 1, 1, 1
-Dreadflayer, 2, 0, Laguna, 1, 1, 1, 1, 1, 1, 1
-Giant Fork, 2, 0, Redluck, 1, 1, 1, 1, 1, 1, 1
-Golden Mop, 2, 0, Claudia, 1, 1, 1, 1, 1, 1, 1
-Macho Hunter Weapon, 2, 0, The Lowain Bros, 1, 1, 1, 1, 1, 1, 1
-Serpentine Longspear, 2, 0, Leona, 1, 1, 1, 1, 1, 1, 1
-Lance d'Espoir, 2, 0, Jeanne d'Arc, 1, 1, 1, 1, 1, 1, 1
-Brocken Lance, 2, 0, Deliford, 1, 1, 1, 1, 1, 1, 1
-Massive Axe, 2, 0, Ryan, 1, 1, 1, 1, 1, 1, 1
-Fremel Hammer, 2, 0, Almeida, 1, 1, 1, 1, 1, 1, 1
-Great Hammer, 2, 0, Galadar, 1, 1, 1, 1, 1, 1, 1
-Cloud Tomahawk, 2, 0, Eso, 1, 1, 1, 1, 1, 1, 1
-Holy Axe, 2, 0, Sevastien, 1, 1, 1, 1, 1, 1, 1
-Golden Woofer, 2, 0, Daetta, 1, 1, 1, 1, 1, 1, 1
-Voulge, 2, 0, Zaja, 1, 1, 1, 1, 1, 1, 1
-Arson, 2, 0, Elmott, 1, 1, 1, 1, 1, 1, 1
-Arson Link, 2, 0, Blazing Teacher Elmott, 1, 1, 1, 1, 1, 1, 1
-Nature's Mystery, 2, 0, Dante, 1, 1, 1, 1, 1, 1, 1
-Soothing Torch, 2, 0, Rosamia, 1, 1, 1, 1, 1, 1, 1
-Witch's Broom, 2, 0, Anna, 1, 1, 1, 1, 1, 1, 1
-Ice Bough Staff, 2, 0, Erin, 1, 1, 1, 1, 1, 1, 1
-Spritewood Staff, 2, 0, Mishra, 1, 1, 1, 1, 1, 1, 1
-Tughril, 2, 0, Nezahualpilli, 1, 1, 1, 1, 1, 1, 1
-Aerial Cane, 2, 0, Arusha, 1, 1, 1, 1, 1, 1, 1
-Flower Crown, 2, 0, Jasmine, 1, 1, 1, 1, 1, 1, 1
-Wind-Rhyme Staff, 2, 0, Noa, 1, 1, 1, 1, 1, 1, 1
-Sacred Codex, 2, 0, Johann, 1, 1, 1, 1, 1, 1, 1
-Staff of the Star Seeker, 2, 0, Sophia, 1, 1, 1, 1, 1, 1, 1
-Cursed Cane, 2, 0, Will, 1, 1, 1, 1, 1, 1, 1
-Shadow Scepter, 2, 0, Goblin Mage, 1, 1, 1, 1, 1, 1, 1
-Dolphin, 2, 0, Cucouroux, 1, 1, 1, 1, 1, 1, 1
-Fire Piece, 2, 0, Mary, 1, 1, 1, 1, 1, 1, 1
-Signal Flare, 2, 0, Karva, 1, 1, 1, 1, 1, 1, 1
-Colorful Crackerjack, 2, 0, Pengy, 1, 1, 1, 1, 1, 1, 1
-Quarrel, 2, 0, Sahli Lao, 1, 1, 1, 1, 1, 1, 1
-Handy Arquebus, 2, 0, Jessica, 1, 1, 1, 1, 1, 1, 1
-Standard Albion Bolt, 2, 0, Tye, 1, 1, 1, 1, 1, 1, 1
-Genius Squared, 2, 0, Skull, 1, 1, 1, 1, 1, 1, 1
-Hunter's Rifle, 2, 0, Ludmila, 1, 1, 1, 1, 1, 1, 1
-Chain Knuckles, 2, 0, Ezecrain, 1, 1, 1, 1, 1, 1, 1
-Crimson Talons, 2, 0, Sen, 1, 1, 1, 1, 1, 1, 1
-Cup and Saucer, 2, 0, Dorothy, 1, 1, 1, 1, 1, 1, 1
-Red-Hot Noodles, 2, 0, Ippatsu, 1, 1, 1, 1, 1, 1, 1
-Epoxy Boogie Plates, 2, 0, Cailana, 1, 1, 1, 1, 1, 1, 1
-Kaiser Knuckles, 2, 0, Alec, 1, 1, 1, 1, 1, 1, 1
-Demitasse, 2, 0, Catherine, 1, 1, 1, 1, 1, 1, 1
-Impact Knuckles, 2, 0, Soriz, 1, 1, 1, 1, 1, 1, 1
-Metal Glove, 2, 0, Ladiva, 1, 1, 1, 1, 1, 1, 1
-Mythril Tonfa, 2, 0, Vanzza, 1, 1, 1, 1, 1, 1, 1
-Sudarshana, 2, 0, Carmelina, 1, 1, 1, 1, 1, 1, 1
-Merciless Chastening, 2, 0, Hazen, 1, 1, 1, 1, 1, 1, 1
-Crocskin Glove, 2, 0, Barawa, 1, 1, 1, 1, 1, 1, 1
-Heavy Blast Knuckles, 2, 0, Feather, 1, 1, 1, 1, 1, 1, 1
-Misanga Bracelet, 2, 0, J.J., 1, 1, 1, 1, 1, 1, 1
-Tiger Fang, 2, 0, Mimlemel, 1, 1, 1, 1, 1, 1, 1
-Cruel Claw, 2, 0, Predator, 1, 1, 1, 1, 1, 1, 1
-Vampire's Nail, 2, 0, Vania, 1, 1, 1, 1, 1, 1, 1
-Glass Bow, 2, 0, Sutera, 1, 1, 1, 1, 1, 1, 1
-Ice Bow, 2, 0, Milleore, 1, 1, 1, 1, 1, 1, 1
-Sutera's Bow, 2, 0, Sutera, 1, 1, 1, 1, 1, 1, 1
-Slingshot, 2, 0, Sarya, 1, 1, 1, 1, 1, 1, 1
-Aquarium Harp, 2, 0, Ejaeli, 1, 1, 1, 1, 1, 1, 1
-Songsmith's Harp, 2, 0, Elta (Wind), 1, 1, 1, 1, 1, 1, 1
-Stravaria, 2, 0, Keehar, 1, 1, 1, 1, 1, 1, 1
-Humming Bard, 2, 0, Elta (Light), 1, 1, 1, 1, 1, 1, 1
-Wandering Blade, 2, 0, Lucius (Fire), 1, 1, 1, 1, 1, 1, 1
-Unsigned Blade, 2, 0, Mirin, 1, 1, 1, 1, 1, 1, 1
-Zanbato, 2, 0, Sevilbarra, 1, 1, 1, 1, 1, 1, 1
-Fragarach, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Almace, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Ilhoon, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Twisted Dagger, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Mirage Knife, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Stiletto, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Fusetto, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Sword Breaker, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Trident, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Partisan, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Dragonfliar Cutter, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Shura Vhara, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Vajranda, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Bullova, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Shoka, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Horseman's Hammer, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Yagrush, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Pastoral Staff, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Holy Cane, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Dragon Tail, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Wheellock Axe, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Crosswind, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Snaphance, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Swallowtail, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Mauler, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Neko Punch, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Jamadhar, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Imperial Bow, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Sarnga, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Aves, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Elfin Bow, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Shadow Bow, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Athanasius, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Iron Tiger, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Fluorithium Blade, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Sauria, 2, 0,, 1, 1, 1, 1, 1, 1, 1
-Garnet Carbuncle, 2, 1,, 1, 1, 1, 1, 1, 1, 1
-Hellhound, 2, 1,, 1, 1, 1, 1, 1, 1, 1
-Hydra, 2, 1,, 1, 1, 1, 1, 1, 1, 1
-Vrazarek Firewyrm, 2, 1,, 1, 1, 1, 1, 1, 1, 1
-Angelie Cascade, 2, 1,, 1, 1, 1, 1, 1, 1, 1
-Aquamarine Carbuncle, 2, 1,, 1, 1, 1, 1, 1, 1, 1
-Wilinus Icewyrm, 2, 1,, 1, 1, 1, 1, 1, 1, 1
-Clay Golem, 2, 1,, 1, 1, 1, 1, 1, 1, 1
-Doomworm, 2, 1,, 1, 1, 1, 1, 1, 1, 1
-Golem, 2, 1,, 1, 1, 1, 1, 1, 1, 1
-Myconid, 2, 1,, 1, 1, 1, 1, 1, 1, 1
-Ruination Gargoyle, 2, 1,, 1, 1, 1, 1, 1, 1, 1
-Stone Golem, 2, 1,, 1, 1, 1, 1, 1, 1, 1
-Zircon Carbuncle, 2, 1,, 1, 1, 1, 1, 1, 1, 1
-Elmenhilde Windsprite, 2, 1,, 1, 1, 1, 1, 1, 1, 1
-Elusious Windwyrm, 2, 1,, 1, 1, 1, 1, 1, 1, 1
-Griffin, 2, 1,, 1, 1, 1, 1, 1, 1, 1
-Wyvern, 2, 1,, 1, 1, 1, 1, 1, 1, 1
-Opal Carbuncle, 2, 1,, 1, 1, 1, 1, 1, 1, 1
-Pixie, 2, 1,, 1, 1, 1, 1, 1, 1, 1
-Onyx Carbuncle, 2, 1,, 1, 1, 1, 1, 1, 1, 1
-Fire Sword, 1, 0, Farrah, 1, 1, 1, 1, 1, 1, 1
-Vintage Flat Iron, 1, 0, Rosine, 1, 1, 1, 1, 1, 1, 1
-Shrimp Lure, 1, 0, Yodarha, 1, 1, 1, 1, 1, 1, 1
-White Sword, 1, 0, Bridgette, 1, 1, 1, 1, 1, 1, 1
-Heavy Metal Comb, 1, 0, La Coiffe, 1, 1, 1, 1, 1, 1, 1
-Two-Handed Sword, 1, 0, Herja, 1, 1, 1, 1, 1, 1, 1
-Xiphos, 1, 0, Volenna, 1, 1, 1, 1, 1, 1, 1
-Lightbringer, 1, 0, Stan, 1, 1, 1, 1, 1, 1, 1
-Old Sword, 1, 0, Krugne, 1, 1, 1, 1, 1, 1, 1
-Paper Fan, 1, 0, Karteira, 1, 1, 1, 1, 1, 1, 1
-Practice Sword, 1, 0, Thelonim, 1, 1, 1, 1, 1, 1, 1
-Blue Crest, 1, 0, Cordelia, 1, 1, 1, 1, 1, 1, 1
-Prism Tear, 1, 0, Vermeil, 1, 1, 1, 1, 1, 1, 1
-Thunder Rapier, 1, 0, Rosamia, 1, 1, 1, 1, 1, 1, 1
-Dark Sword, 1, 0, Leonora, 1, 1, 1, 1, 1, 1, 1
-Broken Bottle, 1, 0, Lamretta, 1, 1, 1, 1, 1, 1, 1
-Little Scarlet, 1, 0, Drusilla, 1, 1, 1, 1, 1, 1, 1
-Mandau, 1, 0, Zehek, 1, 1, 1, 1, 1, 1, 1
-Spin Blade, 1, 0, Spinnah, 1, 1, 1, 1, 1, 1, 1
-Bloody Piercer, 1, 0, Tanya, 1, 1, 1, 1, 1, 1, 1
-Switchblade, 1, 0, Lowain, 1, 1, 1, 1, 1, 1, 1
-Silver Pole, 1, 0, Joel, 1, 1, 1, 1, 1, 1, 1
-Gillie Fork, 1, 0, Elmelaura, 1, 1, 1, 1, 1, 1, 1
-Night Horn, 1, 0, Deliford, 1, 1, 1, 1, 1, 1, 1
-Iron Pliers, 1, 0, Viceroy, 1, 1, 1, 1, 1, 1, 1
-Soldier Axe, 1, 0, Ryan, 1, 1, 1, 1, 1, 1, 1
-Draph Hammer, 1, 0, Galadar, 1, 1, 1, 1, 1, 1, 1
-Sky Tomahawk, 1, 0, Eso, 1, 1, 1, 1, 1, 1, 1
-Morning Star, 1, 0, Daetta, 1, 1, 1, 1, 1, 1, 1
-Forest Hermit Staff, 1, 0, Dante, 1, 1, 1, 1, 1, 1, 1
-Rubia Rod, 1, 0, Camieux (Earth), 1, 1, 1, 1, 1, 1, 1
-Torch, 1, 0, Camieux (Fire), 1, 1, 1, 1, 1, 1, 1
-Snowman Rod, 1, 0, Suframare, 1, 1, 1, 1, 1, 1, 1
-Student Notebook, 1, 0, Alistair, 1, 1, 1, 1, 1, 1, 1
-Stone Pole, 1, 0, Norcel, 1, 1, 1, 1, 1, 1, 1
-Taiaha, 1, 0, Jasmine, 1, 1, 1, 1, 1, 1, 1
-Feather Wand, 1, 0, Anna, 1, 1, 1, 1, 1, 1, 1
-Moss Tree Staff, 1, 0, Petra, 1, 1, 1, 1, 1, 1, 1
-Light Staff, 1, 0, Philosophia, 1, 1, 1, 1, 1, 1, 1
-The Cross, 1, 0, Will, 1, 1, 1, 1, 1, 1, 1
-Derringer, 1, 0, Barawa, 1, 1, 1, 1, 1, 1, 1
-Flame Bolt, 1, 0, Karva, 1, 1, 1, 1, 1, 1, 1
-Sawed-Off Shotgun, 1, 0, Garma, 1, 1, 1, 1, 1, 1, 1
-Self Defender, 1, 0, Richard, 1, 1, 1, 1, 1, 1, 1
-Petronel, 1, 0, Mary, 1, 1, 1, 1, 1, 1, 1
-Chopsticks, 1, 0, Ippatsu, 1, 1, 1, 1, 1, 1, 1
-Boogie Plates, 1, 0, Cailana, 1, 1, 1, 1, 1, 1, 1
-Oven Mitts, 1, 0, Nene, 1, 1, 1, 1, 1, 1, 1
-Tattoo Fist, 1, 0, Randall, 1, 1, 1, 1, 1, 1, 1
-Iron Guard, 1, 0, Balurga, 1, 1, 1, 1, 1, 1, 1
-Mythril Knuckles, 1, 0, Hazen, 1, 1, 1, 1, 1, 1, 1
-Tonfa, 1, 0, Vanzza, 1, 1, 1, 1, 1, 1, 1
-Enchanted Nail, 1, 0, Chloe, 1, 1, 1, 1, 1, 1, 1
-Light Buckler, 1, 0, Pavidus, 1, 1, 1, 1, 1, 1, 1
-Blast Knuckles, 1, 0, Feather, 1, 1, 1, 1, 1, 1, 1
-Flame Bow, 1, 0, Flesselles, 1, 1, 1, 1, 1, 1, 1
-Bronze Bell, 1, 0, Bakura, 1, 1, 1, 1, 1, 1, 1
-Night Bell, 1, 0, Lunalu, 1, 1, 1, 1, 1, 1, 1
-Anelace, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Claymore, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Falchion, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Flame Rapier, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Ice Sword, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Icey Nail, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Earth Cutlass, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Fire Baselard, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Kila, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Mailbreaker, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Water Kukri, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Kris, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Emerald Dagger, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Leaf Dagger, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Holy Kris, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Assassin's Dagger, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Dark Knife, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Couse, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Fire Glaive, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Flame Halberd, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Langdebeve, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Aquan Killer, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Earth Halberd, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Halberd, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Harvester, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Battle Axe, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Earth Zaghnal, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Rock Hammer, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Wind Axe, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Tabar, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Thunder Kalinga Axe, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Neckchopper, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Cane, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Ocean Rod, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Water Rod, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Feather Staff, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Emerald Cane, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Wind Rod, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Shareeravadi, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Evil Wand, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Grenade, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Matchlock, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Straight Anchor, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Ranger Pistol, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Hand Pistol, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Jezail, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Fireball, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Heated Pata, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Pata, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Fish Tooth, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Gauntlet, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Tidal Wraps, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Rock Cutter, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Mythril Baghnakhs, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Whirlwind Wraps, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Composite Bow, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Mythril Bow, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Longbow, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Earth Bow, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Power Bow, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-War Bow, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Wrapped Bow, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Lyre of Lamia, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Nodachi, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Mythril Katana, 1, 0,, 1, 1, 1, 1, 1, 1, 1
-Minotaur, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Twilight Devil, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Venom Lancer, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Walking Torch, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Angelie, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Crusher, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Jawfish, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Purgatorian, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Rivacuda, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Slime, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Swordshark, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Bonethorn, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Crawler, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Lumacie Griffin, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Mandrake, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Sleepyhead, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Belle, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Dragonflair, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Hornbird, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Ghost Light, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Cave Bat, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Imp, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Skeleton, 1, 1,, 1, 1, 1, 1, 1, 1, 1
-Delta Quartz, 3, 0, Beatrix (Themed), 0, 0, 0, 0, 1, 0, 0
-Mikazuki, 3, 0, Danua (Summer), 0, 0, 0, 0, 1, 0, 0
-Diamond Edge, 3, 0, De La Fille (Summer), 0, 0, 0, 0, 1, 0, 0
-Tlepilli, 3, 0, Diantha (Summer), 0, 0, 0, 0, 1, 0, 0
-Draco Horn, 3, 0, Grea (Summer), 0, 0, 0, 0, 1, 0, 0
-Crystal Luin, 3, 0, Heles (Summer), 0, 0, 0, 0, 1, 0, 0
-Arjunan Bow, 3, 0, Ilsa (Summer), 0, 0, 0, 0, 1, 0, 0
-Sunflower Wand, 3, 0, Io (Summer), 0, 0, 0, 0, 1, 0, 0
-Frostbite, 3, 0, Izmir (Summer), 0, 0, 0, 0, 1, 0, 0
-Orleans Standard, 3, 0, Jeanne d'Arc (Themed), 0, 0, 0, 0, 1, 0, 0
-Bell of Happy Endings, 3, 0, Korwa (Summer), 0, 0, 0, 0, 1, 0, 0
-Conifer, 3, 0, Naoise (Summer), 0, 0, 0, 0, 1, 0, 0
-Raikiri, 3, 0, Narmaya (Summer), 0, 0, 0, 0, 1, 0, 0
-Antwerp, 3, 0, Percival (Summer), 0, 0, 0, 0, 1, 0, 0
-Thorny Rose, 3, 0, Rosetta (Summer), 0, 0, 0, 0, 1, 0, 0
-Sinensis, 3, 0, Siegfried (Summer), 0, 0, 0, 0, 1, 0, 0
-Deep Desire, 3, 0, Vira (Summer), 0, 0, 0, 0, 1, 0, 0
-Cletine, 3, 0, Zeta (Summer), 0, 0, 0, 0, 1, 0, 0
-Gold-Plated Fremel, 2, 0, Almeida (Summer), 0, 0, 0, 0, 1, 0, 0
-Tropical Punch, 2, 0, Ayer (Summer), 0, 0, 0, 0, 1, 0, 0
-Water Balloons, 2, 0, Camieux (Summer), 0, 0, 0, 0, 1, 0, 0
-Floaty Sword, 2, 0, Carlotta (Summer), 0, 0, 0, 0, 1, 0, 0
-Seaside Memory, 2, 0, Chloe (Summer), 0, 0, 0, 0, 1, 0, 0
-Deathly Arson, 2, 0, Elmott (Summer), 0, 0, 0, 0, 1, 0, 0
-Desert Arms, 2, 0, Eugen (Summer), 0, 0, 0, 0, 1, 0, 0
-Macuahuitl, 2, 0, Farrah (Summer), 0, 0, 0, 0, 1, 0, 0
-Rope Knuckles, 2, 0, Ghandagoza (Summer), 0, 0, 0, 0, 1, 0, 0
-Skirt Chaser, 2, 0, Helnar (Summer), 0, 0, 0, 0, 1, 0, 0
-Silver Rings, 2, 0, J.J. (Summer), 0, 0, 0, 0, 1, 0, 0
-Custom Arquebus, 2, 0, Jessica (Summer), 0, 0, 0, 0, 1, 0, 0
-Tyrian Tiger Blade, 2, 0, Jin (Themed), 0, 0, 0, 0, 1, 0, 0
-Ripple Rapier, 2, 0, Katalina (Summer), 0, 0, 0, 0, 1, 0, 0
-Pirate Sword, 2, 0, Lecia (Summer), 0, 0, 0, 0, 1, 0, 0
-Summer Beach Sphere, 2, 0, Lilele (Summer), 0, 0, 0, 0, 1, 0, 0
-Ripple Harp, 2, 0, Sara (Summer), 0, 0, 0, 0, 1, 0, 0
-Sunshade Parasol, 2, 0, Suframare (Summer), 0, 0, 0, 0, 1, 0, 0
-Shade Knife, 2, 0, Tanya (Summer), 0, 0, 0, 0, 1, 0, 0
-Summer Souteyrand, 2, 0, Yuisis (Summer), 0, 0, 0, 0, 1, 0, 0
-Cursed Flame Candelabra, 1, 0, Anna (Summer), 0, 0, 0, 0, 1, 0, 0
-Cold Noodles, 1, 0, Ippatsu (Summer), 0, 0, 0, 0, 1, 0, 0
-Cleaver, 1, 0, Lowain (Summer), 0, 0, 0, 0, 1, 0, 0
-Night Air Bell, 1, 0, Lunalu (Summer), 0, 0, 0, 0, 1, 0, 0
-Firecracker, 1, 0, Mary (Summer), 0, 0, 0, 0, 1, 0, 0
-Wooden Dagger, 1, 0, Walder (Summer), 0, 0, 0, 0, 1, 0, 0
-Medusiana Staff, 3, 0, Medusa (Valentine), 0, 0, 0, 1, 0, 0, 0
-Confection Cutter, 2, 0, Narmaya (Valentine), 0, 0, 0, 1, 0, 0, 0
-Scarlet Oath, 2, 0, Teena (Valentine), 0, 0, 0, 1, 0, 0, 0
-Ouroboros Treat, 3, 0, Cagliostro (Halloween), 0, 0, 0, 0, 0, 1, 0
-Jack-O'-Brand, 3, 0, Charlotta (Halloween), 0, 0, 0, 0, 0, 1, 0
-Snack Pole, 3, 0, Danua (Halloween), 0, 0, 0, 0, 0, 1, 0
-Nightmare Mobilizer, 3, 0, Eustace (Halloween), 0, 0, 0, 0, 0, 1, 0
-Distant Requiem, 3, 0, Lady Grey (Halloween), 0, 0, 0, 0, 0, 1, 0
-Dracula Harp, 2, 0, Ange (Halloween), 0, 0, 0, 0, 0, 1, 0
-Delta Apex, 2, 0, Beatrix (Halloween), 0, 0, 0, 0, 0, 1, 0
-Phantom Gauntlet, 2, 0, Feather (Halloween), 0, 0, 0, 0, 0, 1, 0
-Aura Whip, 2, 0, Ferry (Halloween), 0, 0, 0, 0, 0, 1, 0
-Heavy-Duty Pumpkins, 2, 0, Mimlemel and Pun-Kin (Halloween), 0, 0, 0, 0, 0, 1, 0
-Stardust Holly Rod, 3, 0, Arulumaya (Holiday), 0, 0, 0, 0, 0, 0, 1
-Snowy Mobius Strip, 3, 0, Clarisse (Holiday), 0, 0, 0, 0, 0, 0, 1
-Jolly Starcracker, 3, 0, Mary (Holiday), 0, 0, 0, 0, 0, 0, 1
-Pinkie Needle, 3, 0, Metera (Holiday), 0, 0, 0, 0, 0, 0, 1
-Rosen Maiden, 3, 0, Rosetta (Holiday), 0, 0, 0, 0, 0, 0, 1
-Winter Wonderbow, 2, 0, Feena (Holiday), 0, 0, 0, 0, 0, 0, 1
-Holy Glove, 2, 0, Ladiva (Holiday), 0, 0, 0, 0, 0, 0, 1
-Holy Harp, 2, 0, Rackam (Holiday), 0, 0, 0, 0, 0, 0, 1
-White Talons, 2, 0, Sen (Holiday), 0, 0, 0, 0, 0, 0, 1
-Festive Frying Pan, 2, 0, Yaia (Holiday), 0, 0, 0, 0, 0, 0, 1
-Tree Wand, 1, 0, Walder (Holiday), 0, 0, 0, 0, 0, 0, 1
-Dormius, 3, 0, Andira, 0, 0, 1, 0, 0, 0, 0
-Ramulus, 3, 0, Anila, 0, 0, 1, 0, 0, 0, 0
-Gallinarius, 3, 0, Mahira, 0, 0, 1, 0, 0, 0, 0
-Canisius, 3, 0, Vajra, 0, 0, 0, 0, 0, 0, 0
-Porculius, 3, 0, Kumbhira, 0, 0, 1, 0, 0, 0, 0
-Ichigo Hitofuri, 3, 0, Cain (Grand), 0, 0, 1, 0, 0, 0, 0
-AK-4A, 3, 0, Eugen (Grand), 0, 0, 1, 0, 0, 0, 0
-Gambanteinn, 3, 0, Io (Grand), 0, 0, 1, 0, 0, 0, 0
-Murgleis, 3, 0, Katalina (Grand), 0, 0, 1, 0, 0, 0, 0
-Benedia, 3, 0, Rackam (Grand), 0, 0, 1, 0, 0, 0, 0
-Love Eternal, 3, 0, Rosetta (Grand), 0, 0, 1, 0, 0, 0, 0
-Reunion, 3, 0, Lecia (Grand), 0, 0, 1, 0, 0, 0, 0
-Taisai Spirit Bow, 3, 0, Pholia (Grand), 0, 0, 1, 0, 0, 0, 0
-Mirror-Blade Shard, 3, 0, Alexiel, 0, 1, 0, 0, 0, 0, 0
-Blutgang, 3, 0, Black Knight, 0, 1, 0, 0, 0, 0, 0
-Blue Sphere, 3, 0, Drang, 0, 1, 0, 0, 0, 0, 0
-Galilei's Insight, 3, 0, Europa, 0, 1, 0, 0, 0, 0, 0
-Eden, 3, 0, Lucio, 0, 1, 0, 0, 0, 0, 0
-Fallen Sword, 3, 0, Olivia, 0, 1, 0, 0, 0, 0, 0
-Parazonium, 3, 0, Orchid, 0, 1, 0, 0, 0, 0, 0
-Ixaba, 3, 0, Sturm, 0, 1, 0, 0, 0, 0, 0
-Certificus, 3, 0, Vira (Grand), 0, 1, 0, 0, 0, 0, 0
-Cute Ribbon, 3, 0, Zooey (Grand), 0, 1, 0, 0, 0, 0, 0
-Macula Marius (Summer), 3, 1,, 0, 0, 0, 0, 1, 0, 0
-Silphium, 3, 0, Clarisse (Valentine), 0, 0, 0, 1, 0, 0, 0
-Sword on the Cob, 3, 0, Melissabelle (Valentine), 0, 0, 0, 1, 0, 0, 0
-Unheil, 3, 0, Ferry (Grand), 0, 0, 1, 0, 0, 0, 0
-Deirdre's Symbol, 3, 0, Heles (Wind), 1, 1, 1, 1, 1, 1, 1
-Samurai Sword, 2, 0, Mirin (Light), 1, 1, 1, 1, 1, 1, 1
-"Marduk, Battlefield Reaper", 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Crimson Sapphire, 3, 0, Yuel (Themed), 0, 0, 0, 0, 1, 0, 0
-Another Sky, 3, 0, Vira (Wind), 1, 1, 1, 1, 1, 1, 1
-Jeunesse, 2, 0, Korwa, 1, 1, 1, 1, 1, 1, 1
-Demonbream, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Vortex of the Void, 3, 0, Grimnir, 0, 1, 0, 0, 0, 0, 0
-Froststar Staff, 3, 0, Macula Marius, 1, 1, 1, 1, 1, 1, 1
-Euripides, 3, 0, Medusa, 1, 1, 1, 1, 1, 1, 1
-Goldie, 2, 0, Richard, 1, 1, 1, 1, 1, 1, 1
-Sariel, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Spymur's Clause, 3, 0, Baal, 1, 1, 1, 1, 1, 1, 1
-Mythril Bolt, 2, 0, Aster, 1, 1, 1, 1, 1, 1, 1
-Rainbow Hand, 3, 0, Ladiva, 1, 1, 1, 1, 1, 1, 1
-Trí Bandia, 3, 0, Morrigna, 1, 1, 1, 1, 1, 1, 1
-Lumiel Banner, 2, 0, Bridgette and Cordelia, 1, 1, 1, 1, 1, 1, 1
-Metatron, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Vagabond, 3, 0, Kolulu, 1, 1, 1, 1, 1, 1, 1
-Staff of Refusal, 2, 0, Philosophia, 1, 1, 1, 1, 1, 1, 1
-Sharp Letter, 3, 0, Halluel and Malluel (Summer), 0, 0, 0, 0, 1, 0, 0
-Ain Soph, 3, 0, Sandalphon (Summer), 0, 0, 0, 0, 1, 0, 0
-Yggdrasil (Summer), 3, 1,, 0, 0, 0, 0, 1, 0, 0
-Only for a Cutie, 3, 0, Cagliostro (Summer), 0, 0, 0, 0, 1, 0, 0
-Premium Sword, 2, 0, Friday (Summer), 0, 0, 0, 0, 1, 0, 0
-Crystal Bellflowers, 3, 0, Europa (Summer), 0, 0, 0, 0, 1, 0, 0
-Midnight Radiance, 3, 0, Jessica (Themed), 0, 0, 0, 0, 1, 0, 0
-Knight's Beach Banner, 2, 0, Lancelot and Vane (Summer), 0, 0, 0, 0, 1, 0, 0
-Satyr (Summer), 3, 1,, 0, 0, 0, 0, 1, 0, 0
-Forbidden Memories, 3, 0, Anthuria (Summer), 0, 0, 0, 0, 1, 0, 0
-Cotton Candy, 2, 0, Cassius (Summer), 0, 0, 0, 0, 1, 0, 0
-Nibelung Glas, 3, 0, Alexiel (Summer), 0, 0, 0, 0, 1, 0, 0
-Liuyedao, 2, 0, Leona (Summer), 0, 0, 0, 0, 1, 0, 0
-Rose Queen, 3, 1,, 0, 0, 0, 0, 1, 0, 0
-Golden Dragon, 3, 0, Stan and Aliza, 1, 1, 1, 1, 1, 1, 1
-Hand Axe, 3, 0, Tabina, 1, 1, 1, 1, 1, 1, 1
-Surtr, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Metal Destroyer, 3, 0, Colossus, 1, 1, 1, 1, 1, 1, 1
-Eon, 3, 0, Sara (Light), 1, 1, 1, 1, 1, 1, 1
-Sky Ace, 3, 0, Monika (Grand), 0, 0, 1, 0, 0, 0, 0
-Black Dragon's Maw, 3, 0, Siegfried (Fire), 1, 1, 1, 1, 1, 1, 1
-Lilac Comb, 2, 0, La Coiffe, 1, 1, 1, 1, 1, 1, 1
-Princess Long Ji, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Enchanted Broomstick, 3, 0, Zeta and Vaseraga (Halloween), 0, 0, 0, 0, 0, 1, 0
-Spirit Seeker, 3, 0, Hallessena (Halloween), 0, 0, 0, 0, 0, 1, 0
-Horrible Voulge, 2, 0, Zaja (Halloween), 0, 0, 0, 0, 0, 1, 0
-Juzumaru, 3, 0, Kou, 1, 1, 1, 1, 1, 1, 1
-Cardinal Spear, 3, 0, Societte (Wind), 1, 1, 1, 1, 1, 1, 1
-Dogu, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Sacred Standard, 3, 0, Jeanne d'Arc (Grand), 0, 1, 0, 0, 0, 0, 0
-Iridescent Bow, 3, 0, Shitori, 1, 1, 1, 1, 1, 1, 1
-Cube Staff, 2, 0, Krugne, 1, 1, 1, 1, 1, 1, 1
-Holy Knight Scepter, 3, 0, Magisa (Holiday), 0, 0, 0, 0, 0, 0, 1
-Ray Gun, 3, 0, Meteon (Holiday), 0, 0, 0, 0, 0, 0, 1
-Blade of Purification, 3, 0, Narmaya (Holiday), 0, 0, 0, 0, 0, 0, 1
-Brand of Binding Oath, 3, 0, Seruel (Holiday), 0, 0, 0, 0, 0, 0, 1
-Bab-el-Mandeb, 3, 0, Helel ben Shalem, 0, 1, 0, 0, 0, 0, 0
-Alabaster Zenith, 3, 0, Lucius, 1, 1, 1, 1, 1, 1, 1
-Gangsta Knife, 3, 0, Yuisis (Fire), 1, 1, 1, 1, 1, 1, 1
-Rodentius, 3, 0, Vikala, 0, 0, 1, 0, 0, 0, 0
-Belial, 3, 1,, 1, 1, 1, 1, 1, 1, 1
-Spectral Cleaver, 3, 0, Danua, 1, 1, 1, 1, 1, 1, 1
-Soshu Masamune, 3, 0, Jin, 1, 1, 1, 1, 1, 1, 1
-Takeminakata, 3, 0, Ilsa (Light), 1, 1, 1, 1, 1, 1, 1
-True Tiger's Bane, 3, 0, Yodarha (Wind), 1, 1, 1, 1, 1, 1, 1
-Heimdallr, 3, 1,, 1, 1, 1, 1, 1, 1, 1
+name,rarity,type,recruits,premium,flash,legend,valentine,summer,halloween,holiday
+Dainsleif,3,0,Altair,1,1,1,1,1,1,1
+Lohengrin,3,0,Percival,1,1,1,1,1,1,1
+Claíomh Solais,3,0,Charlotta (Water),1,1,1,1,1,1,1
+Gottfried,3,0,Aglovale,1,1,1,1,1,1,1
+Nagelring,3,0,Izmir,1,1,1,1,1,1,1
+Ascalon,3,0,Siegfried,1,1,1,1,1,1,1
+Greatsword Andalius,3,0,Aletheia,1,1,1,1,1,1,1
+Heiliges Schwert,3,0,Lancelot (Wind),1,1,1,1,1,1,1
+Yyrkoon,3,0,Yuisis,1,1,1,1,1,1,1
+Caladbolg,3,0,Jeanne d'Arc,1,1,1,1,1,1,1
+Ethereal Lasher,3,0,Ferry,1,1,1,1,1,1,1
+Hauteclaire,3,0,Albert,1,1,1,1,1,1,1
+Hrotti,3,0,Seruel,1,1,1,1,1,1,1
+Symbol of Justice,3,0,Baotorda,1,1,1,1,1,1,1
+Disparia,3,0,Jeanne d'Arc (Dark),1,1,1,1,1,1,1
+Gram,3,0,Beatrix,1,1,1,1,1,1,1
+Lyst Sin,3,0,Vira,1,1,1,1,1,1,1
+Mistilteinn,3,0,Vaseraga (Dark),1,1,1,1,1,1,1
+Hoarfrost Blade Persius,3,0,Lancelot (Water),1,1,1,1,1,1,1
+Phantom Thief Blade,3,0,Chat Noir,1,1,1,1,1,1,1
+Arsene,3,0,Catherine,1,1,1,1,1,1,1
+Heaven's Cloud,3,0,Petra,1,1,1,1,1,1,1
+Thunder Dirk Jove,3,0,Agielba,1,1,1,1,1,1,1
+Twin Helix,3,0,Rosamia,1,1,1,1,1,1,1
+Azoth,3,0,Vania,1,1,1,1,1,1,1
+Bloody Scar,3,0,Veight,1,1,1,1,1,1,1
+Gandring,3,0,Tanya,1,1,1,1,1,1,1
+Brionac,3,0,Zeta (Fire),1,1,1,1,1,1,1
+Feendrache Pennant,3,0,Lancelot and Vane,1,1,1,1,1,1,1
+Luin,3,0,Heles,1,1,1,1,1,1,1
+Pilum,3,0,Nezahualpilli,1,1,1,1,1,1,1
+Sacred Lance,3,0,Athena,1,1,1,1,1,1,1
+Daemon's Spine,3,0,Anne,1,1,1,1,1,1,1
+Gae Derg,3,0,Razia,1,1,1,1,1,1,1
+Gargantua,3,0,Arulumaya,1,1,1,1,1,1,1
+Galactic Impact,3,0,Sen,1,1,1,1,1,1,1
+Turpin Spear,3,0,Carmelina,1,1,1,1,1,1,1
+Shadow Viperlance,3,0,Azazel,1,1,1,1,1,1,1
+Skyrend Spear,3,0,Forte,1,1,1,1,1,1,1
+Sunspot Spear,3,0,Zeta (Dark),1,1,1,1,1,1,1
+Scarlet Crest Axe,3,0,Yuel,1,1,1,1,1,1,1
+Two-by-Four,3,0,Tsubasa,1,1,1,1,1,1,1
+Way Flyer,3,0,Aoidos,1,1,1,1,1,1,1
+Blossom Axe,3,0,Vane,1,1,1,1,1,1,1
+Mettle,3,0,Nemone,1,1,1,1,1,1,1
+Wurtzite Scythe,3,0,Vaseraga (Earth),1,1,1,1,1,1,1
+Split End,3,0,Melissabelle,1,1,1,1,1,1,1
+Windflash,3,0,Gawain,1,1,1,1,1,1,1
+Claidheamh Soluis,3,0,Charlotta (Light),1,1,1,1,1,1,1
+Full Metal Recoil,3,0,Silva (Light),1,1,1,1,1,1,1
+Ukonvasara,3,0,Lady Grey,1,1,1,1,1,1,1
+Master Key,3,0,Wulf and Renie,1,1,1,1,1,1,1
+Soul Eater,3,0,Hallessena,1,1,1,1,1,1,1
+Vassago,3,0,Melleau,1,1,1,1,1,1,1
+Forbidden Inferno,3,0,Anthuria,1,1,1,1,1,1,1
+Illusion Scepter,3,0,Magisa,1,1,1,1,1,1,1
+Starblaze Rings,3,0,Zahlhamelina,1,1,1,1,1,1,1
+Ice Crystal Staff,3,0,Lily,1,1,1,1,1,1,1
+Montague's Oath,3,0,Romeo,1,1,1,1,1,1,1
+Ouroboros,3,0,Cagliostro (Earth),1,1,1,1,1,1,1
+Thrysus,3,0,De La Fille (Earth),1,1,1,1,1,1,1
+Kerykeion,3,0,De La Fille (Light),1,1,1,1,1,1,1
+Wing of the Pure,3,0,Korwa,1,1,1,1,1,1,1
+Capulet's Oath,3,0,Juliet,1,1,1,1,1,1,1
+Sealed Claustrum,3,0,Sarunan (Light),1,1,1,1,1,1,1
+Black Ouroboros,3,0,Cagliostro (Dark),1,1,1,1,1,1,1
+Gridarvor,3,0,Marquiares,1,1,1,1,1,1,1
+Kalaurops,3,0,Sarunan (Dark),1,1,1,1,1,1,1
+Meteora,3,0,Yngwie,1,1,1,1,1,1,1
+Vlisragna,3,0,Silva (Water),1,1,1,1,1,1,1
+White Hawk,3,0,Cucouroux,1,1,1,1,1,1,1
+Stratomizer,3,0,Eustace (Earth),1,1,1,1,1,1,1
+Far Away,3,0,Lennah,1,1,1,1,1,1,1
+Tiamat Bolt Prime,3,0,Tiamat,1,1,1,1,1,1,1
+Railgun,3,0,Robomi,1,1,1,1,1,1,1
+Ruler of Fate,3,0,Zooey,1,1,1,1,1,1,1
+Arachne,3,0,Freezie,1,1,1,1,1,1,1
+Ishtar,3,0,Eustace (Dark),1,1,1,1,1,1,1
+Blushing Blossom Pin,3,0,Societte (Fire),1,1,1,1,1,1,1
+Brahma Gauntlet,3,0,Ghandagoza,1,1,1,1,1,1,1
+Draco Claw,3,0,Grea,1,1,1,1,1,1,1
+Magma Gauntlet,3,0,Aliza,1,1,1,1,1,1,1
+Metal Hand,3,0,Lady Katapillar and Vira,1,1,1,1,1,1,1
+Scarlet Vane,3,0,Societte (Water),1,1,1,1,1,1,1
+Ancient Bandages,3,0,Ayer,1,1,1,1,1,1,1
+Neko Punch Pro,3,0,Dante and Freiheit,1,1,1,1,1,1,1
+Wyrmtiger Claw,3,0,Soriz,1,1,1,1,1,1,1
+Deirdre's Claws,3,0,Scathacha,1,1,1,1,1,1,1
+Gothic Cutlery,3,0,Dorothy and Claudia,1,1,1,1,1,1,1
+Coco & Mimi,3,0,Cerberus,1,1,1,1,1,1,1
+Ruling Pen,3,0,Lunalu,1,1,1,1,1,1,1
+Roseate Aetherial Bow,3,0,Metera (Fire),1,1,1,1,1,1,1
+Gandiva,3,0,Ilsa,1,1,1,1,1,1,1
+Aetherial Bow,3,0,Metera (Wind),1,1,1,1,1,1,1
+Heroic Bow,3,0,Feena,1,1,1,1,1,1,1
+Levin Shooter,3,0,Levin Sisters,1,1,1,1,1,1,1
+Mobius Strip,3,0,Clarisse (Fire),1,1,1,1,1,1,1
+Melodic Sphere,3,0,Lilele,1,1,1,1,1,1,1
+Ocean Harp,3,0,Sophia,1,1,1,1,1,1,1
+Bella Aeterna,3,0,Yggdrasil,1,1,1,1,1,1,1
+Sandcastle Song-Lume,3,0,Sara,1,1,1,1,1,1,1
+Cords of Heaven Lillah,3,0,Arriet,1,1,1,1,1,1,1
+Cythara Anglica,3,0,Selfira,1,1,1,1,1,1,1
+Fusion Mobius,3,0,Clarisse (Light),1,1,1,1,1,1,1
+Tanzanite Blade,3,0,Therese,1,1,1,1,1,1,1
+Izayoi,3,0,Yuel (Water),1,1,1,1,1,1,1
+Venustas,3,0,Narmaya,1,1,1,1,1,1,1
+Dragon Slayer,3,0,Amira,1,1,1,1,1,1,1
+Fudo-Kuniyuki,3,0,Yodarha,1,1,1,1,1,1,1
+Gigante Slicer,3,0,Nicholas,1,1,1,1,1,1,1
+Agni,3,1,,1,1,1,1,1,1,1
+Athena,3,1,,1,1,1,1,1,1,1
+Michael,3,1,,1,1,1,1,1,1,1
+Prometheus,3,1,,1,1,1,1,1,1,1
+Satyr,3,1,,1,1,1,1,1,1,1
+Sethlans,3,1,,1,1,1,1,1,1,1
+Shiva,3,1,,1,1,1,1,1,1,1
+"Sylph, Flutterspirit of Purity",3,1,,1,1,1,1,1,1,1
+Twin Elements,3,1,,1,1,1,1,1,1,1
+Zaoshen,3,1,,1,1,1,1,1,1,1
+Bonito,3,1,,1,1,1,1,1,1,1
+Ca Ong,3,1,,1,1,1,1,1,1,1
+Europa,3,1,,1,1,1,1,1,1,1
+Gabriel,3,1,,1,1,1,1,1,1,1
+Grani,3,1,,1,1,1,1,1,1,1
+Kaguya,3,1,,1,1,1,1,1,1,1
+Macula Marius,3,1,,1,1,1,1,1,1,1
+Neptune,3,1,,1,1,1,1,1,1,1
+Oceanus,3,1,,1,1,1,1,1,1,1
+"Poseidon, the Tide Father",3,1,,1,1,1,1,1,1,1
+Snow White,3,1,,1,1,1,1,1,1,1
+Varuna,3,1,,1,1,1,1,1,1,1
+Ankusha,3,1,,1,1,1,1,1,1,1
+Baal,3,1,,1,1,1,1,1,1,1
+Cybele,3,1,,1,1,1,1,1,1,1
+Gilgamesh,3,1,,1,1,1,1,1,1,1
+Godsworn Alexiel,3,1,,1,1,1,1,1,1,1
+Gorilla,3,1,,1,1,1,1,1,1,1
+Medusa,3,1,,1,1,1,1,1,1,1
+Tezcatlipoca,3,1,,1,1,1,1,1,1,1
+Titan,3,1,,1,1,1,1,1,1,1
+Uriel,3,1,,1,1,1,1,1,1,1
+"Anat, for Love and War",3,1,,1,1,1,1,1,1,1
+Freyr,3,1,,1,1,1,1,1,1,1
+Garuda,3,1,,1,1,1,1,1,1,1
+"Garula, Shining Hawk",3,1,,1,1,1,1,1,1,1
+Grimnir,3,1,,1,1,1,1,1,1,1
+Hamsa,3,1,,1,1,1,1,1,1,1
+Morrigna,3,1,,1,1,1,1,1,1,1
+Nezha,3,1,,1,1,1,1,1,1,1
+Quetzalcoatl,3,1,,1,1,1,1,1,1,1
+Raphael,3,1,,1,1,1,1,1,1,1
+Rose Queen,3,1,,1,1,1,1,1,1,1
+Setekh,3,1,,1,1,1,1,1,1,1
+Zephyrus,3,1,,1,1,1,1,1,1,1
+Adramelech,3,1,,1,1,1,1,1,1,1
+Aphrodite,3,1,,1,1,1,1,1,1,1
+Apollo,3,1,,1,1,1,1,1,1,1
+Grand Order,3,1,,1,1,1,1,1,1,1
+Halluel and Malluel,3,1,,1,1,1,1,1,1,1
+Hector,3,1,,1,1,1,1,1,1,1
+Lucifer,3,1,,1,1,1,1,1,1,1
+"Magus, Triad of Wisdom",3,1,,1,1,1,1,1,1,1
+Odin,3,1,,1,1,1,1,1,1,1
+Thor,3,1,,1,1,1,1,1,1,1
+Vortex Dragon,3,1,,1,1,1,1,1,1,1
+Zeus,3,1,,1,1,1,1,1,1,1
+Anubis,3,1,,1,1,1,1,1,1,1
+Bahamut,3,1,,1,1,1,1,1,1,1
+"Cerberus, Hellhound Trifecta",3,1,,1,1,1,1,1,1,1
+Dark Angel Olivia,3,1,,1,1,1,1,1,1,1
+Hades,3,1,,1,1,1,1,1,1,1
+Lich,3,1,,1,1,1,1,1,1,1
+Nacht,3,1,,1,1,1,1,1,1,1
+Satan,3,1,,1,1,1,1,1,1,1
+Tsukuyomi,3,1,,1,1,1,1,1,1,1
+Typhon,3,1,,1,1,1,1,1,1,1
+Ember Blade,2,0,Carren,1,1,1,1,1,1,1
+Ram-Dao,2,0,Gayne,1,1,1,1,1,1,1
+Tanzanite Sword Mikoh,2,0,Therese,1,1,1,1,1,1,1
+Time-Tested Iron,2,0,Rosine,1,1,1,1,1,1,1
+Aquablade,2,0,Mina,1,1,1,1,1,1,1
+Bottle o' Blossoms,2,0,Lamretta,1,1,1,1,1,1,1
+Royal Rapier,2,0,Ange,1,1,1,1,1,1,1
+Sword of Sorcery,2,0,Owen,1,1,1,1,1,1,1
+Frying Pan,2,0,Yaia,1,1,1,1,1,1,1
+Grand Edge,2,0,Herja,1,1,1,1,1,1,1
+Prideful Sword,2,0,Beatrix,1,1,1,1,1,1,1
+Balisarde,2,0,Arthur and Mordred,1,1,1,1,1,1,1
+Kilij,2,0,Juri,1,1,1,1,1,1,1
+White Flag,2,0,Mimlemel and Stumpeye,1,1,1,1,1,1,1
+Arondight,2,0,Baotorda,1,1,1,1,1,1,1
+True Teardrop,2,0,Vermeil,1,1,1,1,1,1,1
+Lyst,2,0,Vira,1,1,1,1,1,1,1
+Purity Blade,2,0,Lucius (Dark),1,1,1,1,1,1,1
+Silver Shotel,2,0,Randall,1,1,1,1,1,1,1
+Tilvung,2,0,Helnar,1,1,1,1,1,1,1
+Soulbond Dirk,2,0,Teena,1,1,1,1,1,1,1
+Shrike's Beak,2,0,Jamil,1,1,1,1,1,1,1
+Sword of Lisblanc,2,0,Farrah,1,1,1,1,1,1,1
+Soul Edge,2,0,Ferry,1,1,1,1,1,1,1
+Katzbalger,2,0,Jamil,1,1,1,1,1,1,1
+Puppet Knife,2,0,Danua,1,1,1,1,1,1,1
+Scalpel,2,0,Shao,1,1,1,1,1,1,1
+Wyrm Claw,2,0,Tanya,1,1,1,1,1,1,1
+Flare Glaive,2,0,Mariah,1,1,1,1,1,1,1
+Raging Halberd,2,0,Vane,1,1,1,1,1,1,1
+Narval,2,0,Ulamnuran,1,1,1,1,1,1,1
+Titanium Harpoon,2,0,Sig,1,1,1,1,1,1,1
+Divine Spear,2,0,Razia,1,1,1,1,1,1,1
+Dreadflayer,2,0,Laguna,1,1,1,1,1,1,1
+Giant Fork,2,0,Redluck,1,1,1,1,1,1,1
+Golden Mop,2,0,Claudia,1,1,1,1,1,1,1
+Macho Hunter Weapon,2,0,The Lowain Bros,1,1,1,1,1,1,1
+Serpentine Longspear,2,0,Leona,1,1,1,1,1,1,1
+Lance d'Espoir,2,0,Jeanne d'Arc,1,1,1,1,1,1,1
+Brocken Lance,2,0,Deliford,1,1,1,1,1,1,1
+Massive Axe,2,0,Ryan,1,1,1,1,1,1,1
+Fremel Hammer,2,0,Almeida,1,1,1,1,1,1,1
+Great Hammer,2,0,Galadar,1,1,1,1,1,1,1
+Cloud Tomahawk,2,0,Eso,1,1,1,1,1,1,1
+Holy Axe,2,0,Sevastien,1,1,1,1,1,1,1
+Golden Woofer,2,0,Daetta,1,1,1,1,1,1,1
+Voulge,2,0,Zaja,1,1,1,1,1,1,1
+Arson,2,0,Elmott,1,1,1,1,1,1,1
+Arson Link,2,0,Blazing Teacher Elmott,1,1,1,1,1,1,1
+Nature's Mystery,2,0,Dante,1,1,1,1,1,1,1
+Soothing Torch,2,0,Rosamia,1,1,1,1,1,1,1
+Witch's Broom,2,0,Anna,1,1,1,1,1,1,1
+Ice Bough Staff,2,0,Erin,1,1,1,1,1,1,1
+Spritewood Staff,2,0,Mishra,1,1,1,1,1,1,1
+Tughril,2,0,Nezahualpilli,1,1,1,1,1,1,1
+Aerial Cane,2,0,Arusha,1,1,1,1,1,1,1
+Flower Crown,2,0,Jasmine,1,1,1,1,1,1,1
+Wind-Rhyme Staff,2,0,Noa,1,1,1,1,1,1,1
+Sacred Codex,2,0,Johann,1,1,1,1,1,1,1
+Staff of the Star Seeker,2,0,Sophia,1,1,1,1,1,1,1
+Cursed Cane,2,0,Will,1,1,1,1,1,1,1
+Shadow Scepter,2,0,Goblin Mage,1,1,1,1,1,1,1
+Dolphin,2,0,Cucouroux,1,1,1,1,1,1,1
+Fire Piece,2,0,Mary,1,1,1,1,1,1,1
+Signal Flare,2,0,Karva,1,1,1,1,1,1,1
+Colorful Crackerjack,2,0,Pengy,1,1,1,1,1,1,1
+Quarrel,2,0,Sahli Lao,1,1,1,1,1,1,1
+Handy Arquebus,2,0,Jessica,1,1,1,1,1,1,1
+Standard Albion Bolt,2,0,Tye,1,1,1,1,1,1,1
+Genius Squared,2,0,Skull,1,1,1,1,1,1,1
+Hunter's Rifle,2,0,Ludmila,1,1,1,1,1,1,1
+Chain Knuckles,2,0,Ezecrain,1,1,1,1,1,1,1
+Crimson Talons,2,0,Sen,1,1,1,1,1,1,1
+Cup and Saucer,2,0,Dorothy,1,1,1,1,1,1,1
+Red-Hot Noodles,2,0,Ippatsu,1,1,1,1,1,1,1
+Epoxy Boogie Plates,2,0,Cailana,1,1,1,1,1,1,1
+Kaiser Knuckles,2,0,Alec,1,1,1,1,1,1,1
+Demitasse,2,0,Catherine,1,1,1,1,1,1,1
+Impact Knuckles,2,0,Soriz,1,1,1,1,1,1,1
+Metal Glove,2,0,Ladiva,1,1,1,1,1,1,1
+Mythril Tonfa,2,0,Vanzza,1,1,1,1,1,1,1
+Sudarshana,2,0,Carmelina,1,1,1,1,1,1,1
+Merciless Chastening,2,0,Hazen,1,1,1,1,1,1,1
+Crocskin Glove,2,0,Barawa,1,1,1,1,1,1,1
+Heavy Blast Knuckles,2,0,Feather,1,1,1,1,1,1,1
+Misanga Bracelet,2,0,J.J.,1,1,1,1,1,1,1
+Tiger Fang,2,0,Mimlemel,1,1,1,1,1,1,1
+Cruel Claw,2,0,Predator,1,1,1,1,1,1,1
+Vampire's Nail,2,0,Vania,1,1,1,1,1,1,1
+Glass Bow,2,0,Sutera,1,1,1,1,1,1,1
+Ice Bow,2,0,Milleore,1,1,1,1,1,1,1
+Sutera's Bow,2,0,Sutera,1,1,1,1,1,1,1
+Slingshot,2,0,Sarya,1,1,1,1,1,1,1
+Aquarium Harp,2,0,Ejaeli,1,1,1,1,1,1,1
+Songsmith's Harp,2,0,Elta (Wind),1,1,1,1,1,1,1
+Stravaria,2,0,Keehar,1,1,1,1,1,1,1
+Humming Bard,2,0,Elta (Light),1,1,1,1,1,1,1
+Wandering Blade,2,0,Lucius (Fire),1,1,1,1,1,1,1
+Unsigned Blade,2,0,Mirin,1,1,1,1,1,1,1
+Zanbato,2,0,Sevilbarra,1,1,1,1,1,1,1
+Fragarach,2,0,,1,1,1,1,1,1,1
+Almace,2,0,,1,1,1,1,1,1,1
+Ilhoon,2,0,,1,1,1,1,1,1,1
+Twisted Dagger,2,0,,1,1,1,1,1,1,1
+Mirage Knife,2,0,,1,1,1,1,1,1,1
+Stiletto,2,0,,1,1,1,1,1,1,1
+Fusetto,2,0,,1,1,1,1,1,1,1
+Sword Breaker,2,0,,1,1,1,1,1,1,1
+Trident,2,0,,1,1,1,1,1,1,1
+Partisan,2,0,,1,1,1,1,1,1,1
+Dragonfliar Cutter,2,0,,1,1,1,1,1,1,1
+Shura Vhara,2,0,,1,1,1,1,1,1,1
+Vajranda,2,0,,1,1,1,1,1,1,1
+Bullova,2,0,,1,1,1,1,1,1,1
+Shoka,2,0,,1,1,1,1,1,1,1
+Horseman's Hammer,2,0,,1,1,1,1,1,1,1
+Yagrush,2,0,,1,1,1,1,1,1,1
+Pastoral Staff,2,0,,1,1,1,1,1,1,1
+Holy Cane,2,0,,1,1,1,1,1,1,1
+Dragon Tail,2,0,,1,1,1,1,1,1,1
+Wheellock Axe,2,0,,1,1,1,1,1,1,1
+Crosswind,2,0,,1,1,1,1,1,1,1
+Snaphance,2,0,,1,1,1,1,1,1,1
+Swallowtail,2,0,,1,1,1,1,1,1,1
+Mauler,2,0,,1,1,1,1,1,1,1
+Neko Punch,2,0,,1,1,1,1,1,1,1
+Jamadhar,2,0,,1,1,1,1,1,1,1
+Imperial Bow,2,0,,1,1,1,1,1,1,1
+Sarnga,2,0,,1,1,1,1,1,1,1
+Aves,2,0,,1,1,1,1,1,1,1
+Elfin Bow,2,0,,1,1,1,1,1,1,1
+Shadow Bow,2,0,,1,1,1,1,1,1,1
+Athanasius,2,0,,1,1,1,1,1,1,1
+Iron Tiger,2,0,,1,1,1,1,1,1,1
+Fluorithium Blade,2,0,,1,1,1,1,1,1,1
+Sauria,2,0,,1,1,1,1,1,1,1
+Garnet Carbuncle,2,1,,1,1,1,1,1,1,1
+Hellhound,2,1,,1,1,1,1,1,1,1
+Hydra,2,1,,1,1,1,1,1,1,1
+Vrazarek Firewyrm,2,1,,1,1,1,1,1,1,1
+Angelie Cascade,2,1,,1,1,1,1,1,1,1
+Aquamarine Carbuncle,2,1,,1,1,1,1,1,1,1
+Wilinus Icewyrm,2,1,,1,1,1,1,1,1,1
+Clay Golem,2,1,,1,1,1,1,1,1,1
+Doomworm,2,1,,1,1,1,1,1,1,1
+Golem,2,1,,1,1,1,1,1,1,1
+Myconid,2,1,,1,1,1,1,1,1,1
+Ruination Gargoyle,2,1,,1,1,1,1,1,1,1
+Stone Golem,2,1,,1,1,1,1,1,1,1
+Zircon Carbuncle,2,1,,1,1,1,1,1,1,1
+Elmenhilde Windsprite,2,1,,1,1,1,1,1,1,1
+Elusious Windwyrm,2,1,,1,1,1,1,1,1,1
+Griffin,2,1,,1,1,1,1,1,1,1
+Wyvern,2,1,,1,1,1,1,1,1,1
+Opal Carbuncle,2,1,,1,1,1,1,1,1,1
+Pixie,2,1,,1,1,1,1,1,1,1
+Onyx Carbuncle,2,1,,1,1,1,1,1,1,1
+Fire Sword,1,0,Farrah,1,1,1,1,1,1,1
+Vintage Flat Iron,1,0,Rosine,1,1,1,1,1,1,1
+Shrimp Lure,1,0,Yodarha,1,1,1,1,1,1,1
+White Sword,1,0,Bridgette,1,1,1,1,1,1,1
+Heavy Metal Comb,1,0,La Coiffe,1,1,1,1,1,1,1
+Two-Handed Sword,1,0,Herja,1,1,1,1,1,1,1
+Xiphos,1,0,Volenna,1,1,1,1,1,1,1
+Lightbringer,1,0,Stan,1,1,1,1,1,1,1
+Old Sword,1,0,Krugne,1,1,1,1,1,1,1
+Paper Fan,1,0,Karteira,1,1,1,1,1,1,1
+Practice Sword,1,0,Thelonim,1,1,1,1,1,1,1
+Blue Crest,1,0,Cordelia,1,1,1,1,1,1,1
+Prism Tear,1,0,Vermeil,1,1,1,1,1,1,1
+Thunder Rapier,1,0,Rosamia,1,1,1,1,1,1,1
+Dark Sword,1,0,Leonora,1,1,1,1,1,1,1
+Broken Bottle,1,0,Lamretta,1,1,1,1,1,1,1
+Little Scarlet,1,0,Drusilla,1,1,1,1,1,1,1
+Mandau,1,0,Zehek,1,1,1,1,1,1,1
+Spin Blade,1,0,Spinnah,1,1,1,1,1,1,1
+Bloody Piercer,1,0,Tanya,1,1,1,1,1,1,1
+Switchblade,1,0,Lowain,1,1,1,1,1,1,1
+Silver Pole,1,0,Joel,1,1,1,1,1,1,1
+Gillie Fork,1,0,Elmelaura,1,1,1,1,1,1,1
+Night Horn,1,0,Deliford,1,1,1,1,1,1,1
+Iron Pliers,1,0,Viceroy,1,1,1,1,1,1,1
+Soldier Axe,1,0,Ryan,1,1,1,1,1,1,1
+Draph Hammer,1,0,Galadar,1,1,1,1,1,1,1
+Sky Tomahawk,1,0,Eso,1,1,1,1,1,1,1
+Morning Star,1,0,Daetta,1,1,1,1,1,1,1
+Forest Hermit Staff,1,0,Dante,1,1,1,1,1,1,1
+Rubia Rod,1,0,Camieux (Earth),1,1,1,1,1,1,1
+Torch,1,0,Camieux (Fire),1,1,1,1,1,1,1
+Snowman Rod,1,0,Suframare,1,1,1,1,1,1,1
+Student Notebook,1,0,Alistair,1,1,1,1,1,1,1
+Stone Pole,1,0,Norcel,1,1,1,1,1,1,1
+Taiaha,1,0,Jasmine,1,1,1,1,1,1,1
+Feather Wand,1,0,Anna,1,1,1,1,1,1,1
+Moss Tree Staff,1,0,Petra,1,1,1,1,1,1,1
+Light Staff,1,0,Philosophia,1,1,1,1,1,1,1
+The Cross,1,0,Will,1,1,1,1,1,1,1
+Derringer,1,0,Barawa,1,1,1,1,1,1,1
+Flame Bolt,1,0,Karva,1,1,1,1,1,1,1
+Sawed-Off Shotgun,1,0,Garma,1,1,1,1,1,1,1
+Self Defender,1,0,Richard,1,1,1,1,1,1,1
+Petronel,1,0,Mary,1,1,1,1,1,1,1
+Chopsticks,1,0,Ippatsu,1,1,1,1,1,1,1
+Boogie Plates,1,0,Cailana,1,1,1,1,1,1,1
+Oven Mitts,1,0,Nene,1,1,1,1,1,1,1
+Tattoo Fist,1,0,Randall,1,1,1,1,1,1,1
+Iron Guard,1,0,Balurga,1,1,1,1,1,1,1
+Mythril Knuckles,1,0,Hazen,1,1,1,1,1,1,1
+Tonfa,1,0,Vanzza,1,1,1,1,1,1,1
+Enchanted Nail,1,0,Chloe,1,1,1,1,1,1,1
+Light Buckler,1,0,Pavidus,1,1,1,1,1,1,1
+Blast Knuckles,1,0,Feather,1,1,1,1,1,1,1
+Flame Bow,1,0,Flesselles,1,1,1,1,1,1,1
+Bronze Bell,1,0,Bakura,1,1,1,1,1,1,1
+Night Bell,1,0,Lunalu,1,1,1,1,1,1,1
+Anelace,1,0,,1,1,1,1,1,1,1
+Claymore,1,0,,1,1,1,1,1,1,1
+Falchion,1,0,,1,1,1,1,1,1,1
+Flame Rapier,1,0,,1,1,1,1,1,1,1
+Ice Sword,1,0,,1,1,1,1,1,1,1
+Icey Nail,1,0,,1,1,1,1,1,1,1
+Earth Cutlass,1,0,,1,1,1,1,1,1,1
+Fire Baselard,1,0,,1,1,1,1,1,1,1
+Kila,1,0,,1,1,1,1,1,1,1
+Mailbreaker,1,0,,1,1,1,1,1,1,1
+Water Kukri,1,0,,1,1,1,1,1,1,1
+Kris,1,0,,1,1,1,1,1,1,1
+Emerald Dagger,1,0,,1,1,1,1,1,1,1
+Leaf Dagger,1,0,,1,1,1,1,1,1,1
+Holy Kris,1,0,,1,1,1,1,1,1,1
+Assassin's Dagger,1,0,,1,1,1,1,1,1,1
+Dark Knife,1,0,,1,1,1,1,1,1,1
+Couse,1,0,,1,1,1,1,1,1,1
+Fire Glaive,1,0,,1,1,1,1,1,1,1
+Flame Halberd,1,0,,1,1,1,1,1,1,1
+Langdebeve,1,0,,1,1,1,1,1,1,1
+Aquan Killer,1,0,,1,1,1,1,1,1,1
+Earth Halberd,1,0,,1,1,1,1,1,1,1
+Halberd,1,0,,1,1,1,1,1,1,1
+Harvester,1,0,,1,1,1,1,1,1,1
+Battle Axe,1,0,,1,1,1,1,1,1,1
+Earth Zaghnal,1,0,,1,1,1,1,1,1,1
+Rock Hammer,1,0,,1,1,1,1,1,1,1
+Wind Axe,1,0,,1,1,1,1,1,1,1
+Tabar,1,0,,1,1,1,1,1,1,1
+Thunder Kalinga Axe,1,0,,1,1,1,1,1,1,1
+Neckchopper,1,0,,1,1,1,1,1,1,1
+Cane,1,0,,1,1,1,1,1,1,1
+Ocean Rod,1,0,,1,1,1,1,1,1,1
+Water Rod,1,0,,1,1,1,1,1,1,1
+Feather Staff,1,0,,1,1,1,1,1,1,1
+Emerald Cane,1,0,,1,1,1,1,1,1,1
+Wind Rod,1,0,,1,1,1,1,1,1,1
+Shareeravadi,1,0,,1,1,1,1,1,1,1
+Evil Wand,1,0,,1,1,1,1,1,1,1
+Grenade,1,0,,1,1,1,1,1,1,1
+Matchlock,1,0,,1,1,1,1,1,1,1
+Straight Anchor,1,0,,1,1,1,1,1,1,1
+Ranger Pistol,1,0,,1,1,1,1,1,1,1
+Hand Pistol,1,0,,1,1,1,1,1,1,1
+Jezail,1,0,,1,1,1,1,1,1,1
+Fireball,1,0,,1,1,1,1,1,1,1
+Heated Pata,1,0,,1,1,1,1,1,1,1
+Pata,1,0,,1,1,1,1,1,1,1
+Fish Tooth,1,0,,1,1,1,1,1,1,1
+Gauntlet,1,0,,1,1,1,1,1,1,1
+Tidal Wraps,1,0,,1,1,1,1,1,1,1
+Rock Cutter,1,0,,1,1,1,1,1,1,1
+Mythril Baghnakhs,1,0,,1,1,1,1,1,1,1
+Whirlwind Wraps,1,0,,1,1,1,1,1,1,1
+Composite Bow,1,0,,1,1,1,1,1,1,1
+Mythril Bow,1,0,,1,1,1,1,1,1,1
+Longbow,1,0,,1,1,1,1,1,1,1
+Earth Bow,1,0,,1,1,1,1,1,1,1
+Power Bow,1,0,,1,1,1,1,1,1,1
+War Bow,1,0,,1,1,1,1,1,1,1
+Wrapped Bow,1,0,,1,1,1,1,1,1,1
+Lyre of Lamia,1,0,,1,1,1,1,1,1,1
+Nodachi,1,0,,1,1,1,1,1,1,1
+Mythril Katana,1,0,,1,1,1,1,1,1,1
+Minotaur,1,1,,1,1,1,1,1,1,1
+Twilight Devil,1,1,,1,1,1,1,1,1,1
+Venom Lancer,1,1,,1,1,1,1,1,1,1
+Walking Torch,1,1,,1,1,1,1,1,1,1
+Angelie,1,1,,1,1,1,1,1,1,1
+Crusher,1,1,,1,1,1,1,1,1,1
+Jawfish,1,1,,1,1,1,1,1,1,1
+Purgatorian,1,1,,1,1,1,1,1,1,1
+Rivacuda,1,1,,1,1,1,1,1,1,1
+Slime,1,1,,1,1,1,1,1,1,1
+Swordshark,1,1,,1,1,1,1,1,1,1
+Bonethorn,1,1,,1,1,1,1,1,1,1
+Crawler,1,1,,1,1,1,1,1,1,1
+Lumacie Griffin,1,1,,1,1,1,1,1,1,1
+Mandrake,1,1,,1,1,1,1,1,1,1
+Sleepyhead,1,1,,1,1,1,1,1,1,1
+Belle,1,1,,1,1,1,1,1,1,1
+Dragonflair,1,1,,1,1,1,1,1,1,1
+Hornbird,1,1,,1,1,1,1,1,1,1
+Ghost Light,1,1,,1,1,1,1,1,1,1
+Cave Bat,1,1,,1,1,1,1,1,1,1
+Imp,1,1,,1,1,1,1,1,1,1
+Skeleton,1,1,,1,1,1,1,1,1,1
+Delta Quartz,3,0,Beatrix (Themed),0,0,0,0,1,0,0
+Mikazuki,3,0,Danua (Summer),0,0,0,0,1,0,0
+Diamond Edge,3,0,De La Fille (Summer),0,0,0,0,1,0,0
+Tlepilli,3,0,Diantha (Summer),0,0,0,0,1,0,0
+Draco Horn,3,0,Grea (Summer),0,0,0,0,1,0,0
+Crystal Luin,3,0,Heles (Summer),0,0,0,0,1,0,0
+Arjunan Bow,3,0,Ilsa (Summer),0,0,0,0,1,0,0
+Sunflower Wand,3,0,Io (Summer),0,0,0,0,1,0,0
+Frostbite,3,0,Izmir (Summer),0,0,0,0,1,0,0
+Orleans Standard,3,0,Jeanne d'Arc (Themed),0,0,0,0,1,0,0
+Bell of Happy Endings,3,0,Korwa (Summer),0,0,0,0,1,0,0
+Conifer,3,0,Naoise (Summer),0,0,0,0,1,0,0
+Raikiri,3,0,Narmaya (Summer),0,0,0,0,1,0,0
+Antwerp,3,0,Percival (Summer),0,0,0,0,1,0,0
+Thorny Rose,3,0,Rosetta (Summer),0,0,0,0,1,0,0
+Sinensis,3,0,Siegfried (Summer),0,0,0,0,1,0,0
+Deep Desire,3,0,Vira (Summer),0,0,0,0,1,0,0
+Cletine,3,0,Zeta (Summer),0,0,0,0,1,0,0
+Gold-Plated Fremel,2,0,Almeida (Summer),0,0,0,0,1,0,0
+Tropical Punch,2,0,Ayer (Summer),0,0,0,0,1,0,0
+Water Balloons,2,0,Camieux (Summer),0,0,0,0,1,0,0
+Floaty Sword,2,0,Carlotta (Summer),0,0,0,0,1,0,0
+Seaside Memory,2,0,Chloe (Summer),0,0,0,0,1,0,0
+Deathly Arson,2,0,Elmott (Summer),0,0,0,0,1,0,0
+Desert Arms,2,0,Eugen (Summer),0,0,0,0,1,0,0
+Macuahuitl,2,0,Farrah (Summer),0,0,0,0,1,0,0
+Rope Knuckles,2,0,Ghandagoza (Summer),0,0,0,0,1,0,0
+Skirt Chaser,2,0,Helnar (Summer),0,0,0,0,1,0,0
+Silver Rings,2,0,J.J. (Summer),0,0,0,0,1,0,0
+Custom Arquebus,2,0,Jessica (Summer),0,0,0,0,1,0,0
+Tyrian Tiger Blade,2,0,Jin (Themed),0,0,0,0,1,0,0
+Ripple Rapier,2,0,Katalina (Summer),0,0,0,0,1,0,0
+Pirate Sword,2,0,Lecia (Summer),0,0,0,0,1,0,0
+Summer Beach Sphere,2,0,Lilele (Summer),0,0,0,0,1,0,0
+Ripple Harp,2,0,Sara (Summer),0,0,0,0,1,0,0
+Sunshade Parasol,2,0,Suframare (Summer),0,0,0,0,1,0,0
+Shade Knife,2,0,Tanya (Summer),0,0,0,0,1,0,0
+Summer Souteyrand,2,0,Yuisis (Summer),0,0,0,0,1,0,0
+Cursed Flame Candelabra,1,0,Anna (Summer),0,0,0,0,1,0,0
+Cold Noodles,1,0,Ippatsu (Summer),0,0,0,0,1,0,0
+Cleaver,1,0,Lowain (Summer),0,0,0,0,1,0,0
+Night Air Bell,1,0,Lunalu (Summer),0,0,0,0,1,0,0
+Firecracker,1,0,Mary (Summer),0,0,0,0,1,0,0
+Wooden Dagger,1,0,Walder (Summer),0,0,0,0,1,0,0
+Medusiana Staff,3,0,Medusa (Valentine),0,0,0,1,0,0,0
+Confection Cutter,2,0,Narmaya (Valentine),0,0,0,1,0,0,0
+Scarlet Oath,2,0,Teena (Valentine),0,0,0,1,0,0,0
+Ouroboros Treat,3,0,Cagliostro (Halloween),0,0,0,0,0,1,0
+Jack-O'-Brand,3,0,Charlotta (Halloween),0,0,0,0,0,1,0
+Snack Pole,3,0,Danua (Halloween),0,0,0,0,0,1,0
+Nightmare Mobilizer,3,0,Eustace (Halloween),0,0,0,0,0,1,0
+Distant Requiem,3,0,Lady Grey (Halloween),0,0,0,0,0,1,0
+Dracula Harp,2,0,Ange (Halloween),0,0,0,0,0,1,0
+Delta Apex,2,0,Beatrix (Halloween),0,0,0,0,0,1,0
+Phantom Gauntlet,2,0,Feather (Halloween),0,0,0,0,0,1,0
+Aura Whip,2,0,Ferry (Halloween),0,0,0,0,0,1,0
+Heavy-Duty Pumpkins,2,0,Mimlemel and Pun-Kin (Halloween),0,0,0,0,0,1,0
+Stardust Holly Rod,3,0,Arulumaya (Holiday),0,0,0,0,0,0,1
+Snowy Mobius Strip,3,0,Clarisse (Holiday),0,0,0,0,0,0,1
+Jolly Starcracker,3,0,Mary (Holiday),0,0,0,0,0,0,1
+Pinkie Needle,3,0,Metera (Holiday),0,0,0,0,0,0,1
+Rosen Maiden,3,0,Rosetta (Holiday),0,0,0,0,0,0,1
+Winter Wonderbow,2,0,Feena (Holiday),0,0,0,0,0,0,1
+Holy Glove,2,0,Ladiva (Holiday),0,0,0,0,0,0,1
+Holy Harp,2,0,Rackam (Holiday),0,0,0,0,0,0,1
+White Talons,2,0,Sen (Holiday),0,0,0,0,0,0,1
+Festive Frying Pan,2,0,Yaia (Holiday),0,0,0,0,0,0,1
+Tree Wand,1,0,Walder (Holiday),0,0,0,0,0,0,1
+Dormius,3,0,Andira,0,0,1,0,0,0,0
+Ramulus,3,0,Anila,0,0,1,0,0,0,0
+Gallinarius,3,0,Mahira,0,0,1,0,0,0,0
+Canisius,3,0,Vajra,0,0,0,0,0,0,0
+Porculius,3,0,Kumbhira,0,0,1,0,0,0,0
+Ichigo Hitofuri,3,0,Cain (Grand),0,0,1,0,0,0,0
+AK-4A,3,0,Eugen (Grand),0,0,1,0,0,0,0
+Gambanteinn,3,0,Io (Grand),0,0,1,0,0,0,0
+Murgleis,3,0,Katalina (Grand),0,0,1,0,0,0,0
+Benedia,3,0,Rackam (Grand),0,0,1,0,0,0,0
+Love Eternal,3,0,Rosetta (Grand),0,0,1,0,0,0,0
+Reunion,3,0,Lecia (Grand),0,0,1,0,0,0,0
+Taisai Spirit Bow,3,0,Pholia (Grand),0,0,1,0,0,0,0
+Mirror-Blade Shard,3,0,Alexiel,0,1,0,0,0,0,0
+Blutgang,3,0,Black Knight,0,1,0,0,0,0,0
+Blue Sphere,3,0,Drang,0,1,0,0,0,0,0
+Galilei's Insight,3,0,Europa,0,1,0,0,0,0,0
+Eden,3,0,Lucio,0,1,0,0,0,0,0
+Fallen Sword,3,0,Olivia,0,1,0,0,0,0,0
+Parazonium,3,0,Orchid,0,1,0,0,0,0,0
+Ixaba,3,0,Sturm,0,1,0,0,0,0,0
+Certificus,3,0,Vira (Grand),0,1,0,0,0,0,0
+Cute Ribbon,3,0,Zooey (Grand),0,1,0,0,0,0,0
+Macula Marius (Summer),3,1,,0,0,0,0,1,0,0
+Silphium,3,0,Clarisse (Valentine),0,0,0,1,0,0,0
+Sword on the Cob,3,0,Melissabelle (Valentine),0,0,0,1,0,0,0
+Unheil,3,0,Ferry (Grand),0,0,1,0,0,0,0
+Deirdre's Symbol,3,0,Heles (Wind),1,1,1,1,1,1,1
+Samurai Sword,2,0,Mirin (Light),1,1,1,1,1,1,1
+"Marduk, Battlefield Reaper",3,1,,1,1,1,1,1,1,1
+Crimson Sapphire,3,0,Yuel (Themed),0,0,0,0,1,0,0
+Another Sky,3,0,Vira (Wind),1,1,1,1,1,1,1
+Jeunesse,2,0,Korwa,1,1,1,1,1,1,1
+Demonbream,3,1,,1,1,1,1,1,1,1
+Vortex of the Void,3,0,Grimnir,0,1,0,0,0,0,0
+Froststar Staff,3,0,Macula Marius,1,1,1,1,1,1,1
+Euripides,3,0,Medusa,1,1,1,1,1,1,1
+Goldie,2,0,Richard,1,1,1,1,1,1,1
+Sariel,3,1,,1,1,1,1,1,1,1
+Spymur's Clause,3,0,Baal,1,1,1,1,1,1,1
+Mythril Bolt,2,0,Aster,1,1,1,1,1,1,1
+Rainbow Hand,3,0,Ladiva,1,1,1,1,1,1,1
+Trí Bandia,3,0,Morrigna,1,1,1,1,1,1,1
+Lumiel Banner,2,0,Bridgette and Cordelia,1,1,1,1,1,1,1
+Metatron,3,1,,1,1,1,1,1,1,1
+Vagabond,3,0,Kolulu,1,1,1,1,1,1,1
+Staff of Refusal,2,0,Philosophia,1,1,1,1,1,1,1
+Sharp Letter,3,0,Halluel and Malluel (Summer),0,0,0,0,1,0,0
+Ain Soph,3,0,Sandalphon (Summer),0,0,0,0,1,0,0
+Yggdrasil (Summer),3,1,,0,0,0,0,1,0,0
+Only for a Cutie,3,0,Cagliostro (Summer),0,0,0,0,1,0,0
+Premium Sword,2,0,Friday (Summer),0,0,0,0,1,0,0
+Crystal Bellflowers,3,0,Europa (Summer),0,0,0,0,1,0,0
+Midnight Radiance,3,0,Jessica (Themed),0,0,0,0,1,0,0
+Knight's Beach Banner,2,0,Lancelot and Vane (Summer),0,0,0,0,1,0,0
+Satyr (Summer),3,1,,0,0,0,0,1,0,0
+Forbidden Memories,3,0,Anthuria (Summer),0,0,0,0,1,0,0
+Cotton Candy,2,0,Cassius (Summer),0,0,0,0,1,0,0
+Nibelung Glas,3,0,Alexiel (Summer),0,0,0,0,1,0,0
+Liuyedao,2,0,Leona (Summer),0,0,0,0,1,0,0
+Rose Queen,3,1,,0,0,0,0,1,0,0
+Golden Dragon,3,0,Stan and Aliza,1,1,1,1,1,1,1
+Hand Axe,3,0,Tabina,1,1,1,1,1,1,1
+Surtr,3,1,,1,1,1,1,1,1,1
+Metal Destroyer,3,0,Colossus,1,1,1,1,1,1,1
+Eon,3,0,Sara (Light),1,1,1,1,1,1,1
+Sky Ace,3,0,Monika (Grand),0,0,1,0,0,0,0
+Black Dragon's Maw,3,0,Siegfried (Fire),1,1,1,1,1,1,1
+Lilac Comb,2,0,La Coiffe,1,1,1,1,1,1,1
+Princess Long Ji,3,1,,1,1,1,1,1,1,1
+Enchanted Broomstick,3,0,Zeta and Vaseraga (Halloween),0,0,0,0,0,1,0
+Spirit Seeker,3,0,Hallessena (Halloween),0,0,0,0,0,1,0
+Horrible Voulge,2,0,Zaja (Halloween),0,0,0,0,0,1,0
+Juzumaru,3,0,Kou,1,1,1,1,1,1,1
+Cardinal Spear,3,0,Societte (Wind),1,1,1,1,1,1,1
+Dogu,3,1,,1,1,1,1,1,1,1
+Sacred Standard,3,0,Jeanne d'Arc (Grand),0,1,0,0,0,0,0
+Iridescent Bow,3,0, Shitori,1,1,1,1,1,1,1
+Cube Staff,2,0, Krugne,1,1,1,1,1,1,1
+Holy Knight Scepter,3,0,Magisa (Holiday),0,0,0,0,0,0,1
+Ray Gun,3,0,Meteon (Holiday),0,0,0,0,0,0,1
+Blade of Purification,3,0,Narmaya (Holiday),0,0,0,0,0,0,1
+Brand of Binding Oath,3,0,Seruel (Holiday),0,0,0,0,0,0,1
+Bab-el-Mandeb,3,0,Helel ben Shalem,0,1,0,0,0,0,0
+Alabaster Zenith,3,0,Lucius,1,1,1,1,1,1,1
+Gangsta Knife,3,0,Yuisis (Fire),1,1,1,1,1,1,1
+Rodentius,3,0,Vikala,0,0,1,0,0,0,0
+Belial,3,1,,1,1,1,1,1,1,1
+Spectral Cleaver,3,0,Danua,1,1,1,1,1,1,1
+Soshu Masamune,3,0,Jin,1,1,1,1,1,1,1
+Takeminakata,3,0,Ilsa (Light),1,1,1,1,1,1,1
+True Tiger's Bane,3,0,Yodarha (Wind),1,1,1,1,1,1,1
+Heimdallr,3,1,,1,1,1,1,1,1,1
