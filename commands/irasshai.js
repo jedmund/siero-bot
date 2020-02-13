@@ -9,7 +9,7 @@ class IrasshaiCommand extends Command {
     }
 
     exec(message, args) {
-        irasshai(message.channel)
+        this.irasshai(message.channel)
     }
 
     irasshai(channel) {
