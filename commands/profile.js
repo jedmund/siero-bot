@@ -71,10 +71,10 @@ class ProfileCommand extends Command {
     }
 
     promptField(message, prompt, key, readable_key) {
-        let sentMessage = await message.author.send(prompt)
+        message.author.send(prompt)
 
         const collector = new MessageCollector(
-            sentMessage.channel, 
+            message.channel, 
             m => m.author.id === message.author.id, 
             { 
                 time: 10000 
