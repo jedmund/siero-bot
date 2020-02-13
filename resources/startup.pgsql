@@ -23,3 +23,13 @@ CREATE TABLE IF NOT EXISTS gacha (
     halloween INTEGER,
     holiday INTEGER
 );
+
+CREATE TABLE IF NOT EXISTS profiles (
+    user_id TEXT PRIMARY KEY,
+    server_id TEXT,
+    crew_id INTEGER,
+    granblue_id INTEGER,
+    granblue_name TEXT,
+    psn TEXT,
+    steam TEXT
+)
