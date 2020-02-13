@@ -28,6 +28,8 @@ CREATE TABLE IF NOT EXISTS profiles (
     user_id TEXT PRIMARY KEY,
     server_id TEXT,
     crew_id INTEGER,
+    nickname TEXT,
+    pronouns TEXT,
     granblue_id INTEGER,
     granblue_name TEXT,
     psn TEXT,
