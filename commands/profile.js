@@ -224,30 +224,6 @@ class ProfileCommand extends Command {
             }
         }
 
-        // if (dict["nickname"] != null) {
-        //     embed.addField("Nickname", dict["nickname"])
-        // }
-
-        // if (dict["pronouns"] != null) {
-        //     embed.addField("Pronouns", dict["pronouns"])
-        // }
-        
-        // if (dict["granblueName"] != null) {
-        //     embed.addField("Granblue Fantasy name", dict["granblueName"])
-        // }
-
-        // if (dict["granblueId"] != null) {
-        //     embed.addField("Granblue Fantasy ID", dict["granblueId"])
-        // }
-
-        // if (dict["psn"] != null) {
-        //     embed.addField("Playstation Network", dict["psn"])
-        // }
-
-        // if (dict["steam"] != null) {
-        //     embed.addField("Steam", dict["steam"])
-        // }
-
         message.channel.send(embed)
     }
 }
