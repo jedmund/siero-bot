@@ -277,7 +277,7 @@ class SparkCommand extends Command {
     
         client.query(sql, [userId], (err, res) => {
             if (res.rows[0].count == 0) {
-                this.createEntryForUser(userId, callback)
+                this.createRowForUser(userId, callback)
             } else {
                 callback()
             }
