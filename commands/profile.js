@@ -123,10 +123,6 @@ class ProfileCommand extends Command {
 
     // Helper methods
     switchOperation(message, args) {
-        if (args.operation == null) {
-            this.show(message, args)
-        }
-
         switch(args.operation) {
             case "set":
                 this.set(message, args)
@@ -152,7 +148,7 @@ class ProfileCommand extends Command {
             } else {
                 callback()
             }
-        })
+        })  
     }
     
     createRowForUser(userId, callback) {
@@ -176,23 +172,24 @@ class ProfileCommand extends Command {
         if (mentions.length > 0) {
             user = mentions[0]
         } else {
-            console.log("no mentions")
             user = message.author
         }
 
         client.query(sql, [user.id], (err, res) => {
-            if (res.rows[0].count > 0) {
+            if (res.rows.length > 0) {
+                console.log("Hello we're in here!")
                 let profile = {
                     "nickname": res.rows[0].nickname,
                     "pronouns": res.rows[0].pronouns,
                     "granblueName": res.rows[0].granblue_name,
-                    "granblueId": res.rows[0].granblueId,
+                    "granblueId": res.rows[0].granblue_id,
                     "psn": res.rows[0].psn,
                     "steam": res.rows[0].steam
                 }
 
                 this.generateProfile(message, user, profile)
             } else {
+                console.log("Hello we're in here now")
                 var reply = ""
 
                 if (mentions.length > 0 && message.author.id != user.id) {
