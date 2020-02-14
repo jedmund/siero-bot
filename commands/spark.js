@@ -31,7 +31,7 @@ class SparkCommand extends Command {
     }
 
     exec(message, args) {
-        this.checkIfUserExists(message.author.id, () => {
+        this.checkIfUserExists(message.author, () => {
             this.switchOperation(message, args)
         })
     }
@@ -342,22 +342,22 @@ See a leaderboard of everyone's spark progress\`\`\``)
     }
     
     // Database methods
-    checkIfUserExists(userId, callback) {
+    checkIfUserExists(user, callback) {
         let sql = 'SELECT COUNT(*) AS count FROM sparks WHERE user_id = $1'
     
-        client.query(sql, [userId], (err, res) => {
+        client.query(sql, [user.id], (err, res) => {
             if (res.rows[0].count == 0) {
-                this.createRowForUser(userId, callback)
+                this.createRowForUser(user, callback)
             } else {
                 callback()
             }
         })
     }
     
-    createRowForUser(userId, callback) {
-        let sql = 'INSERT INTO sparks (user_id) VALUES ($1)'
+    createRowForUser(user, callback) {
+        let sql = 'INSERT INTO sparks (user_id, username) VALUES ($1, $2)'
         
-        client.query(sql, [userId], function(err, res) {
+        client.query(sql, [user.id, user.username], function(err, res) {
             if (err) {
                 console.log(err.message)
             }
@@ -384,8 +384,8 @@ See a leaderboard of everyone's spark progress\`\`\``)
     }
     
     async updateCurrency(amount, currency, message) {
-        let sql = `UPDATE sparks SET ${currency} = $1 WHERE user_id = $2`
-        let data = [amount, message.author.id]
+        let sql = `UPDATE sparks SET ${currency} = $1, username = $2 WHERE user_id = $3`
+        let data = [amount, message.author.username, message.author.id]
     
         await client.query(sql, data, (err, res) => {
             if (err) {
@@ -397,8 +397,8 @@ See a leaderboard of everyone's spark progress\`\`\``)
     }
     
     updateSpark(crystals, tickets, tenTickets, message) {
-        let sql = `UPDATE sparks SET crystals = $1, tickets = $2, ten_tickets = $3 WHERE user_id = $4`
-        let data = [crystals, tickets, tenTickets, message.author.id]
+        let sql = `UPDATE sparks SET crystals = $1, tickets = $2, ten_tickets = $3, username = $4 WHERE user_id = $5`
+        let data = [crystals, tickets, tenTickets, message.author.username, message.author.id]
     
         client.query(sql, data, (err) => {
             if (err) {
