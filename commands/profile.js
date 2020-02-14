@@ -208,12 +208,45 @@ class ProfileCommand extends Command {
         embed.setColor(0xb58900)
 
         embed.setTitle(user.username)
-        embed.addField("Nickname", dict["nickname"])
-        embed.addField("Pronouns", dict["pronouns"])
-        embed.addField("Granblue Fantasy name", dict["granblueName"])
-        embed.addField("Granblue Fantasy ID", dict["granblueId"])
-        embed.addField("Playstation Network", dict["psn"])
-        embed.addField("Steam", dict["steam"])
+
+        const fieldToDisplayStr = {
+            nickname: 'Nickname',
+            pronouns: 'Pronouns',
+            granblueName: 'Granblue Fantasy name',
+            granblueId: 'Granblue Fantasy ID',
+            psn: 'Playstation Network',
+            steam: 'Steam',
+        }
+
+        for (const field in dict) {
+            if (dict[field]) {
+                embed.addField(fieldToDisplayStr[field], dict[field])
+            }
+        }
+
+        // if (dict["nickname"] != null) {
+        //     embed.addField("Nickname", dict["nickname"])
+        // }
+
+        // if (dict["pronouns"] != null) {
+        //     embed.addField("Pronouns", dict["pronouns"])
+        // }
+        
+        // if (dict["granblueName"] != null) {
+        //     embed.addField("Granblue Fantasy name", dict["granblueName"])
+        // }
+
+        // if (dict["granblueId"] != null) {
+        //     embed.addField("Granblue Fantasy ID", dict["granblueId"])
+        // }
+
+        // if (dict["psn"] != null) {
+        //     embed.addField("Playstation Network", dict["psn"])
+        // }
+
+        // if (dict["steam"] != null) {
+        //     embed.addField("Steam", dict["steam"])
+        // }
 
         message.channel.send(embed)
     }
