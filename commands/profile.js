@@ -123,6 +123,10 @@ class ProfileCommand extends Command {
 
     // Helper methods
     switchOperation(message, args) {
+        if (args.operation == null) {
+            this.show(message, args)
+        }
+
         switch(args.operation) {
             case "set":
                 this.set(message, args)
@@ -164,41 +168,55 @@ class ProfileCommand extends Command {
     }
     
     getProfile(message) {
-        let sql = 'SELECT granblue_name, granblue_id, psn, steam FROM profiles WHERE user_id = $1'
-
         var user
-        let mentions = message.mentions.users.array()
 
-        if (mentions.count > 0) {
+        let mentions = message.mentions.users.array()
+        let sql = 'SELECT * FROM profiles WHERE user_id = $1'
+
+        if (mentions.length > 0) {
             user = mentions[0]
         } else {
+            console.log("no mentions")
             user = message.author
         }
 
         client.query(sql, [user.id], (err, res) => {
-            if (res.rowCount > 0) {
-                let granblueName = res.rows[0].granblue_name
-                let granblueID = res.rows[0].granblue_id
-                let psn = res.rows[0].psn
-                let steam = res.rows[0].steam
-        
-                this.generateProfile(message, user, granblueName, granblueID, psn, steam)
+            if (res.rows[0].count > 0) {
+                let profile = {
+                    "nickname": res.rows[0].nickname,
+                    "pronouns": res.rows[0].pronouns,
+                    "granblueName": res.rows[0].granblue_name,
+                    "granblueId": res.rows[0].granblueId,
+                    "psn": res.rows[0].psn,
+                    "steam": res.rows[0].steam
+                }
+
+                this.generateProfile(message, user, profile)
             } else {
-                var id = message.mentions.users.values().next().value
-                message.reply(`It looks like ${id} hasn't filled out their profile yet.`)
+                var reply = ""
+
+                if (mentions.length > 0 && message.author.id != user.id) {
+                    reply = `Sorry, ${user} hasn't filled out their profile yet.`
+                } else {
+                    reply = `Sorry, you haven't filled out your profile yet.`
+                }
+
+                message.channel.send(reply)
             }
         })
     }
 
-    generateProfile(message, user, granblueName, granblueID, psn, steam) {
+    generateProfile(message, user, dict) {
         var embed = new RichEmbed()
         embed.setColor(0xb58900)
 
         embed.setTitle(user.username)
-        embed.addField("Granblue Fantasy name", granblueName)
-        embed.addField("Granblue Fantasy ID", granblueID)
-        embed.addField("Playstation Network", psn)
-        embed.addField("Steam", steam)
+        embed.addField("Nickname", dict["nickname"])
+        embed.addField("Pronouns", dict["pronouns"])
+        embed.addField("Granblue Fantasy name", dict["granblueName"])
+        embed.addField("Granblue Fantasy ID", dict["granblueId"])
+        embed.addField("Playstation Network", dict["psn"])
+        embed.addField("Steam", dict["steam"])
 
         message.channel.send(embed)
     }
