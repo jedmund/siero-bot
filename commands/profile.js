@@ -53,28 +53,21 @@ class ProfileCommand extends Command {
     async directSet(message) {
         message.author.send("Hello! Let's set up your profile. Type <skip> to skip a field.")
         
-        let profileName = "Let's start with your Granblue Fantasy profile. What is your **in-game name**?"
-        let profileID = "What is your Granblue Fantasy ID? You can find this in `Menu` → `Friends` → `Search` → `ID`."
+        let nickname = "Let's start with your nickname. **What should people call you?**"
+        let pronouns = "What are your **preferred pronouns?**"
+        let profileName = "Okay, what is your **in-game name** in Granblue Fantasy?"
+        let profileID = "What is your **ID** in Granblue Fantasy? You can find this in `Menu` → `Friends` → `Search` → `ID`."
         let psnName = "Do you have a **Playstation Network** account? What is your username?"
         let steamName = "Do you have a **Steam** account? What is your username?"
 
+        await this.promptField(message, nickname, "nickname", "nickname");
+        await this.promptField(message, pronouns, "pronouns", "pronoun preference");
         await this.promptField(message, profileName, "granblue_name", "Granblue Fantasy name");
         await this.promptField(message, profileID, "granblue_id", "Granblue Fantasy ID");
         await this.promptField(message, psnName, "psn", "Playstation Network username");
         await this.promptField(message, steamName, "steam", "Steam username");
 
         message.author.send("That's all for now. Thanks for filling out your profile!");
-
-        // var that = this
-        // that.promptField(message, profileID, "granblue_id", "Granblue Fantasy ID").then(function(result) {
-        //     that.promptField(message, psnName, "psn", "Playstation Network username").then(function(result) {
-        //         this.promptField(message, profileName, "granblue_name", "Granblue Fantasy name").then(function(result) {
-        //             that.promptField(message, steamName, "steam", "Steam username").then(function(result) {
-        //                 message.author.send("That's all for now. Thanks for filling out your profile!")
-        //             })
-        //         })
-        //     })
-        // })
     }
 
     async promptField(message, prompt, key, readable_key) {
