@@ -148,12 +148,19 @@ class GachaCommand extends Command {
         embed.setDescription("Welcome! I can help you save your money!")
         embed.setColor(0xdc322f)
         embed.addField("Command syntax", "```gacha spark <gala> <season>```")
-        embed.addField("Gacha options", `\`\`\`yolo: A single Premium Draw pull
-    ten: A 10-part Premium Draw pull
-    spark: A whole spark\`\`\``)
-        embed.addField("Galas and Seasons", `\`\`\`premium/flash/legend/ff/lf: The <gala> you choose will determine the SSR rate
+        embed.addField("Gacha options", `\`\`\`html\n
+<yolo>
+A single Premium Draw pull\n
+<ten>
+A 10-part Premium Draw pull\n
+<spark> 
+A whole spark\`\`\``)
+        embed.addField("Galas and Seasons", `\`\`\`html\n
+<gala: premium flash legend ff lf>
+The <gala> you choose will determine the SSR rate
 
-    valentine/summer/halloween/holiday: The <season> you choose adds seasonal SSRs to the pool\`\`\``)
+<season: valentine summer halloween holiday>
+The <season> you choose adds seasonal SSRs to the pool\`\`\``)
 
         message.channel.send(embed)
     }

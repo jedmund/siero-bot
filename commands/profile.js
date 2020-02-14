@@ -110,13 +110,12 @@ class ProfileCommand extends Command {
         embed.setDescription("Welcome! You can make a profile here that others can see!")
         embed.setColor(0xdc322f)
         embed.addField("Command syntax", "```profile <option> <key> <value>```")
-        embed.addField("Spark options", `\`\`\`show: Show your profile, or tag another Discord member to see their profile
-    set: Specify a field on your own profile to set it, or if you don't specify a field, we can fill it all out together!
+        embed.addField("Spark options", `\`\`\`html\n
+<show>
+Show your profile, or tag another Discord member to see their profile\n
+<set>
+Specify a field on your own profile to set it, or if you don't specify a field, we can fill it all out together!
     \`\`\``)
-        embed.addField("Currencies", `You can use both singular and plural words for currencies
-    \`\`\`crystals tickets tenticket\`\`\``)
-        embed.addField("Quicksave", `This is the proper formatting for quicksave:
-    \`\`\`spark quicksave <crystals> <tickets> <tentickets>\`\`\``)
     
         message.channel.send(embed)
     }
@@ -177,7 +176,6 @@ class ProfileCommand extends Command {
 
         client.query(sql, [user.id], (err, res) => {
             if (res.rows.length > 0) {
-                console.log("Hello we're in here!")
                 let profile = {
                     "nickname": res.rows[0].nickname,
                     "pronouns": res.rows[0].pronouns,
@@ -189,7 +187,6 @@ class ProfileCommand extends Command {
 
                 this.generateProfile(message, user, profile)
             } else {
-                console.log("Hello we're in here now")
                 var reply = ""
 
                 if (mentions.length > 0 && message.author.id != user.id) {

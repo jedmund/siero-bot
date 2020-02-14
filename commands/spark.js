@@ -117,12 +117,21 @@ class SparkCommand extends Command {
         embed.setDescription("Welcome! I can help you save your spark!")
         embed.setColor(0xdc322f)
         embed.addField("Command syntax", "```spark <option> <amount> <currency>```")
-        embed.addField("Spark options", `\`\`\`status: See how much you've saved
-    set: Save an absolute value for a currency
-    add/save: Add an amount of currency to your total
-    remove/spend: Remove an amount of currency from your total
-    reset: Reset your spark
-    quicksave: Quickly save all currencies\`\`\``)
+        embed.addField("Spark options", `\`\`\`html\n
+<status>
+See how much you've saved\n
+<set>
+Save an absolute value for a currency\n
+<add/save>
+Add an amount of currency to your total\n
+<remove/spend>
+Remove an amount of currency from your total\n
+<reset>
+Reset your spark\n
+<quicksave>
+Quickly save all currencies\n
+<leaderboard>
+See a leaderboard of everyone's spark progress\`\`\``)
         embed.addField("Currencies", `You can use both singular and plural words for currencies
     \`\`\`crystals tickets tenticket\`\`\``)
         embed.addField("Quicksave", `This is the proper formatting for quicksave:
