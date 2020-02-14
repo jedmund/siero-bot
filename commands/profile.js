@@ -50,7 +50,7 @@ class ProfileCommand extends Command {
         }
     }
 
-    directSet(message) {
+    async directSet(message) {
         message.author.send("Hello! Let's set up your profile. Type <skip> to skip a field.")
         
         let profileName = "Let's start with your Granblue Fantasy profile. What is your **in-game name**?"
@@ -58,46 +58,42 @@ class ProfileCommand extends Command {
         let psnName = "Do you have a **Playstation Network** account? What is your username?"
         let steamName = "Do you have a **Steam** account? What is your username?"
 
-        var that = this
-        this.promptField(message, profileName, "granblue_name", "Granblue Fantasy name").then(function(result) {
-            that.promptField(message, profileID, "granblue_id", "Granblue Fantasy ID").then(function(result) {
-                that.promptField(message, psnName, "psn", "Playstation Network username").then(function(result) {
-                    that.promptField(message, steamName, "steam", "Steam username").then(function(result) {
-                        message.author.send("That's all for now. Thanks for filling out your profile!")
-                    })
-                })
-            })
-        })
+        await this.promptField(message, profileName, "granblue_name", "Granblue Fantasy name");
+        await this.promptField(message, profileID, "granblue_id", "Granblue Fantasy ID");
+        await this.promptField(message, psnName, "psn", "Playstation Network username");
+        await this.promptField(message, steamName, "steam", "Steam username");
+
+        message.author.send("That's all for now. Thanks for filling out your profile!");
+
+        // var that = this
+        // that.promptField(message, profileID, "granblue_id", "Granblue Fantasy ID").then(function(result) {
+        //     that.promptField(message, psnName, "psn", "Playstation Network username").then(function(result) {
+        //         this.promptField(message, profileName, "granblue_name", "Granblue Fantasy name").then(function(result) {
+        //             that.promptField(message, steamName, "steam", "Steam username").then(function(result) {
+        //                 message.author.send("That's all for now. Thanks for filling out your profile!")
+        //             })
+        //         })
+        //     })
+        // })
     }
 
-    promptField(message, prompt, key, readable_key) {
-        message.author.send(prompt)
+    async promptField(message, prompt, key, readable_key) {
+        let firstMessage = await message.author.send(prompt)
 
-        const collector = new MessageCollector(
-            message.channel, 
-            m => m.author.id === message.author.id, 
-            { 
-                time: 10000 
-            }
-        )
+        let filter = (response) => {
+            return response.author.id == message.author.id
+        }
+        
+        let collected = await firstMessage.channel.awaitMessages(filter, {
+            maxMatches: 1,
+            time: 60000
+        }).catch(console.log)
 
-        var that = this
-        var promise = new Promise(function(resolve, reject) {
-            collector.on('collect', message => {
-                if(message.content != "<skip>") {
-                    that.saveField(message.author.id, key, message.content)
-                    message.author.send(`Your ${readable_key} has been set to \`${message.content}\`.`)
-                    collector.stop()
-                    resolve("field set")
-                } else {
-                    message.author.send(`Okay. We won't set your ${readable_key} right now.`)
-                    collector.stop()
-                    resolve("field skipped")
-                }
-            })
-        })
-
-        return promise
+        if (collected && collected.size > 0) {
+            let value = collected.first().content
+            this.saveField(message.author.id, key, value)
+            message.author.send(`Your ${readable_key} has been set to \`${value}\`.`)
+        } else await firstMessage.edit("Sorry, this command timed out.")
     }
 
     saveField(user_id, field, value) {
