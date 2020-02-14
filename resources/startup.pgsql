@@ -2,6 +2,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE IF NOT EXISTS sparks (
     user_id TEXT PRIMARY KEY,
+    username TEXT,
     crystals INTEGER DEFAULT 0,
     tickets INTEGER DEFAULT 0,
     ten_tickets INTEGER DEFAULT 0,

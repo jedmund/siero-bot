@@ -102,6 +102,41 @@ class SparkCommand extends Command {
         this.updateCurrency(args.amount, this.transposeCurrency(args.currency), message)
     }
 
+    leaderboard(message) {
+        let sql = `SELECT * FROM sparks`
+
+        client.query(sql, (err, res) => {
+            let rows = res.rows.sort(this.compareProgress)
+
+            var embed = new RichEmbed()
+            embed.setColor(0xb58900)
+            
+            var result = "+-----+-----------------+------------+\n"
+            var limit = 10
+            for (var i = 0; i < limit; i++) {
+                let numSpaces = 15 - rows[i].username.length
+                var spacedUsername = rows[i].username
+
+                for (var j = 0; j < numSpaces; j++) {
+                    spacedUsername += " "
+                }
+
+                let place = ((i + 1) < 10) ? `${i + 1}  ` : `${i + 1} `
+
+                result += `| #${place}| ${spacedUsername} | ${this.calculateDraws(rows[i].crystals, rows[i].tickets, rows[i].ten_tickets)} draws\n`
+                result += "+-----+-----------------+------------+\n"
+            }
+            
+            embed.setTitle("Leaderboard")
+            embed.setDescription("```html\n" + result + "\n```")
+            message.channel.send(embed)
+
+            if (err) {
+                console.log(err.message)
+            }
+        })
+    }
+
     status(message) {
         // var id = 0
         // if (message.mentions.users.values().next().value != undefined) {
@@ -159,6 +194,30 @@ See a leaderboard of everyone's spark progress\`\`\``)
         }
     
         return valid
+    }
+
+    compareProgress(a, b, order = 'desc') {
+        function calculateDraws(crystals, tickets, tenTickets) {
+            let ticketValue = tickets * 300
+            let tenTicketValue = tenTickets * 3000
+            let totalCrystalValue = crystals + ticketValue + tenTicketValue
+
+            return Math.floor(totalCrystalValue / 300)
+        }
+
+        let aDraws = calculateDraws(a.crystals, a.tickets, a.ten_tickets)
+        let bDraws = calculateDraws(b.crystals, b.tickets, b.ten_tickets)
+
+        let comparison = 0
+        if (aDraws > bDraws) {
+            comparison = 1
+        } else if (aDraws < bDraws) {
+            comparison = -1
+        }
+
+        return (
+            (order === 'desc') ? (comparison * -1) : comparison
+        )
     }
 
     generateProgressString2(message, crystals, tickets, tenTickets) {
@@ -259,6 +318,8 @@ See a leaderboard of everyone's spark progress\`\`\``)
             case "status":
                 this.status(message)
                 break
+            case "leaderboard":
+                this.leaderboard(message)
             default:
                 break
         }
