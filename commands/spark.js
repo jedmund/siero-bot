@@ -114,16 +114,23 @@ class SparkCommand extends Command {
             var result = "+-----+-----------------+------------+\n"
             var limit = 10
             for (var i = 0; i < limit; i++) {
-                let numSpaces = 15 - rows[i].username.length
+                let numUsernameSpaces = 15 - rows[i].username.length
                 var spacedUsername = rows[i].username
-
-                for (var j = 0; j < numSpaces; j++) {
+                for (var j = 0; j < numUsernameSpaces; j++) {
                     spacedUsername += " "
                 }
 
+                let numDraws = this.calculateDraws(rows[i].crystals, rows[i].tickets, rows[i].ten_tickets)
+                var spacedDraws = `${numDraws} draws`
+                let numDrawSpaces = 11 - spacedDraws.length
+                for (var k = 0; k < numDrawSpaces; k++) {
+                    spacedDraws += " "
+                }
+
+
                 let place = ((i + 1) < 10) ? `${i + 1}  ` : `${i + 1} `
 
-                result += `| #${place}| ${spacedUsername} | ${this.calculateDraws(rows[i].crystals, rows[i].tickets, rows[i].ten_tickets)} draws\n`
+                result += `| #${place}| ${spacedUsername} | ${spacedDraws}|\n`
                 result += "+-----+-----------------+------------+\n"
             }
             
