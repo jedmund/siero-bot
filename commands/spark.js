@@ -296,10 +296,10 @@ class SparkCommand extends Command {
         })
     }
     
-    getProgress(message, userId) {
+    getProgress(message) {
         let sql = 'SELECT crystals, tickets, ten_tickets FROM sparks WHERE user_id = $1'
 
-        client.query(sql, [userId], (err, res) => {
+        client.query(sql, [message.author.id], (err, res) => {
             if (res.rowCount > 0) {
                 let crystals = res.rows[0].crystals
                 let tickets = res.rows[0].tickets
@@ -313,17 +313,17 @@ class SparkCommand extends Command {
         })
     }
     
-    updateCurrency(amount, currency, message) {
+    async updateCurrency(amount, currency, message) {
         let sql = `UPDATE sparks SET ${currency} = $1 WHERE user_id = $2`
         let data = [amount, message.author.id]
     
-        client.query(sql, data, (err) => {
+        await client.query(sql, data, (err, res) => {
             if (err) {
                 console.log(err.message)
             }
-    
-            this.getProgress(message)
         })
+
+        this.getProgress(message)
     }
     
     updateSpark(crystals, tickets, tenTickets, message) {
