@@ -17,9 +17,7 @@ class Gacha {
     season
 
     singleRoll() {
-        let rarity = this.determineRarity(false)
-
-        return rarity
+        return this.determineRarity(false)
     }
 
     tenPartRoll(times = 1) {
@@ -49,7 +47,7 @@ class Gacha {
 
     spark() {
         let maxRolls = 30
-        return this.tenPartRoll(30)
+        return this.tenPartRoll(maxRolls)
     }
 
     currentRates(final = false) {
