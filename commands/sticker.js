@@ -40,12 +40,9 @@ class StickerCommand extends Command {
                 var embed = new RichEmbed()
                 embed.setColor(0xb58900)
                 embed.setImage(stickers[alias])
+                message.channel.send(embed)
             }
-
-            message.channel.send(embed)
         }
-
-        
     }
 }
 
