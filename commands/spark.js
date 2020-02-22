@@ -148,8 +148,8 @@ class SparkCommand extends Command {
         let sql = `SELECT * FROM sparks`
 
         client.query(sql, (err, res) => {
-            let rows = res.rows.sort(this.compareProgress, 'asc')
-
+            let rows = res.rows.sort(this.compareProgress).reverse()
+            console.log(rows)
             var embed = new RichEmbed()
             embed.setColor(0xb58900)
             
@@ -264,6 +264,7 @@ See a leaderboard of everyone's spark progress\`\`\``)
             comparison = -1
         }
 
+        console.log(order)
         return (
             (order === 'desc') ? (comparison * -1) : comparison
         )
@@ -369,8 +370,10 @@ See a leaderboard of everyone's spark progress\`\`\``)
                 break
             case "leaderboard":
                 this.leaderboard(message)
+                break
             case "loserboard":
                 this.loserboard(message)
+                break
             default:
                 break
         }
