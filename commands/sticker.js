@@ -30,6 +30,9 @@ class StickerCommand extends Command {
             embed.setTitle("Stickers")
             embed.setDescription("Here are all the stickers you can send:")
             embed.addField("List", listStickers())
+
+            message.reply("I've sent you a direct message with the list of all of the currently available stickers. Have a look!")
+            message.author.send(embed)
         } else {
             let stickers = getStickers()
 
@@ -38,10 +41,11 @@ class StickerCommand extends Command {
                 embed.setColor(0xb58900)
                 embed.setImage(stickers[alias])
             }
+
+            message.channel.send(embed)
         }
 
-        message.reply("I've sent you a direct message with the list of all of the currently available stickers. Have a look!")
-        message.author.send(embed)
+        
     }
 }
 
