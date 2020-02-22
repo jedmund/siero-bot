@@ -176,7 +176,7 @@ class SparkCommand extends Command {
                 result += "+-----+-----------------+------------+\n"
             }
             
-            embed.setTitle("Leaderboard")
+            embed.setTitle("~~Leader~~ Loserboard")
             embed.setDescription("```html\n" + result + "\n```")
             message.channel.send(embed)
 
