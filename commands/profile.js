@@ -145,7 +145,7 @@ class ProfileCommand extends Command {
 <show>
 Show your profile, or tag another Discord member to see their profile\n
 <set>
-Specify a field on your own profile to set it, or if you don't specify a field, we can fill it all out together!
+Run the profile setup wizard, or you can specify a single field from the keys below to update a single key
     \`\`\``)
         embed.addField("Settable fields", `You can set the following fields individually: 
         \`\`\`nickname pronouns granblue_name granblue_id psn steam\`\`\``)
