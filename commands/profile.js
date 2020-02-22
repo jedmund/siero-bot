@@ -93,19 +93,46 @@ class ProfileCommand extends Command {
         } else await firstMessage.edit("Sorry, this command timed out.")
     }
 
-    saveField(user_id, field, value) {
+    saveField(user_id, field, value, message = null) {
         let sql = `UPDATE profiles SET ${field} = $1 WHERE user_id = $2`
         let data = [value, user_id]
 
-        client.query(sql, data, (err) => {
+        var readableField = ""
+        switch(field) {
+            case "nickname":
+                readableField = "nickname"
+                break
+            case "pronouns":
+                readableField = "pronoun preference"
+                break
+            case "granblue_name":
+                readableField = "Granblue Fantasy name"
+                break
+            case "granblue_id":
+                readableField = "Granblue Fantasy ID"
+                break
+            case "psn":
+                readableField = "Playstation Network username"
+                break
+            case "steam":
+                readableField = "Steam username"
+                break
+        }
+
+
+        client.query(sql, data, (err, res) => {
             if (err) {
                 console.log(err.message)
+            }
+
+            if (res && message != null) {
+                message.reply(`Successfully updated your ${readableField} to ${value}.`)
             }
         })
     }
 
     singleSet(message, args) {
-        this.saveField(message.author.id, args.field, args.value)
+        this.saveField(message.author.id, args.field, args.value, message)
     }
 
     help(message) {
@@ -120,6 +147,8 @@ Show your profile, or tag another Discord member to see their profile\n
 <set>
 Specify a field on your own profile to set it, or if you don't specify a field, we can fill it all out together!
     \`\`\``)
+        embed.addField("Settable fields", `You can set the following fields individually: 
+        \`\`\`nickname pronouns granblue_name granblue_id psn steam\`\`\``)
     
         message.channel.send(embed)
     }
