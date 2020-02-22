@@ -15,7 +15,7 @@ class StickerCommand extends Command {
         })
     }
 
-    exec(message, match, args) {
+    exec(message, match) {
         var alias
         if (match[0] != null) {
             alias = match[0]
@@ -36,9 +36,7 @@ class StickerCommand extends Command {
         } else {
             let stickers = getStickers()
 
-            if (stickers[alias] != null ) {
-                var embed = new RichEmbed()
-                embed.setColor(0xb58900)
+            if (stickers[alias] != null) {
                 embed.setImage(stickers[alias])
                 message.channel.send(embed)
             }
