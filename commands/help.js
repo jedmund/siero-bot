@@ -15,13 +15,13 @@ class HelpCommand extends Command {
         embed.setDescription("Welcome! Here are all the things I can do!")
         embed.setColor(0xdc322f)
         embed.addField("Commands", `\`\`\`html\n
-<$gacha>
+<$gacha $g>
 Roll the virtual gacha\n
-<$profile>
+<$profile $p>
 Save useful information in your profile or see someone else's\n
-<$spark> 
+<$spark $s> 
 Log your progress while saving a spark\n
-<$sticker>
+<$sticker $ss>
 Use a Granblue sticker in Discord\`\`\``)
         embed.addField("Even more help", `You can get help on any of the above commands by typing \`help\` after the command, like so: 
 \`\`\`$gacha help\`\`\``)
