@@ -126,7 +126,7 @@ class ProfileCommand extends Command {
             }
 
             if (res && message != null) {
-                message.reply(`Successfully updated your ${readableField} to ${value}.`)
+                message.reply(`Successfully updated your ${readableField} to \`${value}\`.`)
             }
         })
     }
