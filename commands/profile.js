@@ -14,7 +14,7 @@ class ProfileCommand extends Command {
                 {
                     id: 'operation',
                     type: 'string',
-                    default: 'status'
+                    default: null
                 },
                 {
                     id: 'field',
@@ -30,7 +30,11 @@ class ProfileCommand extends Command {
         })
     }
 
-    exec(message, args) {
+    exec(message, args) {        
+        if (args.operation == null || args.operation.includes("@")) {
+            this.show(message)
+        }
+
         this.checkIfUserExists(message.author.id, () => {
             this.switchOperation(message, args)
         })
@@ -46,7 +50,7 @@ class ProfileCommand extends Command {
         if (args.field == null) {
             this.directSet(message)
         } else {
-            this.singleSet(message)
+            this.singleSet(message, args)
         }
     }
 
@@ -101,7 +105,7 @@ class ProfileCommand extends Command {
     }
 
     singleSet(message, args) {
-
+        this.saveField(message.author.id, args.field, args.value)
     }
 
     help(message) {
