@@ -1,6 +1,6 @@
 const { Client } = require('pg')
 const { Command } = require('discord-akairo')
-const { MessageCollector, RichEmbed } = require('discord.js')
+const { RichEmbed } = require('discord.js')
 const pluralize = require('pluralize')
 
 const client = getClient()
