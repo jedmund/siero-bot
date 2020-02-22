@@ -370,7 +370,7 @@ See a leaderboard of everyone's spark progress\`\`\``)
             case "leaderboard":
                 this.leaderboard(message)
             case "loserboard":
-                this.leaderboard(message)
+                this.loserboard(message)
             default:
                 break
         }
