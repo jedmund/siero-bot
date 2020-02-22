@@ -52,7 +52,6 @@ class StickerCommand extends Command {
 
         if (alias.startsWith("jp")) {
             alias = this.extractAlias(alias)
-            console.log(alias)
         }
 
         if (isJapanese) {
@@ -318,8 +317,6 @@ function exportListForGithub() {
         var row = `|![${i}](${sticker})|\`${i}\`|\n`
         list += row
     }
-
-    console.log(list)
 }
 
 module.exports = StickerCommand
