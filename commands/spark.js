@@ -144,6 +144,48 @@ class SparkCommand extends Command {
         })
     }
 
+    loserboard(message) {
+        let sql = `SELECT * FROM sparks`
+
+        client.query(sql, (err, res) => {
+            let rows = res.rows.sort(this.compareProgress, 'asc')
+
+            var embed = new RichEmbed()
+            embed.setColor(0xb58900)
+            
+            var result = "+-----+-----------------+------------+\n"
+            var limit = 10
+            for (var i = 0; i < limit; i++) {
+                let numUsernameSpaces = 15 - rows[i].username.length
+                var spacedUsername = rows[i].username
+                for (var j = 0; j < numUsernameSpaces; j++) {
+                    spacedUsername += " "
+                }
+
+                let numDraws = this.calculateDraws(rows[i].crystals, rows[i].tickets, rows[i].ten_tickets)
+                var spacedDraws = `${numDraws} draws`
+                let numDrawSpaces = 11 - spacedDraws.length
+                for (var k = 0; k < numDrawSpaces; k++) {
+                    spacedDraws += " "
+                }
+
+
+                let place = ((i + 1) < 10) ? `${i + 1}  ` : `${i + 1} `
+
+                result += `| #${place}| ${spacedUsername} | ${spacedDraws}|\n`
+                result += "+-----+-----------------+------------+\n"
+            }
+            
+            embed.setTitle("Leaderboard")
+            embed.setDescription("```html\n" + result + "\n```")
+            message.channel.send(embed)
+
+            if (err) {
+                console.log(err.message)
+            }
+        })
+    }
+
     status(message) {
         // var id = 0
         // if (message.mentions.users.values().next().value != undefined) {
@@ -326,6 +368,8 @@ See a leaderboard of everyone's spark progress\`\`\``)
                 this.status(message)
                 break
             case "leaderboard":
+                this.leaderboard(message)
+            case "loserboard":
                 this.leaderboard(message)
             default:
                 break
