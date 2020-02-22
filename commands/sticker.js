@@ -52,6 +52,7 @@ class StickerCommand extends Command {
 
         if (alias.startsWith("jp")) {
             alias = this.extractAlias(alias)
+            console.log(alias)
         }
 
         if (isJapanese) {
@@ -64,7 +65,7 @@ class StickerCommand extends Command {
     }
 
     extractAlias(string) {
-        return string.substring(2).toLowerCase()
+        return string.substring(2).charAt(0).toLowerCase() + string.substring(2).slice(1)
     }
 }
 
