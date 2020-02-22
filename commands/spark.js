@@ -102,81 +102,42 @@ class SparkCommand extends Command {
         this.updateCurrency(args.amount, this.transposeCurrency(args.currency), message)
     }
 
-    leaderboard(message) {
+    async leaderboard(message, order = 'desc') {
         let sql = `SELECT * FROM sparks`
 
-        client.query(sql, (err, res) => {
-            let rows = res.rows.sort(this.compareProgress)
+        var embed = new RichEmbed()
+        embed.setColor(0xb58900)
 
-            var embed = new RichEmbed()
-            embed.setColor(0xb58900)
-            
-            var result = "+-----+-----------------+------------+\n"
-            var limit = 10
-            for (var i = 0; i < limit; i++) {
-                let numUsernameSpaces = 15 - rows[i].username.length
-                var spacedUsername = rows[i].username
-                for (var j = 0; j < numUsernameSpaces; j++) {
-                    spacedUsername += " "
-                }
-
-                let numDraws = this.calculateDraws(rows[i].crystals, rows[i].tickets, rows[i].ten_tickets)
-                var spacedDraws = `${numDraws} draws`
-                let numDrawSpaces = 11 - spacedDraws.length
-                for (var k = 0; k < numDrawSpaces; k++) {
-                    spacedDraws += " "
-                }
-
-
-                let place = ((i + 1) < 10) ? `${i + 1}  ` : `${i + 1} `
-
-                result += `| #${place}| ${spacedUsername} | ${spacedDraws}|\n`
-                result += "+-----+-----------------+------------+\n"
-            }
-            
+        if (order === 'desc') {
             embed.setTitle("Leaderboard")
-            embed.setDescription("```html\n" + result + "\n```")
-            message.channel.send(embed)
-
-            if (err) {
-                console.log(err.message)
-            }
-        })
-    }
-
-    loserboard(message) {
-        let sql = `SELECT * FROM sparks`
+        } else {
+            embed.setTitle("~~Leader~~ Loserboard")
+        }
 
         client.query(sql, (err, res) => {
-            let rows = res.rows.sort(this.compareProgress).reverse()
-            console.log(rows)
-            var embed = new RichEmbed()
-            embed.setColor(0xb58900)
+            let rows = (order === 'desc') ? 
+                res.rows.sort(this.compareProgress) :
+                res.rows.sort(this.compareProgress).reverse()
             
-            var result = "+-----+-----------------+------------+\n"
-            var limit = 10
-            for (var i = 0; i < limit; i++) {
-                let numUsernameSpaces = 15 - rows[i].username.length
-                var spacedUsername = rows[i].username
-                for (var j = 0; j < numUsernameSpaces; j++) {
-                    spacedUsername += " "
-                }
+            var maxItems = 10
+            let usernameMaxChars = 15
+            let numDrawsMaxChars = 10
 
+            let divider = '+-----+' + '-'.repeat(usernameMaxChars + 2) + '+' + '-'.repeat(numDrawsMaxChars + 1) + '+\n'
+            var result = divider
+
+            for (var i = 0; i < maxItems; i++) {
                 let numDraws = this.calculateDraws(rows[i].crystals, rows[i].tickets, rows[i].ten_tickets)
-                var spacedDraws = `${numDraws} draws`
-                let numDrawSpaces = 11 - spacedDraws.length
-                for (var k = 0; k < numDrawSpaces; k++) {
-                    spacedDraws += " "
-                }
 
+                let spacedUsername = this.spacedString(rows[i].username, usernameMaxChars)
+                let spacedDraws = this.spacedString(`${numDraws} draws`, numDrawsMaxChars)
 
                 let place = ((i + 1) < 10) ? `${i + 1}  ` : `${i + 1} `
 
                 result += `| #${place}| ${spacedUsername} | ${spacedDraws}|\n`
-                result += "+-----+-----------------+------------+\n"
+                result += divider
             }
             
-            embed.setTitle("~~Leader~~ Loserboard")
             embed.setDescription("```html\n" + result + "\n```")
             message.channel.send(embed)
 
@@ -264,10 +225,20 @@ See a leaderboard of everyone's spark progress\`\`\``)
             comparison = -1
         }
 
-        console.log(order)
         return (
             (order === 'desc') ? (comparison * -1) : comparison
         )
+    }
+
+    spacedString(string, maxNumChars) {
+        let numSpaces = maxNumChars - string.length
+        var spacedString = string
+
+        for (var i = 0; i < numSpaces; i++) {
+            spacedString += " "
+        }
+
+        return spacedString
     }
 
     generateProgressString2(message, crystals, tickets, tenTickets) {
@@ -372,7 +343,7 @@ See a leaderboard of everyone's spark progress\`\`\``)
                 this.leaderboard(message)
                 break
             case "loserboard":
-                this.loserboard(message)
+                this.leaderboard(message, "asc")
                 break
             default:
                 break
