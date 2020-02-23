@@ -18,7 +18,7 @@ class AskCommand extends Command {
     constructor() {
         super('ask', {
             aliases: ['ask'],
-            trigger: ['<(@539533389187776523)>']
+            trigger: ['\b<@539533389187776523>\b']
         })
     }
 
