@@ -135,6 +135,10 @@ function getStickers() {
             en: 'https://gbf.wiki/images/2/26/Stamp253.png',
             jp: 'https://gbf.wiki/images/7/71/Stamp253jp.png'
         },
+        'legendOfRackam': {
+            en: 'https://gbf.wiki/images/4/4f/Stamp36.png',
+            jp: 'https://gbf.wiki/images/e/e9/Stamp36jp.png'
+        },
         'like': {
             en: 'https://gbf.wiki/images/6/68/Stamp260.png',
             jp: 'https://gbf.wiki/images/6/6b/Stamp260jp.png'
