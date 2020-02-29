@@ -1,23 +1,7 @@
 const { Cache } = require('../services/cache.js')
+const { ItemType, Festival, Rarity, Season, SSRRate } = require('../services/constants.js')
 
-const Festival = {
-    LEGEND : 0,
-    FLASH  : 1
-}
-
-const Season = {
-    VALENTINE : 0,
-    SUMMER    : 1,
-    HALLOWEEN : 2,
-    HOLIDAY   : 3
-}
-
-const ItemType = {
-	WEAPON : 0,
-	SUMMON : 1
-}
-
-const SSRRate = 3.0
+const cache = new Cache()
 
 class Gacha {
     festival

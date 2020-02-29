@@ -1,3 +1,5 @@
+const { ItemType, Festival, Rarity, Season, SSRRate } = require('../services/constants.js')
+
 // Set up database connection
 const pgPromise = require('pg-promise')
 const initOptions = {
@@ -6,17 +8,6 @@ const initOptions = {
 
 const pgp = pgPromise(initOptions)
 const client = pgp(getConnection())
-
-const Rarity = {
-	R   : 1,
-	SR  : 2,
-	SSR : 3
-}
-
-const ItemType = {
-	WEAPON : 0,
-	SUMMON : 1
-}
 
 class Cache {
 	characterWeapons = {}
