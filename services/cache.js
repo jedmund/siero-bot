@@ -10,9 +10,9 @@ const pgp = pgPromise(initOptions)
 const client = pgp(getConnection())
 
 class Cache {
-	characterWeapons = {}
-	nonCharacterWeapons = {}
-	summons = {}
+	_characterWeapons = {}
+	_nonCharacterWeapons = {}
+	_summons = {}
 
 	isExpired = this.isExpired.bind(this)
 	lastUpdated = new Date(0)
@@ -31,6 +31,43 @@ class Cache {
 
 	resetCache() {
 		this.lastUpdated = new Date(0)
+	}
+
+	// Subset retrieval methods
+	characterWeapons(rarity, gala = null, season = null) {
+		return this._characterWeapons[rarity].filter(item => this.filterItem(item, gala, season))
+	}
+
+	summons(rarity, gala = null, season = null) {
+		return this._summons[rarity].filter(item => this.filterItem(item, gala, season))
+	}
+
+	filterItem(item, gala, season) {
+		if (season != null && gala != null) {
+			return item[season] == 1 && item[gala] == 1
+		} else if (gala != null) {
+			return item[gala] == 1
+		} else if (season != null) {
+			return item[season] == 1
+		} else {
+			return item[season] == 0 && item[gala] == 0
+		}
+	}
+
+	limitedWeapons(gala) {
+		var limitedWeapons = []
+
+		if (gala == Festival.FLASH) {
+			limitedWeapons = this._characterWeapons[Rarity.SSR].filter(item => {
+				return item.flash == 1 && item.premium == 0
+			})
+		} else if (gala == Festival.LEGEND) {
+			limitedWeapons = this._characterWeapons[Rarity.SSR].filter(item => {
+				return item.legend == 1 && item.premium == 0
+			})
+		}
+
+		return limitedWeapons
 	}
 
 	// Batch fetching methods
@@ -52,13 +89,37 @@ class Cache {
 		this.fetchSummons(Rarity.SSR)
 	}
 
+	// Single fetching methods
+	fetchItem(rarity) {
+		let mappedRarity = this.mapRarity(rarity)
+		let set = [
+			...this._characterWeapons[mappedRarity], 
+			...this._nonCharacterWeapons[mappedRarity], 
+			...this._summons[mappedRarity]
+		]
+		let rand = Math.floor(Math.random() * set.length)
+
+		return set[rand]
+	}
+
+	mapRarity(rarity) {
+		switch(rarity.int) {
+			case 1:
+				return Rarity.R
+			case 2:
+				return Rarity.SR
+			case 3:
+				return Rarity.SSR
+		}
+	}
+
 	// Fetching methods
 	fetchCharacterWeapons(rarity) {
 		let sql = "SELECT * FROM gacha WHERE item_type = 0 AND rarity = $1 AND recruits IS NOT NULL"
 
 		client.any(sql, [rarity])
 			.then(data => {
-				this.characterWeapons[rarity] = data
+				this._characterWeapons[rarity] = data
 			})
 			.catch(error => {
 				console.log(error)
@@ -70,7 +131,7 @@ class Cache {
 
 		client.any(sql, [rarity])
 			.then(data => {
-				this.characterWeapons[rarity] = data
+				this._nonCharacterWeapons[rarity] = data
 			})
 			.catch(error => {
 				console.log(error)
@@ -82,7 +143,7 @@ class Cache {
 
 		client.any(sql, [rarity])
 			.then(data => {
-				this.characterWeapons[rarity] = data
+				this._summons[rarity] = data
 			})
 			.catch(error => {
 				console.log(error)

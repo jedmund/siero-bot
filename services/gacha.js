@@ -4,12 +4,42 @@ const { ItemType, Festival, Rarity, Season, SSRRate } = require('../services/con
 const cache = new Cache()
 
 class Gacha {
-    festival
+    gala
     season
     rateups
 
+    constructor(gala, season) {
+        if (["flash", "ff"].includes(gala)) {
+            this.gala = Festival.FLASH
+        } else if (["legend", "lf"].includes(gala)) {
+            this.gala = Festival.LEGEND
+        }
+
+        switch(season) {
+            case "summer":
+                this.season = Season.SUMMER
+                break
+            case "halloween":
+                this.season = Season.HALLOWEEN
+                break
+            case "holiday":
+                this.season = Season.HOLIDAY
+                break
+            case "valentine":
+                this.season = Season.VALENTINE
+                break
+        }
+
+        console.log(`in constructor ${this.gala}, ${this.season}`)
+
+        this.rateups = []
+    }
+
     singleRoll() {
-        return this.determineRarity(false)
+        let rarity = this.determineRarity(false)
+        let item = this.determineItem(rarity)
+
+        return item
     }
 
     tenPartRoll(times = 1) {
@@ -44,7 +74,7 @@ class Gacha {
 
     currentRates(final = false) {
         var rates = {}
-        var rateUp = this.festival != null
+        var rateUp = this.gala != null
 
         if (rateUp && !final) {
             rates = {
@@ -80,17 +110,39 @@ class Gacha {
     }
 
     ssrRates() {
-        var rate = (festival != null) ? SSRRate * 2 : SSRRate
-        
+        var rate = (this.gala != null) ? SSRRate * 2 : SSRRate
+
+        this.rateups = [
+            {
+                item: "Ichigo Hitofuri",
+                itemType: ItemType.WEAPON,
+                legend: 1,
+                rate: 0.300
+            }, {
+                item: "Taisai Spirit Bow",
+                itemType: ItemType.WEAPON,
+                legend: 1,
+                rate: 0.300
+            }, {
+                item: "Murgleis",
+                itemType: ItemType.WEAPON,
+                legend: 1,
+                rate: 0.300
+            }
+        ]
+
+        var remainingWeapons = cache.characterWeapons(Rarity.SSR, this.gala, this.season).length
+        var remainingSummons = cache.summons(Rarity.SSR, this.gala, this.season).length 
+
         // First, subtract the sum of the rates of any rate-up characters from the total rate.
         for (var r in this.rateups) {
             var rateup = this.rateups[r]
-            rate - rateup.rate
+            rate = rate - rateup.rate
         }
 
         // Remove rateups from the total count of character weapons and summons
-        let remainingWeapons = cache.characterWeapons[Rarity.SSR] - this.rateups.filter(rateup => rateup.itemType == ItemType.WEAPON)
-        let remainingSummons = cache.summons[Rarity.SSR] - this.rateups.filter(rateup => rateup.itemType == ItemType.SUMMON)
+        remainingWeapons = remainingWeapons - this.rateups.filter(rateup => rateup.itemType == ItemType.WEAPON).length
+        remainingSummons = remainingSummons - this.rateups.filter(rateup => rateup.itemType == ItemType.SUMMON).length
 
         // Divide the difference evenly among all other items in the pool. 
         // The quotient is the summon rate.
@@ -102,20 +154,20 @@ class Gacha {
         // Divide the difference by a+2b, 
         // where a is the number of regular characters in the pool, 
         // and b is the number of limited, non-rate-up characters in the pool.
-        if (festival != null) {
-            let remainingLimiteds = cache.limitedWeapons(festival) - this.rateups.filter(rateup => {
+        if (this.gala != null) {
+            let remainingLimiteds = cache.limitedWeapons(this.gala).length - this.rateups.filter(rateup => {
                 var isLimited = false
 
-                if (festival == Festival.FLASH) {
-                    isLimited = rateup.flash == true
-                } else if (festival == Festival.LEGEND) {
-                    isLimited = rateup.legend == true
+                if (this.gala == Festival.FLASH) {
+                    isLimited = rateup.flash === 1
+                } else if (this.gala == Festival.LEGEND) {
+                    isLimited = rateup.legend === 1
                 }
 
                 return isLimited
-            })
+            }).length
 
-            rate = rate / (remainingWeapons - remainingLimiteds) + (remainingLimiteds * 2)
+            rate = rate / ((remainingWeapons - remainingLimiteds) + (remainingLimiteds * 2))
         } else {
             rate = rate / remainingWeapons
         }
@@ -157,9 +209,21 @@ class Gacha {
         return rarity
     }
 
-    determineItem() {
+    determineItem(rarity) {
         let rates = this.ssrRates()
         let rand = Math.random()
+
+        console.log(rates)
+        console.log(rand)
+
+        if (rarity.int == Rarity.SSR) {
+
+        } else if (rarity.int == Rarity.SR) {
+            console.log(cache.fetchItem(rarity))
+        } else {
+            console.log("Finding an R")
+            console.log(cache.fetchItem(rarity))
+        }
     }
 }
 
