@@ -1,14 +1,50 @@
 const { Cache } = require('../services/cache.js')
-const { ItemType, Festival, Rarity, Season, SSRRate } = require('../services/constants.js')
+const { Chance } = require('chance')
+const { GachaBucket, ItemType, Festival, Rarity, RollsInSpark, Season, SSRRate } = require('../services/constants.js')
 
 const cache = new Cache()
+const chance = new Chance()
+
+let Rateups = [
+    {
+        item: "Reunion",
+        itemType: ItemType.WEAPON,
+        gacha_id: 1,
+        legend: 1,
+        rate: 0.300
+    }, {
+        item: "Sunya",
+        itemType: ItemType.WEAPON,
+        gacha_id: 2,
+        legend: 1,
+        rate: 0.300
+    }, {
+        item: "Commander's Sidearm",
+        itemType: ItemType.WEAPON,
+        gacha_id: 3,
+        legend: 1,
+        rate: 0.300
+    }, {
+        item: "Plushie Pal",
+        itemType: ItemType.WEAPON,
+        gacha_id: 4,
+        legend: 1,
+        rate: 0.300
+    }, {
+        item: "Nyarlathotep",
+        itemType: ItemType.SUMMON,
+        gacha_id: 5,
+        legend: 1,
+        rate: 0.500
+    }
+]
 
 class Gacha {
     gala
     season
     rateups
 
-    constructor(gala, season) {
+    constructor(gala, season, rateups) {
         if (["flash", "ff"].includes(gala)) {
             this.gala = Festival.FLASH
         } else if (["legend", "lf"].includes(gala)) {
@@ -30,25 +66,26 @@ class Gacha {
                 break
         }
 
-        console.log(`in constructor ${this.gala}, ${this.season}`)
-
-        this.rateups = []
+        // Use this one in prod
+        // this.rateups = rateups
+        this.rateups = Rateups
     }
 
     singleRoll() {
         let rarity = this.determineRarity(false)
-        let item = this.determineItem(rarity)
-
-        return item
+        return this.determineItem(rarity)
     }
 
-    tenPartRoll(times = 1) {
-        let maxPulls = 10
+    tenPartRoll(times = 1, fetchAllItems = true) {
+        // Create an object to store counts
         var count = { 
             R: 0, 
             SR: 0, 
             SSR: 0 
         }
+
+        let maxPulls = 10
+        var items = []
 
         for (var i = 0; i < times; i++) {
             for (var j = 0; j < maxPulls; j++) {
@@ -61,15 +98,24 @@ class Gacha {
                 }
 
                 count[rarity.string] += 1
+
+                if (rarity.int == Rarity.SSR || (rarity != Rarity.SSR && fetchAllItems)) {
+                    items.push(this.determineItem(rarity))
+                }
             }
         }
 
-        return count
+        return {
+            count: count,
+            items: items
+        }
     }
 
     spark() {
-        let maxRolls = 30
-        return this.tenPartRoll(maxRolls)
+        let maxRolls = RollsInSpark / 10
+        var items = this.tenPartRoll(maxRolls, false)
+
+        return items
     }
 
     currentRates(final = false) {
@@ -112,25 +158,6 @@ class Gacha {
     ssrRates() {
         var rate = (this.gala != null) ? SSRRate * 2 : SSRRate
 
-        this.rateups = [
-            {
-                item: "Ichigo Hitofuri",
-                itemType: ItemType.WEAPON,
-                legend: 1,
-                rate: 0.300
-            }, {
-                item: "Taisai Spirit Bow",
-                itemType: ItemType.WEAPON,
-                legend: 1,
-                rate: 0.300
-            }, {
-                item: "Murgleis",
-                itemType: ItemType.WEAPON,
-                legend: 1,
-                rate: 0.300
-            }
-        ]
-
         var remainingWeapons = cache.characterWeapons(Rarity.SSR, this.gala, this.season).length
         var remainingSummons = cache.summons(Rarity.SSR, this.gala, this.season).length 
 
@@ -154,8 +181,9 @@ class Gacha {
         // Divide the difference by a+2b, 
         // where a is the number of regular characters in the pool, 
         // and b is the number of limited, non-rate-up characters in the pool.
+        var remainingLimiteds = 0
         if (this.gala != null) {
-            let remainingLimiteds = cache.limitedWeapons(this.gala).length - this.rateups.filter(rateup => {
+            remainingLimiteds = cache.limitedWeapons(this.gala).length - this.rateups.filter(rateup => {
                 var isLimited = false
 
                 if (this.gala == Festival.FLASH) {
@@ -173,9 +201,18 @@ class Gacha {
         }
 
         return {
-            "weapon"  : rate,
-            "limited" : rate * 2,
-            "summon"  : summonRate
+            "weapon"  : {
+                "rate"  : rate,
+                "count" : remainingWeapons - remainingLimiteds
+            },
+            "limited" : {
+                "rate"  : rate * 2,
+                "count" : remainingLimiteds
+            },
+            "summon"  : {
+                "rate"  : summonRate,
+                "count" : remainingSummons
+            }
         }
     }
 
@@ -184,8 +221,8 @@ class Gacha {
         let rand = Math.random()
 
         var rarity = {
-            integer: 0,
-            string: ""
+            int    : 0,
+            string : ""
         }
 
         if (rand < rates.SSR) {
@@ -210,20 +247,71 @@ class Gacha {
     }
 
     determineItem(rarity) {
-        let rates = this.ssrRates()
-        let rand = Math.random()
+        var item
 
-        console.log(rates)
-        console.log(rand)
-
-        if (rarity.int == Rarity.SSR) {
-
-        } else if (rarity.int == Rarity.SR) {
-            console.log(cache.fetchItem(rarity))
+        if (rarity.int === Rarity.SSR) {
+            item = this.determineSSRItem()
         } else {
-            console.log("Finding an R")
-            console.log(cache.fetchItem(rarity))
+            item = cache.fetchItem(rarity, this.gala, this.season)
         }
+
+        return item
+    }
+
+    determineSSRItem() {
+        // Fixed rarity that matches the output of determineRarity
+        let rarity = {
+            int     : 3,
+            string  : "SSR"
+        }
+
+        // Fetch the rates and determine a bucket
+        let rates = this.ssrRates()
+        let bucket = this.determineSSRBucket(rates)
+
+        var item
+        if ([GachaBucket.WEAPON, GachaBucket.SUMMON, GachaBucket.LIMITED].includes(bucket)) {
+            // pick a random item from that bucket
+            switch(bucket) {
+                case GachaBucket.WEAPON:
+                    item = cache.fetchWeapon(rarity, this.season) 
+                    break
+                case GachaBucket.SUMMON:
+                    item = cache.fetchSummon(rarity, this.season)
+                    break
+                case GachaBucket.LIMITED:
+                    item = cache.fetchLimited(this.gala)
+                    break
+            }
+        } else {
+            let rateupItems = this.rateups.map(item => item.gacha_id)
+            let rateupRates = this.rateups.map(item => item.rate)
+
+            let result = chance.weighted(rateupItems, rateupRates)
+            return this.rateups.find(item => item.gacha_id == result)
+        }
+
+        return item
+    }
+
+    determineSSRBucket(rates) {
+        // Calculate the total rate of all rateup items
+        var rateupSum = 0
+        for (var i in this.rateups) {
+            rateupSum += this.rateups[i].rate
+        }
+
+        // Store all the rates
+        let bucketRates = [
+            rateupSum, 
+            rates.limited.rate * rates.limited.count, 
+            rates.summon.rate * rates.summon.count, 
+            rates.weapon.rate * rates.weapon.count
+        ]
+        let bucketKeys = [GachaBucket.RATEUP, GachaBucket.LIMITED, GachaBucket.SUMMON, GachaBucket.WEAPON]
+
+        // Use Chance.js to determine a bucket
+        return chance.weighted(bucketKeys, bucketRates)
     }
 }
 
