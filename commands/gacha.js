@@ -100,6 +100,8 @@ The <season> you choose adds seasonal SSRs to the pool\`\`\``)
         embed.addField("Using Rateups", `\`\`\`html\n
 <rateup set>
 Set a new rateup\n
+<rateup copy @user>
+Copy another user's current rateup\n
 <rateup check>
 Check your current rateup\n
 <rateup clear>
@@ -112,8 +114,8 @@ You can set rateups with the weapon or summon name, followed by the desired rate
 
     // Rate-up methods
     rateup(message, args) {
-        let command = message.content.substring("$g rateup ".length)
-
+        let command = message.content.substring("$g rateup ".length).split(" ")[0]
+        console.log(command)
         if (command == "check") {
             this.checkRateUp(message, args)
         }
@@ -126,6 +128,25 @@ You can set rateups with the weapon or summon name, followed by the desired rate
         if (command.includes("set")) {
             this.setRateUp(command)
         }
+
+        if (command == "copy") {
+            this.copyRateUp(message)
+        }
+    }
+
+    copyRateUp(message) {
+        let sourceUser = message.mentions.users.array()[0]
+        let destinationUser = message.author
+        let sql = 'INSERT INTO rateup (gacha_id, rate, user_id) SELECT gacha_id, rate, $1 FROM rateup WHERE user_id = $2'
+
+        Client.any(sql, [destinationUser.id, sourceUser.id])
+            .then(data => {
+                message.channel.send(`You successfully copied ${sourceUser}'s rate up!`)
+            })
+            .catch(error => {
+                console.log(error)
+            })
+
     }
 
     checkRateUp(message) {
@@ -193,34 +214,39 @@ You can set rateups with the weapon or summon name, followed by the desired rate
         let sql = 'SELECT id, name, recruits FROM gacha WHERE name IN ($1:csv) OR recruits IN ($1:csv)'
         Client.any(sql, [list])
             .then(data => {
-                var rateups = []
-                for (var i in data) {
-                    // Fetch the rateup from the passed-in dictionary
-                    let rateup = this.joinRateUpData(data[i], dictionary)
-
-                    // Save the rate up data
-                    this.saveRateUp(rateup.id, rateup.rate)
-
-                    // Push to array
-                    rateups.push(rateup)
-                }
-
-                // Fetch the data for missing rate-ups
-                // These will be items that don't exist in the game or typos
-                let missing = this.findMissingRateUpData(list, data)
-
-                // Create the embed displaying rate-up data
-                let embed = this.generateRateUpString(rateups)
-
-                if (missing.length > 0) {
-                    embed.addField('The following items could not be found and were not added to your rateup',  `\`\`\`${missing.join("\n")}\`\`\``)
-                }
-
+                let embed = this.createRateUpEmbed(data)
                 this.message.channel.send(embed)
             })
             .catch(error => {
                 console.log(error)
             })
+    }
+
+    createRateUpEmbed(data) {
+        var rateups = []
+        for (var i in data) {
+            // Fetch the rateup from the passed-in dictionary
+            let rateup = this.joinRateUpData(data[i], dictionary)
+
+            // Save the rate up data
+            this.saveRateUp(rateup.id, rateup.rate)
+
+            // Push to array
+            rateups.push(rateup)
+        }
+
+        // Fetch the data for missing rate-ups
+        // These will be items that don't exist in the game or typos
+        let missing = this.findMissingRateUpData(list, data)
+
+        // Create the embed displaying rate-up data
+        let embed = this.generateRateUpString(rateups)
+
+        if (missing.length > 0) {
+            embed.addField('The following items could not be found and were not added to your rateup',  `\`\`\`${missing.join("\n")}\`\`\``)
+        }
+
+        return embed
     }
 
     joinRateUpData(dict1, dict2) {
