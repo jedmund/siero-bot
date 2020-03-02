@@ -78,6 +78,26 @@ class GachaCommand extends Command {
         message.channel.send(embed)
     }
 
+    rateup(message, args) {
+        let command = message.content.substring("$g rateup ".length).split(" ")[0]
+
+        switch(command) {
+            case "check":
+                this.checkRateUp(message, args)
+                break
+            case "clear":
+                this.clearRateUp()
+                message.reply("Your rate-up has been cleared.")
+                break
+            case "set":
+                this.setRateUp(command)
+                break
+            case "copy":
+                this.copyRateUp(message)
+                break
+        }
+    }
+
     help(message) {
         var embed = new RichEmbed()
 
@@ -99,117 +119,89 @@ class GachaCommand extends Command {
             "The <season> you choose adds seasonal units to the pool```"
         ].join("\n")
 
+        var usingRateups = [
+            "```html\n",
+            "<rateup set>",
+            "Start a new rateup\n",
+            "<rateup copy @user>",
+            "Copy the tagged user's rateup\n",
+            "<rateup check>",
+            "Check your current rateup",
+            "<rateup clear>",
+            "Clear your current rateup```"
+        ].join("\n")
+
+        var settingRateups = [
+            "```html\n",
+            "<rateup set Sky Ace 0.300, Elil 0.500>",
+            "Set rateups with the weapon or summon name followed by the desired rate",
+            "You can add multiple rateups by separating them with a comma, as seen above.```"
+        ].join("\n")
+
         embed.setTitle("Gacha")
         embed.setDescription("Welcome! I can help you save your money!")
         embed.setColor(0xdc322f)
         embed.addField("Command syntax", "```gacha spark <gala> <season>```")
         embed.addField("Gacha options", gachaOptions)
-        embed.addField("Galas and Seasons", `\`\`\`html\n
-<gala: premium flash legend ff lf>
-The <gala> you choose will determine the SSR rate
-
-<season: valentine summer halloween holiday>
-The <season> you choose adds seasonal SSRs to the pool\`\`\``)
-        embed.addField("Using Rateups", `\`\`\`html\n
-<rateup set>
-Set a new rateup\n
-<rateup copy @user>
-Copy another user's current rateup\n
-<rateup check>
-Check your current rateup\n
-<rateup clear>
-Clear your current rateup\`\`\``)
-        embed.addField("Setting Rateups", `\`\`\`html\n
-<rateup set Sky Ace 0.300, Elil 0.500>
-You can set rateups with the weapon or summon name, followed by the desired rate separated by a space. You can add multiple rateups by separating them with a comma, as seen above.\`\`\``)
+        embed.addField("Galas and Seasons", galasAndSeasons)
+        embed.addField("Using Rateups", usingRateups)
+        embed.addField("Setting Rateups", settingRateups)
         message.channel.send(embed)
     }
 
-    // Rate-up methods
-    rateup(message, args) {
-        let command = message.content.substring("$g rateup ".length).split(" ")[0]
-
-        if (command == "check") {
-            this.checkRateUp(message, args)
-        }
-
-        if (command == "clear") {
-            this.clearRateUp()
-            message.reply("Your rate-up has been cleared.")
-        }
-
-        if (command.includes("set")) {
-            this.setRateUp(command)
-        }
-
-        if (command == "copy") {
-            this.copyRateUp(message)
-        }
-    }
-
+    // Rate-up command methods
     copyRateUp(message) {
         let sourceUser = message.mentions.users.array()[0]
         let destinationUser = message.author
-        let sql = 'INSERT INTO rateup (gacha_id, rate, user_id) SELECT gacha_id, rate, $1 FROM rateup WHERE user_id = $2'
+        let sql = [
+            "INSERT INTO rateup (gacha_id, rate, user_id)",
+            "SELECT gacha_id, rate, $1",
+            "FROM rateup WHERE user_id = $2"
+        ].join(" ")
 
         Client.any(sql, [destinationUser.id, sourceUser.id])
-            .then(data => {
+            .then(_ => {
                 message.channel.send(`You successfully copied ${sourceUser}'s rate up!`)
             })
             .catch(error => {
+                this.message.author.send(`Sorry, there was an error with your last request.`)
                 console.log(error)
             })
 
     }
 
     checkRateUp(message) {
-        let sql = 'SELECT rateup.gacha_id, rateup.rate, gacha.name, gacha.recruits FROM rateup LEFT JOIN gacha ON rateup.gacha_id = gacha.id WHERE rateup.user_id = $1 ORDER BY rateup.rate DESC'
+        let sql = [
+            "SELECT rateup.gacha_id, rateup.rate, gacha.name, gacha.recruits",
+            "FROM rateup LEFT JOIN gacha ON rateup.gacha_id = gacha.id",
+            "WHERE rateup.user_id = $1",
+            "ORDER BY rateup.rate DESC"
+        ].join(" ")
+
         Client.any(sql, [message.author.id])
             .then(data => {
                 if (data.length > 0) {
                     var rateUpDict = []
                     
                     for (var i = 0; i < data.length; i++) {
-                        var dict = {}
-                        var result = data[i]
-
-                        dict.gacha_id = result.gacha_id
-                        dict.name = result.name
-                        dict.recruits = result.recruits
-                        dict.rate = result.rate
-
-                        rateUpDict.push(dict)
+                        rateUpDict.push({
+                            gacha_id : data[i].gacha_id,
+                            name     : data[i].name,
+                            rate     : data[i].rate,
+                            recruits : data[i].recruits
+                        })
                     }
 
                     let embed = this.generateRateUpString(rateUpDict)
                     message.channel.send(embed)
                 } else {
-                    message.reply("It looks like you don't have any rate-ups set right now!")
+                    message.reply("It looks like you don't have any rate-ups set right now. You can get started with `$g rateup copy @user` or `$g rateup set <rates>`.")
                 }
             })
             .catch(error => {
+                this.message.author.send(`Sorry, there was an error with your last request.`)
                 console.log(error)
             })
-    }
-
-    generateRateUpString(rateups) {
-        var string = ""
-        for (var i in rateups) {
-            let rateup = rateups[i]
-            if (rateup.recruits != null) {
-                string += `${rateup.name} - ${rateup.recruits}: ${rateup.rate}%\n`
-            } else {
-                string += `${rateup.name}: ${rateup.rate}%\n`
-            }
-        }
-
-        var embed = new RichEmbed()
-        embed.setColor(0xb58900)
-        embed.setTitle("Your current rate-up")
-        embed.setDescription("```html\n" + string + "\n```")
-        embed.setFooter(`These rate ups will only take effect on your gacha simulations.`)
-
-        return embed
     }
 
     setRateUp(command, message) {
@@ -221,21 +213,36 @@ You can set rateups with the weapon or summon name, followed by the desired rate
         this.saveRateUps(rateups)
     }
 
-    saveRateUps(dictionary) {
-        let list = dictionary.map(rateup => rateup.item)
-
-        let sql = 'SELECT id, name, recruits FROM gacha WHERE name IN ($1:csv) OR recruits IN ($1:csv)'
-        Client.any(sql, [list])
-            .then(data => {
-                let embed = this.createRateUpEmbed(data)
-                this.message.channel.send(embed)
-            })
+    clearRateUp() {
+        let sql = 'DELETE FROM rateup WHERE user_id = $1'
+        Client.any(sql, [this.userId])
             .catch(error => {
+                this.message.author.send(`Sorry, there was an error with your last request.`)
                 console.log(error)
             })
     }
 
-    createRateUpEmbed(data) {
+    // Rate-up helper methods
+    saveRateUps(dictionary) {
+        let list = dictionary.map(rateup => rateup.item)
+
+        let sql = [
+            "SELECT id, name, recruits",
+            "FROM gacha WHERE name IN ($1:csv) OR recruits IN ($1:csv)"
+        ].join(" ")
+        
+        Client.any(sql, [list])
+            .then(data => {
+                let embed = this.createRateUpEmbed(data, dictionary, list)
+                this.message.channel.send(embed)
+            })
+            .catch(error => {
+                this.message.author.send(`Sorry, there was an error with your last request.`)
+                console.log(error)
+            })
+    }
+
+    createRateUpEmbed(data, dictionary, list) {
         var rateups = []
         for (var i in data) {
             // Fetch the rateup from the passed-in dictionary
@@ -262,18 +269,27 @@ You can set rateups with the weapon or summon name, followed by the desired rate
         return embed
     }
 
-    joinRateUpData(dict1, dict2) {
-        var rateup = {}
+    saveRateUp(id, rate) {
+        let sql = 'INSERT INTO rateup (gacha_id, user_id, rate) VALUES ($1, $2, $3)'
+        Client.query(sql, [id, this.userId, rate])
+            .catch(error => {
+                this.message.author.send(`Sorry, there was an error with your last request.`)
+                console.log(error)
+            })
+    }
 
-        rateup.id = dict1.id
-        rateup.name = dict1.name
-        rateup.recruits = dict1.recruits
+    joinRateUpData(dict1, dict2) {
+        var rateup = {
+            id       : dict1.id,
+            name     : dict1.name,
+            recruits : dict1.recruits
+        }
 
         for (var i in dict2) {
             let entry = dict2[i]
 
             if (entry.item == rateup.name || entry.item == rateup.recruits) {
-            rateup.rate = entry.rate
+                rateup.rate = entry.rate
             }
         }
 
@@ -287,12 +303,25 @@ You can set rateups with the weapon or summon name, followed by the desired rate
         return original.filter(e => !resultNames.includes(e) && !resultRecruits.includes(e))
     }
 
-    saveRateUp(id, rate) {
-        let sql = 'INSERT INTO rateup (gacha_id, user_id, rate) VALUES ($1, $2, $3)'
-        Client.query(sql, [id, this.userId, rate])
-            .catch(error => {
-                console.log(error)
-            })
+    generateRateUpString(rateups) {
+        var string = ""
+        for (var i in rateups) {
+            let rateup = rateups[i]
+
+            if (rateup.recruits != null) {
+                string += `${rateup.name} - ${rateup.recruits}: ${rateup.rate}%\n`
+            } else {
+                string += `${rateup.name}: ${rateup.rate}%\n`
+            }
+        }
+
+        var embed = new RichEmbed()
+        embed.setColor(0xb58900)
+        embed.setTitle("Your current rate-up")
+        embed.setDescription("```html\n" + string + "\n```")
+        embed.setFooter(`These rate ups will only take effect on your gacha simulations.`)
+
+        return embed
     }
 
     extractRateUp() {
@@ -303,22 +332,13 @@ You can set rateups with the weapon or summon name, followed by the desired rate
         for (var i in rawRateUps) {
             let splitRateup = rawRateUps[i].split(" ")
 
-            var rateup = {}
-            rateup.rate = splitRateup.pop()
-            rateup.item = splitRateup.join(" ")
-
-            rateups.push(rateup)
+            rateups.push({
+                rate : splitRateup.pop(),
+                item : splitRateup.join(" ")
+            })
         }
 
         return rateups
-    }
-
-    clearRateUp() {
-        let sql = 'DELETE FROM rateup WHERE user_id = $1'
-        Client.any(sql, [this.userId])
-            .catch(error => {
-                console.log(error)
-            })
     }
 
     // Filter methods
@@ -330,6 +350,7 @@ You can set rateups with the weapon or summon name, followed by the desired rate
         return el.rarity == 3 && el.item_type == 1
     }
     
+    // Render methods
     sortCharacterWeapons(results) {
         var characterWeapons = []
     
@@ -372,7 +393,6 @@ You can set rateups with the weapon or summon name, followed by the desired rate
         return characterWeapons
     }
 
-    // String methods    
     responseString(result, combined = false) {
         var response = ""
     
