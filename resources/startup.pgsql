@@ -35,4 +35,11 @@ CREATE TABLE IF NOT EXISTS profiles (
     granblue_name TEXT,
     psn TEXT,
     steam TEXT
-)
+);
+
+CREATE TABLE rateup (
+    id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+    gacha_id uuid,
+    user_id text,
+    rate numeric
+);
