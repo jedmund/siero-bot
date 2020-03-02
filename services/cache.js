@@ -42,15 +42,15 @@ class Cache {
 		return this._summons[rarity].filter(item => this.filterItem(item, gala, season))
 	}
 
-	filterItem(item, gala, season) {
+	filterItem(item, gala = null, season = null) {
 		if (season != null && gala != null) {
 			return item[season] == 1 && item[gala] == 1
-		} else if (gala != null) {
+		} else if (gala != null && season == null) {
 			return item[gala] == 1
-		} else if (season != null) {
+		} else if (season != null && gala == null) {
 			return item[season] == 1
 		} else {
-			return item[season] == 0 && item[gala] == 0
+			return item["premium"] == 1
 		}
 	}
 
@@ -90,16 +90,39 @@ class Cache {
 	}
 
 	// Single fetching methods
-	fetchItem(rarity) {
+	fetchItem(rarity, gala, season) {
 		let mappedRarity = this.mapRarity(rarity)
 		let set = [
-			...this._characterWeapons[mappedRarity], 
-			...this._nonCharacterWeapons[mappedRarity], 
-			...this._summons[mappedRarity]
+			...this._characterWeapons[mappedRarity].filter(item => this.filterItem(item, gala, season)), 
+			...this._nonCharacterWeapons[mappedRarity].filter(item => this.filterItem(item, gala, season)), 
+			...this._summons[mappedRarity].filter(item => this.filterItem(item, gala, season))
 		]
 		let rand = Math.floor(Math.random() * set.length)
 
 		return set[rand]
+	}
+
+	fetchWeapon(rarity, season = null) {
+		let mappedRarity = this.mapRarity(rarity)
+		let list = this.characterWeapons(mappedRarity, null, season)
+		let r = Math.floor(Math.random() * list.length)
+
+		return list[r]
+	}
+
+	fetchSummon(rarity, season = null) {
+		let mappedRarity = this.mapRarity(rarity)
+		let list = this.summons(mappedRarity, null, season)
+		let r = Math.floor(Math.random() * list.length)
+
+		return list[r]
+	}
+
+	fetchLimited(gala) {
+		let list = this.characterWeapons(Rarity.SSR, gala, null)
+		let r = Math.floor(Math.random() * list.length)
+
+		return list[r]
 	}
 
 	mapRarity(rarity) {
