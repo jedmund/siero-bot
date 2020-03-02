@@ -1,13 +1,5 @@
 const { ItemType, Festival, Rarity, Season, SSRRate } = require('../services/constants.js')
-
-// Set up database connection
-const pgPromise = require('pg-promise')
-const initOptions = {
-	promiseLib: Promise
-}
-
-const pgp = pgPromise(initOptions)
-const client = pgp(getConnection())
+const { Client } = require('../services/connection.js')
 
 class Cache {
 	_characterWeapons = {}
@@ -140,7 +132,7 @@ class Cache {
 	fetchCharacterWeapons(rarity) {
 		let sql = "SELECT * FROM gacha WHERE item_type = 0 AND rarity = $1 AND recruits IS NOT NULL"
 
-		client.any(sql, [rarity])
+		Client.any(sql, [rarity])
 			.then(data => {
 				this._characterWeapons[rarity] = data
 			})
@@ -152,7 +144,7 @@ class Cache {
 	fetchNonCharacterWeapons(rarity) {
 		let sql = "SELECT * FROM gacha WHERE item_type = 0 AND rarity = $1 AND recruits IS NULL"
 
-		client.any(sql, [rarity])
+		Client.any(sql, [rarity])
 			.then(data => {
 				this._nonCharacterWeapons[rarity] = data
 			})
@@ -164,7 +156,7 @@ class Cache {
 	fetchSummons(rarity) {
 		let sql = "SELECT * FROM gacha WHERE item_type = 1 AND rarity = $1"
 
-		client.any(sql, [rarity])
+		Client.any(sql, [rarity])
 			.then(data => {
 				this._summons[rarity] = data
 			})
@@ -172,24 +164,6 @@ class Cache {
 				console.log(error)
 			})
 	}
-}
-
-function getConnection() {
-	var connection
-  
-	if (process.env.NODE_ENV == "development") {
-		connection = {
-			host: process.env.PG_HOST,
-			port: 5432,
-			database: process.env.PG_DB,
-			user: process.env.PG_USER,
-			password: process.env.PG_PASSWORD
-		}
-	} else {
-		connection = process.env.DATABASE_URL
-	}
-  
-	return connection
 }
 
 exports.Cache = Cache
