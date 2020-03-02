@@ -1,10 +1,7 @@
-const { Client } = require('pg')
+const { Client } = require('../services/connection.js')
 const { Command } = require('discord-akairo')
 const { Gacha } = require('../services/gacha.js')
 const { RichEmbed } = require('discord.js')
-
-const client = getClient()
-client.connect()
 
 class GachaCommand extends Command {
     constructor(gala, season) {
@@ -30,7 +27,11 @@ class GachaCommand extends Command {
         })
     }
 
-    exec(message, args) {
+    async exec(message, args) {
+        this.storeMessage(message)
+        this.storeUser(message.author.id)
+        await this.storeRateups()
+
         switch(args.operation) {
             case "yolo":
                 this.yolo(message, args)
@@ -40,6 +41,9 @@ class GachaCommand extends Command {
                 break
             case "spark":
                 this.spark(message, args)
+                break
+            case "rateup":
+                this.rateup(message)
                 break
             case "help":
                 this.help(message)
@@ -51,7 +55,7 @@ class GachaCommand extends Command {
 
     // Command methods
     yolo(message, args) {
-        let gacha = new Gacha(args.gala, args.season)
+        let gacha = new Gacha(args.gala, args.season, this.rateups)
         let item = gacha.singleRoll()
         let response = this.responseString(item)
 
@@ -59,7 +63,7 @@ class GachaCommand extends Command {
     }
 
     ten_pull(message, args) {
-        let gacha = new Gacha(args.gala, args.season)
+        let gacha = new Gacha(args.gala, args.season, this.rateups)
         let items = gacha.tenPartRoll()
         var response = `You got these 10 things!\`\`\`html\n${this.multilineResponseString(items.items)}\n\`\`\``
         
@@ -67,7 +71,7 @@ class GachaCommand extends Command {
     }
 
     spark(message, args) {
-        let gacha = new Gacha(args.gala, args.season)
+        let gacha = new Gacha(args.gala, args.season, this.rateups)
         let items = gacha.spark()
 
         let embed = this.buildEmbed(items)
@@ -95,6 +99,178 @@ The <gala> you choose will determine the SSR rate
 The <season> you choose adds seasonal SSRs to the pool\`\`\``)
 
         message.channel.send(embed)
+    }
+
+    // Rate-up methods
+    rateup(message, args) {
+        let command = message.content.substring("$g rateup ".length)
+
+        if (command == "check") {
+            this.checkRateUp(message, args)
+        }
+
+        if (command == "clear") {
+            this.clearRateUp()
+            message.reply("Your rate-up has been cleared.")
+        }
+
+        if (command.includes("set")) {
+            this.setRateUp(command)
+        }
+    }
+
+    checkRateUp(message) {
+        let sql = 'SELECT rateup.gacha_id, rateup.rate, gacha.name, gacha.recruits FROM rateup LEFT JOIN gacha ON rateup.gacha_id = gacha.id WHERE rateup.user_id = $1 ORDER BY rateup.rate DESC'
+        Client.any(sql, [message.author.id])
+            .then(data => {
+                if (data.length > 0) {
+                    var rateUpDict = []
+                    
+                    for (var i = 0; i < data.length; i++) {
+                        var dict = {}
+                        var result = data[i]
+
+                        dict.gacha_id = result.gacha_id
+                        dict.name = result.name
+                        dict.recruits = result.recruits
+                        dict.rate = result.rate
+
+                        rateUpDict.push(dict)
+                    }
+
+                    let embed = this.generateRateUpString(rateUpDict)
+                    message.channel.send(embed)
+                } else {
+                    message.reply("It looks like you don't have any rate-ups set right now!")
+                }
+            })
+            .catch(error => {
+                console.log(error)
+            })
+    }
+
+    generateRateUpString(rateups) {
+        var string = ""
+        for (var i in rateups) {
+            let rateup = rateups[i]
+            if (rateup.recruits != null) {
+                string += `${rateup.name} - ${rateup.recruits}: ${rateup.rate}%\n`
+            } else {
+                string += `${rateup.name}: ${rateup.rate}%\n`
+            }
+        }
+
+        var embed = new RichEmbed()
+        embed.setColor(0xb58900)
+        embed.setTitle("Your current rate-up")
+        embed.setDescription("```html\n" + string + "\n```")
+        embed.setFooter(`These rate ups will only take effect on your gacha simulations.`)
+
+        return embed
+    }
+
+    setRateUp(command, message) {
+        // First, clear the existing rate up
+        this.clearRateUp(message)
+
+        // Then, save the new rate up
+        var rateups = this.extractRateUp(command)
+        this.saveRateUps(rateups)
+    }
+
+    saveRateUps(dictionary) {
+        let list = dictionary.map(rateup => rateup.item)
+
+        let sql = 'SELECT id, name, recruits FROM gacha WHERE name IN ($1:csv) OR recruits IN ($1:csv)'
+        Client.any(sql, [list])
+            .then(data => {
+                var rateups = []
+                for (var i in data) {
+                    // Fetch the rateup from the passed-in dictionary
+                    let rateup = this.joinRateUpData(data[i], dictionary)
+
+                    // Save the rate up data
+                    this.saveRateUp(rateup.id, rateup.rate)
+
+                    // Push to array
+                    rateups.push(rateup)
+                }
+
+                // Fetch the data for missing rate-ups
+                // These will be items that don't exist in the game or typos
+                let missing = this.findMissingRateUpData(list, data)
+
+                // Create the embed displaying rate-up data
+                let embed = this.generateRateUpString(rateups)
+
+                if (missing.length > 0) {
+                    embed.addField('The following items could not be found and were not added to your rateup',  `\`\`\`${missing.join("\n")}\`\`\``)
+                }
+
+                this.message.channel.send(embed)
+            })
+            .catch(error => {
+                console.log(error)
+            })
+    }
+
+    joinRateUpData(dict1, dict2) {
+        var rateup = {}
+
+        rateup.id = dict1.id
+        rateup.name = dict1.name
+        rateup.recruits = dict1.recruits
+
+        for (var i in dict2) {
+            let entry = dict2[i]
+
+            if (entry.item == rateup.name || entry.item == rateup.recruits) {
+            rateup.rate = entry.rate
+            }
+        }
+
+        return rateup
+    }
+
+        findMissingRateUpData(original, result) {
+        let resultNames = result.map(result => result.name)
+        let resultRecruits = result.map(result => result.recruits)
+            
+        return original.filter(e => !resultNames.includes(e) && !resultRecruits.includes(e))
+    }
+
+    saveRateUp(id, rate) {
+        let sql = 'INSERT INTO rateup (gacha_id, user_id, rate) VALUES ($1, $2, $3)'
+        Client.query(sql, [id, this.userId, rate])
+            .catch(error => {
+                console.log(error)
+            })
+    }
+
+    extractRateUp() {
+        let rateupString = this.message.content.substring("$g rateup set ".length)
+        let rawRateUps = rateupString.split(",").map(item => item.trim())
+
+        var rateups = []
+        for (var i in rawRateUps) {
+            let splitRateup = rawRateUps[i].split(" ")
+
+            var rateup = {}
+            rateup.rate = splitRateup.pop()
+            rateup.item = splitRateup.join(" ")
+
+            rateups.push(rateup)
+        }
+
+        return rateups
+    }
+
+    clearRateUp() {
+        let sql = 'DELETE FROM rateup WHERE user_id = $1'
+        Client.any(sql, [this.userId])
+            .catch(error => {
+                console.log(error)
+            })
     }
 
     // Filter methods
@@ -195,7 +371,6 @@ The <season> you choose adds seasonal SSRs to the pool\`\`\``)
     }
 
     buildEmbed(results) {
-        console.log(results)
         var embed = new RichEmbed()
         embed.setColor(0xb58900)
 
@@ -245,26 +420,24 @@ The <season> you choose adds seasonal SSRs to the pool\`\`\``)
       
         return array
     }
-}
 
-function getClient() {
-    var c
-    if (process.env.NODE_ENV == "development") {
-        c = new Client({
-            user: process.env.PG_USER,
-            host: process.env.PG_HOST,
-            database: process.env.PG_DB,
-            password: process.env.PG_PASSWORD,
-            port: 5432,
-        })
-    } else {
-        c = new Client({
-            connectionString: process.env.DATABASE_URL,
-            ssl: true
-        })
+    storeMessage(message) {
+        this.message = message
     }
 
-    return c
+    storeUser(id) {
+        this.userId = id
+    }
+
+    async storeRateups() {
+        let sql = 'SELECT rateup.gacha_id, rateup.rate, gacha.name, gacha.recruits, gacha.rarity, gacha.item_type, gacha.premium, gacha.legend, gacha.flash, gacha.halloween, gacha.holiday, gacha.summer, gacha.valentine FROM rateup LEFT JOIN gacha ON rateup.gacha_id = gacha.id WHERE rateup.user_id = $1 ORDER BY rateup.rate DESC'
+
+        try {
+            this.rateups = await Client.any(sql, [this.userId])
+        } catch {
+            console.log("Error")
+        }
+    }
 }
 
 module.exports = GachaCommand
