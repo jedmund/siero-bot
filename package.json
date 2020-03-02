@@ -7,6 +7,7 @@
   "description": "",
   "main": "bot.js",
   "dependencies": {
+    "chance": "^1.1.4",
     "discord-akairo": "^7.5.5",
     "discord.js": "^11.4.2",
     "dotenv": "^6.2.0",
