@@ -218,32 +218,18 @@ class Gacha {
 
     determineRarity(final = false) {
         let rates = this.currentRates(final)
-        let rand = Math.random()
 
-        var rarity = {
-            int    : 0,
-            string : ""
-        }
-
-        if (rand < rates.SSR) {
-            rarity.int = 3
-            rarity.string = "SSR"
+        var r
+        if (final) {
+            r = chance.weighted(["SR", "SSR"], [rates.SR, rates.SSR])
         } else {
-            if (final) {
-                rarity.int = 2
-                rarity.string = "SR"
-            } else {
-                if (rand < rates.SR) {
-                    rarity.int = 2
-                    rarity.string = "SR"
-                } else {
-                    rarity.int = 1
-                    rarity.string = "R"
-                }
-            }
+            r = chance.weighted(["R", "SR", "SSR"], [rates.R, rates.SR, rates.SSR])
         }
 
-        return rarity
+        return {
+            int    : Rarity[r],
+            string : r
+        }
     }
 
     determineItem(rarity) {
