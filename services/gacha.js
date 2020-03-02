@@ -5,40 +5,6 @@ const { GachaBucket, ItemType, Festival, Rarity, RollsInSpark, Season, SSRRate }
 const cache = new Cache()
 const chance = new Chance()
 
-let Rateups = [
-    {
-        item: "Reunion",
-        itemType: ItemType.WEAPON,
-        gacha_id: 1,
-        legend: 1,
-        rate: 0.300
-    }, {
-        item: "Sunya",
-        itemType: ItemType.WEAPON,
-        gacha_id: 2,
-        legend: 1,
-        rate: 0.300
-    }, {
-        item: "Commander's Sidearm",
-        itemType: ItemType.WEAPON,
-        gacha_id: 3,
-        legend: 1,
-        rate: 0.300
-    }, {
-        item: "Plushie Pal",
-        itemType: ItemType.WEAPON,
-        gacha_id: 4,
-        legend: 1,
-        rate: 0.300
-    }, {
-        item: "Nyarlathotep",
-        itemType: ItemType.SUMMON,
-        gacha_id: 5,
-        legend: 1,
-        rate: 0.500
-    }
-]
-
 class Gacha {
     gala
     season
@@ -66,9 +32,7 @@ class Gacha {
                 break
         }
 
-        // Use this one in prod
-        // this.rateups = rateups
-        this.rateups = Rateups
+        this.rateups = rateups
     }
 
     singleRoll() {
@@ -270,21 +234,51 @@ class Gacha {
                     break
             }
         } else {
-            let rateupItems = this.rateups.map(item => item.gacha_id)
-            let rateupRates = this.rateups.map(item => item.rate)
+            let filteredRateUpItems = this.rateups.filter(item => this.filterItems(item, this.gala, this.season))
+            let rateupItems = filteredRateUpItems.map(item => item.name)
+            let rateupRates = filteredRateUpItems.map(item => parseFloat(item.rate))
 
             let result = chance.weighted(rateupItems, rateupRates)
-            return this.rateups.find(item => item.gacha_id == result)
+            return this.rateups.find(item => item.name == result)
         }
 
         return item
+    }
+
+    filterItems(item, gala, season) {
+        if (gala == null && this.isLimited(item)) {
+            return false
+        }
+
+        if (gala != null && item[gala] == 0) {
+            return false
+        }
+
+        if (season == null && this.isSeasonal(item)) {
+            return false
+        }
+
+        if (season != null && item[season] == 0) {
+            return false
+        }
+
+        return true
+    }
+
+    isLimited(item) {
+        console.log(item.flash, item.legend, item.premium)
+        return (item.flash == 1 || item.legend == 1) && item.premium == 0
+    }
+
+    isSeasonal(item) {
+        return (item.halloween == 1 || item.holiday == 1 || item.summer == 1 || item.valentine == 1) && item.premium == 0
     }
 
     determineSSRBucket(rates) {
         // Calculate the total rate of all rateup items
         var rateupSum = 0
         for (var i in this.rateups) {
-            rateupSum += this.rateups[i].rate
+            rateupSum += parseFloat(this.rateups[i].rate)
         }
 
         // Store all the rates
