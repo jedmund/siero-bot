@@ -15,6 +15,13 @@ const ItemType = {
 	SUMMON : 1
 }
 
+const GachaBucket = {
+    WEAPON  : 1,
+    SUMMON  : 2,
+    LIMITED : 3,
+    RATEUP  : 4
+}
+
 const Rarity = {
 	R   : 1,
 	SR  : 2,
@@ -23,8 +30,12 @@ const Rarity = {
 
 const SSRRate = 3.0
 
+const RollsInSpark = 300
+
+exports.GachaBucket = GachaBucket
 exports.ItemType = ItemType
 exports.Festival = Festival
 exports.Rarity = Rarity
+exports.RollsInSpark = RollsInSpark
 exports.Season = Season
 exports.SSRRate = SSRRate
