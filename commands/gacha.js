@@ -80,17 +80,30 @@ class GachaCommand extends Command {
 
     help(message) {
         var embed = new RichEmbed()
+
+        var gachaOptions = [
+            "```html\n",
+            "<yolo>",
+            "A single Premium Draw pull\n",
+            "<ten>",
+            "A 10-part Premium Draw pull\n",
+            "<spark>",
+            "A whole spark```"
+        ].join("\n")
+
+        var galasAndSeasons = [
+            "```html\n",
+            "<gala: premium flash legend ff lf>",
+            "The <gala> you choose will determine the SSR rate\n",
+            "<season: valentine summer halloween holiday>",
+            "The <season> you choose adds seasonal units to the pool```"
+        ].join("\n")
+
         embed.setTitle("Gacha")
         embed.setDescription("Welcome! I can help you save your money!")
         embed.setColor(0xdc322f)
         embed.addField("Command syntax", "```gacha spark <gala> <season>```")
-        embed.addField("Gacha options", `\`\`\`html\n
-<yolo>
-A single Premium Draw pull\n
-<ten>
-A 10-part Premium Draw pull\n
-<spark> 
-A whole spark\`\`\``)
+        embed.addField("Gacha options", gachaOptions)
         embed.addField("Galas and Seasons", `\`\`\`html\n
 <gala: premium flash legend ff lf>
 The <gala> you choose will determine the SSR rate
@@ -115,7 +128,7 @@ You can set rateups with the weapon or summon name, followed by the desired rate
     // Rate-up methods
     rateup(message, args) {
         let command = message.content.substring("$g rateup ".length).split(" ")[0]
-        
+
         if (command == "check") {
             this.checkRateUp(message, args)
         }
@@ -267,7 +280,7 @@ You can set rateups with the weapon or summon name, followed by the desired rate
         return rateup
     }
 
-        findMissingRateUpData(original, result) {
+    findMissingRateUpData(original, result) {
         let resultNames = result.map(result => result.name)
         let resultRecruits = result.map(result => result.recruits)
             
