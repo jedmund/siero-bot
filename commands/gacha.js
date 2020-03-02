@@ -97,7 +97,16 @@ The <gala> you choose will determine the SSR rate
 
 <season: valentine summer halloween holiday>
 The <season> you choose adds seasonal SSRs to the pool\`\`\``)
-
+        embed.addField("Using Rateups", `\`\`\`html\n
+<rateup set>
+Set a new rateup\n
+<rateup check>
+Check your current rateup\n
+<rateup clear>
+Clear your current rateup\`\`\``)
+        embed.addField("Setting Rateups", `\`\`\`html\n
+<rateup set Sky Ace 0.300, Elil 0.500>
+You can set rateups with the weapon or summon name, followed by the desired rate separated by a space. You can add multiple rateups by separating them with a comma, as seen above.\`\`\``)
         message.channel.send(embed)
     }
 
