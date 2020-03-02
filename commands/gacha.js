@@ -115,7 +115,7 @@ You can set rateups with the weapon or summon name, followed by the desired rate
     // Rate-up methods
     rateup(message, args) {
         let command = message.content.substring("$g rateup ".length).split(" ")[0]
-        console.log(command)
+        
         if (command == "check") {
             this.checkRateUp(message, args)
         }
