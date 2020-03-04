@@ -9,6 +9,7 @@ class Gacha {
     gala
     season
     rateups
+    rates
 
     constructor(gala, season, rateups) {
         if (["flash", "ff"].includes(gala)) {
@@ -32,7 +33,8 @@ class Gacha {
                 break
         }
 
-        this.rateups = rateups
+        this.rateups = rateups.filter(item => this.filterItems(item, this.gala, this.season))
+        this.rates = this.ssrRates()
     }
 
     singleRoll() {
@@ -127,8 +129,7 @@ class Gacha {
 
         // First, subtract the sum of the rates of any rate-up characters from the total rate.
         for (var r in this.rateups) {
-            var rateup = this.rateups[r]
-            rate = rate - rateup.rate
+            rate = rate - this.rateups[r].rate
         }
 
         // Remove rateups from the total count of character weapons and summons
@@ -216,8 +217,7 @@ class Gacha {
         }
 
         // Fetch the rates and determine a bucket
-        let rates = this.ssrRates()
-        let bucket = this.determineSSRBucket(rates)
+        let bucket = this.determineSSRBucket(this.rates)
 
         var item
         if ([GachaBucket.WEAPON, GachaBucket.SUMMON, GachaBucket.LIMITED].includes(bucket)) {
@@ -234,10 +234,11 @@ class Gacha {
                     break
             }
         } else {
-            let filteredRateUpItems = this.rateups.filter(item => this.filterItems(item, this.gala, this.season))
-            let rateupItems = filteredRateUpItems.map(item => item.name)
-            let rateupRates = filteredRateUpItems.map(item => parseFloat(item.rate))
+            let rateupItems = this.rateups.map(item => item.name)
+            let rateupRates = this.rateups.map(item => parseFloat(item.rate))
 
+            console.log(rateupItems, rateupRates)
+            
             let result = chance.weighted(rateupItems, rateupRates)
             return this.rateups.find(item => item.name == result)
         }
@@ -246,18 +247,32 @@ class Gacha {
     }
 
     filterItems(item, gala, season) {
+        // If both a gala and a season are specified, 
+        // and the item appears in both
+        if (
+            (gala != null && season != null) && 
+            (this.isLimited(item) || this.isSeasonal(item)) &&
+            (item[gala] == 1 || item[season] == 1) 
+        ) {
+            return true
+        }
+
+        // If there is no gala specified, but this is a limited item
         if (gala == null && this.isLimited(item)) {
             return false
         }
 
+        // If there is a gala specified, but this item doesn't appear in the gala
         if (gala != null && item[gala] == 0) {
             return false
         }
 
+        // If there is no season specified, but this is a seasonal item
         if (season == null && this.isSeasonal(item)) {
             return false
         }
 
+        // If there is a season specified, but this item doesn't appear in that season
         if (season != null && item[season] == 0) {
             return false
         }
@@ -266,7 +281,6 @@ class Gacha {
     }
 
     isLimited(item) {
-        console.log(item.flash, item.legend, item.premium)
         return (item.flash == 1 || item.legend == 1) && item.premium == 0
     }
 
