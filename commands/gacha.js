@@ -350,6 +350,20 @@ class GachaCommand extends Command {
         return el.rarity == 3 && el.item_type == 1
     }
     
+    filterRateUpItems(items) {
+        var totalCount = 0
+        var rateups = this.rateups
+
+        for (var i in rateups) {
+            let rateupItem = this.rateups[i]
+            totalCount += items.reduce(function (n, item) {
+                return n + (rateupItem.gacha_id == item.gacha_id)
+            }, 0)
+        }
+
+        return totalCount
+    }
+
     // Render methods
     sortCharacterWeapons(results) {
         var characterWeapons = []
@@ -459,13 +473,15 @@ class GachaCommand extends Command {
     summaryString(results, count) {
         let ssrWeapons = results.filter(this.filterSSRWeapons)
         let ssrSummons = results.filter(this.filterSSRSummons)
+        let numRateupItems = this.filterRateUpItems(results)
     
         var ssrWeaponString = `SSR Weapons: ${ssrWeapons.length}`
         var ssrSummonString = `SSR Summons: ${ssrSummons.length}`
+        var rateupString = `Rate-up Items: ${numRateupItems}`
         var srString = `SR: ${count.SR}`
         var rString = `R: ${count.R}`
     
-        return [ssrWeaponString, ssrSummonString, srString, rString].join("\n")
+        return [rateupString, ssrWeaponString, ssrSummonString, srString, rString].join("\n")
     }
 
     // Helper methods
