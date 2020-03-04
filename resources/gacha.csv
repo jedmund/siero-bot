@@ -560,16 +560,17 @@ Benedia,3,0,Rackam (Grand),0,0,1,0,0,0,0
 Love Eternal,3,0,Rosetta (Grand),0,0,1,0,0,0,0
 Reunion,3,0,Lecia (Grand),0,0,1,0,0,0,0
 Taisai Spirit Bow,3,0,Pholia (Grand),0,0,1,0,0,0,0
-Mirror-Blade Shard,3,0,Alexiel,0,1,0,0,0,0,0
-Blutgang,3,0,Black Knight,0,1,0,0,0,0,0
-Blue Sphere,3,0,Drang,0,1,0,0,0,0,0
-Galilei's Insight,3,0,Europa,0,1,0,0,0,0,0
-Eden,3,0,Lucio,0,1,0,0,0,0,0
-Fallen Sword,3,0,Olivia,0,1,0,0,0,0,0
-Parazonium,3,0,Orchid,0,1,0,0,0,0,0
-Ixaba,3,0,Sturm,0,1,0,0,0,0,0
+Mirror-Blade Shard,3,0,Alexiel (Grand),0,1,0,0,0,0,0
+Blutgang,3,0,Black Knight (Grand),0,1,0,0,0,0,0
+Blue Sphere,3,0,Drang (Grand),0,1,0,0,0,0,0
+Galilei's Insight,3,0,Europa (Grand),0,1,0,0,0,0,0
+Eden,3,0,Lucio (Grand),0,1,0,0,0,0,0
+Fallen Sword,3,0,Olivia (Grand),0,1,0,0,0,0,0
+Parazonium,3,0,Orchid (Grand),0,1,0,0,0,0,0
+Ixaba,3,0,Sturm (Grand),0,1,0,0,0,0,0
 Certificus,3,0,Vira (Grand),0,1,0,0,0,0,0
 Cute Ribbon,3,0,Zooey (Grand),0,1,0,0,0,0,0
+Purifying Thunderbolt,3,0,Shiva (Grand),0,1,0,0,0,0,0
 Macula Marius (Summer),3,1,,0,0,0,0,1,0,0
 Silphium,3,0,Clarisse (Valentine),0,0,0,1,0,0,0
 Sword on the Cob,3,0,Melissabelle (Valentine),0,0,0,1,0,0,0
@@ -607,7 +608,7 @@ Forbidden Memories,3,0,Anthuria (Summer),0,0,0,0,1,0,0
 Cotton Candy,2,0,Cassius (Summer),0,0,0,0,1,0,0
 Nibelung Glas,3,0,Alexiel (Summer),0,0,0,0,1,0,0
 Liuyedao,2,0,Leona (Summer),0,0,0,0,1,0,0
-Rose Queen,3,1,,0,0,0,0,1,0,0
+Rose Queen (Summer),3,1,,0,0,0,0,1,0,0
 Golden Dragon,3,0,Stan and Aliza,1,1,1,1,1,1,1
 Hand Axe,3,0,Tabina,1,1,1,1,1,1,1
 Surtr,3,1,,1,1,1,1,1,1,1
