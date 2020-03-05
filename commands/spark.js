@@ -1,10 +1,7 @@
-const { Client } = require('pg')
+const { Client } = require('../services/connection.js')
 const { Command } = require('discord-akairo')
 const { RichEmbed } = require('discord.js')
 const pluralize = require('pluralize')
-
-const client = getClient()
-client.connect()
 
 class SparkCommand extends Command {
     constructor() {
@@ -31,6 +28,9 @@ class SparkCommand extends Command {
     }
 
     exec(message, args) {
+        this.storeMessage(message)
+        this.storeUser(message.author.id)
+
         this.checkIfUserExists(message.author, () => {
             this.switchOperation(message, args)
         })
@@ -45,14 +45,15 @@ class SparkCommand extends Command {
         let transposedCurrency = this.transposeCurrency(args.currency)
     
         let sql = `SELECT ${transposedCurrency} AS currency FROM sparks WHERE user_id = $1`
-        client.query(sql, [message.author.id], (err, res) => {
-            if (err) {
-                console.log(err.message)
-            }
-    
-            let sum = res.rows[0].currency + args.amount
-            this.updateCurrency(sum, transposedCurrency, message)
-        })
+        Client.query(sql, [message.author.id])
+            .then(res => {
+                let sum = res[0].currency + args.amount
+                this.updateCurrency(sum, transposedCurrency, message)
+            })
+            .catch(error => {
+                this.message.author.send(`Sorry, there was an error with your last request.`)
+                console.log(error)
+            })
     }
 
     remove(message, args) {
@@ -64,14 +65,15 @@ class SparkCommand extends Command {
     
         let sql = `SELECT ${transposedCurrency} AS currency FROM sparks WHERE user_id = $1`
     
-        client.query(sql, [message.author.id], (err, res) => {
-            if (err) {
-                console.log(err.message)
-            }
-    
-            let sum = res.rows[0].currency - args.amount
-            this.updateCurrency(sum, transposedCurrency, message)
-        })
+        Client.query(sql, [message.author.id])
+            .then(res => {
+                let sum = res[0].currency - args.amount
+                this.updateCurrency(sum, transposedCurrency, message)
+            })
+            .catch(error => {
+                this.message.author.send(`Sorry, there was an error with your last request.`)
+                console.log(error)
+            })
     }
 
     quicksave(message) {
@@ -85,13 +87,14 @@ class SparkCommand extends Command {
     reset(message) {
         let sql = `UPDATE sparks SET crystals = 0, tickets = 0, ten_tickets = 0 WHERE user_id = $1`
     
-        client.query(sql, [message.author.id], (err) => {
-            if (err) {
-                console.log(err.message)
-            }
-    
-            message.reply("Your spark has been reset!")
-        })
+        Client.query(sql, [message.author.id])
+            .then(_ => {
+                message.reply("Your spark has been reset!")
+            })
+            .catch(error => {
+                this.message.author.send(`Sorry, there was an error with your last request.`)
+                console.log(error)
+            })   
     }
 
     set(message, args) {
@@ -114,37 +117,38 @@ class SparkCommand extends Command {
             embed.setTitle("~~Leader~~ Loserboard")
         }
 
-        client.query(sql, (err, res) => {
-            let rows = (order === 'desc') ? 
-                res.rows.sort(this.compareProgress) :
-                res.rows.sort(this.compareProgress).reverse()
-            
-            var maxItems = 10
-            let usernameMaxChars = 15
-            let numDrawsMaxChars = 10
+        Client.query(sql)
+            .then(res => {
+                let rows = (order === 'desc') ? 
+                    res.rows.sort(this.compareProgress) :
+                    res.rows.sort(this.compareProgress).reverse()
+                
+                var maxItems = 10
+                let usernameMaxChars = 15
+                let numDrawsMaxChars = 10
 
-            let divider = '+-----+' + '-'.repeat(usernameMaxChars + 2) + '+' + '-'.repeat(numDrawsMaxChars + 1) + '+\n'
-            var result = divider
+                let divider = '+-----+' + '-'.repeat(usernameMaxChars + 2) + '+' + '-'.repeat(numDrawsMaxChars + 1) + '+\n'
+                var result = divider
 
-            for (var i = 0; i < maxItems; i++) {
-                let numDraws = this.calculateDraws(rows[i].crystals, rows[i].tickets, rows[i].ten_tickets)
+                for (var i = 0; i < maxItems; i++) {
+                    let numDraws = this.calculateDraws(rows[i].crystals, rows[i].tickets, rows[i].ten_tickets)
 
-                let spacedUsername = this.spacedString(rows[i].username, usernameMaxChars)
-                let spacedDraws = this.spacedString(`${numDraws} draws`, numDrawsMaxChars)
+                    let spacedUsername = this.spacedString(rows[i].username, usernameMaxChars)
+                    let spacedDraws = this.spacedString(`${numDraws} draws`, numDrawsMaxChars)
 
-                let place = ((i + 1) < 10) ? `${i + 1}  ` : `${i + 1} `
+                    let place = ((i + 1) < 10) ? `${i + 1}  ` : `${i + 1} `
 
-                result += `| #${place}| ${spacedUsername} | ${spacedDraws}|\n`
-                result += divider
-            }
-            
-            embed.setDescription("```html\n" + result + "\n```")
-            message.channel.send(embed)
-
-            if (err) {
-                console.log(err.message)
-            }
-        })
+                    result += `| #${place}| ${spacedUsername} | ${spacedDraws}|\n`
+                    result += divider
+                }
+                
+                embed.setDescription("```html\n" + result + "\n```")
+                message.channel.send(embed)
+            })
+            .catch(error => {
+                this.message.author.send(`Sorry, there was an error with your last request.`)
+                console.log(error)
+            })
     }
 
     status(message) {
@@ -370,89 +374,86 @@ See a leaderboard of everyone's spark progress\`\`\``)
     checkIfUserExists(user, callback) {
         let sql = 'SELECT COUNT(*) AS count FROM sparks WHERE user_id = $1'
     
-        client.query(sql, [user.id], (err, res) => {
-            if (res.rows[0].count == 0) {
-                this.createRowForUser(user, callback)
-            } else {
-                callback()
-            }
-        })
+        Client.one(sql, [user.id])
+            .then(res => {
+                if (res.count == 0) {
+                    this.createRowForUser(user, callback)
+                } else {
+                    callback()
+                }
+            })
+            .catch(error => {
+                this.message.author.send(`Sorry, there was an error with your last request.`)
+                console.log(error)
+            })
     }
     
     createRowForUser(user, callback) {
         let sql = 'INSERT INTO sparks (user_id, username) VALUES ($1, $2)'
         
-        client.query(sql, [user.id, user.username], function(err, res) {
-            if (err) {
-                console.log(err.message)
-            }
-    
-            callback()
-        })
+        Client.one(sql, [user.id, user.username])
+            .then(_ => {
+                callback()
+            })
+            .catch(error => {
+                this.message.author.send(`Sorry, there was an error with your last request.`)
+                console.log(error)
+            })
     }
     
     getProgress(message) {
         let sql = 'SELECT crystals, tickets, ten_tickets FROM sparks WHERE user_id = $1'
 
-        client.query(sql, [message.author.id], (err, res) => {
-            if (res.rowCount > 0) {
-                let crystals = res.rows[0].crystals
-                let tickets = res.rows[0].tickets
-                let tenTickets = res.rows[0].ten_tickets
+        Client.one(sql, [message.author.id])
+            .then(res => {
+                let crystals = res.crystals
+                let tickets = res.tickets
+                let tenTickets = res.ten_tickets
         
                 this.generateProgressString(message, crystals, tickets, tenTickets)
-            } else {
-                var id = message.mentions.users.values().next().value
-                message.reply(`It looks like ${id} hasn't started a spark yet.`)
-            }
-        })
+            })
+            .catch(error => {
+                this.message.author.send(`Sorry, there was an error with your last request.`)
+                console.log(error)
+            })
     }
     
     async updateCurrency(amount, currency, message) {
         let sql = `UPDATE sparks SET ${currency} = $1, username = $2 WHERE user_id = $3`
         let data = [amount, message.author.username, message.author.id]
     
-        await client.query(sql, data, (err, res) => {
-            if (err) {
-                console.log(err.message)
-            }
-        })
-
-        this.getProgress(message)
+        await Client.query(sql, data)
+            .then(_ => {
+                this.getProgress(message)
+            })
+            .catch(error => {
+                this.message.author.send(`Sorry, there was an error with your last request.`)
+                console.log(error)
+            })
     }
     
     updateSpark(crystals, tickets, tenTickets, message) {
         let sql = `UPDATE sparks SET crystals = $1, tickets = $2, ten_tickets = $3, username = $4 WHERE user_id = $5`
         let data = [crystals, tickets, tenTickets, message.author.username, message.author.id]
     
-        client.query(sql, data, (err) => {
-            if (err) {
-                console.log(err.message)
-            }
-    
-            this.getProgress(message)
-        })
-    }
-}
-
-function getClient() {
-    var c
-    if (process.env.NODE_ENV == "development") {
-        c = new Client({
-            user: process.env.PG_USER,
-            host: process.env.PG_HOST,
-            database: process.env.PG_DB,
-            password: process.env.PG_PASSWORD,
-            port: 5432,
-        })
-    } else {
-        c = new Client({
-            connectionString: process.env.DATABASE_URL,
-            ssl: true
-        })
+        Client.query(sql, data)
+            .then(_ => {
+                this.getProgress(message)
+            })
+            .catch(error => {
+                this.message.author.send(`Sorry, there was an error with your last request.`)
+                console.log(error)
+            })
     }
 
-    return c
+    // Helper methods
+    storeMessage(message) {
+        this.message = message
+    }
+
+    storeUser(id) {
+        this.userId = id
+    }
 }
 
 module.exports = SparkCommand
