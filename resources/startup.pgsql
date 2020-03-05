@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS sparks (
     crystals INTEGER DEFAULT 0,
     tickets INTEGER DEFAULT 0,
     ten_tickets INTEGER DEFAULT 0,
-    target TEXT,
+    target_id uuid,
     last_updated TIMESTAMP DEFAULT current_timestamp
 );
 
