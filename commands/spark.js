@@ -160,6 +160,94 @@ class SparkCommand extends Command {
         this.getProgress(message, id)
     }
 
+    target(message) {
+        let splitMessage = message.content.split(" ")
+        let targetString = splitMessage.slice(3).join(" ")
+
+        if (splitMessage.length >= 4 && splitMessage[2] == "set") {
+            this.setTarget(message.author.id, targetString)
+        } else if (splitMessage.length == 2 || splitMessage[2] == "show") {
+            this.showTarget(message.author.id)
+        }
+    }
+
+    setTarget(userId, target) {
+        let sql = [
+            "UPDATE sparks SET target_id = (",
+            "SELECT id FROM gacha",
+            "WHERE name = $1 OR recruits = $1",
+            "LIMIT 1)",
+            "WHERE user_id = $2 RETURNING",
+            "(SELECT name FROM gacha WHERE id = target_id),",
+            "(SELECT recruits FROM gacha WHERE id = target_id),",
+            "(SELECT rarity FROM gacha WHERE id = target_id)"
+        ].join(" ")
+        
+        Client.any(sql, [target, userId])
+            .then(data => {
+                var rarityString = ""
+                if (data[0].rarity == 1) {
+                    rarityString = "R"
+                } else if (data[0].rarity == 2) {
+                    rarityString = "SR"
+                } else if (data[0].rarity == 3) {
+                    rarityString = "SSR"
+                }
+
+                var string = `<${rarityString}> ${data[0].name}`
+                if (data[0].recruits != null) {
+                    string += ` (${data[0].recruits})`
+                }
+
+                var embed = new RichEmbed()
+                embed.setColor(0xb58900)
+                embed.setTitle("Your spark target")
+                embed.setDescription("```html\n" + string + "\n```")
+
+                this.message.channel.send(embed)
+            })
+            .catch(error => {
+                this.message.author.send(`Sorry, there was an error with your last request.`)
+                console.log(error)
+            })
+    }
+
+    showTarget(userId) {
+        let sql = [
+            "SELECT sparks.target_id, gacha.name, gacha.recruits, gacha.rarity FROM sparks",
+            "LEFT JOIN gacha ON sparks.target_id = gacha.id",
+            "WHERE user_id = $1"
+        ].join(" ")
+
+        Client.query(sql, [userId])
+            .then(data => {
+                var rarityString = ""
+                if (data[0].rarity == 1) {
+                    rarityString = "R"
+                } else if (data[0].rarity == 2) {
+                    rarityString = "SR"
+                } else if (data[0].rarity == 3) {
+                    rarityString = "SSR"
+                }
+
+                var string = `<${rarityString}> ${data[0].name}`
+                if (data[0].recruits != null) {
+                    string += ` (${data[0].recruits})`
+                }
+
+                var embed = new RichEmbed()
+                embed.setColor(0xb58900)
+                embed.setTitle("Your spark target")
+                embed.setDescription("```html\n" + string + "\n```")
+
+                this.message.channel.send(embed)
+            })
+            .catch(error => {
+                this.message.author.send(`Sorry, there was an error with your last request.`)
+                console.log(error)
+            })
+    }
+
     help(message) {
         var embed = new RichEmbed()
         embed.setTitle("Spark")
@@ -339,6 +427,9 @@ See a leaderboard of everyone's spark progress\`\`\``)
                 break
             case "spend":
                 this.remove(message, args)
+                break
+            case "target":
+                this.target(message, args)
                 break
             case "status":
                 this.status(message)
