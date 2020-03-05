@@ -213,30 +213,43 @@ class SparkCommand extends Command {
     }
 
     help(message) {
+        let sparkOptions = [
+            "```html\n",
+            "<status>",
+            "See how much you've saved\n",
+            "<set>",
+            "Save an absolute value for a currency\n",
+            "<add/save>",
+            "Add an amount of currency to your total\n",
+            "<remove/spend>",
+            "Remove an amount of currency from your total\n",
+            "<reset>",
+            "Reset your spark\n",
+            "<quicksave>",
+            "Quickly save all currencies\n",
+            "<leaderboard>",
+            "See a leaderboard of everyone's spark progress```"
+        ].join("\n")
+
+        let currencies = [
+            "You can use both singular and plural words for currencies",
+            "```crystals tickets tenticket```"
+        ].join("\n")
+
+        let quicksave = [
+            "This is the proper formatting for quicksave:",
+            "```spark quicksave <crystals> <tickets> <tentickets>```"
+        ].join("\n")
+
         var embed = new RichEmbed()
         embed.setTitle("Spark")
         embed.setDescription("Welcome! I can help you save your spark!")
         embed.setColor(0xdc322f)
+        
         embed.addField("Command syntax", "```spark <option> <amount> <currency>```")
-        embed.addField("Spark options", `\`\`\`html\n
-<status>
-See how much you've saved\n
-<set>
-Save an absolute value for a currency\n
-<add/save>
-Add an amount of currency to your total\n
-<remove/spend>
-Remove an amount of currency from your total\n
-<reset>
-Reset your spark\n
-<quicksave>
-Quickly save all currencies\n
-<leaderboard>
-See a leaderboard of everyone's spark progress\`\`\``)
-        embed.addField("Currencies", `You can use both singular and plural words for currencies
-    \`\`\`crystals tickets tenticket\`\`\``)
-        embed.addField("Quicksave", `This is the proper formatting for quicksave:
-    \`\`\`spark quicksave <crystals> <tickets> <tentickets>\`\`\``)
+        embed.addField("Spark options", sparkOptions)
+        embed.addField("Currencies", currencies)
+        embed.addField("Quicksave", quicksave)
     
         message.channel.send(embed)
     }
