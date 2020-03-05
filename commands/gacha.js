@@ -133,64 +133,6 @@ class GachaCommand extends Command {
         }
     }
 
-    extractPropertiesFromTarget(message) {
-        let gala = message.find(item => ["legend", "flash", "lf", "ff"].includes(item))
-        let season = message.find(item => ["halloween", "holiday", "summer", "valentine"].includes(item))
-
-        return {
-            gala   : gala,
-            season : season
-        }
-    }
-
-    checkTarget(gacha, item) {
-        if (gacha.gala == null && gacha.season == null && (gacha.isLimited(item) || gacha.isSeasonal(item))) {
-            return false
-        }
-
-        if (gacha.gala != null && gacha.season == null && item[gacha.gala] == 0) {
-            return false
-        }
-
-        if (gacha.season != null && gacha.gala == null && item[gacha.season] == 0) {
-            return false
-        }
-
-        if (gacha.gala != null && gacha.season != null && item[gacha.gala] == 0 && item[gacha.season] == 0) {
-            return false
-        }
-
-        return true
-    }
-
-    extractTarget(message, gala, season) {
-        let indexOfGala = message.indexOf(gala)
-        let indexOfSeason = message.indexOf(season)
-        
-        var target
-        if (indexOfGala > -1) {
-            target = message.splice(2, indexOfGala - 2).join(" ")
-        } else if (indexOfGala == -1 && indexOfSeason > -1) {
-            target = message.splice(2, indexOfSeason - 2).join(" ")
-        } else {
-            target = message.splice(2).join(" ")
-        }
-
-        return target
-    }
-
-    async fetchTarget(name) {
-        let sql = "SELECT * FROM gacha WHERE name = $1 OR recruits = $1"
-        return await Client.one(sql, [name])
-            .then(res => {
-                return res
-            })
-            .catch(error => {
-                this.message.author.send(`Sorry, there was an error with your last request.`)
-                console.log(error)
-            })
-    }
-
     help(message) {
         var embed = new RichEmbed()
 
@@ -417,22 +359,6 @@ class GachaCommand extends Command {
         return embed
     }
 
-    generateTargetString(target, rolls) {
-        var string = ""
-        if (target.recruits != null) {
-            string = `It took **${rolls} rolls** to pull **${target.name} (${target.recruits})**.`
-        } else {
-            string = `It took **${rolls} rolls** to pull **${target.name}**.`
-        }
-
-        let numTenPulls = rolls / 10
-        let tenPullCost = 3000
-        let exchangeRate = 106.10
-        let conversion = `That's **${(numTenPulls * tenPullCost).toLocaleString()} crystals** or about **\$${Math.ceil(((numTenPulls * tenPullCost) / exchangeRate)).toLocaleString()}**!`
-        
-        return [string, conversion].join(" ")
-    }
-
     extractRateUp() {
         let rateupString = this.message.content.split(" ").splice(3).join(" ")
         let rawRateUps = rateupString.split(",").map(item => item.trim())
@@ -448,6 +374,82 @@ class GachaCommand extends Command {
         }
 
         return rateups
+    }
+
+    // Target command methods
+    checkTarget(gacha, item) {
+        if (gacha.gala == null && gacha.season == null && (gacha.isLimited(item) || gacha.isSeasonal(item))) {
+            return false
+        }
+
+        if (gacha.gala != null && gacha.season == null && item[gacha.gala] == 0) {
+            return false
+        }
+
+        if (gacha.season != null && gacha.gala == null && item[gacha.season] == 0) {
+            return false
+        }
+
+        if (gacha.gala != null && gacha.season != null && item[gacha.gala] == 0 && item[gacha.season] == 0) {
+            return false
+        }
+
+        return true
+    }
+
+    extractPropertiesFromTarget(message) {
+        let gala = message.find(item => ["legend", "flash", "lf", "ff"].includes(item))
+        let season = message.find(item => ["halloween", "holiday", "summer", "valentine"].includes(item))
+
+        return {
+            gala   : gala,
+            season : season
+        }
+    }
+
+    extractTarget(message, gala, season) {
+        let indexOfGala = message.indexOf(gala)
+        let indexOfSeason = message.indexOf(season)
+        
+        var target
+        if (indexOfGala > -1) {
+            target = message.splice(2, indexOfGala - 2).join(" ")
+        } else if (indexOfGala == -1 && indexOfSeason > -1) {
+            target = message.splice(2, indexOfSeason - 2).join(" ")
+        } else {
+            target = message.splice(2).join(" ")
+        }
+
+        return target
+    }
+
+    async fetchTarget(name) {
+        let sql = "SELECT * FROM gacha WHERE name = $1 OR recruits = $1"
+        return await Client.one(sql, [name])
+            .then(res => {
+                return res
+            })
+            .catch(error => {
+                this.message.author.send(`Sorry, there was an error with your last request.`)
+                console.log(error)
+            })
+    }
+
+    // Target helper methods
+    generateTargetString(target, rolls) {
+        var string = ""
+        if (target.recruits != null) {
+            string = `It took **${rolls} rolls** to pull **${target.name} (${target.recruits})**.`
+        } else {
+            string = `It took **${rolls} rolls** to pull **${target.name}**.`
+        }
+
+        let numTenPulls = rolls / 10
+        let tenPullCost = 3000
+        let exchangeRate = 106.10
+        let conversion = `That's **${(numTenPulls * tenPullCost).toLocaleString()} crystals** or about **\$${Math.ceil(((numTenPulls * tenPullCost) / exchangeRate)).toLocaleString()}**!`
+        
+        return [string, conversion].join(" ")
     }
 
     // Filter methods
