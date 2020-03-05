@@ -501,8 +501,7 @@ class SparkCommand extends Command {
     }
 
     buildSparkTargetEmbed(target) {
-        
-        var rarity = target.rarity
+        var rarity = this.mapRarity(target.rarity)
 
         var string = `<${rarity}> ${target.name}`
         if (target.recruits != null) {
