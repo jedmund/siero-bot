@@ -31,6 +31,7 @@ class GachaCommand extends Command {
         this.storeMessage(message)
         this.storeUser(message.author.id)
         await this.storeRateups()
+        await this.storeSparkTarget()
 
         switch(args.operation) {
             case "yolo":
@@ -108,7 +109,7 @@ class GachaCommand extends Command {
         let targetString = this.extractTarget(splitMessage, properties.gala, properties.season)
 
         let gacha = new Gacha(properties.gala, properties.season, this.rateups)
-        let target = await this.fetchTarget(targetString)
+        let target = await this.fetchSuppliedTarget(targetString)
 
         if (this.checkTarget(gacha, target)) {
             var count = 0
@@ -423,7 +424,7 @@ class GachaCommand extends Command {
         return target
     }
 
-    async fetchTarget(name) {
+    async fetchSuppliedTarget(name) {
         let sql = "SELECT * FROM gacha WHERE name = $1 OR recruits = $1"
         return await Client.one(sql, [name])
             .then(res => {
@@ -585,14 +586,18 @@ class GachaCommand extends Command {
         let ssrWeapons = results.filter(this.filterSSRWeapons)
         let ssrSummons = results.filter(this.filterSSRSummons)
         let numRateupItems = this.filterRateUpItems(results)
-    
+        let targetAcquired = results.filter(item => { 
+            return item.name === this.sparkTarget.name || item.recruits === this.sparkTarget.recruits 
+        })
+
+        var targetAcquiredString = (targetAcquired.length > 1) ? `You got your spark target! (${targetAcquired.length})` : "You got your spark target!"
         var ssrWeaponString = `SSR Weapons: ${ssrWeapons.length}`
         var ssrSummonString = `SSR Summons: ${ssrSummons.length}`
-        var rateupString = `Rate-up Items: ${numRateupItems}`
+        var rateupString = (this.rateups.length > 0) ? `Rate-up Items: ${numRateupItems}` : ""
         var srString = `SR: ${count.SR}`
         var rString = `R: ${count.R}`
     
-        return [rateupString, ssrWeaponString, ssrSummonString, srString, rString].join("\n")
+        return [targetAcquiredString, rateupString, ssrWeaponString, ssrSummonString, srString, rString].join("\n")
     }
 
     // Helper methods
@@ -630,6 +635,22 @@ class GachaCommand extends Command {
         try {
             this.rateups = await Client.any(sql, [this.userId])
         } catch {
+            console.log("Error")
+        }
+    }
+
+    async storeSparkTarget() {
+        let sql = [
+            "SELECT gacha.* FROM sparks",
+            "LEFT JOIN gacha ON sparks.target_id = gacha.id",
+            "WHERE user_id = $1"
+        ].join(" ")
+
+        try {
+            let result = await Client.query(sql, [this.userId])
+            this.sparkTarget = result[0]
+        } catch {
+            this.message.author.send(`Sorry, there was an error with your last request.`)
             console.log("Error")
         }
     }
