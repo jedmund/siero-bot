@@ -236,8 +236,6 @@ class Gacha {
         } else {
             let rateupItems = this.rateups.map(item => item.name)
             let rateupRates = this.rateups.map(item => parseFloat(item.rate))
-
-            console.log(rateupItems, rateupRates)
             
             let result = chance.weighted(rateupItems, rateupRates)
             return this.rateups.find(item => item.name == result)

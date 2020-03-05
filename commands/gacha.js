@@ -45,6 +45,9 @@ class GachaCommand extends Command {
             case "rateup":
                 this.rateup(message)
                 break
+            case "until":
+                this.target(message, args)
+                break
             case "help":
                 this.help(message)
                 break
@@ -96,6 +99,96 @@ class GachaCommand extends Command {
                 this.copyRateUp(message)
                 break
         }
+    }
+
+    async target(message) {        
+        let splitMessage = message.content.split(" ")
+
+        let properties = this.extractPropertiesFromTarget(splitMessage)
+        let targetString = this.extractTarget(splitMessage, properties.gala, properties.season)
+
+        let gacha = new Gacha(properties.gala, properties.season, this.rateups)
+        let target = await this.fetchTarget(targetString)
+
+        if (this.checkTarget(gacha, target)) {
+            var count = 0
+            var found = false
+
+            while (!found) {
+                let roll = gacha.tenPartRoll()
+                count = count + 10
+                
+                for (var i in roll.items) {
+                    let item = roll.items[i]
+                    if (item.name == target.name || (item.recruits == target.recruits && target.recruits != null)) {
+                        found = true
+                    }
+                }
+            }
+
+            let string = this.generateTargetString(target, count)
+            message.reply(string)
+        } else {
+            message.reply(`Sorry, **${target.name}** doesn't appear in the gala or season you selected.`)
+        }
+    }
+
+    extractPropertiesFromTarget(message) {
+        let gala = message.find(item => ["legend", "flash", "lf", "ff"].includes(item))
+        let season = message.find(item => ["halloween", "holiday", "summer", "valentine"].includes(item))
+
+        return {
+            gala   : gala,
+            season : season
+        }
+    }
+
+    checkTarget(gacha, item) {
+        if (gacha.gala == null && gacha.season == null && (gacha.isLimited(item) || gacha.isSeasonal(item))) {
+            return false
+        }
+
+        if (gacha.gala != null && gacha.season == null && item[gacha.gala] == 0) {
+            return false
+        }
+
+        if (gacha.season != null && gacha.gala == null && item[gacha.season] == 0) {
+            return false
+        }
+
+        if (gacha.gala != null && gacha.season != null && item[gacha.gala] == 0 && item[gacha.season] == 0) {
+            return false
+        }
+
+        return true
+    }
+
+    extractTarget(message, gala, season) {
+        let indexOfGala = message.indexOf(gala)
+        let indexOfSeason = message.indexOf(season)
+        
+        var target
+        if (indexOfGala > -1) {
+            target = message.splice(2, indexOfGala - 2).join(" ")
+        } else if (indexOfGala == -1 && indexOfSeason > -1) {
+            target = message.splice(2, indexOfSeason - 2).join(" ")
+        } else {
+            target = message.splice(2).join(" ")
+        }
+
+        return target
+    }
+
+    async fetchTarget(name) {
+        let sql = "SELECT * FROM gacha WHERE name = $1 OR recruits = $1"
+        return await Client.one(sql, [name])
+            .then(res => {
+                return res
+            })
+            .catch(error => {
+                this.message.author.send(`Sorry, there was an error with your last request.`)
+                console.log(error)
+            })
     }
 
     help(message) {
@@ -324,8 +417,24 @@ class GachaCommand extends Command {
         return embed
     }
 
+    generateTargetString(target, rolls) {
+        var string = ""
+        if (target.recruits != null) {
+            string = `It took **${rolls} rolls** to pull **${target.name} (${target.recruits})**.`
+        } else {
+            string = `It took **${rolls} rolls** to pull **${target.name}**.`
+        }
+
+        let numTenPulls = rolls / 10
+        let tenPullCost = 3000
+        let exchangeRate = 106.10
+        let conversion = `That's **${(numTenPulls * tenPullCost).toLocaleString()} crystals** or about **\$${Math.ceil(((numTenPulls * tenPullCost) / exchangeRate)).toLocaleString()}**!`
+        
+        return [string, conversion].join(" ")
+    }
+
     extractRateUp() {
-        let rateupString = this.message.content.substring("$g rateup set ".length)
+        let rateupString = this.message.content.split(" ").splice(3).join(" ")
         let rawRateUps = rateupString.split(",").map(item => item.trim())
 
         var rateups = []
