@@ -185,25 +185,7 @@ class SparkCommand extends Command {
         
         Client.any(sql, [target, userId])
             .then(data => {
-                var rarityString = ""
-                if (data[0].rarity == 1) {
-                    rarityString = "R"
-                } else if (data[0].rarity == 2) {
-                    rarityString = "SR"
-                } else if (data[0].rarity == 3) {
-                    rarityString = "SSR"
-                }
-
-                var string = `<${rarityString}> ${data[0].name}`
-                if (data[0].recruits != null) {
-                    string += ` (${data[0].recruits})`
-                }
-
-                var embed = new RichEmbed()
-                embed.setColor(0xb58900)
-                embed.setTitle("Your spark target")
-                embed.setDescription("```html\n" + string + "\n```")
-
+                let embed = this.buildSparkTargetEmbed(data[0])
                 this.message.channel.send(embed)
             })
             .catch(error => {
@@ -221,25 +203,7 @@ class SparkCommand extends Command {
 
         Client.query(sql, [userId])
             .then(data => {
-                var rarityString = ""
-                if (data[0].rarity == 1) {
-                    rarityString = "R"
-                } else if (data[0].rarity == 2) {
-                    rarityString = "SR"
-                } else if (data[0].rarity == 3) {
-                    rarityString = "SSR"
-                }
-
-                var string = `<${rarityString}> ${data[0].name}`
-                if (data[0].recruits != null) {
-                    string += ` (${data[0].recruits})`
-                }
-
-                var embed = new RichEmbed()
-                embed.setColor(0xb58900)
-                embed.setTitle("Your spark target")
-                embed.setDescription("```html\n" + string + "\n```")
-
+                let embed = this.buildSparkTargetEmbed(data[0])
                 this.message.channel.send(embed)
             })
             .catch(error => {
@@ -521,6 +485,37 @@ See a leaderboard of everyone's spark progress\`\`\``)
                 this.message.author.send(`Sorry, there was an error with your last request.`)
                 console.log(error)
             })
+    }
+
+    buildSparkTargetEmbed(target) {
+        
+        var rarity = target.rarity
+
+        var string = `<${rarity}> ${target.name}`
+        if (target.recruits != null) {
+            string += ` (${target.recruits})`
+        }
+
+        var embed = new RichEmbed()
+        embed.setColor(0xb58900)
+        embed.setTitle("Your spark target")
+        embed.setDescription("```html\n" + string + "\n```")
+
+        return embed
+    }
+
+    mapRarity(rarity) {
+        var rarityString = ""
+
+        if (rarity == 1) {
+            rarityString = "R"
+        } else if (rarity == 2) {
+            rarityString = "SR"
+        } else if (rarity == 3) {
+            rarityString = "SSR"
+        }
+
+        return rarityString
     }
     
     updateSpark(crystals, tickets, tenTickets, message) {
