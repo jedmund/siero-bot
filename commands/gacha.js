@@ -587,10 +587,10 @@ class GachaCommand extends Command {
         let ssrSummons = results.filter(this.filterSSRSummons)
         let numRateupItems = this.filterRateUpItems(results)
         let targetAcquired = results.filter(item => { 
-            return item.name === this.sparkTarget.name || item.recruits === this.sparkTarget.recruits 
+            return item.name === this.sparkTarget.name || (item.recruits != null && item.recruits === this.sparkTarget.recruits)
         })
 
-        var targetAcquiredString = (targetAcquired.length > 1) ? `You got your spark target! (${targetAcquired.length})` : "You got your spark target!"
+        var targetAcquiredString = (targetAcquired.length > 0) ? `You got your spark target! (${targetAcquired.length})` : ""
         var ssrWeaponString = `SSR Weapons: ${ssrWeapons.length}`
         var ssrSummonString = `SSR Summons: ${ssrSummons.length}`
         var rateupString = (this.rateups.length > 0) ? `Rate-up Items: ${numRateupItems}` : ""
