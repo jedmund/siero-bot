@@ -168,6 +168,8 @@ class SparkCommand extends Command {
             this.setTarget(message.author.id, targetString)
         } else if (splitMessage.length == 2 || splitMessage[2] == "show") {
             this.showTarget(message.author.id)
+        } else if (splitMessage.length == 2 || splitMessage[2] == "reset") {
+            this.resetTarget(message)
         }
     }
 
@@ -198,13 +200,26 @@ class SparkCommand extends Command {
         let sql = [
             "SELECT sparks.target_id, gacha.name, gacha.recruits, gacha.rarity FROM sparks",
             "LEFT JOIN gacha ON sparks.target_id = gacha.id",
-            "WHERE user_id = $1"
+            "WHERE user_id = $1 AND sparks.target_id IS NOT NULL"
         ].join(" ")
 
-        Client.query(sql, [userId])
+        Client.one(sql, [userId])
             .then(data => {
-                let embed = this.buildSparkTargetEmbed(data[0])
+                let embed = this.buildSparkTargetEmbed(data)
                 this.message.channel.send(embed)
+            })
+            .catch(error => {
+                this.message.author.send(`It looks like you haven't set a spark target yet!`)
+                console.log(error)
+            })
+    }
+
+    resetTarget(message) {
+        let sql = `UPDATE sparks SET target_id = NULL WHERE user_id = $1`
+    
+        Client.query(sql, [message.author.id])
+            .then(_ => {
+                message.reply("Your spark target has been reset!")
             })
             .catch(error => {
                 this.message.author.send(`Sorry, there was an error with your last request.`)
