@@ -442,9 +442,9 @@ class GachaCommand extends Command {
     generateTargetString(target, rolls) {
         var string = ""
         if (target.recruits != null) {
-            string = `It took **${rolls} rolls** to pull **${target.name} (${target.recruits})**.`
+            string = `It took **${rolls.toLocaleString()} rolls** to pull **${target.name} (${target.recruits})**.`
         } else {
-            string = `It took **${rolls} rolls** to pull **${target.name}**.`
+            string = `It took **${rolls.toLocaleString()} rolls** to pull **${target.name}**.`
         }
 
         let numTenPulls = rolls / 10
