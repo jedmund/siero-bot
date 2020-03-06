@@ -89,9 +89,8 @@ class GachaCommand extends Command {
             case "check":
                 this.checkRateUp(message, args)
                 break
-            case "clear":
-                this.clearRateUp()
-                message.reply("Your rate-up has been cleared.")
+            case "reset":
+                this.resetRateUp()
                 break
             case "set":
                 this.setRateUp(command)
@@ -164,8 +163,8 @@ class GachaCommand extends Command {
             "<rateup copy @user>",
             "Copy the tagged user's rateup\n",
             "<rateup check>",
-            "Check your current rateup",
-            "<rateup clear>",
+            "Check your current rateup\n",
+            "<rateup reset>",
             "Clear your current rateup```"
         ].join("\n")
 
@@ -189,6 +188,8 @@ class GachaCommand extends Command {
 
     // Rate-up command methods
     copyRateUp(message) {
+        this.resetRateUp()
+
         let sourceUser = message.mentions.users.array()[0]
         let destinationUser = message.author
         let sql = [
@@ -244,16 +245,19 @@ class GachaCommand extends Command {
 
     setRateUp(command, message) {
         // First, clear the existing rate up
-        this.clearRateUp(message)
+        this.resetRateUp(message)
 
         // Then, save the new rate up
         var rateups = this.extractRateUp(command)
         this.saveRateUps(rateups)
     }
 
-    clearRateUp() {
+    resetRateUp() {
         let sql = 'DELETE FROM rateup WHERE user_id = $1'
         Client.any(sql, [this.userId])
+            .then(_ => {
+                this.message.reply("Your rate-up has been cleared.")
+            })
             .catch(error => {
                 this.message.author.send(`Sorry, there was an error with your last request.`)
                 console.log(error)
@@ -271,6 +275,10 @@ class GachaCommand extends Command {
         
         Client.any(sql, [list])
             .then(data => {
+                if (data.length > list.length) {
+                    console.log("Data mismatch!")
+                }
+
                 let embed = this.createRateUpEmbed(data, dictionary, list)
                 this.message.channel.send(embed)
             })
