@@ -238,10 +238,12 @@ class SparkCommand extends Command {
             "Add an amount of currency to your total\n",
             "<remove/spend>",
             "Remove an amount of currency from your total\n",
-            "<reset>",
-            "Reset your spark\n",
             "<quicksave>",
             "Quickly save all currencies\n",
+            "<reset>",
+            "Reset your spark\n",
+            "<target>",
+            "Set a target for your spark\n",
             "<leaderboard>",
             "See a leaderboard of everyone's spark progress```"
         ].join("\n")
@@ -256,6 +258,17 @@ class SparkCommand extends Command {
             "```spark quicksave <crystals> <tickets> <tentickets>```"
         ].join("\n")
 
+        let usingTargets = [
+            "```html\n",
+            "<target set @item>",
+            "Set the provided @item as your spark target",
+            "<target show>",
+            "Show your current spark target",
+            "<target reset>",
+            "Reset your current spark target",
+            "```"
+        ].join("\n")
+
         var embed = new RichEmbed()
         embed.setTitle("Spark")
         embed.setDescription("Welcome! I can help you save your spark!")
@@ -265,6 +278,7 @@ class SparkCommand extends Command {
         embed.addField("Spark options", sparkOptions)
         embed.addField("Currencies", currencies)
         embed.addField("Quicksave", quicksave)
+        embed.addField("Using Targets", usingTargets)
     
         message.channel.send(embed)
     }

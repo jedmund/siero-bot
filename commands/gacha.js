@@ -144,7 +144,9 @@ class GachaCommand extends Command {
             "<ten>",
             "A 10-part Premium Draw pull\n",
             "<spark>",
-            "A whole spark```"
+            "A whole spark```\n",
+            "<until>",
+            "Roll until you get the item you want"
         ].join("\n")
 
         var galasAndSeasons = [
