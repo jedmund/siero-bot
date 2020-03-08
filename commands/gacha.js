@@ -188,7 +188,7 @@ class GachaCommand extends Command {
 
     // Rate-up command methods
     copyRateUp(message) {
-        this.resetRateUp()
+        this.resetRateUp(false)
 
         let sourceUser = message.mentions.users.array()[0]
         let destinationUser = message.author
@@ -245,18 +245,20 @@ class GachaCommand extends Command {
 
     setRateUp(command, message) {
         // First, clear the existing rate up
-        this.resetRateUp(message)
+        this.resetRateUp(false)
 
         // Then, save the new rate up
         var rateups = this.extractRateUp(command)
         this.saveRateUps(rateups)
     }
 
-    resetRateUp() {
+    resetRateUp(message = true) {
         let sql = 'DELETE FROM rateup WHERE user_id = $1'
         Client.any(sql, [this.userId])
             .then(_ => {
-                this.message.reply("Your rate-up has been cleared.")
+                if (message) {
+                    this.message.reply("Your rate-up has been cleared.")
+                }
             })
             .catch(error => {
                 this.message.author.send(`Sorry, there was an error with your last request.`)
