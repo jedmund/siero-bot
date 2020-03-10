@@ -106,7 +106,7 @@ class SparkCommand extends Command {
     }
 
     async leaderboard(message, order = 'desc') {
-        let sql = `SELECT * FROM sparks`
+        let sql = `SELECT username, crystals, tickets, ten_tickets, last_updated, gacha.name, gacha.recruits FROM sparks LEFT JOIN gacha ON sparks.target_id = gacha.id`
 
         var embed = new RichEmbed()
         embed.setColor(0xb58900)
@@ -126,8 +126,9 @@ class SparkCommand extends Command {
                 var maxItems = 10
                 let usernameMaxChars = 15
                 let numDrawsMaxChars = 10
+                let targetMaxChars = 14
 
-                let divider = '+-----+' + '-'.repeat(usernameMaxChars + 2) + '+' + '-'.repeat(numDrawsMaxChars + 1) + '+\n'
+                let divider = '+-----+' + '-'.repeat(usernameMaxChars + 2) + '+' + '-'.repeat(numDrawsMaxChars + 1) + '+' + '-'.repeat(targetMaxChars + 2) + '+\n'
                 var result = divider
 
                 for (var i = 0; i < maxItems; i++) {
@@ -136,9 +137,18 @@ class SparkCommand extends Command {
                     let spacedUsername = this.spacedString(rows[i].username, usernameMaxChars)
                     let spacedDraws = this.spacedString(`${numDraws} draws`, numDrawsMaxChars)
 
+                    var spacedTarget = ""
+                    if (rows[i].recruits != null) {
+                        spacedTarget = this.spacedString(rows[i].recruits, targetMaxChars)
+                    } else if (rows[i].name != null) {
+                        spacedTarget = this.spacedString(rows[i].name, targetMaxChars)
+                    } else {
+                        spacedTarget = this.spacedString("", targetMaxChars)
+                    }
+
                     let place = ((i + 1) < 10) ? `${i + 1}  ` : `${i + 1} `
 
-                    result += `| #${place}| ${spacedUsername} | ${spacedDraws}|\n`
+                    result += `| #${place}| ${spacedUsername} | ${spacedDraws}| ${spacedTarget} |\n`
                     result += divider
                 }
                 
