@@ -120,8 +120,8 @@ class SparkCommand extends Command {
         Client.query(sql)
             .then(res => {
                 let rows = (order === 'desc') ? 
-                    res.rows.sort(this.compareProgress) :
-                    res.rows.sort(this.compareProgress).reverse()
+                    res.sort(this.compareProgress) :
+                    res.sort(this.compareProgress).reverse()
                 
                 var maxItems = 10
                 let usernameMaxChars = 15
