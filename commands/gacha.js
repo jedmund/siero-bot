@@ -92,6 +92,9 @@ class GachaCommand extends Command {
             case "reset":
                 this.resetRateUp()
                 break
+            case "clear":
+                this.resetRateUp()
+                break
             case "set":
                 this.setRateUp(command)
                 break
@@ -598,9 +601,10 @@ class GachaCommand extends Command {
         let ssrWeapons = results.filter(this.filterSSRWeapons)
         let ssrSummons = results.filter(this.filterSSRSummons)
         let numRateupItems = this.filterRateUpItems(results)
+
         let targetAcquired = results.filter(item => { 
             if (this.sparkTarget != null) {
-                return item.name === this.sparkTarget.name || (item.recruits != null && item.recruits === this.sparkTarget.recruits)
+                return item.name == this.sparkTarget.name || (item.recruits != null && item.recruits == this.sparkTarget.recruits)
             } else {
                 return null
             }
@@ -608,7 +612,7 @@ class GachaCommand extends Command {
 
         var targetAcquiredString = ""
         if (targetAcquired != null) {
-            targetAcquired = (targetAcquired.length > 0) ? `You got your spark target! (${targetAcquired.length})` : ""
+            targetAcquiredString = (targetAcquired.length > 0) ? `You got your spark target! (${targetAcquired.length})` : ""
         }
         
         var ssrWeaponString = `SSR Weapons: ${ssrWeapons.length}`
