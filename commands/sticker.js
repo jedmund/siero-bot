@@ -40,8 +40,11 @@ class StickerCommand extends Command {
             message.author.send(embed)
         } else {
             let sticker = this.sticker(alias, args)
-            embed.setImage(sticker)
-            message.channel.send(embed)
+
+            if (sticker != null) {
+                embed.setImage(sticker)
+                message.channel.send(embed)
+            }
         }
     }
 
@@ -54,13 +57,17 @@ class StickerCommand extends Command {
             alias = this.extractAlias(alias)
         }
 
-        if (isJapanese) {
-            sticker = stickers[alias].jp
-        } else {
-            sticker = stickers[alias].en
-        }
+        if (Object.keys(stickers).includes(alias)) {
+            if (isJapanese) {
+                sticker = stickers[alias].jp
+            } else {
+                sticker = stickers[alias].en
+            }
 
-        return sticker
+            return sticker
+        } else {
+            return null
+        }
     }
 
     extractAlias(string) {
