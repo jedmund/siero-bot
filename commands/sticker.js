@@ -90,7 +90,7 @@ function getStickers() {
             en: 'https://gbf.wiki/images/2/28/Stamp11.png',
             jp: 'https://gbf.wiki/images/7/7e/Stamp11jp.png'
         },
-        'bonito': {
+        'bigBonito': {
             en: 'https://gbf.wiki/images/7/71/Stamp54.png',
             jp: 'https://gbf.wiki/images/7/71/Stamp54.png'
         },
@@ -322,7 +322,7 @@ function getStickers() {
             en: 'https://gbf.wiki/images/b/b3/Stamp109.png',
             jp: 'https://gbf.wiki/images/b/be/Stamp109jp.png'
         },
-        'yugu': {
+        'yuguChime': {
             en: 'https://gbf.wiki/images/3/3f/Stamp180.png',
             jp: 'https://gbf.wiki/images/3/3f/Stamp180.png'
         },
