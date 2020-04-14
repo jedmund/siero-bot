@@ -82,6 +82,18 @@ function getStickers() {
             en: 'https://gbf.wiki/images/7/74/Stamp37.png',
             jp: 'https://gbf.wiki/images/6/66/Stamp37jp.png'
         },
+        'at': {
+            en: 'https://gbf.wiki/images/2/28/Stamp11.png',
+            jp: 'https://gbf.wiki/images/7/7e/Stamp11jp.png'
+        },
+        'st': {
+            en: 'https://gbf.wiki/images/2/28/Stamp11.png',
+            jp: 'https://gbf.wiki/images/7/7e/Stamp11jp.png'
+        },
+        'bonito': {
+            en: 'https://gbf.wiki/images/7/71/Stamp54.png',
+            jp: 'https://gbf.wiki/images/7/71/Stamp54.png'
+        },
         'cagTeehee': {
             en: 'https://gbf.wiki/images/0/08/Stamp142.png',
             jp: 'https://gbf.wiki/images/8/8f/Stamp142jp.png'
@@ -297,6 +309,22 @@ function getStickers() {
         'vyrnZzz': {
             en: 'https://gbf.wiki/images/7/7c/Stamp79.png',
             jp: 'https://gbf.wiki/images/7/74/Stamp79jp.png'
+        },
+        'yipyip1': {
+            en: 'https://gbf.wiki/images/d/d3/Stamp177.png',
+            jp: 'https://gbf.wiki/images/2/20/Stamp177jp.png'
+        },
+        'yipyip2': {
+            en: 'https://gbf.wiki/images/7/75/Stamp178.png',
+            jp: 'https://gbf.wiki/images/3/3c/Stamp178jp.png'
+        },
+        'yuelNope': {
+            en: 'https://gbf.wiki/images/b/b3/Stamp109.png',
+            jp: 'https://gbf.wiki/images/b/be/Stamp109jp.png'
+        },
+        'yugu': {
+            en: 'https://gbf.wiki/images/3/3f/Stamp180.png',
+            jp: 'https://gbf.wiki/images/3/3f/Stamp180.png'
         },
         'zetaWhat': {
             en: 'https://gbf.wiki/images/3/3a/Stamp118.png',
