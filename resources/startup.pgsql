@@ -7,8 +7,22 @@ CREATE TABLE IF NOT EXISTS sparks (
     tickets INTEGER DEFAULT 0,
     ten_tickets INTEGER DEFAULT 0,
     target_id uuid,
+    target_memo TEXT,
     last_updated TIMESTAMP DEFAULT current_timestamp
 );
+
+CREATE OR REPLACE FUNCTION trigger_set_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.last_updated = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_timestamp
+BEFORE UPDATE ON sparks
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
 
 CREATE TABLE IF NOT EXISTS gacha (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
