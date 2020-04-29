@@ -126,7 +126,7 @@ class SparkCommand extends Command {
                     var maxItems = (rows.length > 10) ? 10 : rows.length
                     let usernameMaxChars = 15
                     let numDrawsMaxChars = 10
-                    let targetMaxChars = 20
+                    let targetMaxChars = 16
 
                     let divider = '+-----+' + '-'.repeat(usernameMaxChars + 2) + '+' + '-'.repeat(numDrawsMaxChars + 1) + '+' + '-'.repeat(targetMaxChars + 2) + '+\n'
                     var result = divider
