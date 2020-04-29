@@ -31,7 +31,7 @@ class SparkCommand extends Command {
         this.storeMessage(message)
         this.storeUser(message.author.id)
 
-        this.checkIfUserExists(message.author, () => {
+        this.checkIfUserExists(message.author, message.guild, () => {
             this.switchOperation(message, args)
         })
     }
@@ -105,7 +105,7 @@ class SparkCommand extends Command {
     }
 
     async leaderboard(message, order = 'desc') {
-        let sql = `SELECT username, crystals, tickets, ten_tickets, target_memo, last_updated, gacha.name, gacha.recruits FROM sparks LEFT JOIN gacha ON sparks.target_id = gacha.id WHERE last_updated > NOW() - INTERVAL '14 days'`
+        let sql = `SELECT username, crystals, tickets, ten_tickets, target_memo, last_updated, gacha.name, gacha.recruits FROM sparks LEFT JOIN gacha ON sparks.target_id = gacha.id WHERE last_updated > NOW() - INTERVAL '14 days' AND guild_ids @> $1`
 
         var embed = new RichEmbed()
         embed.setColor(0xb58900)
@@ -116,7 +116,8 @@ class SparkCommand extends Command {
             embed.setTitle("~~Leader~~ Loserboard (Last 14 days)")
         }
 
-        Client.query(sql)
+        let guildId = "{" + message.guild.id + "}"
+        Client.query(sql, [guildId])
             .then(res => {
                 if (res.length > 0) {
                     let rows = (order === 'desc') ? 
@@ -163,6 +164,7 @@ class SparkCommand extends Command {
                 }
             })
             .catch(error => {
+                console.log(sql)
                 this.message.author.send(`Sorry, there was an error with your last request.`)
                 console.log(error)
             })
@@ -524,13 +526,13 @@ class SparkCommand extends Command {
     }
     
     // Database methods
-    checkIfUserExists(user, callback) {
+    checkIfUserExists(user, guild, callback) {
         let sql = 'SELECT COUNT(*) AS count FROM sparks WHERE user_id = $1'
     
         Client.one(sql, [user.id])
             .then(res => {
                 if (res.count == 0) {
-                    this.createRowForUser(user, callback)
+                    this.createRowForUser(user, guild, callback)
                 } else {
                     callback()
                 }
@@ -541,10 +543,19 @@ class SparkCommand extends Command {
             })
     }
     
-    createRowForUser(user, callback) {
-        let sql = 'INSERT INTO sparks (user_id, username) VALUES ($1, $2)'
+    createRowForUser(user, guild, callback) {
+        var sql
+        var parameters
+
+        if (guild != null) {
+            sql = 'INSERT INTO sparks (user_id, guild_id, username) VALUES ($1, $2, $3)'
+            parameters = [user.id, guild.id, user.username]
+        } else {
+            sql = 'INSERT INTO sparks (user_id, username) VALUES ($1, $2)'
+            parameters = [user.id, user.username]
+        }
         
-        Client.one(sql, [user.id, user.username])
+        Client.any(sql, parameters)
             .then(_ => {
                 callback()
             })
