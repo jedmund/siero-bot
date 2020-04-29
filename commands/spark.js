@@ -64,7 +64,6 @@ class SparkCommand extends Command {
         let transposedCurrency = this.transposeCurrency(args.currency)
     
         let sql = `SELECT ${transposedCurrency} AS currency FROM sparks WHERE user_id = $1`
-    
         Client.query(sql, [message.author.id])
             .then(res => {
                 let sum = (res[0].currency - args.amount >= 0) ? res[0].currency - args.amount : 0
@@ -106,7 +105,7 @@ class SparkCommand extends Command {
     }
 
     async leaderboard(message, order = 'desc') {
-        let sql = `SELECT username, crystals, tickets, ten_tickets, last_updated, gacha.name, gacha.recruits FROM sparks LEFT JOIN gacha ON sparks.target_id = gacha.id`
+        let sql = `SELECT username, crystals, tickets, ten_tickets, last_updated, gacha.name, gacha.recruits FROM sparks LEFT JOIN gacha ON sparks.target_id = gacha.id WHERE last_updated > NOW() - INTERVAL '14 days'`
 
         var embed = new RichEmbed()
         embed.setColor(0xb58900)
