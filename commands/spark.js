@@ -118,41 +118,45 @@ class SparkCommand extends Command {
 
         Client.query(sql)
             .then(res => {
-                let rows = (order === 'desc') ? 
-                    res.sort(this.compareProgress) :
-                    res.sort(this.compareProgress).reverse()
-                
-                var maxItems = 10
-                let usernameMaxChars = 15
-                let numDrawsMaxChars = 10
-                let targetMaxChars = 14
+                if (res.length > 0) {
+                    let rows = (order === 'desc') ? 
+                        res.sort(this.compareProgress) :
+                        res.sort(this.compareProgress).reverse()
+                    
+                    var maxItems = (rows.length > 10) ? 10 : rows.length
+                    let usernameMaxChars = 15
+                    let numDrawsMaxChars = 10
+                    let targetMaxChars = 14
 
-                let divider = '+-----+' + '-'.repeat(usernameMaxChars + 2) + '+' + '-'.repeat(numDrawsMaxChars + 1) + '+' + '-'.repeat(targetMaxChars + 2) + '+\n'
-                var result = divider
+                    let divider = '+-----+' + '-'.repeat(usernameMaxChars + 2) + '+' + '-'.repeat(numDrawsMaxChars + 1) + '+' + '-'.repeat(targetMaxChars + 2) + '+\n'
+                    var result = divider
 
-                for (var i = 0; i < maxItems; i++) {
-                    let numDraws = this.calculateDraws(rows[i].crystals, rows[i].tickets, rows[i].ten_tickets)
+                    for (var i = 0; i < maxItems; i++) {
+                        let numDraws = this.calculateDraws(rows[i].crystals, rows[i].tickets, rows[i].ten_tickets)
 
-                    let spacedUsername = this.spacedString(rows[i].username, usernameMaxChars)
-                    let spacedDraws = this.spacedString(`${numDraws} draws`, numDrawsMaxChars)
+                        let spacedUsername = this.spacedString(rows[i].username, usernameMaxChars)
+                        let spacedDraws = this.spacedString(`${numDraws} draws`, numDrawsMaxChars)
 
-                    var spacedTarget = ""
-                    if (rows[i].recruits != null) {
-                        spacedTarget = this.spacedString(rows[i].recruits, targetMaxChars)
-                    } else if (rows[i].name != null) {
-                        spacedTarget = this.spacedString(rows[i].name, targetMaxChars)
-                    } else {
-                        spacedTarget = this.spacedString("", targetMaxChars)
+                        var spacedTarget = ""
+                        if (rows[i].recruits != null) {
+                            spacedTarget = this.spacedString(rows[i].recruits, targetMaxChars)
+                        } else if (rows[i].name != null) {
+                            spacedTarget = this.spacedString(rows[i].name, targetMaxChars)
+                        } else {
+                            spacedTarget = this.spacedString("", targetMaxChars)
+                        }
+
+                        let place = ((i + 1) < 10) ? `${i + 1}  ` : `${i + 1} `
+
+                        result += `| #${place}| ${spacedUsername} | ${spacedDraws}| ${spacedTarget} |\n`
+                        result += divider
                     }
-
-                    let place = ((i + 1) < 10) ? `${i + 1}  ` : `${i + 1} `
-
-                    result += `| #${place}| ${spacedUsername} | ${spacedDraws}| ${spacedTarget} |\n`
-                    result += divider
+                    
+                    embed.setDescription("```html\n" + result + "\n```")
+                    message.channel.send(embed)
+                } else {
+                    message.channel.send("No one has updated their sparks in the last two weeks!")
                 }
-                
-                embed.setDescription("```html\n" + result + "\n```")
-                message.channel.send(embed)
             })
             .catch(error => {
                 this.message.author.send(`Sorry, there was an error with your last request.`)
