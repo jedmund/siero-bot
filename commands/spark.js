@@ -111,9 +111,9 @@ class SparkCommand extends Command {
         embed.setColor(0xb58900)
 
         if (order === 'desc') {
-            embed.setTitle("Leaderboard")
+            embed.setTitle("Leaderboard (Last 14 days)")
         } else {
-            embed.setTitle("~~Leader~~ Loserboard")
+            embed.setTitle("~~Leader~~ Loserboard (Last 14 days)")
         }
 
         Client.query(sql)
