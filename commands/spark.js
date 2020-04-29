@@ -548,8 +548,8 @@ class SparkCommand extends Command {
         var parameters
 
         if (guild != null) {
-            sql = 'INSERT INTO sparks (user_id, guild_id, username) VALUES ($1, $2, $3)'
-            parameters = [user.id, guild.id, user.username]
+            sql = 'INSERT INTO sparks (user_id, guild_ids, username) VALUES ($1, $2, $3)'
+            parameters = [user.id, '{' + guild.id + '}', user.username]
         } else {
             sql = 'INSERT INTO sparks (user_id, username) VALUES ($1, $2)'
             parameters = [user.id, user.username]
