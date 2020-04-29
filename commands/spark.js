@@ -67,7 +67,7 @@ class SparkCommand extends Command {
     
         Client.query(sql, [message.author.id])
             .then(res => {
-                let sum = (res[0].currency - args.amount >= 0) ? res[0].currency - args.amount >= 0 : 0
+                let sum = (res[0].currency - args.amount >= 0) ? res[0].currency - args.amount : 0
                 this.updateCurrency(sum, transposedCurrency, message)
             })
             .catch(error => {
