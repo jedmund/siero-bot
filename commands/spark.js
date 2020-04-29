@@ -105,7 +105,7 @@ class SparkCommand extends Command {
     }
 
     async leaderboard(message, order = 'desc') {
-        let sql = `SELECT username, crystals, tickets, ten_tickets, last_updated, gacha.name, gacha.recruits FROM sparks LEFT JOIN gacha ON sparks.target_id = gacha.id WHERE last_updated > NOW() - INTERVAL '14 days'`
+        let sql = `SELECT username, crystals, tickets, ten_tickets, target_memo, last_updated, gacha.name, gacha.recruits FROM sparks LEFT JOIN gacha ON sparks.target_id = gacha.id WHERE last_updated > NOW() - INTERVAL '14 days'`
 
         var embed = new RichEmbed()
         embed.setColor(0xb58900)
@@ -138,10 +138,14 @@ class SparkCommand extends Command {
                         let spacedDraws = this.spacedString(`${numDraws} draws`, numDrawsMaxChars)
 
                         var spacedTarget = ""
-                        if (rows[i].recruits != null) {
-                            spacedTarget = this.spacedString(rows[i].recruits, targetMaxChars)
-                        } else if (rows[i].name != null) {
-                            spacedTarget = this.spacedString(rows[i].name, targetMaxChars)
+                        if (rows[i].recruits == null && rows[i].name == null && rows[i].target_memo != null) {
+                            spacedTarget = this.spacedString(`${rows[i].target_memo} (U)`, targetMaxChars)
+                        } else if (rows[i].recruits != null || rows[i].name != null) {
+                            if (rows[i].recruits != null) {
+                                spacedTarget = this.spacedString(rows[i].recruits, targetMaxChars)
+                            } else if (rows[i].name != null) {
+                                spacedTarget = this.spacedString(rows[i].name, targetMaxChars)
+                            }
                         } else {
                             spacedTarget = this.spacedString("", targetMaxChars)
                         }
@@ -175,10 +179,21 @@ class SparkCommand extends Command {
 
     target(message) {
         let splitMessage = message.content.split(" ")
+
+        var isUnreleased = false
+        if (splitMessage.indexOf("unreleased") >= 0) {
+            isUnreleased = true
+            splitMessage.splice(splitMessage.indexOf("unreleased", 1))
+        }
+
         let targetString = splitMessage.slice(3).join(" ")
 
         if (splitMessage.length >= 4 && splitMessage[2] == "set") {
-            this.setTarget(message.author.id, targetString)
+            if (isUnreleased) {
+                this.setAmbiguousTarget(message.author.id, targetString)
+            } else {
+                this.setTarget(message.author.id, targetString)
+            }
         } else if (splitMessage.length == 2 || splitMessage[2] == "show") {
             this.showTarget(message.author.id)
         } else if (splitMessage.length == 2 || splitMessage[2] == "reset") {
@@ -187,6 +202,8 @@ class SparkCommand extends Command {
     }
 
     setTarget(userId, target) {
+        this.resetTarget(this.message, false)
+
         let sql = [
             "UPDATE sparks SET target_id = (",
             "SELECT id FROM gacha",
@@ -201,6 +218,30 @@ class SparkCommand extends Command {
         Client.any(sql, [target, userId])
             .then(data => {
                 let embed = this.buildSparkTargetEmbed(data[0])
+                this.message.channel.send(embed)
+            })
+            .catch(error => {
+                this.message.author.send(`Sorry, there was an error with your last request.`)
+                console.log(error)
+            })
+    }
+
+    setAmbiguousTarget(userId, target) {
+        this.resetTarget(this.message, false)
+
+        let sql = [
+            "UPDATE sparks SET target_memo = $1",
+            "WHERE user_id = $2",
+        ].join(" ")
+
+        Client.any(sql, [target, userId])
+            .then(data => {
+                let fauxData = {
+                    "rarity": 3,
+                    "name": `${target} (unreleased)`
+                }
+
+                let embed = this.buildSparkTargetEmbed(fauxData)
                 this.message.channel.send(embed)
             })
             .catch(error => {
@@ -227,12 +268,14 @@ class SparkCommand extends Command {
             })
     }
 
-    resetTarget(message) {
-        let sql = `UPDATE sparks SET target_id = NULL WHERE user_id = $1`
+    resetTarget(message, reply = true) {
+        let sql = `UPDATE sparks SET target_id = NULL, target_memo = NULL WHERE user_id = $1`
     
         Client.query(sql, [message.author.id])
             .then(_ => {
-                message.reply("Your spark target has been reset!")
+                if (reply) {
+                    message.reply("Your spark target has been reset!")
+                }
             })
             .catch(error => {
                 this.message.author.send(`Sorry, there was an error with your last request.`)
