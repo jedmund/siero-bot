@@ -7,14 +7,14 @@
   "description": "",
   "main": "bot.js",
   "dependencies": {
-    "chance": "^1.1.4",
-    "discord-akairo": "^7.5.5",
-    "discord.js": "^11.4.2",
+    "chance": "^1.1.5",
+    "discord-akairo": "^7.5.6",
+    "discord.js": "^11.6.4",
     "dotenv": "^6.2.0",
-    "pg": "^7.8.0",
-    "pg-promise": "^10.4.3",
+    "pg": "^7.18.2",
+    "pg-promise": "^10.5.5",
     "pluralize": "^7.0.0",
-    "typescript": "^3.3.1"
+    "typescript": "^3.8.3"
   },
   "devDependencies": {
     "nodemon": "^1.19.4"
