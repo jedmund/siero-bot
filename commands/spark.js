@@ -426,7 +426,7 @@ class SparkCommand extends Command {
             progressString = numSparksString
             
             if (drawPercentage > 0) {
-                progressString += ` You're **${drawPercentage}%** towards your next spark.`
+                progressString = `${progressString} You're **${drawPercentage}%** towards your next spark.`
             }
         } else {
             if (drawPercentage > 0 && drawPercentage < 25) {
