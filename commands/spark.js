@@ -408,33 +408,48 @@ class SparkCommand extends Command {
 
     generateProgressString(message, crystals, tickets, tenTickets) {
         let draws = this.calculateDraws(crystals, tickets, tenTickets)
-        let drawPercentage = Math.floor((draws / 300) * 100)
+        // let drawPercentage = Math.floor((draws / 300) * 100)
 
-        let table = this.generateTable(crystals, tickets, tenTickets)
+        // let table = this.generateTable(crystals, tickets, tenTickets)
 
         let statusString = `You have ${crystals} ${pluralize('crystal', crystals)}, ${tickets} ${pluralize('ticket', tickets)}, and ${tenTickets} ${pluralize('10-ticket', tenTickets)} for a total of **${draws} draws.**`
+        
+        var numSparks = Math.floor(numSparks / 300)
+        let numSparksString = `You have ${numSparks} sparks.`
 
         var progressString = ""
-        if (drawPercentage > 0 && drawPercentage < 25) {
-            progressString = `You're just **${drawPercentage}%** of the way there.`
-        } else if (drawPercentage > 25 && drawPercentage < 75) {
-            progressString = `You've saved **${drawPercentage}%** of a spark.`
-        } else if (drawPercentage > 75 && drawPercentage < 100) {
-            progressString = `Wow! You've got **${drawPercentage}%** of your spark.`
+
+        if (numSparks > 0) {
+            let remainder = draws - (numSparks * 300)
+            let drawPercentage = Math.floor((remainder / 300) * 100)
+
+            progressString = numSparksString
+            
+            if (drawPercentage > 0) {
+                progressString += ` You're **${drawPercentage}%** towards your next spark.`
+            }
         } else {
-            progressString = `Time to start saving!`
+            if (drawPercentage > 0 && drawPercentage < 25) {
+                progressString = `You've got just **${drawPercentage}%** of a spark.`
+            } else if (drawPercentage > 25 && drawPercentage < 75) {
+                progressString = `You've saved **${drawPercentage}%** of a spark.`
+            } else if (drawPercentage > 75 && drawPercentage < 100) {
+                progressString = `Wow! You've saved **${drawPercentage}%** towards your spark.`
+            } else {
+                progressString = `Time to start saving!`
+            }
         }
 
-        var encouragement = ""
-        if (draws < 50) {
-            encouragement = "Looks like you have some work to do!"
-        } else if (draws < 150) {
-            encouragement = "You're getting there! Stay strong!"
-        } else if (draws < 250) {
-            encouragement = "You've been at this for a while, haven't you?"
-        } else if (draws < 290) {
-            encouragement = "This is the home stretch! You're almost done!"
-        }
+        // var encouragement = ""
+        // if (draws < 50) {
+        //     encouragement = "Looks like you have some work to do!"
+        // } else if (draws < 150) {
+        //     encouragement = "You're getting there! Stay strong!"
+        // } else if (draws < 250) {
+        //     encouragement = "You've been at this for a while, haven't you?"
+        // } else if (draws < 290) {
+        //     encouragement = "This is the home stretch! You're almost done!"
+        // }
         
         message.reply(`${statusString}\n${progressString}`)
     }
