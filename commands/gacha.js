@@ -137,7 +137,7 @@ class GachaCommand extends Command {
             } else {
                 this.duplicateMessage.edit({
                     content: string,
-                    embed: {}
+                    embed: null
                 })
             }
         } else {
