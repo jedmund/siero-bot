@@ -2,6 +2,9 @@ const { Client } = require('../services/connection.js')
 const { Command } = require('discord-akairo')
 const { Gacha } = require('../services/gacha.js')
 const { MessageEmbed } = require('discord.js')
+
+const common = require('../helpers/common.js')
+const decision = require('../helpers/decision.js')
 const pluralize = require('pluralize')
 
 class GachaCommand extends Command {
@@ -29,8 +32,9 @@ class GachaCommand extends Command {
     }
 
     async exec(message, args) {
-        this.storeMessage(message)
-        this.storeUser(message.author.id)
+        common.storeMessage(this, message)
+        common.storeUser(this, message.author.id)
+    
         await this.storeRateups()
         await this.storeSparkTarget()
 
@@ -459,7 +463,7 @@ class GachaCommand extends Command {
             return await Client.any(sql, [name])
                 .then(data => {
                     if (data[0].count > 1) {
-                        return this.resolveDuplicate(name)
+                        return this.resolveDuplicate(name, this.message, this.fetchSuppliedTargetById)
                     } else {
                         return this.fetchSuppliedTarget(name)
                     }
@@ -485,14 +489,14 @@ class GachaCommand extends Command {
             return await Client.any(sql, [target])
                 .then(data => {
                     results = data
-                    return this.buildDuplicateEmbed(data, target)
+                    return decision.buildDuplicateEmbed(data, target)
                 }).then(embed => {
                     return this.message.channel.send(embed)
                 }).then(message => {
                     this.duplicateMessage = message
-                    this.addOptions(message, results.length)
+                    decision.addOptions(message, results.length)
 
-                    return this.receiveSelection(message)
+                    return decision.receiveSelection(message, this.userId)
                 }).then(selection => {
                     return this.fetchSuppliedTargetById(results[selection].id)
                 }).catch(error => {
@@ -502,49 +506,6 @@ class GachaCommand extends Command {
             } catch(error) {
                 console.log(error)
             }
-    }
-
-    async receiveSelection(message) {
-        let possibleOptions = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '❓']
-        const filter = (reaction, user) => {
-            return possibleOptions.includes(reaction.emoji.name) && user.id === this.userId
-        }
-
-        try {
-            return await message.awaitReactions(filter, { max: 1, time: 60000, errors: ['time'] })
-                .then(collected => {
-                    const reaction = collected.first();
-                
-                    if (reaction.emoji.name === '1️⃣') {
-                        // return this.fetchSuppliedTargetById(data[0].id)
-                        return 0
-                    } else if (reaction.emoji.name === '2️⃣') {
-                        return 1
-                    } else if (reaction.emoji.name === '3️⃣') {
-                        return 2
-                    } else if (reaction.emoji.name === '4️⃣') {
-                        return 3
-                    } else if (reaction.emoji.name === '5️⃣') {
-                        return 4
-                    } else if (reaction.emoji.name === '6️⃣') {
-                        return 5
-                    } else if (reaction.emoji.name === '7️⃣') {
-                        return 6
-                    } else if (reaction.emoji.name === '8️⃣') {
-                        return 7
-                    } else if (reaction.emoji.name === '9️⃣') {
-                        return 8
-                    } else {
-                        return -1
-                    }
-                })
-                .catch(error => {
-                    console.log(error)
-                    message.reply('You didn\'t react with a valid emoji.');
-                })
-        } catch (error) {
-            console.log(error)
-        }
     }
 
     async fetchSuppliedTarget(name) {
@@ -560,7 +521,6 @@ class GachaCommand extends Command {
     }
 
     async fetchSuppliedTargetById(targetId) {
-        console.log("Fetch target by ID")
         try {
             let sql = "SELECT * FROM gacha WHERE id = $1"
             return await Client.one(sql, [targetId])
@@ -770,18 +730,6 @@ class GachaCommand extends Command {
         return array
     }
 
-    storeMessage(message) {
-        this.message = message
-    }
-
-    storeUser(id) {
-        this.userId = id
-    }
-
-    storeDuplicateMessage(message) {
-        this.duplicateMessage = message
-    }
-
     async storeRateups() {
         let sql = 'SELECT rateup.gacha_id, rateup.rate, gacha.name, gacha.recruits, gacha.rarity, gacha.item_type, gacha.premium, gacha.legend, gacha.flash, gacha.halloween, gacha.holiday, gacha.summer, gacha.valentine FROM rateup LEFT JOIN gacha ON rateup.gacha_id = gacha.id WHERE rateup.user_id = $1 ORDER BY rateup.rate DESC'
 
@@ -805,102 +753,6 @@ class GachaCommand extends Command {
         } catch {
             this.message.author.send(`Sorry, there was an error with your last request.`)
             console.log("Error")
-        }
-    }
-
-    generateOptions(data, target) {
-        var options = ""
-
-        for (const [i, item] of data.entries()) {
-            var string = `${i + 1}. `
-
-            if (item.item_type == 0) {
-                string += `(${this.mapRarity(item.rarity)} Weapon) `
-            } else {
-                string += `(${this.mapRarity(item.rarity)} Summon) `
-            }
-
-            if (item.recruits != null) {
-                if (item.name === target) {
-                    string += `<${item.name}> - ${item.recruits}`
-                } else if (item.recruits === target) {
-                    string += `${item.name} - <${item.recruits}>`
-                }
-            } else {
-                if (item.name === target) {
-                    string += `<${item.name}>`
-                } else {
-                    string += `${item.name}`
-                }
-            }
-
-            options += `${string}\n`
-        }
-
-        return options
-    }
-
-    buildDuplicateEmbed(data, target) {
-        var options = this.generateOptions(data, target)
-        let count = data.length
-
-        var embed = new MessageEmbed()
-        embed.setColor(0xb58900)
-        embed.setTitle(`${count} ${pluralize('result', count)} found`)
-        embed.setDescription("```html\n" + options + "\n```")
-
-        return embed
-    }
-
-    mapRarity(rarity) {
-        var rarityString = ""
-
-        if (rarity == 1) {
-            rarityString = "R"
-        } else if (rarity == 2) {
-            rarityString = "SR"
-        } else if (rarity == 3) {
-            rarityString = "SSR"
-        }
-
-        return rarityString
-    }
-
-    addOptions(message, count) {
-        for (var i = 0; i < count; i++) {
-            var place = i + 1
-            switch (place) {
-                case 1:
-                    message.react("1️⃣")
-                    break
-                case 2:
-                    message.react("2️⃣")
-                    break
-                case 3:
-                    message.react("3️⃣")
-                    break
-                case 4:
-                    message.react("4️⃣")
-                    break
-                case 5:
-                    message.react("5️⃣")
-                    break
-                case 6:
-                    message.react("6️⃣")
-                    break
-                case 7:
-                    message.react("7️⃣")
-                    break
-                case 8:
-                    message.react("8️⃣")
-                    break
-                case 9:
-                    message.react("9️⃣")
-                    break
-                default:
-                    message.react("❓")
-                    break
-            }
         }
     }
 }
