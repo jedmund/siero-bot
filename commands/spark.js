@@ -1,6 +1,9 @@
 const { Client } = require('../services/connection.js')
 const { Command } = require('discord-akairo')
 const { MessageEmbed } = require('discord.js')
+
+const common = require('../helpers/common.js')
+const decision = require('../helpers/decision.js')
 const pluralize = require('pluralize')
 
 class SparkCommand extends Command {
@@ -28,8 +31,8 @@ class SparkCommand extends Command {
     }
 
     exec(message, args) {
-        this.storeMessage(message)
-        this.storeUser(message.author.id)
+        common.storeMessage(this, message)
+        common.storeUser(this, message.author.id)
 
         this.checkIfUserExists(message.author, message.guild, () => {
             this.switchOperation(message, args)
@@ -135,20 +138,20 @@ class SparkCommand extends Command {
                     for (var i = 0; i < maxItems; i++) {
                         let numDraws = this.calculateDraws(rows[i].crystals, rows[i].tickets, rows[i].ten_tickets)
 
-                        let spacedUsername = this.spacedString(rows[i].username, usernameMaxChars)
-                        let spacedDraws = this.spacedString(`${numDraws} draws`, numDrawsMaxChars)
+                        let spacedUsername = common.spacedString(rows[i].username, usernameMaxChars)
+                        let spacedDraws = common.spacedString(`${numDraws} draws`, numDrawsMaxChars)
 
                         var spacedTarget = ""
                         if (rows[i].recruits == null && rows[i].name == null && rows[i].target_memo != null) {
-                            spacedTarget = this.spacedString(`${rows[i].target_memo} (U)`, targetMaxChars)
+                            spacedTarget = common.spacedString(`${rows[i].target_memo} (U)`, targetMaxChars)
                         } else if (rows[i].recruits != null || rows[i].name != null) {
                             if (rows[i].recruits != null) {
-                                spacedTarget = this.spacedString(rows[i].recruits, targetMaxChars)
+                                spacedTarget = common.spacedString(rows[i].recruits, targetMaxChars)
                             } else if (rows[i].name != null) {
-                                spacedTarget = this.spacedString(rows[i].name, targetMaxChars)
+                                spacedTarget = common.spacedString(rows[i].name, targetMaxChars)
                             }
                         } else {
-                            spacedTarget = this.spacedString("", targetMaxChars)
+                            spacedTarget = common.spacedString("", targetMaxChars)
                         }
 
                         let place = ((i + 1) < 10) ? `${i + 1}  ` : `${i + 1} `
@@ -226,49 +229,35 @@ class SparkCommand extends Command {
             })
     }
 
-    resolveDuplicate(target) {
+    async resolveDuplicate(target) {
         let sql = [
             "SELECT id, name, recruits, rarity, item_type",
             "FROM gacha",
             "WHERE name = $1 OR recruits = $1"
         ].join(" ")
 
-        Client.any(sql, [target])
-            .then(data => {
-                let embed = this.buildDuplicateEmbed(data, target)
-                this.message.channel.send(embed)
-                    .then(message => {
-                        this.addOptions(message, data.length)
-                        let possibleOptions = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '❓']
-                        const filter = (reaction, user) => {
-                            return possibleOptions.includes(reaction.emoji.name) && user.id === this.userId
-                        }
+        try {
+            var results
+            await Client.any(sql, [target])
+                .then(data => {
+                    results = data
+                    return decision.buildDuplicateEmbed(data, target)
+                }).then(embed => {
+                    return this.message.channel.send(embed)
+                }).then(message => {
+                    this.duplicateMessage = message
+                    decision.addOptions(message, results.length)
 
-                        message.awaitReactions(filter, { max: 1, time: 60000, errors: ['time'] })
-                            .then(collected => {
-                                const reaction = collected.first();
-                        
-                                if (reaction.emoji.name === '1️⃣') {
-                                    this.saveTargetById(this.userId, data[0].id, message)
-                                } else if (reaction.emoji.name === '2️⃣') {
-                                    this.saveTargetById(this.userId, data[1].id, message)
-                                }
-                            })
-                            .catch(error => {
-                                console.log(error)
-                                message.reply('you reacted with neither a thumbs up, nor a thumbs down.');
-                            });
-                    })
-
-                    .catch(error => {
-                        this.message.author.send(`Sorry, there was an error with your last request.`)
-                        console.log(error)
-                    })
-            })
-            .catch(error => {
-                this.message.author.send(`Sorry, there was an error with your last request.`)
-                console.log(error)
-            })
+                    return decision.receiveSelection(message, this.userId)
+                }).then(selection => {
+                    this.saveTargetById(this.userId, results[selection].id, this.duplicateMessage)
+                }).catch(error => {
+                    this.message.author.send(`Sorry, there was an error with your last request.`)
+                    console.log(error)
+                })
+        } catch(error) {
+            console.log(error)
+        }
     }
 
     saveTarget(userId, target) {
@@ -479,16 +468,7 @@ class SparkCommand extends Command {
         )
     }
 
-    spacedString(string, maxNumChars) {
-        let numSpaces = maxNumChars - string.length
-        var spacedString = string
-
-        for (var i = 0; i < numSpaces; i++) {
-            spacedString += " "
-        }
-
-        return spacedString
-    }
+    
 
     generateProgressString2(message, crystals, tickets, tenTickets) {
         let draws = this.calculateDraws(crystals, tickets, tenTickets)
@@ -695,7 +675,7 @@ class SparkCommand extends Command {
     }
 
     buildSparkTargetEmbed(target) {
-        var rarity = this.mapRarity(target.rarity)
+        var rarity = common.mapRarity(target.rarity)
 
         var string = `<${rarity}> ${target.name}`
         if (target.recruits != null) {
@@ -710,102 +690,6 @@ class SparkCommand extends Command {
         return embed
     }
 
-    generateOptions(data, target) {
-        var options = ""
-
-        for (const [i, item] of data.entries()) {
-            var string = `${i + 1}. `
-
-            if (item.item_type == 0) {
-                string += `(${this.mapRarity(item.rarity)} Weapon) `
-            } else {
-                string += `(${this.mapRarity(item.rarity)} Summon) `
-            }
-
-            if (item.recruits != null) {
-                if (item.name === target) {
-                    string += `<${item.name}> - ${item.recruits}`
-                } else if (item.recruits === target) {
-                    string += `${item.name} - <${item.recruits}>`
-                }
-            } else {
-                if (item.name === target) {
-                    string += `<${item.name}>`
-                } else {
-                    string += `${item.name}`
-                }
-            }
-
-            options += `${string}\n`
-        }
-
-        return options
-    }
-
-    buildDuplicateEmbed(data, target) {
-        var options = this.generateOptions(data, target)
-        let count = data.length
-
-        var embed = new MessageEmbed()
-        embed.setColor(0xb58900)
-        embed.setTitle(`${count} ${pluralize('result', count)} found`)
-        embed.setDescription("```html\n" + options + "\n```")
-
-        return embed
-    }
-
-    addOptions(message, count) {
-        for (var i = 0; i < count; i++) {
-            var place = i + 1
-            switch (place) {
-                case 1:
-                    message.react("1️⃣")
-                    break
-                case 2:
-                    message.react("2️⃣")
-                    break
-                case 3:
-                    message.react("3️⃣")
-                    break
-                case 4:
-                    message.react("4️⃣")
-                    break
-                case 5:
-                    message.react("5️⃣")
-                    break
-                case 6:
-                    message.react("6️⃣")
-                    break
-                case 7:
-                    message.react("7️⃣")
-                    break
-                case 8:
-                    message.react("8️⃣")
-                    break
-                case 9:
-                    message.react("9️⃣")
-                    break
-                default:
-                    message.react("❓")
-                    break
-            }
-        }
-    }
-
-    mapRarity(rarity) {
-        var rarityString = ""
-
-        if (rarity == 1) {
-            rarityString = "R"
-        } else if (rarity == 2) {
-            rarityString = "SR"
-        } else if (rarity == 3) {
-            rarityString = "SSR"
-        }
-
-        return rarityString
-    }
-    
     updateSpark(crystals, tickets, tenTickets, message) {
         let sql = `UPDATE sparks SET crystals = $1, tickets = $2, ten_tickets = $3, username = $4 WHERE user_id = $5`
         let data = [crystals, tickets, tenTickets, message.author.username, message.author.id]
@@ -818,15 +702,6 @@ class SparkCommand extends Command {
                 this.message.author.send(`Sorry, there was an error with your last request.`)
                 console.log(error)
             })
-    }
-
-    // Helper methods
-    storeMessage(message) {
-        this.message = message
-    }
-
-    storeUser(id) {
-        this.userId = id
     }
 }
 
