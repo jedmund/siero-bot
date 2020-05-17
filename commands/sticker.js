@@ -1,5 +1,5 @@
 const { Command } = require('discord-akairo')
-const { RichEmbed } = require('discord.js')
+const { MessageEmbed } = require('discord.js')
 
 class StickerCommand extends Command {
     constructor() {
@@ -28,7 +28,7 @@ class StickerCommand extends Command {
             alias = args['alias']
         }
 
-        var embed = new RichEmbed()
+        var embed = new MessageEmbed()
         embed.setColor(0xb58900)
 
         if (alias === "list" || alias === "help") {
