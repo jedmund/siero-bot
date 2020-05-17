@@ -10,12 +10,7 @@ class messageReactionAddedListener extends Listener {
     }
 
     async exec(reaction, user) {
-        console.log(`${user.username} reacted with ${reaction._emoji.name}`)
-        // const message = reaction.message;
-
-        // if (message.id === '710764645316821004' && reaction.emoji === '✅') {
-        //     this.client.channels.cache.get('694607365462294668').send(`Thank you for your reaction <@${user.id}>`);
-        // }
+        // console.log(`${user.username} reacted with ${reaction._emoji.name}`)
     }
 }
 
