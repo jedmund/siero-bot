@@ -7,7 +7,8 @@ class SieroClient extends AkairoClient {
         super({
             ownerID: '139468879008235520',
             allowMention: true,
-            handleEdits: true
+            handleEdits: true,
+            partials: ['MESSAGE']
         }, {
             disableEveryone: true
         })
@@ -19,13 +20,6 @@ class SieroClient extends AkairoClient {
         })
 
         this.commandHandler.loadAll()
-
-        // Set up listener handler
-        this.listenerHandler = new ListenerHandler(this, {
-            directory: './listeners/'
-        })
-
-        this.listenerHandler.loadAll()
     }
 }
 
