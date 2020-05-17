@@ -1,7 +1,7 @@
 const { Client } = require('../services/connection.js')
 const { Command } = require('discord-akairo')
 const { Gacha } = require('../services/gacha.js')
-const { RichEmbed } = require('discord.js')
+const { MessageEmbed } = require('discord.js')
 
 class GachaCommand extends Command {
     constructor(gala, season) {
@@ -137,7 +137,7 @@ class GachaCommand extends Command {
     }
 
     help(message) {
-        var embed = new RichEmbed()
+        var embed = new MessageEmbed()
 
         var gachaOptions = [
             "```html\n",
@@ -366,7 +366,7 @@ class GachaCommand extends Command {
             }
         }
 
-        var embed = new RichEmbed()
+        var embed = new MessageEmbed()
         embed.setColor(0xb58900)
         embed.setTitle("Your current rate-up")
         embed.setDescription("```html\n" + string + "\n```")
@@ -580,7 +580,7 @@ class GachaCommand extends Command {
     }
 
     buildEmbed(results) {
-        var embed = new RichEmbed()
+        var embed = new MessageEmbed()
         embed.setColor(0xb58900)
 
         var response = ""

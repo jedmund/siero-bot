@@ -1,5 +1,5 @@
 const { Command } = require('discord-akairo')
-const { RichEmbed } = require('discord.js')
+const { MessageEmbed } = require('discord.js')
 
 class HelpCommand extends Command {
     constructor() {
@@ -10,7 +10,7 @@ class HelpCommand extends Command {
     }
 
     exec(message, args) {        
-        var embed = new RichEmbed()
+        var embed = new MessageEmbed()
         embed.setTitle("Help")
         embed.setDescription("Welcome! Here are all the things I can do!")
         embed.setColor(0xdc322f)

@@ -1,6 +1,6 @@
 const { Client } = require('../services/connection.js')
 const { Command } = require('discord-akairo')
-const { RichEmbed } = require('discord.js')
+const { MessageEmbed } = require('discord.js')
 const pluralize = require('pluralize')
 
 class SparkCommand extends Command {
@@ -107,7 +107,7 @@ class SparkCommand extends Command {
     async leaderboard(message, order = 'desc') {
         let sql = `SELECT username, crystals, tickets, ten_tickets, target_memo, last_updated, gacha.name, gacha.recruits FROM sparks LEFT JOIN gacha ON sparks.target_id = gacha.id WHERE last_updated > NOW() - INTERVAL '14 days' AND guild_ids @> $1`
 
-        var embed = new RichEmbed()
+        var embed = new MessageEmbed()
         embed.setColor(0xb58900)
 
         if (order === 'desc') {
@@ -327,7 +327,7 @@ class SparkCommand extends Command {
             "```"
         ].join("\n")
 
-        var embed = new RichEmbed()
+        var embed = new MessageEmbed()
         embed.setTitle("Spark")
         embed.setDescription("Welcome! I can help you save your spark!")
         embed.setColor(0xdc322f)
@@ -401,7 +401,7 @@ class SparkCommand extends Command {
         let draws = this.calculateDraws(crystals, tickets, tenTickets)
         let drawPercentage = Math.floor((draws / 300) * 100)
 
-        let embed = new RichEmbed()
+        let embed = new MessageEmbed()
 
         message.channel.send(embed)
     }
@@ -609,7 +609,7 @@ class SparkCommand extends Command {
             string += ` (${target.recruits})`
         }
 
-        var embed = new RichEmbed()
+        var embed = new MessageEmbed()
         embed.setColor(0xb58900)
         embed.setTitle("Your spark target")
         embed.setDescription("```html\n" + string + "\n```")

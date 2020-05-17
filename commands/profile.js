@@ -1,6 +1,6 @@
 const { Client } = require('pg')
 const { Command } = require('discord-akairo')
-const { RichEmbed } = require('discord.js')
+const { MessageEmbed } = require('discord.js')
 const pluralize = require('pluralize')
 
 const client = getClient()
@@ -136,7 +136,7 @@ class ProfileCommand extends Command {
     }
 
     help(message) {
-        var embed = new RichEmbed()
+        var embed = new MessageEmbed()
         embed.setTitle("Profile")
         embed.setDescription("Welcome! You can make a profile here that others can see!")
         embed.setColor(0xdc322f)
@@ -234,7 +234,7 @@ Run the profile setup wizard, or you can specify a single field from the keys be
     }
 
     generateProfile(message, user, dict) {
-        var embed = new RichEmbed()
+        var embed = new MessageEmbed()
         embed.setColor(0xb58900)
 
         embed.setTitle(user.username)
