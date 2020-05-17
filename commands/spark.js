@@ -235,74 +235,13 @@ class SparkCommand extends Command {
 
         Client.any(sql, [target])
             .then(data => {
-                var options = ""
-                for (const [i, item] of data.entries()) {
-                    var string = `${i + 1}. `
-
-                    if (item.item_type == 0) {
-                        string += `(${this.mapRarity(item.rarity)} Weapon) `
-                    } else {
-                        string += `(${this.mapRarity(item.rarity)} Summon) `
-                    }
-
-                    if (item.recruits != null) {
-                        if (item.name === target) {
-                            string += `<${item.name}> - ${item.recruits}`
-                        } else if (item.recruits === target) {
-                            string += `${item.name} - <${item.recruits}>`
-                        }
-                    } else {
-                        if (item.name === target) {
-                            string += `<${item.name}>`
-                        } else {
-                            string += `${item.name}`
-                        }
-                    }
-
-                    options += `${string}\n`
-                }
-
-                let embed = this.buildDuplicateEmbed(data.length, options)
+                let embed = this.buildDuplicateEmbed(data, target)
                 this.message.channel.send(embed)
                     .then(message => {
-                        for (const [j, _] of data.entries()) {
-                            var place = j + 1
-                            switch (place) {
-                                case 1:
-                                    message.react("1️⃣")
-                                    break
-                                case 2:
-                                    message.react("2️⃣")
-                                    break
-                                case 3:
-                                    message.react("3️⃣")
-                                    break
-                                case 4:
-                                    message.react("4️⃣")
-                                    break
-                                case 5:
-                                    message.react("5️⃣")
-                                    break
-                                case 6:
-                                    message.react("6️⃣")
-                                    break
-                                case 7:
-                                    message.react("7️⃣")
-                                    break
-                                case 8:
-                                    message.react("8️⃣")
-                                    break
-                                case 9:
-                                    message.react("9️⃣")
-                                    break
-                                default:
-                                    message.react("❓")
-                                    break
-                            }
-                        }
-
+                        this.addOptions(message, data.length)
+                        let possibleOptions = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '❓']
                         const filter = (reaction, user) => {
-                            return ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '❓'].includes(reaction.emoji.name) && user.id === this.userId
+                            return possibleOptions.includes(reaction.emoji.name) && user.id === this.userId
                         }
 
                         message.awaitReactions(filter, { max: 1, time: 60000, errors: ['time'] })
@@ -310,13 +249,9 @@ class SparkCommand extends Command {
                                 const reaction = collected.first();
                         
                                 if (reaction.emoji.name === '1️⃣') {
-                                    message.reply('you selected #1')
-                                    console.log(`${data[0].id} ${data[0].name}`)
-                                    this.saveTargetById(this.userId, data[0].id)
+                                    this.saveTargetById(this.userId, data[0].id, message)
                                 } else if (reaction.emoji.name === '2️⃣') {
-                                    message.reply('you selected #2')
-                                    console.log(`${data[1].id} ${data[1].name}`)
-                                    this.saveTargetById(this.userId, data[1].id)
+                                    this.saveTargetById(this.userId, data[1].id, message)
                                 }
                             })
                             .catch(error => {
@@ -359,7 +294,7 @@ class SparkCommand extends Command {
             })
     }
 
-    saveTargetById(userId, targetId) {
+    saveTargetById(userId, targetId, message) {
         let sql = [
             "UPDATE sparks SET target_id = (",
             "SELECT id FROM gacha",
@@ -374,7 +309,11 @@ class SparkCommand extends Command {
         Client.any(sql, [targetId, userId])
             .then(data => {
                 let embed = this.buildSparkTargetEmbed(data[0])
-                this.message.channel.send(embed)
+                message.edit(embed)
+
+                if (message.channel.type !== 'dm') {
+                    message.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error))
+                }
             })
             .catch(error => {
                 this.message.author.send(`Sorry, there was an error with your last request.`)
@@ -771,13 +710,86 @@ class SparkCommand extends Command {
         return embed
     }
 
-    buildDuplicateEmbed(count, string) {
+    generateOptions(data, target) {
+        var options = ""
+
+        for (const [i, item] of data.entries()) {
+            var string = `${i + 1}. `
+
+            if (item.item_type == 0) {
+                string += `(${this.mapRarity(item.rarity)} Weapon) `
+            } else {
+                string += `(${this.mapRarity(item.rarity)} Summon) `
+            }
+
+            if (item.recruits != null) {
+                if (item.name === target) {
+                    string += `<${item.name}> - ${item.recruits}`
+                } else if (item.recruits === target) {
+                    string += `${item.name} - <${item.recruits}>`
+                }
+            } else {
+                if (item.name === target) {
+                    string += `<${item.name}>`
+                } else {
+                    string += `${item.name}`
+                }
+            }
+
+            options += `${string}\n`
+        }
+
+        return options
+    }
+
+    buildDuplicateEmbed(data, target) {
+        var options = this.generateOptions(data, target)
+        let count = data.length
+
         var embed = new MessageEmbed()
         embed.setColor(0xb58900)
         embed.setTitle(`${count} ${pluralize('result', count)} found`)
-        embed.setDescription("```html\n" + string + "\n```")
+        embed.setDescription("```html\n" + options + "\n```")
 
         return embed
+    }
+
+    addOptions(message, count) {
+        for (var i = 0; i < count; i++) {
+            var place = i + 1
+            switch (place) {
+                case 1:
+                    message.react("1️⃣")
+                    break
+                case 2:
+                    message.react("2️⃣")
+                    break
+                case 3:
+                    message.react("3️⃣")
+                    break
+                case 4:
+                    message.react("4️⃣")
+                    break
+                case 5:
+                    message.react("5️⃣")
+                    break
+                case 6:
+                    message.react("6️⃣")
+                    break
+                case 7:
+                    message.react("7️⃣")
+                    break
+                case 8:
+                    message.react("8️⃣")
+                    break
+                case 9:
+                    message.react("9️⃣")
+                    break
+                default:
+                    message.react("❓")
+                    break
+            }
+        }
     }
 
     mapRarity(rarity) {
