@@ -151,6 +151,11 @@ class GachaCommand extends Command {
                     content: string,
                     embed: null
                 })
+
+                if (this.duplicateMessage.channel.type !== 'dm') {
+                    this.duplicateMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error))
+                }
+                this.duplicateMessage = null
             }
         } else {
             message.reply(`Sorry, **${target.name}** doesn't appear in the gala or season you selected.`)
@@ -275,10 +280,13 @@ class GachaCommand extends Command {
         try {
             let extractedRateups = this.extractRateUp(command)
             let embed = await this.validateRateUps(extractedRateups)
-            console.log(embed)
 
             if (this.duplicateMessage != null) {
                 this.duplicateMessage.edit(embed)
+
+                if (this.duplicateMessage.channel.type !== 'dm') {
+                    this.duplicateMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error))
+                }
                 this.duplicateMessage = null
             } else {
                 this.message.channel.send(embed)
@@ -322,7 +330,6 @@ class GachaCommand extends Command {
                 })
                 .then(items => {
                     missing = this.findMissingRateUpData(originalDictionary, items)
-                    console.log(missing)
                     return this.createRateUpEmbed(items, missing)
                 })
                 .catch(error => {
@@ -580,8 +587,6 @@ class GachaCommand extends Command {
     }
 
     async resolveDuplicate(target) {
-        console.log(`Resolving duplicate for ${target}`)
-
         let sql = [
             "SELECT id, name, recruits, rarity, item_type",
             "FROM gacha",

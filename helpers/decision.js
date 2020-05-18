@@ -73,14 +73,12 @@ module.exports = {
         return options
     },
     receiveSelection: async function(message, userId) {
-        console.log("Receive selection")
         let possibleOptions = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '❓']
         const filter = (reaction, user) => {
             return possibleOptions.includes(reaction.emoji.name) && user.id === userId
         }
 
         try {
-            console.log("Awaiting...")
             return await message.awaitReactions(filter, { max: 1, time: 60000, errors: ['time'] })
                 .then(collected => {
                     const reaction = collected.first();
