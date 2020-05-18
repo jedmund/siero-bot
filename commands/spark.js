@@ -37,6 +37,8 @@ class SparkCommand extends Command {
         this.checkIfUserExists(message.author, message.guild, () => {
             this.switchOperation(message, args)
         })
+
+        this.checkGuildAssociation(message.author, message.guild)
     }
 
     // Command methods
@@ -618,6 +620,35 @@ class SparkCommand extends Command {
             .catch(error => {
                 this.message.author.send(`Sorry, there was an error with your last request.`)
                 console.log(error)
+            })
+    }
+
+    checkGuildAssociation(user, guild) {
+        let sql = [
+            "SELECT user_id, guild_ids FROM sparks",
+            "WHERE user_id = $1",
+            "LIMIT 1"
+        ].join(" ")
+
+        Client.one(sql, [user.id])
+            .then(result => {
+                let guilds = result.guild_ids
+                if (!guilds.includes(guild.id)) {
+                    this.createGuildAssociation(user, guild)
+                }
+            })
+    }
+
+    createGuildAssociation(user, guild) {
+        let sql = [
+            "UPDATE sparks",
+            "SET guild_ids = array_cat(guild_ids, $1)",
+            "WHERE user_id = $2"
+        ].join(" ")
+
+        Client.any(sql, ['{' + guild.id + '}', user.id])
+            .then(result => {
+                console.log(result)
             })
     }
     
