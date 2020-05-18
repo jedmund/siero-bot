@@ -117,7 +117,7 @@ function getStickers() {
         },
         'djeetaLook': {
             en: 'https://gbf.wiki/images/b/be/Stamp133.png',
-            jp: ''
+            jp: 'https://gbf-wiki.com/attach2/696D67_7374616D703133332E706E67.png'
         },
         'ferryWhoa': {
             en: 'https://gbf.wiki/images/c/c8/Stamp57.png',
@@ -197,7 +197,7 @@ function getStickers() {
         },
         'lyriaTummy': {
             en: 'https://gbf.wiki/images/b/b2/Stamp131.png',
-            jp: ''
+            jp: 'https://gbf-wiki.com/attach2/696D67_7374616D703133312E706E67.png'
         },
         'lyriaUntz': {
             en: 'https://gbf.wiki/images/a/a5/Stamp161.png',
@@ -211,7 +211,7 @@ function getStickers() {
             en: 'https://gbf.wiki/images/3/36/Stamp112.png',
             jp: 'https://gbf.wiki/images/f/f7/Stamp112jp.png'
         },
-        'moniMoni': {
+        'monimoni': {
             en: 'https://gbf.wiki/images/a/a4/Stamp252.png',
             jp: 'https://gbf.wiki/images/7/71/Stamp252jp.png'
         },
