@@ -16,7 +16,7 @@ class StickerCommand extends Command {
                     default: null
                 }
             ],
-            trigger: ['(?<=\:)(.*?)(?=\:)']
+            regex: ['(?<=\:)(.*?)(?=\:)']
         })
     }
 
@@ -51,6 +51,11 @@ class StickerCommand extends Command {
     sticker(alias, args) {
         var sticker = null
         let stickers = getStickers()
+
+        if (alias == null && args.match != null) {
+            alias = args.match[0]
+        }
+
         var isJapanese = (alias.startsWith("jp") || args.language != null)
 
         if (alias.startsWith("jp")) {
