@@ -49,7 +49,12 @@ class GachaCommand extends Command {
                 this.spark(message, args)
                 break
             case "rateup":
-                this.rateup(message)
+                try {
+                    await this.rateup(message)
+                } catch(error) {
+                    console.log(error)
+                }
+                
                 break
             case "until":
                 this.target(message, args)
@@ -87,7 +92,7 @@ class GachaCommand extends Command {
         message.channel.send(embed)
     }
 
-    rateup(message, args) {
+    async rateup(message, args) {
         let command = message.content.substring("$g rateup ".length).split(" ")[0]
 
         switch(command) {
@@ -101,7 +106,11 @@ class GachaCommand extends Command {
                 this.resetRateUp()
                 break
             case "set":
-                this.setRateUp(command)
+                try {
+                    await this.setRateUp(command)
+                } catch(error) {
+                    console.log(error)
+                }
                 break
             case "copy":
                 this.copyRateUp(message)
@@ -259,13 +268,25 @@ class GachaCommand extends Command {
             })
     }
 
-    setRateUp(command, message) {
+    async setRateUp(command) {
         // First, clear the existing rate up
         this.resetRateUp(false)
 
         // Then, save the new rate up
-        var rateups = this.extractRateUp(command)
-        this.saveRateUps(rateups)
+        try {
+            let extractedRateups = this.extractRateUp(command)
+            let embed = await this.validateRateUps(extractedRateups)
+            console.log(embed)
+
+            if (this.duplicateMessage != null) {
+                this.duplicateMessage.edit(embed)
+                this.duplicateMessage = null
+            } else {
+                this.message.channel.send(embed)
+            }
+        } catch(error) {
+            console.log(error)
+        }
     }
 
     resetRateUp(message = true) {
@@ -282,52 +303,119 @@ class GachaCommand extends Command {
             })
     }
 
-    // Rate-up helper methods
-    saveRateUps(dictionary) {
-        let list = dictionary.map(rateup => rateup.item)
+    async validateRateUps(dictionary) {
+        let originalDictionary = JSON.parse(JSON.stringify(dictionary))
 
-        let sql = [
-            "SELECT id, name, recruits",
-            "FROM gacha WHERE name IN ($1:csv) OR recruits IN ($1:csv)"
-        ].join(" ")
-        
-        Client.any(sql, [list])
-            .then(data => {
-                if (data.length > list.length) {
-                    console.log("Data mismatch!")
-                }
+        try {
+            var itemDictionary
+            var missing
 
-                let embed = this.createRateUpEmbed(data, dictionary, list)
-                this.message.channel.send(embed)
-            })
-            .catch(error => {
-                this.message.author.send(`Sorry, there was an error with your last request.`)
-                console.log(error)
-            })
+            return await this.resolveDuplicates(dictionary)
+                .then(result => {
+                    itemDictionary = result
+                    return this.fetchIdForItems(result.remaining)
+                })
+                .then(itemsWithIds => {
+                    return this.mergeRatesIntoItems(itemsWithIds, itemDictionary.remaining)
+                })
+                .then(itemsWithRates => {
+                    return itemsWithRates.concat(itemDictionary.ambiguous)
+                })
+                .then(items => {
+                    missing = this.findMissingRateUpData(originalDictionary, items)
+                    console.log(missing)
+                    return this.createRateUpEmbed(items, missing)
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+        } catch(error) {
+            console.log(error)
+        }
     }
 
-    createRateUpEmbed(data, dictionary, list) {
-        var rateups = []
-        for (var i in data) {
-            // Fetch the rateup from the passed-in dictionary
-            let rateup = this.joinRateUpData(data[i], dictionary)
+    async resolveDuplicates(dictionary) {
+        let remainingItems = JSON.parse(JSON.stringify(dictionary))
+        let ambiguousItems = []
 
-            // Save the rate up data
-            this.saveRateUp(rateup.id, rateup.rate)
+        for (var i = dictionary.length - 1; i >= 0; i--) {            
+            let item = dictionary[i]
+            await this.countPossibleItems(item.item)
+                .then(data => {
+                    if (data[0].count > 1) {
+                        return this.resolveDuplicate(item.item)
+                            .then(selection => {
+                                item.id = selection.id
 
-            // Push to array
-            rateups.push(rateup)
+                                if (item.name == null && selection.name != null) {
+                                    item.name = selection.name
+                                }
+
+                                if (item.recruits == null && selection.recruits != null) {
+                                    item.recruits = selection.recruits
+                                }
+
+                                if (item.item != null) {
+                                    delete item.item
+                                }
+
+                                ambiguousItems.push(item)
+                                remainingItems.splice(i, 1)
+                            }).catch(error => {
+                                this.message.author.send(`Sorry, there was an error with your last request.`)
+                                console.log(error)
+                            })
+                    }
+                })
         }
 
-        // Fetch the data for missing rate-ups
-        // These will be items that don't exist in the game or typos
-        let missing = this.findMissingRateUpData(list, data)
+        return {
+            remaining: remainingItems,
+            ambiguous: ambiguousItems
+        }
+    }
 
+    async mergeRatesIntoItems(data, dictionary) {
+        if (data.length > 0) {
+            var rateups = []
+            for (var i in data) {
+                // Fetch the rateup from the passed-in dictionary
+                let rateup = this.joinRateUpData(data[i], dictionary)
+
+                // Save the rate up data
+                this.saveRateUp(rateup.id, rateup.rate)
+
+                // Push to array
+                rateups.push(rateup)
+            }
+            return rateups
+        } else {
+            return []
+        }
+    }
+
+    // Rate-up helper methods
+    async fetchIdForItems(dictionary) {
+        if (dictionary.length > 0) {
+            let list = dictionary.map(rateup => rateup.item)
+
+            let sql = [
+                "SELECT id, name, recruits",
+                "FROM gacha WHERE name IN ($1:csv) OR recruits IN ($1:csv)"
+            ].join(" ")
+
+            return await Client.any(sql, [list])
+        } else {
+            return []
+        }
+    }
+
+    createRateUpEmbed(rateups, missing) {
         // Create the embed displaying rate-up data
         let embed = this.generateRateUpString(rateups)
 
         if (missing.length > 0) {
-            embed.addField('The following items could not be found and were not added to your rateup',  `\`\`\`${missing.join("\n")}\`\`\``)
+            embed.addField('The following items could not be found and were not added to your rateup',  `\`\`\`${missing.join(' \n')}\`\`\``)
         }
 
         return embed
@@ -361,10 +449,11 @@ class GachaCommand extends Command {
     }
 
     findMissingRateUpData(original, result) {
+        let list = original.map(rateup => rateup.item)
         let resultNames = result.map(result => result.name)
         let resultRecruits = result.map(result => result.recruits)
             
-        return original.filter(e => !resultNames.includes(e) && !resultRecruits.includes(e))
+        return list.filter(e => !resultNames.includes(e) && !resultRecruits.includes(e))
     }
 
     generateRateUpString(rateups) {
@@ -453,17 +542,17 @@ class GachaCommand extends Command {
     }
 
     async countPossibleTargets(name) {
-        let sql = [
-            "SELECT COUNT(*)",
-            "FROM gacha",
-            "WHERE name = $1 OR recruits = $1"
-        ].join(" ")
-
         try {
-            return await Client.any(sql, [name])
+            return await this.countPossibleItems(name)
                 .then(data => {
                     if (data[0].count > 1) {
                         return this.resolveDuplicate(name, this.message, this.fetchSuppliedTargetById)
+                            .then(selection => {
+                                return this.fetchSuppliedTargetById(selection.id)
+                            }).catch(error => {
+                                this.message.author.send(`Sorry, there was an error with your last request.`)
+                                console.log(error)
+                            })
                     } else {
                         return this.fetchSuppliedTarget(name)
                     }
@@ -477,7 +566,23 @@ class GachaCommand extends Command {
         }
     }
 
+    async countPossibleItems(name) {
+        let sql = [
+            "SELECT COUNT(*)",
+            "FROM gacha",
+            "WHERE name = $1 OR recruits = $1"
+        ].join(" ")
+
+        try {
+            return await Client.any(sql, [name])
+        } catch(error) {
+            console.log(error)
+        }
+    }
+
     async resolveDuplicate(target) {
+        console.log(`Resolving duplicate for ${target}`)
+
         let sql = [
             "SELECT id, name, recruits, rarity, item_type",
             "FROM gacha",
@@ -491,14 +596,20 @@ class GachaCommand extends Command {
                     results = data
                     return decision.buildDuplicateEmbed(data, target)
                 }).then(embed => {
-                    return this.message.channel.send(embed)
+                    var message
+                    if (this.duplicateMessage != null) {
+                        message = this.duplicateMessage.edit(embed)
+                    } else {
+                        message = this.message.channel.send(embed)
+                    }
+                    return message
                 }).then(message => {
                     this.duplicateMessage = message
                     decision.addOptions(message, results.length)
 
                     return decision.receiveSelection(message, this.userId)
                 }).then(selection => {
-                    return this.fetchSuppliedTargetById(results[selection].id)
+                    return results[selection]
                 }).catch(error => {
                     this.message.author.send(`Sorry, there was an error with your last request.`)
                     console.log(error)
