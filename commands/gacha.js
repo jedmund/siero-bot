@@ -5,7 +5,6 @@ const { MessageEmbed } = require('discord.js')
 
 const common = require('../helpers/common.js')
 const decision = require('../helpers/decision.js')
-const pluralize = require('pluralize')
 
 class GachaCommand extends Command {
     constructor(gala, season) {
