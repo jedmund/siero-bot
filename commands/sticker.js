@@ -353,14 +353,39 @@ function listStickers() {
 
 function exportListForGithub() {
     let stickers = getStickers()
-    
-    var list = ""
 
-    for (i in stickers) {
-        var sticker = stickers[i]
-        var row = `|![${i}](${sticker})|\`${i}\`|\n`
+    delete stickers.st
+    
+    var list = [
+        "| Sticker | Alias | Sticker | Alias |",
+        "|---------|-------|---------|-------|\n"
+    ].join("\n")
+
+    let keys = []
+    for (let key in stickers) {
+        if (stickers.hasOwnProperty(key)) {
+            keys.push(key)
+        }
+    }
+
+    for (let i = 0; i < keys.length; i++) {
+        let alias = keys[i]
+        let stickerImage = stickers[keys[i]].en
+
+        if (alias == "at") {
+            alias = "at\` or \`st"
+        }
+
+        var row = `|![${alias}](${stickerImage})|\`${alias}\``
+
+        if (i % 2 != 0) {
+            row += `|\n`
+        }
+
         list += row
     }
+
+    console.log(list)
 }
 
 module.exports = StickerCommand
