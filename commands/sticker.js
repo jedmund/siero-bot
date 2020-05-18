@@ -33,7 +33,7 @@ class StickerCommand extends Command {
 
         if (alias === "list" || alias === "help") {
             embed.setTitle("Stickers")
-            embed.setDescription("Here are all the stickers you can send:")
+            embed.setDescription("Here is a list of all the stickers you can send.\n\nYou can also see all the stickers available with images on my wiki: https://github.com/jedmund/siero-bot/wiki/Using-stickers#available-stickers")
             embed.addField("List", listStickers())
 
             message.reply("I've sent you a direct message with the list of all of the currently available stickers. Have a look!")
