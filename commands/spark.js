@@ -871,7 +871,7 @@ class SparkCommand extends Command {
         })
 
         if (description) {
-            embed.setDescription("You can find the documentation for sparks at https://github.com/jedmund/siero-bot/wiki/Saving-sparks, or you can type `$spark help`")
+            embed.setDescription("You can find the documentation for `$spark` at https://github.com/jedmund/siero-bot/wiki/Saving-sparks, or you can type `$spark help`")
         }
 
         if (extraSection != null) {
