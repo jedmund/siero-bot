@@ -5,7 +5,7 @@ const { AkairoClient, CommandHandler, ListenerHandler } = require('discord-akair
 class SieroClient extends AkairoClient {
     constructor() {
         super({
-            ownerID: '139468879008235520',
+            ownerID: process.env.OWNER_ID,
             allowMention: true,
             handleEdits: true,
             partials: ['MESSAGE']
