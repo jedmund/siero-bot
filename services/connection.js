@@ -26,3 +26,4 @@ function getConnection() {
 }
 
 exports.Client = client
+exports.pgpErrors = pgp.errors
