@@ -637,6 +637,9 @@ class SparkCommand extends Command {
                     this.createGuildAssociation(user, guild)
                 }
             })
+            .catch(error => {
+                console.log(error)
+            })
     }
 
     createGuildAssociation(user, guild) {
@@ -649,6 +652,9 @@ class SparkCommand extends Command {
         Client.any(sql, ['{' + guild.id + '}', user.id])
             .then(result => {
                 console.log(result)
+            })
+            .catch(error => {
+                console.log(error)
             })
     }
     
