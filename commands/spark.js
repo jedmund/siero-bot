@@ -1,4 +1,4 @@
-const { Client } = require('../services/connection.js')
+const { Client, pgpErrors } = require('../services/connection.js')
 const { Command } = require('discord-akairo')
 const { MessageEmbed } = require('discord.js')
 
@@ -31,6 +31,7 @@ class SparkCommand extends Command {
     }
 
     exec(message, args) {
+        common.storeArgs(this, args)
         common.storeMessage(this, message)
         common.storeUser(this, message.author.id)
 
@@ -38,7 +39,9 @@ class SparkCommand extends Command {
             this.switchOperation(message, args)
         })
 
-        this.checkGuildAssociation(message.author, message.guild)
+        if (message.channel.type !== 'dm') {
+            this.checkGuildAssociation(message.author, message.guild)
+        }
     }
 
     // Command methods
@@ -56,7 +59,11 @@ class SparkCommand extends Command {
                 this.updateCurrency(sum, transposedCurrency, message)
             })
             .catch(error => {
-                this.message.author.send(`Sorry, there was an error with your last request.`)
+                let text = 'Sorry, there was an error communicating with the database for your last request.'
+
+                let response = this.buildHelpfulResponse(message, text)
+                this.message.author.send(response)
+                
                 console.log(error)
             })
     }
@@ -75,7 +82,11 @@ class SparkCommand extends Command {
                 this.updateCurrency(sum, transposedCurrency, message)
             })
             .catch(error => {
-                this.message.author.send(`Sorry, there was an error with your last request.`)
+                let text = 'Sorry, there was an error communicating with the database for your last request.'
+                
+                let response = this.buildHelpfulResponse(message, text)
+                this.message.author.send(response)
+                
                 console.log(error)
             })
     }
@@ -96,7 +107,11 @@ class SparkCommand extends Command {
                 message.reply("Your spark has been reset!")
             })
             .catch(error => {
-                this.message.author.send(`Sorry, there was an error with your last request.`)
+                let text = 'Sorry, there was an error communicating with the database for your last request.'
+                
+                let response = this.buildHelpfulResponse(message, text)
+                this.message.author.send(response)
+                
                 console.log(error)
             })   
     }
@@ -110,6 +125,16 @@ class SparkCommand extends Command {
     }
 
     async leaderboard(message, order = 'desc') {
+        if (message.channel.type === 'dm') {
+            let text = 'Sorry, I can\'t show you leaderboards in direct messages. Please send the command from a server that we\'re both in!'
+                
+            let response = this.buildHelpfulResponse(message, text)
+            this.message.author.send(response)
+            
+            console.log(`Incorrect context: ${message.content}`)
+            return
+        }
+
         let sql = `SELECT username, crystals, tickets, ten_tickets, target_memo, last_updated, gacha.name, gacha.recruits FROM sparks LEFT JOIN gacha ON sparks.target_id = gacha.id WHERE last_updated > NOW() - INTERVAL '14 days' AND guild_ids @> $1`
 
         var embed = new MessageEmbed()
@@ -169,8 +194,11 @@ class SparkCommand extends Command {
                 }
             })
             .catch(error => {
-                console.log(sql)
-                this.message.author.send(`Sorry, there was an error with your last request.`)
+                let text = 'Sorry, there was an error communicating with the database for your last request.'
+                
+                let response = this.buildHelpfulResponse(message, text)
+                this.message.author.send(response)
+                
                 console.log(error)
             })
     }
@@ -226,7 +254,11 @@ class SparkCommand extends Command {
                 }
             })
             .catch(error => {
-                this.message.author.send(`Sorry, there was an error with your last request.`)
+                let text = 'Sorry, there was an error communicating with the database for your last request.'
+                
+                let response = this.buildHelpfulResponse(message, text)
+                this.message.author.send(response)
+                
                 console.log(error)
             })
     }
@@ -307,7 +339,11 @@ class SparkCommand extends Command {
                 }
             })
             .catch(error => {
-                this.message.author.send(`Sorry, there was an error with your last request.`)
+                let text = 'Sorry, there was an error communicating with the database for your last request.'
+                
+                let response = this.buildHelpfulResponse(message, text)
+                this.message.author.send(response)
+                
                 console.log(error)
             })
     }
@@ -321,7 +357,7 @@ class SparkCommand extends Command {
         ].join(" ")
 
         Client.any(sql, [target, userId])
-            .then(data => {
+            .then(_ => {
                 let fauxData = {
                     "rarity": 3,
                     "name": `${target} (unreleased)`
@@ -331,7 +367,11 @@ class SparkCommand extends Command {
                 this.message.channel.send(embed)
             })
             .catch(error => {
-                this.message.author.send(`Sorry, there was an error with your last request.`)
+                let text = 'Sorry, there was an error communicating with the database for your last request.'
+                
+                let response = this.buildHelpfulResponse(message, text)
+                this.message.author.send(response)
+                
                 console.log(error)
             })
     }
@@ -349,7 +389,29 @@ class SparkCommand extends Command {
                 this.message.channel.send(embed)
             })
             .catch(error => {
-                this.message.author.send(`It looks like you haven't set a spark target yet!`)
+                var text
+                var documentation = false
+                
+                if (error instanceof pgpErrors.QueryResultError) {
+                    text = 'It looks like you haven\'t set a spark target yet!'
+                    documentation = true
+                } else {
+                    text = 'Sorry, there was an error communicating with the database for your last request.'
+                }
+
+                let section = {
+                    title: "Setting a spark target",
+                    content: [
+                        "```html\n",
+                        "<target set @item>",
+                        "Set the provided @item as your spark target",
+                        "```"
+                    ].join("\n")
+                }
+
+                let response = this.buildHelpfulResponse(this.message, text, documentation, section)
+                this.message.author.send(response)
+
                 console.log(error)
             })
     }
@@ -364,7 +426,11 @@ class SparkCommand extends Command {
                 }
             })
             .catch(error => {
-                this.message.author.send(`Sorry, there was an error with your last request.`)
+                let text = 'Sorry, there was an error communicating with the database for your last request.'
+                
+                let response = this.buildHelpfulResponse(message, text)
+                this.message.author.send(response)
+                
                 console.log(error)
             })
     }
@@ -403,24 +469,30 @@ class SparkCommand extends Command {
         let usingTargets = [
             "```html\n",
             "<target set @item>",
-            "Set the provided @item as your spark target",
+            "Set the provided @item as your spark target\n",
             "<target show>",
-            "Show your current spark target",
+            "Show your current spark target\n",
             "<target reset>",
             "Reset your current spark target",
             "```"
         ].join("\n")
 
-        var embed = new MessageEmbed()
-        embed.setTitle("Spark")
-        embed.setDescription("Welcome! I can help you save your spark!")
-        embed.setColor(0xdc322f)
+        let link = "https://github.com/jedmund/siero-bot/wiki/Saving-sparks"
+
+        var embed = new MessageEmbed(
+            {
+                title: "Spark",
+                description: "Welcome! I can help you save your spark!",
+                color: 0xdc322f
+            }
+        )
         
         embed.addField("Command syntax", "```spark <option> <amount> <currency>```")
         embed.addField("Spark options", sparkOptions)
         embed.addField("Currencies", currencies)
         embed.addField("Quicksave", quicksave)
         embed.addField("Using Targets", usingTargets)
+        embed.addField("Full documentation", link)
     
         message.channel.send(embed)
     }
@@ -440,7 +512,39 @@ class SparkCommand extends Command {
     
         if (!currencies.includes(currency) && !currencies.includes(currency + "s")) {
             valid = false
-            message.reply(`\`${currency}\` isn't a valid currency. The valid currencies are \`crystal\`, \`ticket\`, \`tenticket\` as well as their pluralized forms.`)
+
+            var text
+            var section
+
+            if (!isNaN(currency)) {
+                text = `You might have reversed the currency and amount! \`${currency}\` is a number.`
+                section = {
+                    title: "You might mean...",
+                    content: [
+                        "```html\n",
+                        `$spark ${this.args.operation} ${this.args.currency} tickets`,
+                        `$spark ${this.args.operation} ${this.args.currency} crystals`,
+                        "```"
+                    ].join("\n")
+                }
+            } else {
+                text = `\`${currency}\` isn't a valid currency.`
+                section = {
+                    title: "Valid currencies",
+                    content: [
+                        `The valid currencies are \`crystal\`, \`ticket\`, and \`tenticket\`. They also work pluralized!`,
+                        "```html\n",
+                        `$spark ${this.args.operation} 1 ticket`,
+                        `$spark ${this.args.operation} 300 crystals`,
+                        "```"
+                    ].join("\n")
+                }
+            }
+            
+            let response = this.buildHelpfulResponse(message, text, true, section)
+            this.message.author.send(response)
+                
+            console.log(`Invalid currency: ${message.content}`)
         }
     
         return valid
@@ -468,9 +572,7 @@ class SparkCommand extends Command {
         return (
             (order === 'desc') ? (comparison * -1) : comparison
         )
-    }
-
-    
+    }    
 
     generateProgressString2(message, crystals, tickets, tenTickets) {
         let draws = this.calculateDraws(crystals, tickets, tenTickets)
@@ -585,6 +687,12 @@ class SparkCommand extends Command {
                 this.leaderboard(message, "asc")
                 break
             default:
+                let text = 'Sorry, I don\'t recognize that command. Are you sure it\'s the right one?'
+
+                let response = this.buildHelpfulResponse(message, text, true)
+                this.message.author.send(response)
+                
+                console.log(`Unrecognized command: ${message.content}`)
                 break
         }
     }
@@ -618,7 +726,11 @@ class SparkCommand extends Command {
                 }
             })
             .catch(error => {
-                this.message.author.send(`Sorry, there was an error with your last request.`)
+                let text = 'Sorry, there was an error communicating with the database for your last request.'
+                
+                let response = this.buildHelpfulResponse(message, text)
+                this.message.author.send(response)
+                
                 console.log(error)
             })
     }
@@ -692,7 +804,11 @@ class SparkCommand extends Command {
                 this.generateProgressString(message, crystals, tickets, tenTickets)
             })
             .catch(error => {
-                this.message.author.send(`Sorry, there was an error with your last request.`)
+                let text = 'Sorry, there was an error communicating with the database for your last request.'
+                
+                let response = this.buildHelpfulResponse(message, text)
+                this.message.author.send(response)
+                
                 console.log(error)
             })
     }
@@ -706,7 +822,11 @@ class SparkCommand extends Command {
                 this.getProgress(message)
             })
             .catch(error => {
-                this.message.author.send(`Sorry, there was an error with your last request.`)
+                let text = 'Sorry, there was an error communicating with the database for your last request.'
+                
+                let response = this.buildHelpfulResponse(message, text)
+                this.message.author.send(response)
+                
                 console.log(error)
             })
     }
@@ -736,9 +856,34 @@ class SparkCommand extends Command {
                 this.getProgress(message)
             })
             .catch(error => {
-                this.message.author.send(`Sorry, there was an error with your last request.`)
+                let text = 'Sorry, there was an error communicating with the database for your last request.'
+                
+                let response = this.buildHelpfulResponse(message, text)
+                this.message.author.send(response)
+                
                 console.log(error)
             })
+    }
+
+    buildHelpfulResponse(message, response, description = false, extraSection = null) {
+        var embed = new MessageEmbed({
+            color: 0xb58900
+        })
+
+        if (description) {
+            embed.setDescription("You can find the documentation for sparks at https://github.com/jedmund/siero-bot/wiki/Saving-sparks, or you can type `$spark help`")
+        }
+
+        if (extraSection != null) {
+            embed.addField(extraSection.title, extraSection.content)
+        }
+
+        embed.addField("You sent...", message.content)
+
+        return {
+            content: response,
+            embed: embed
+        }
     }
 }
 
