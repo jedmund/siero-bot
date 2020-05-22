@@ -24,6 +24,9 @@ module.exports = {
 
         return spacedString
     },
+    storeArgs: function(that, args) {
+        that.args = args
+    },
     storeMessage: function(that, message) {
         that.message = message
     },

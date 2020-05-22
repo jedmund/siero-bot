@@ -286,6 +286,38 @@ class Gacha {
         return (item.halloween == 1 || item.holiday == 1 || item.summer == 1 || item.valentine == 1) && item.premium == 0
     }
 
+    getGala(item) {
+        var string = ""
+
+        if (item.flash == 1) {
+            string = "flash"
+        } else if (item.legend == 1) {
+            string = "legend"
+        } else {
+            string = "premium"
+        }
+
+        return string
+    }
+
+    getSeason(item) {
+        var string = ""
+
+        if (item.summer == 1) {
+            string = "summer"
+        } else if (item.holiday == 1) {
+            string = "holiday"
+        } else if (item.halloween == 1) {
+            string = "halloween"
+        } else if (item.valentine == 1) {
+            string = "valentine"
+        } else {
+            string = "all seasons"
+        }
+        
+        return string
+    }
+
     determineSSRBucket(rates) {
         // Calculate the total rate of all rateup items
         var rateupSum = 0

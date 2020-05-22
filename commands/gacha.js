@@ -1,4 +1,4 @@
-const { Client } = require('../services/connection.js')
+const { Client, pgpErrors } = require('../services/connection.js')
 const { Command } = require('discord-akairo')
 const { Gacha } = require('../services/gacha.js')
 const { MessageEmbed } = require('discord.js')
@@ -62,6 +62,12 @@ class GachaCommand extends Command {
                 this.help(message)
                 break
             default:
+                let text = 'Sorry, I don\'t recognize that command. Are you sure it\'s the right one?'
+
+                let response = this.buildHelpfulResponse(message, text, true)
+                this.message.author.send(response)
+                
+                console.log(`Unrecognized command: ${message.content}`)
                 break
         }
     }
@@ -114,6 +120,14 @@ class GachaCommand extends Command {
             case "copy":
                 this.copyRateUp(message)
                 break
+            default: 
+                let text = 'Sorry, I don\'t recognize that command. Are you sure it\'s the right one?'
+
+                let response = this.buildHelpfulResponse(message, text, true)
+                this.message.author.send(response)
+                
+                console.log(`Unrecognized command: ${message.content}`)
+                break
         }
     }
 
@@ -158,12 +172,33 @@ class GachaCommand extends Command {
                 this.duplicateMessage = null
             }
         } else {
-            message.reply(`Sorry, **${target.name}** doesn't appear in the gala or season you selected.`)
+            let text = `It looks like **${target.name}** doesn't appear in the gala or season you selected.`
+                
+            var appearance
+            if (gacha.isLimited(target)) {
+                appearance = gacha.getGala(target)
+            } else if (gacha.isSeasonal(target)) {
+                appearance = gacha.getSeason(target)
+            }
+
+            let section = {
+                title: "Did you mean...",
+                content: `\`\`\`${message.content} ${appearance}\`\`\``
+            }
+
+            let response = this.buildHelpfulResponse(message, text, false, section)
+            this.message.author.send(response)
+            
+            console.log(`Incorrect gala or season: ${message.content}`)
         }
     }
 
     help(message) {
-        var embed = new MessageEmbed()
+        var embed = new MessageEmbed({
+            title: "Gacha",
+            description: "Welcome! I can help you save your money!",
+            color: 0xdc322f
+        })
 
         var gachaOptions = [
             "```html\n",
@@ -204,16 +239,13 @@ class GachaCommand extends Command {
             "You can add multiple rateups by separating them with a comma, as seen above.```"
         ].join("\n")
 
-        embed.setTitle("Gacha")
-        embed.setDescription("Welcome! I can help you save your money!")
-        embed.setColor(0xdc322f)
         embed.addField("Command syntax", "```gacha spark <gala> <season>```")
         embed.addField("Gacha options", gachaOptions)
         embed.addField("Galas and Seasons", galasAndSeasons)
         embed.addField("Using Rateups", usingRateups)
         embed.addField("Setting Rateups", settingRateups)
         message.channel.send(embed)
-    }
+    } 
 
     // Rate-up command methods
     copyRateUp(message) {
@@ -267,7 +299,11 @@ class GachaCommand extends Command {
                 }
             })
             .catch(error => {
-                this.message.author.send(`Sorry, there was an error with your last request.`)
+                let text = 'Sorry, there was an error communicating with the database for your last request.'
+                
+                let response = this.buildHelpfulResponse(message, text)
+                this.message.author.send(response)
+                
                 console.log(error)
             })
     }
@@ -305,7 +341,11 @@ class GachaCommand extends Command {
                 }
             })
             .catch(error => {
-                this.message.author.send(`Sorry, there was an error with your last request.`)
+                let text = 'Sorry, there was an error communicating with the database for your last request.'
+                
+                let response = this.buildHelpfulResponse(message, text)
+                this.message.author.send(response)
+                
                 console.log(error)
             })
     }
@@ -368,7 +408,11 @@ class GachaCommand extends Command {
                                 ambiguousItems.push(item)
                                 remainingItems.splice(i, 1)
                             }).catch(error => {
-                                this.message.author.send(`Sorry, there was an error with your last request.`)
+                                let text = 'Sorry, there was an error communicating with the database for your last request.'
+                
+                                let response = this.buildHelpfulResponse(message, text)
+                                this.message.author.send(response)
+                                
                                 console.log(error)
                             })
                     }
@@ -431,7 +475,11 @@ class GachaCommand extends Command {
         let sql = 'INSERT INTO rateup (gacha_id, user_id, rate) VALUES ($1, $2, $3)'
         Client.query(sql, [id, this.userId, rate])
             .catch(error => {
-                this.message.author.send(`Sorry, there was an error with your last request.`)
+                let text = 'Sorry, there was an error communicating with the database for your last request.'
+                
+                let response = this.buildHelpfulResponse(message, text)
+                this.message.author.send(response)
+                
                 console.log(error)
             })
     }
@@ -564,8 +612,12 @@ class GachaCommand extends Command {
                     }
                 })
                 .catch(error => {
-                    this.message.author.send(`Sorry, there was an error with your last request.`)
-                    console.log(error)
+                    let text = 'Sorry, there was an error communicating with the database for your last request.'
+                
+                let response = this.buildHelpfulResponse(this.message, text)
+                this.message.author.send(response)
+                
+                console.log(error)
                 })
         } catch(error) {
             console.log(error)
@@ -615,7 +667,11 @@ class GachaCommand extends Command {
                 }).then(selection => {
                     return results[selection]
                 }).catch(error => {
-                    this.message.author.send(`Sorry, there was an error with your last request.`)
+                    let text = 'Sorry, there was an error communicating with the database for your last request.'
+                
+                    let response = this.buildHelpfulResponse(message, text)
+                    this.message.author.send(response)
+                    
                     console.log(error)
                 })
             } catch(error) {
@@ -630,7 +686,34 @@ class GachaCommand extends Command {
                 return res
             })
             .catch(error => {
-                this.message.author.send(`Sorry, there was an error with your last request.`)
+                var text = ""
+                var section = {
+                    title: "Did you mean...",
+                    content: ""
+                }
+
+                if (error instanceof pgpErrors.QueryResultError) {
+                    text = `We couldn\'t find \`${name}\` in our database. Double-check that you're using the correct item name and that the name is properly capitalized.`
+                    
+                    
+                    let hasUpperCase = /[A-Z]/.test(name)
+                    if (!hasUpperCase) {
+                        let prediction = name.split(' ').map(function(word) {
+                            return word.charAt(0).toUpperCase() + word.slice(1)
+                        }).join(' ')
+
+                        let command = this.message.content.substring(0, this.message.content.indexOf(name))
+
+                        section.content = `\`\`\`${command}${prediction}\`\`\``
+                    }
+                } else {
+                    text = 'Sorry, there was an error communicating with the database for your last request.'
+                    section = null
+                }
+                
+                let response = this.buildHelpfulResponse(this.message, text, false, section)
+                this.message.author.send(response)
+                
                 console.log(error)
             })
     }
@@ -643,8 +726,12 @@ class GachaCommand extends Command {
                     return res
                 })
                 .catch(error => {
-                    this.message.author.send(`Sorry, there was an error with your last request.`)
-                    console.log(error)
+                    let text = 'Sorry, there was an error communicating with the database for your last request.'
+                
+                let response = this.buildHelpfulResponse(this.message, text)
+                this.message.author.send(response)
+                
+                console.log(error)
                 })
         } catch(error) {
             console.log(error)
@@ -826,6 +913,27 @@ class GachaCommand extends Command {
 
     // Helper methods
     // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+    buildHelpfulResponse(message, response, description = false, extraSection = null) {
+        var embed = new MessageEmbed({
+            color: 0xb58900
+        })
+
+        if (description) {
+            embed.setDescription("You can find the documentation for `$gacha` at https://github.com/jedmund/siero-bot/wiki/Pulling-gacha, or you can type `$gacha help`")
+        }
+
+        if (extraSection != null) {
+            embed.addField(extraSection.title, extraSection.content)
+        }
+
+        embed.addField("You sent...", message.content)
+
+        return {
+            content: response,
+            embed: embed
+        }
+    }
+
     shuffle(array) {
         var currentIndex = array.length, temporaryValue, randomIndex
       
