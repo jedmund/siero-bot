@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS profiles (
     steam TEXT
 );
 
-CREATE TABLE rateup (
+CREATE TABLE rateups (
     id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
     gacha_id uuid,
     user_id text,
