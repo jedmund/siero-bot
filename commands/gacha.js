@@ -256,7 +256,7 @@ class GachaCommand extends Command {
         let sql = [
             "INSERT INTO rateup (gacha_id, rate, user_id)",
             "SELECT gacha_id, rate, $1",
-            "FROM rateup WHERE user_id = $2"
+            "FROM rateups WHERE user_id = $2"
         ].join(" ")
 
         Client.any(sql, [destinationUser.id, sourceUser.id])
@@ -272,10 +272,10 @@ class GachaCommand extends Command {
 
     checkRateUp(message) {
         let sql = [
-            "SELECT rateup.gacha_id, rateup.rate, gacha.name, gacha.recruits",
-            "FROM rateup LEFT JOIN gacha ON rateup.gacha_id = gacha.id",
-            "WHERE rateup.user_id = $1",
-            "ORDER BY rateup.rate DESC"
+            "SELECT rateups.gacha_id, rateups.rate, gacha.name, gacha.recruits",
+            "FROM rateups LEFT JOIN gacha ON rateups.gacha_id = gacha.id",
+            "WHERE rateups.user_id = $1",
+            "ORDER BY rateups.rate DESC"
         ].join(" ")
 
         Client.any(sql, [message.author.id])
@@ -333,7 +333,7 @@ class GachaCommand extends Command {
     }
 
     resetRateUp(message = true) {
-        let sql = 'DELETE FROM rateup WHERE user_id = $1'
+        let sql = 'DELETE FROM rateups WHERE user_id = $1'
         Client.any(sql, [this.userId])
             .then(_ => {
                 if (message) {
@@ -954,7 +954,7 @@ class GachaCommand extends Command {
     }
 
     async storeRateups() {
-        let sql = 'SELECT rateup.gacha_id, rateup.rate, gacha.name, gacha.recruits, gacha.rarity, gacha.item_type, gacha.premium, gacha.legend, gacha.flash, gacha.halloween, gacha.holiday, gacha.summer, gacha.valentine FROM rateup LEFT JOIN gacha ON rateup.gacha_id = gacha.id WHERE rateup.user_id = $1 ORDER BY rateup.rate DESC'
+        let sql = 'SELECT rateups.gacha_id, rateups.rate, gacha.name, gacha.recruits, gacha.rarity, gacha.item_type, gacha.premium, gacha.legend, gacha.flash, gacha.halloween, gacha.holiday, gacha.summer, gacha.valentine FROM rateups LEFT JOIN gacha ON rateups.gacha_id = gacha.id WHERE rateups.user_id = $1 ORDER BY rateups.rate DESC'
 
         try {
             this.rateups = await Client.any(sql, [this.userId])
