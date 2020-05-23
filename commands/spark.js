@@ -237,10 +237,14 @@ class SparkCommand extends Command {
 
         Client.any(sql, [target])
             .then(data => {
-                if (data[0].count > 1) {
+                let count = data[0].count
+
+                if (count > 1) {
                     this.resolveDuplicate(target)
-                } else {
+                } else if (count == 1) {
                     this.saveTarget(userId, target)
+                } else {
+                    common.missingItem(this.message, this.userId, this.context, target)
                 }
             })
             .catch(error => {
@@ -591,8 +595,6 @@ class SparkCommand extends Command {
             }
         } else {
             let drawPercentage = Math.floor((draws / 300) * 100)
-
-            console.log(draws, drawPercentage)
 
             if (drawPercentage > 0 && drawPercentage < 25) {
                 progressString = `You've got just **${drawPercentage}%** of a spark.`

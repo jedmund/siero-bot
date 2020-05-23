@@ -76,6 +76,31 @@ module.exports = {
 
         return link
     },
+    missingItem: function(message, userId, context, name) {
+        var text = ""
+        var section = {
+            title: "Did you mean...",
+            content: ""
+        }
+
+        let error = `[Item not found] ${userId}: ${message.content}`
+        text = `We couldn\'t find \`${name}\` in our database. Double-check that you're using the correct item name and that the name is properly capitalized.`
+        
+        let hasUpperCase = /[A-Z]/.test(name)
+        if (!hasUpperCase) {
+            let prediction = name.split(' ').map(function(word) {
+                return word.charAt(0).toUpperCase() + word.slice(1)
+            }).join(' ')
+
+            let command = message.content.substring(0, message.content.indexOf(name))
+
+            section.content = `\`\`\`${command}${prediction}\`\`\``
+        } else {
+            section = null
+        }
+        
+        this.reportError(message, userId, context, error, text, false, section)
+    },
     reportError: function(message, userId, context, error, responseText, showDescription = false, extraSection = null) {                
         let response = this.buildHelpfulResponse(message, responseText, context, showDescription, extraSection)
         

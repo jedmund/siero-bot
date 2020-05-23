@@ -596,7 +596,7 @@ class GachaCommand extends Command {
                     } else if (count == 1) {
                         return this.fetchSuppliedTarget(name)
                     } else {
-                        this.missingItem(name)
+                        common.missingItem(this.message, this.userId, this.context, name)
                     }
                 })
                 .catch(error => {
@@ -861,32 +861,6 @@ class GachaCommand extends Command {
     }
 
     // Helper methods
-    missingItem(name) {
-        var text = ""
-        var section = {
-            title: "Did you mean...",
-            content: ""
-        }
-
-        let error = `[Item not found] ${this.userId}: ${this.message.content}`
-        text = `We couldn\'t find \`${name}\` in our database. Double-check that you're using the correct item name and that the name is properly capitalized.`
-        
-        let hasUpperCase = /[A-Z]/.test(name)
-        if (!hasUpperCase) {
-            let prediction = name.split(' ').map(function(word) {
-                return word.charAt(0).toUpperCase() + word.slice(1)
-            }).join(' ')
-
-            let command = this.message.content.substring(0, this.message.content.indexOf(name))
-
-            section.content = `\`\`\`${command}${prediction}\`\`\``
-        } else {
-            section = null
-        }
-        
-        common.reportError(this.message, this.userId, this.context, error, text, false, section)
-    }
-
     // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
     shuffle(array) {
         var currentIndex = array.length, temporaryValue, randomIndex
