@@ -1,6 +1,6 @@
 const { Client, pgpErrors } = require('../services/connection.js')
 const { Command } = require('discord-akairo')
-const { MessageEmbed } = require('discord.js')
+const { DiscordAPIError, MessageEmbed } = require('discord.js')
 
 const common = require('../helpers/common.js')
 const decision = require('../helpers/decision.js')
@@ -31,6 +31,8 @@ class SparkCommand extends Command {
     }
 
     exec(message, args) {
+        this.context = "spark"
+
         common.storeArgs(this, args)
         common.storeMessage(this, message)
         common.storeUser(this, message.author.id)
@@ -60,11 +62,7 @@ class SparkCommand extends Command {
             })
             .catch(error => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-
-                let response = this.buildHelpfulResponse(message, text)
-                this.message.author.send(response)
-                
-                console.log(error)
+                common.reportError(this.message, this.userId, this.context, error, text)
             })
     }
 
@@ -83,11 +81,7 @@ class SparkCommand extends Command {
             })
             .catch(error => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                
-                let response = this.buildHelpfulResponse(message, text)
-                this.message.author.send(response)
-                
-                console.log(error)
+                common.reportError(this.message, this.userId, this.context, error, text)
             })
     }
 
@@ -108,11 +102,7 @@ class SparkCommand extends Command {
             })
             .catch(error => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                
-                let response = this.buildHelpfulResponse(message, text)
-                this.message.author.send(response)
-                
-                console.log(error)
+                common.reportError(this.message, this.userId, this.context, error, text)
             })   
     }
 
@@ -127,11 +117,10 @@ class SparkCommand extends Command {
     async leaderboard(message, order = 'desc') {
         if (message.channel.type === 'dm') {
             let text = 'Sorry, I can\'t show you leaderboards in direct messages. Please send the command from a server that we\'re both in!'
-                
-            let response = this.buildHelpfulResponse(message, text)
-            this.message.author.send(response)
-            
-            console.log(`Incorrect context: ${message.content}`)
+            let error = `Incorrect context: ${message.content}` 
+
+            common.reportError(this.message, this.userId, this.context, error, text)
+
             return
         }
 
@@ -195,11 +184,7 @@ class SparkCommand extends Command {
             })
             .catch(error => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                
-                let response = this.buildHelpfulResponse(message, text)
-                this.message.author.send(response)
-                
-                console.log(error)
+                common.reportError(this.message, this.userId, this.context, error, text)
             })
     }
 
@@ -233,6 +218,11 @@ class SparkCommand extends Command {
             this.showTarget(message.author.id)
         } else if (splitMessage.length == 2 || splitMessage[2] == "reset") {
             this.resetTarget(message)
+        } else {
+            let text = 'Sorry, I don\'t recognize that command. Are you sure it\'s the right one?'
+            let error = `Unrecognized command: ${message.content}`
+            
+            common.reportError(this.message, this.userId, this.context, error, text, true)
         }
     }
 
@@ -255,11 +245,7 @@ class SparkCommand extends Command {
             })
             .catch(error => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                
-                let response = this.buildHelpfulResponse(message, text)
-                this.message.author.send(response)
-                
-                console.log(error)
+                common.reportError(this.message, this.userId, this.context, error, text)
             })
     }
 
@@ -287,6 +273,14 @@ class SparkCommand extends Command {
                     this.saveTargetById(this.userId, results[selection].id, this.duplicateMessage)
                 }).catch(error => {
                     this.message.author.send(`Sorry, there was an error with your last request.`)
+                        .catch(function(error) {
+                            if (error instanceof DiscordAPIError) {
+                                console.log(`Cannot send private messages to this user: ${userId}`)
+                            }
+                        })
+                        .then(function() {
+                            message.reply("There was an error, but it looks like I'm not allowed to send you direct messages! Check your Discord privacy settings if you'd like help with commands via DM.")
+                        })
                     console.log(error)
                 })
         } catch(error) {
@@ -313,6 +307,14 @@ class SparkCommand extends Command {
             })
             .catch(error => {
                 this.message.author.send(`Sorry, there was an error with your last request.`)
+                    .catch(function(error) {
+                        if (error instanceof DiscordAPIError) {
+                            console.log(`Cannot send private messages to this user: ${userId}`)
+                        }
+                    })
+                    .then(function() {
+                        message.reply("There was an error, but it looks like I'm not allowed to send you direct messages! Check your Discord privacy settings if you'd like help with commands via DM.")
+                    })
                 console.log(error)
             })
     }
@@ -340,11 +342,7 @@ class SparkCommand extends Command {
             })
             .catch(error => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                
-                let response = this.buildHelpfulResponse(message, text)
-                this.message.author.send(response)
-                
-                console.log(error)
+                common.reportError(this.message, this.userId, this.context, error, text)
             })
     }
 
@@ -368,9 +366,7 @@ class SparkCommand extends Command {
             })
             .catch(error => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                
-                let response = this.buildHelpfulResponse(message, text)
-                this.message.author.send(response)
+                common.reportError(this.message, this.userId, this.context, error, text)
                 
                 console.log(error)
             })
@@ -409,10 +405,7 @@ class SparkCommand extends Command {
                     ].join("\n")
                 }
 
-                let response = this.buildHelpfulResponse(this.message, text, documentation, section)
-                this.message.author.send(response)
-
-                console.log(error)
+                common.reportError(this.message, this.userId, this.context, error, text, documentation, section)
             })
     }
 
@@ -427,11 +420,7 @@ class SparkCommand extends Command {
             })
             .catch(error => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                
-                let response = this.buildHelpfulResponse(message, text)
-                this.message.author.send(response)
-                
-                console.log(error)
+                common.reportError(this.message, this.userId, this.context, error, text)
             })
     }
 
@@ -541,10 +530,8 @@ class SparkCommand extends Command {
                 }
             }
             
-            let response = this.buildHelpfulResponse(message, text, true, section)
-            this.message.author.send(response)
-                
-            console.log(`Invalid currency: ${message.content}`)
+            let error = `Invalid currency: ${message.content}`
+            common.reportError(this.message, this.userId, this.context, error, text, false, section)
         }
     
         return valid
@@ -688,11 +675,10 @@ class SparkCommand extends Command {
                 break
             default:
                 let text = 'Sorry, I don\'t recognize that command. Are you sure it\'s the right one?'
-
-                let response = this.buildHelpfulResponse(message, text, true)
-                this.message.author.send(response)
-                
-                console.log(`Unrecognized command: ${message.content}`)
+                let error = `Unrecognized command: ${message.content}`
+               
+                common.reportError(this.message, this.userId, this.context, error, text)
+               
                 break
         }
     }
@@ -727,11 +713,7 @@ class SparkCommand extends Command {
             })
             .catch(error => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                
-                let response = this.buildHelpfulResponse(message, text)
-                this.message.author.send(response)
-                
-                console.log(error)
+                common.reportError(this.message, this.userId, this.context, error, text)
             })
     }
 
@@ -805,11 +787,7 @@ class SparkCommand extends Command {
             })
             .catch(error => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                
-                let response = this.buildHelpfulResponse(message, text)
-                this.message.author.send(response)
-                
-                console.log(error)
+                common.reportError(this.message, this.userId, this.context, error, text)
             })
     }
     
@@ -823,11 +801,7 @@ class SparkCommand extends Command {
             })
             .catch(error => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                
-                let response = this.buildHelpfulResponse(message, text)
-                this.message.author.send(response)
-                
-                console.log(error)
+                common.reportError(this.message, this.userId, this.context, error, text)
             })
     }
 
@@ -857,33 +831,8 @@ class SparkCommand extends Command {
             })
             .catch(error => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                
-                let response = this.buildHelpfulResponse(message, text)
-                this.message.author.send(response)
-                
-                console.log(error)
+                common.reportError(message, this.userId, error, text, this.context)
             })
-    }
-
-    buildHelpfulResponse(message, response, description = false, extraSection = null) {
-        var embed = new MessageEmbed({
-            color: 0xb58900
-        })
-
-        if (description) {
-            embed.setDescription("You can find the documentation for `$spark` at https://github.com/jedmund/siero-bot/wiki/Saving-sparks, or you can type `$spark help`")
-        }
-
-        if (extraSection != null) {
-            embed.addField(extraSection.title, extraSection.content)
-        }
-
-        embed.addField("You sent...", message.content)
-
-        return {
-            content: response,
-            embed: embed
-        }
     }
 }
 
