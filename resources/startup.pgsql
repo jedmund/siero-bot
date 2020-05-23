@@ -2,7 +2,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE IF NOT EXISTS sparks (
     user_id TEXT PRIMARY KEY,
-    guild_id TEXT,
+    guild_ids TEXT[],
     username TEXT,
     crystals INTEGER DEFAULT 0,
     tickets INTEGER DEFAULT 0,
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS profiles (
     steam TEXT
 );
 
-CREATE TABLE rateup (
+CREATE TABLE rateups (
     id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
     gacha_id uuid,
     user_id text,
