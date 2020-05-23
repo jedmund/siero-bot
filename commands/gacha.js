@@ -449,6 +449,10 @@ class GachaCommand extends Command {
 
                     return decision.receiveSelection(message, this.userId)
                 }).then(selection => {
+                    if (this.duplicateMessage.channel.type !== 'dm') {
+                        this.duplicateMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error))
+                    }
+                    
                     return results[selection]
                 }).catch(error => {
                     let text = 'Sorry, there was an error communicating with the database for your last request.'
