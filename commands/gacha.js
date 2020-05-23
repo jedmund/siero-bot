@@ -65,7 +65,7 @@ class GachaCommand extends Command {
                 break
             default:
                 let text = 'Sorry, I don\'t recognize that command. Are you sure it\'s the right one?'
-                let error = `Unrecognized command: ${message.content}`
+                let error = `[Unrecognized command] ${this.userId}: ${message.content}`
 
                 common.reportError(this.message, this.userId, this.context, error, text)
 
@@ -123,7 +123,7 @@ class GachaCommand extends Command {
                 break
             default: 
                 let text = 'Sorry, I don\'t recognize that command. Are you sure it\'s the right one?'
-                let error = `Unrecognized command: ${message.content}`
+                let error = `[Unrecognized command] ${this.userId}: ${message.content}`
                 
                 common.reportError(this.message, this.userId, this.context, error, text)
 
@@ -174,7 +174,7 @@ class GachaCommand extends Command {
                 }
             } else {
                 let text = `It looks like **${target.name}** doesn't appear in the gala or season you selected.`
-                let error = `Incorrect gala or season: ${message.content}`
+                let error = `[Incorrect gala or season] ${this.userId}: ${message.content}`
                 
                 var appearance
                 if (gacha.isLimited(target)) {
@@ -868,7 +868,7 @@ class GachaCommand extends Command {
             content: ""
         }
 
-        let error = `ItemNotFound: ${this.message.content}`
+        let error = `[Item not found] ${this.userId}: ${this.message.content}`
         text = `We couldn\'t find \`${name}\` in our database. Double-check that you're using the correct item name and that the name is properly capitalized.`
         
         let hasUpperCase = /[A-Z]/.test(name)
