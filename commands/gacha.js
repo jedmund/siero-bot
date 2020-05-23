@@ -188,7 +188,12 @@ class GachaCommand extends Command {
                     content: `\`\`\`${message.content} ${appearance}\`\`\``
                 }
 
-                common.reportError(this.message, this.userId, this.context, error, text, false, section)
+                if (this.duplicateMessage != null) {
+                    common.reportError(this.message, this.userId, this.context, error, text, false, section, this.duplicateMessage)
+                    this.duplicateMessage = null
+                } else {
+                    common.reportError(this.message, this.userId, this.context, error, text, false, section)
+                }   
             }
         }
     }
@@ -433,6 +438,7 @@ class GachaCommand extends Command {
                     var message
                     if (this.duplicateMessage != null) {
                         message = this.duplicateMessage.edit(embed)
+                        this.duplicateMessage = null
                     } else {
                         message = this.message.channel.send(embed)
                     }
