@@ -99,7 +99,7 @@ class GachaCommand extends Command {
     }
 
     async rateup(message, args) {
-        let command = message.content.substring("$g rateup ".length).split(" ")[0]
+        let command = message.content.split(" ").splice(2, 1)[0]
 
         switch(command) {
             case "check":
