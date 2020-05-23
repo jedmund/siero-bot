@@ -232,7 +232,7 @@ class SparkCommand extends Command {
         let sql = [
             "SELECT COUNT(*)",
             "FROM gacha",
-            "WHERE name = $1 OR recruits = $1"
+            "WHERE name % $1 OR recruits % $1"
         ].join(" ")
 
         Client.any(sql, [target])
@@ -257,7 +257,7 @@ class SparkCommand extends Command {
         let sql = [
             "SELECT id, name, recruits, rarity, item_type",
             "FROM gacha",
-            "WHERE name = $1 OR recruits = $1"
+            "WHERE name % $1 OR recruits % $1"
         ].join(" ")
 
         try {
