@@ -7,7 +7,7 @@ const common = require('../helpers/common.js')
 const decision = require('../helpers/decision.js')
 
 class GachaCommand extends Command {
-    constructor(gala, season) {
+    constructor() {
         super('gacha', {
             aliases: ['gacha', 'g'],
             args: [
@@ -31,6 +31,8 @@ class GachaCommand extends Command {
     }
 
     async exec(message, args) {
+        this.context = "gacha"
+
         common.storeMessage(this, message)
         common.storeUser(this, message.author.id)
     
@@ -63,11 +65,10 @@ class GachaCommand extends Command {
                 break
             default:
                 let text = 'Sorry, I don\'t recognize that command. Are you sure it\'s the right one?'
+                let error = `[Unrecognized command] ${this.userId}: ${message.content}`
 
-                let response = this.buildHelpfulResponse(message, text, true)
-                this.message.author.send(response)
-                
-                console.log(`Unrecognized command: ${message.content}`)
+                common.reportError(this.message, this.userId, this.context, error, text)
+
                 break
         }
     }
@@ -122,11 +123,10 @@ class GachaCommand extends Command {
                 break
             default: 
                 let text = 'Sorry, I don\'t recognize that command. Are you sure it\'s the right one?'
-
-                let response = this.buildHelpfulResponse(message, text, true)
-                this.message.author.send(response)
+                let error = `[Unrecognized command] ${this.userId}: ${message.content}`
                 
-                console.log(`Unrecognized command: ${message.content}`)
+                common.reportError(this.message, this.userId, this.context, error, text)
+
                 break
         }
     }
@@ -140,56 +140,56 @@ class GachaCommand extends Command {
         let gacha = new Gacha(properties.gala, properties.season, this.rateups)
         let target = await this.countPossibleTargets(targetString)
 
-        if (this.checkTarget(gacha, target)) {
-            var count = 0
-            var found = false
+        if (target != null) {
+            if (this.checkTarget(gacha, target)) {
+                var count = 0
+                var found = false
 
-            while (!found) {
-                let roll = gacha.tenPartRoll()
-                count = count + 10
-                
-                for (var i in roll.items) {
-                    let item = roll.items[i]
-                    if (item.name == target.name || (item.recruits == target.recruits && target.recruits != null)) {
-                        found = true
+                while (!found) {
+                    let roll = gacha.tenPartRoll()
+                    count = count + 10
+                    
+                    for (var i in roll.items) {
+                        let item = roll.items[i]
+                        if (item.name == target.name || (item.recruits == target.recruits && target.recruits != null)) {
+                            found = true
+                        }
                     }
                 }
-            }
 
-            let string = this.generateTargetString(target, count)
+                let string = this.generateTargetString(target, count)
 
-            if (this.duplicateMessage == null) {
-                message.reply(string)
-            } else {
-                this.duplicateMessage.edit({
-                    content: string,
-                    embed: null
-                })
+                if (this.duplicateMessage == null) {
+                    message.reply(string)
+                } else {
+                    this.duplicateMessage.edit({
+                        content: string,
+                        embed: null
+                    })
 
-                if (this.duplicateMessage.channel.type !== 'dm') {
-                    this.duplicateMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error))
+                    if (this.duplicateMessage.channel.type !== 'dm') {
+                        this.duplicateMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error))
+                    }
+                    this.duplicateMessage = null
                 }
-                this.duplicateMessage = null
-            }
-        } else {
-            let text = `It looks like **${target.name}** doesn't appear in the gala or season you selected.`
+            } else {
+                let text = `It looks like **${target.name}** doesn't appear in the gala or season you selected.`
+                let error = `[Incorrect gala or season] ${this.userId}: ${message.content}`
                 
-            var appearance
-            if (gacha.isLimited(target)) {
-                appearance = gacha.getGala(target)
-            } else if (gacha.isSeasonal(target)) {
-                appearance = gacha.getSeason(target)
-            }
+                var appearance
+                if (gacha.isLimited(target)) {
+                    appearance = gacha.getGala(target)
+                } else if (gacha.isSeasonal(target)) {
+                    appearance = gacha.getSeason(target)
+                }
 
-            let section = {
-                title: "Did you mean...",
-                content: `\`\`\`${message.content} ${appearance}\`\`\``
-            }
+                let section = {
+                    title: "Did you mean...",
+                    content: `\`\`\`${message.content} ${appearance}\`\`\``
+                }
 
-            let response = this.buildHelpfulResponse(message, text, false, section)
-            this.message.author.send(response)
-            
-            console.log(`Incorrect gala or season: ${message.content}`)
+                common.reportError(this.message, this.userId, this.context, error, text, false, section)
+            }
         }
     }
 
@@ -300,11 +300,7 @@ class GachaCommand extends Command {
             })
             .catch(error => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                
-                let response = this.buildHelpfulResponse(message, text)
-                this.message.author.send(response)
-                
-                console.log(error)
+                common.reportError(this.message, this.userId, this.context, error, text)
             })
     }
 
@@ -342,11 +338,7 @@ class GachaCommand extends Command {
             })
             .catch(error => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                
-                let response = this.buildHelpfulResponse(message, text)
-                this.message.author.send(response)
-                
-                console.log(error)
+                common.reportError(this.message, this.userId, this.context, error, text)
             })
     }
 
@@ -409,11 +401,7 @@ class GachaCommand extends Command {
                                 remainingItems.splice(i, 1)
                             }).catch(error => {
                                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                
-                                let response = this.buildHelpfulResponse(message, text)
-                                this.message.author.send(response)
-                                
-                                console.log(error)
+                                this.reportError(text)
                             })
                     }
                 })
@@ -476,11 +464,7 @@ class GachaCommand extends Command {
         Client.query(sql, [id, this.userId, rate])
             .catch(error => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                
-                let response = this.buildHelpfulResponse(message, text)
-                this.message.author.send(response)
-                
-                console.log(error)
+                common.reportError(this.message, this.userId, this.context, error, text)
             })
     }
 
@@ -599,7 +583,9 @@ class GachaCommand extends Command {
         try {
             return await this.countPossibleItems(name)
                 .then(data => {
-                    if (data[0].count > 1) {
+                    let count = data[0].count
+
+                    if (count > 1) {
                         return this.resolveDuplicate(name, this.message, this.fetchSuppliedTargetById)
                             .then(selection => {
                                 return this.fetchSuppliedTargetById(selection.id)
@@ -607,17 +593,15 @@ class GachaCommand extends Command {
                                 this.message.author.send(`Sorry, there was an error with your last request.`)
                                 console.log(error)
                             })
-                    } else {
+                    } else if (count == 1) {
                         return this.fetchSuppliedTarget(name)
+                    } else {
+                        common.missingItem(this.message, this.userId, this.context, name)
                     }
                 })
                 .catch(error => {
                     let text = 'Sorry, there was an error communicating with the database for your last request.'
-                
-                let response = this.buildHelpfulResponse(this.message, text)
-                this.message.author.send(response)
-                
-                console.log(error)
+                    common.reportError(this.message, this.userId, this.context, error, text)
                 })
         } catch(error) {
             console.log(error)
@@ -668,11 +652,7 @@ class GachaCommand extends Command {
                     return results[selection]
                 }).catch(error => {
                     let text = 'Sorry, there was an error communicating with the database for your last request.'
-                
-                    let response = this.buildHelpfulResponse(message, text)
-                    this.message.author.send(response)
-                    
-                    console.log(error)
+                    common.reportError(this.message, this.userId, this.context, error, text)
                 })
             } catch(error) {
                 console.log(error)
@@ -686,35 +666,8 @@ class GachaCommand extends Command {
                 return res
             })
             .catch(error => {
-                var text = ""
-                var section = {
-                    title: "Did you mean...",
-                    content: ""
-                }
-
-                if (error instanceof pgpErrors.QueryResultError) {
-                    text = `We couldn\'t find \`${name}\` in our database. Double-check that you're using the correct item name and that the name is properly capitalized.`
-                    
-                    
-                    let hasUpperCase = /[A-Z]/.test(name)
-                    if (!hasUpperCase) {
-                        let prediction = name.split(' ').map(function(word) {
-                            return word.charAt(0).toUpperCase() + word.slice(1)
-                        }).join(' ')
-
-                        let command = this.message.content.substring(0, this.message.content.indexOf(name))
-
-                        section.content = `\`\`\`${command}${prediction}\`\`\``
-                    }
-                } else {
-                    text = 'Sorry, there was an error communicating with the database for your last request.'
-                    section = null
-                }
-                
-                let response = this.buildHelpfulResponse(this.message, text, false, section)
-                this.message.author.send(response)
-                
-                console.log(error)
+                let text = 'Sorry, there was an error communicating with the database for your last request.'
+                common.reportError(this.message, this.userId, this.context, error, text)
             })
     }
 
@@ -727,11 +680,7 @@ class GachaCommand extends Command {
                 })
                 .catch(error => {
                     let text = 'Sorry, there was an error communicating with the database for your last request.'
-                
-                let response = this.buildHelpfulResponse(this.message, text)
-                this.message.author.send(response)
-                
-                console.log(error)
+                    common.reportError(this.message, this.userId, this.context, error, text)
                 })
         } catch(error) {
             console.log(error)
@@ -913,27 +862,6 @@ class GachaCommand extends Command {
 
     // Helper methods
     // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-    buildHelpfulResponse(message, response, description = false, extraSection = null) {
-        var embed = new MessageEmbed({
-            color: 0xb58900
-        })
-
-        if (description) {
-            embed.setDescription("You can find the documentation for `$gacha` at https://github.com/jedmund/siero-bot/wiki/Pulling-gacha, or you can type `$gacha help`")
-        }
-
-        if (extraSection != null) {
-            embed.addField(extraSection.title, extraSection.content)
-        }
-
-        embed.addField("You sent...", message.content)
-
-        return {
-            content: response,
-            embed: embed
-        }
-    }
-
     shuffle(array) {
         var currentIndex = array.length, temporaryValue, randomIndex
       
