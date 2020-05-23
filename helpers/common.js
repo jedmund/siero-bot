@@ -1,4 +1,5 @@
 const { DiscordAPIError, MessageEmbed } = require('discord.js')
+const { pgpErrors } = require('../services/connection.js')
 
 const common = require('./common.js')
 
@@ -113,6 +114,8 @@ module.exports = {
                 }
             })
         
-        console.log(error)
+        if (!error instanceof pgpErrors.QueryResultError) {
+            console.log(error)
+        }
     },
 }

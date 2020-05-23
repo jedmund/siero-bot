@@ -404,7 +404,7 @@ class GachaCommand extends Command {
                                 remainingItems.splice(i, 1)
                             }).catch(error => {
                                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                                this.reportError(text)
+                                common.reportError(this.message, this.userId, this.context, error, text)
                             })
                     }
                 })
