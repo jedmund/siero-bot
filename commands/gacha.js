@@ -361,6 +361,9 @@ class GachaCommand extends Command {
                     return itemsWithRates.concat(itemDictionary.ambiguous)
                 })
                 .then(items => {
+                    return this.saveRateUps(items)
+                    
+                }).then(items => {
                     missing = this.findMissingRateUpData(originalDictionary, items)
                     return this.createRateUpEmbed(items, missing)
                 })
@@ -413,15 +416,51 @@ class GachaCommand extends Command {
         }
     }
 
+    async resolveDuplicate(target) {
+        let sql = [
+            "SELECT id, name, recruits, rarity, item_type",
+            "FROM gacha",
+            "WHERE name = $1 OR recruits = $1"
+        ].join(" ")
+
+        try {
+            var results
+            return await Client.any(sql, [target])
+                .then(data => {
+                    results = data
+                    return decision.buildDuplicateEmbed(data, target)
+                }).then(embed => {
+                    var message
+                    if (this.duplicateMessage != null) {
+                        message = this.duplicateMessage.edit(embed)
+                    } else {
+                        message = this.message.channel.send(embed)
+                    }
+                    return message
+                }).then(message => {
+                    this.duplicateMessage = message
+                    decision.addOptions(message, results.length)
+
+                    return decision.receiveSelection(message, this.userId)
+                }).then(selection => {
+                    return results[selection]
+                }).catch(error => {
+                    let text = 'Sorry, there was an error communicating with the database for your last request.'
+                    common.reportError(this.message, this.userId, this.context, error, text)
+                })
+            } catch(error) {
+                let text = 'Sorry, there was an error fulfilling your last request.'
+                    common.reportError(this.message, this.userId, this.context, error, text)
+            }
+    }
+
     async mergeRatesIntoItems(data, dictionary) {
         if (data.length > 0) {
             var rateups = []
+
             for (var i in data) {
                 // Fetch the rateup from the passed-in dictionary
                 let rateup = this.joinRateUpData(data[i], dictionary)
-
-                // Save the rate up data
-                this.saveRateUp(rateup.id, rateup.rate)
 
                 // Push to array
                 rateups.push(rateup)
@@ -459,9 +498,23 @@ class GachaCommand extends Command {
         return embed
     }
 
-    saveRateUp(id, rate) {
+    async saveRateUps(items) {
+        try {
+            for (var i in items) {
+                let rateup = items[i]
+                await this.saveRateUp(rateup.id, rateup.rate)
+            }
+
+            return items
+        } catch(error) {
+            let text = 'Sorry, there was an error fulfilling your last request.'
+            common.reportError(this.message, this.userId, this.context, error, text)
+        }
+    }
+
+    async saveRateUp(id, rate) {
         let sql = 'INSERT INTO rateups (gacha_id, user_id, rate) VALUES ($1, $2, $3)'
-        Client.query(sql, [id, this.userId, rate])
+        await Client.query(sql, [id, this.userId, rate])
             .catch(error => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
                 common.reportError(this.message, this.userId, this.context, error, text)
@@ -620,43 +673,6 @@ class GachaCommand extends Command {
         } catch(error) {
             console.log(error)
         }
-    }
-
-    async resolveDuplicate(target) {
-        let sql = [
-            "SELECT id, name, recruits, rarity, item_type",
-            "FROM gacha",
-            "WHERE name = $1 OR recruits = $1"
-        ].join(" ")
-
-        try {
-            var results
-            return await Client.any(sql, [target])
-                .then(data => {
-                    results = data
-                    return decision.buildDuplicateEmbed(data, target)
-                }).then(embed => {
-                    var message
-                    if (this.duplicateMessage != null) {
-                        message = this.duplicateMessage.edit(embed)
-                    } else {
-                        message = this.message.channel.send(embed)
-                    }
-                    return message
-                }).then(message => {
-                    this.duplicateMessage = message
-                    decision.addOptions(message, results.length)
-
-                    return decision.receiveSelection(message, this.userId)
-                }).then(selection => {
-                    return results[selection]
-                }).catch(error => {
-                    let text = 'Sorry, there was an error communicating with the database for your last request.'
-                    common.reportError(this.message, this.userId, this.context, error, text)
-                })
-            } catch(error) {
-                console.log(error)
-            }
     }
 
     async fetchSuppliedTarget(name) {
