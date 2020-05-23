@@ -44,28 +44,23 @@ module.exports = {
     generateOptions: function(data, target) {
         var options = ""
 
-	re = new RegExp(target, 'i');
-        
-	for (const [i, item] of data.entries()) {
+        for (const [i, item] of data.entries()) {
             var string = `${i + 1}. `
+
             if (item.item_type == 0) {
                 string += `(${common.mapRarity(item.rarity)} Weapon) `
             } else {
                 string += `(${common.mapRarity(item.rarity)} Summon) `
             }
 
-	    if (item.recruits != null) {
-
-		if (item.name.match(re)) {
+            if (item.recruits != null) {
+                if (item.name === target) {
                     string += `<${item.name}> - ${item.recruits}`
-                } else if (item.recruits.match(re)) {
+                } else if (item.recruits === target) {
                     string += `${item.name} - <${item.recruits}>`
-                } else {
-		    string += `${item.name} - ${item.recruits}`
-		}
-
+                }
             } else {
-                if (item.name.match(re)) {
+                if (item.name === target) {
                     string += `<${item.name}>`
                 } else {
                     string += `${item.name}`
