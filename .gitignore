@@ -1,6 +1,13 @@
-node_modules
+# dependencies
+/node_modules
 
+# compilation output
+/build
+
+# misc
+.DS_Store
+.env*
 *.db
 
-.env
-*.db
+# debug logs
+npm-debug.log*
