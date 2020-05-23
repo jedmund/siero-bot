@@ -254,7 +254,7 @@ class GachaCommand extends Command {
         let sourceUser = message.mentions.users.array()[0]
         let destinationUser = message.author
         let sql = [
-            "INSERT INTO rateup (gacha_id, rate, user_id)",
+            "INSERT INTO rateups (gacha_id, rate, user_id)",
             "SELECT gacha_id, rate, $1",
             "FROM rateups WHERE user_id = $2"
         ].join(" ")
@@ -460,7 +460,7 @@ class GachaCommand extends Command {
     }
 
     saveRateUp(id, rate) {
-        let sql = 'INSERT INTO rateup (gacha_id, user_id, rate) VALUES ($1, $2, $3)'
+        let sql = 'INSERT INTO rateups (gacha_id, user_id, rate) VALUES ($1, $2, $3)'
         Client.query(sql, [id, this.userId, rate])
             .catch(error => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
