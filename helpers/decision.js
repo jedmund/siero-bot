@@ -112,7 +112,7 @@ module.exports = {
                 })
                 .catch(error => {
                     console.log(error)
-                    message.reply('You didn\'t react with a valid emoji.');
+                    message.channel.send('You didn\'t react with a valid emoji.');
                 })
         } catch (error) {
             console.log(error)
