@@ -1,3 +1,5 @@
+import { Message } from "discord.js"
+
 const { Command } = require('discord-akairo')
 const { MessageEmbed } = require('discord.js')
 
@@ -8,10 +10,10 @@ class IRSCommand extends Command {
         })
     }
 
-    exec(message) {
+    exec(message: Message) {
         const embed = new MessageEmbed({
             color: 'C8232C',
-            title: 'IWASSHAAAAY',
+            title: 'IWASSHAAAAY!',
             description: '…ムムムム？？？？？？？',
             image: { url: 'https://i.imgur.com/GhkS14Z.png' },
         })

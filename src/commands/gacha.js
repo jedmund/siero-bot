@@ -35,11 +35,11 @@ class GachaCommand extends Command {
 
         common.storeMessage(this, message)
         common.storeUser(this, message.author.id)
-    
+
         await this.storeRateups()
         await this.storeSparkTarget()
 
-        switch(args.operation) {
+        switch (args.operation) {
             case "yolo":
                 this.yolo(message, args)
                 break
@@ -52,10 +52,10 @@ class GachaCommand extends Command {
             case "rateup":
                 try {
                     await this.rateup(message)
-                } catch(error) {
+                } catch (error) {
                     console.log(error)
                 }
-                
+
                 break
             case "until":
                 this.target(message, args)
@@ -86,7 +86,7 @@ class GachaCommand extends Command {
         let gacha = new Gacha(args.gala, args.season, this.rateups)
         let items = gacha.tenPartRoll()
         var response = `You got these 10 things!\`\`\`html\n${this.multilineResponseString(items.items)}\n\`\`\``
-        
+
         message.reply(response)
     }
 
@@ -101,7 +101,7 @@ class GachaCommand extends Command {
     async rateup(message, args) {
         let command = message.content.split(" ").splice(2, 1)[0]
 
-        switch(command) {
+        switch (command) {
             case "check":
                 this.checkRateUp(message, args)
                 break
@@ -114,24 +114,24 @@ class GachaCommand extends Command {
             case "set":
                 try {
                     await this.setRateUp(command)
-                } catch(error) {
+                } catch (error) {
                     console.log(error)
                 }
                 break
             case "copy":
                 this.copyRateUp(message)
                 break
-            default: 
+            default:
                 let text = 'Sorry, I don\'t recognize that command. Are you sure it\'s the right one?'
                 let error = `[Unrecognized command] ${this.userId}: ${message.content}`
-                
+
                 common.reportError(this.message, this.userId, this.context, error, text)
 
                 break
         }
     }
 
-    async target(message) {        
+    async target(message) {
         let splitMessage = message.content.split(" ")
 
         let properties = this.extractPropertiesFromTarget(splitMessage)
@@ -148,7 +148,7 @@ class GachaCommand extends Command {
                 while (!found) {
                     let roll = gacha.tenPartRoll()
                     count = count + 10
-                    
+
                     for (var i in roll.items) {
                         let item = roll.items[i]
                         if (item.name == target.name || (item.recruits == target.recruits && target.recruits != null)) {
@@ -175,7 +175,7 @@ class GachaCommand extends Command {
             } else {
                 let text = `It looks like **${target.name}** doesn't appear in the gala or season you selected.`
                 let error = `[Incorrect gala or season] ${this.userId}: ${message.content}`
-                
+
                 var appearance
                 if (gacha.isLimited(target)) {
                     appearance = gacha.getGala(target)
@@ -245,7 +245,7 @@ class GachaCommand extends Command {
         embed.addField("Using Rateups", usingRateups)
         embed.addField("Setting Rateups", settingRateups)
         message.channel.send(embed)
-    } 
+    }
 
     // Rate-up command methods
     copyRateUp(message) {
@@ -282,13 +282,13 @@ class GachaCommand extends Command {
             .then(data => {
                 if (data.length > 0) {
                     var rateUpDict = []
-                    
+
                     for (var i = 0; i < data.length; i++) {
                         rateUpDict.push({
-                            gacha_id : data[i].gacha_id,
-                            name     : data[i].name,
-                            rate     : data[i].rate,
-                            recruits : data[i].recruits
+                            gacha_id: data[i].gacha_id,
+                            name: data[i].name,
+                            rate: data[i].rate,
+                            recruits: data[i].recruits
                         })
                     }
 
@@ -323,7 +323,7 @@ class GachaCommand extends Command {
             } else {
                 this.message.channel.send(embed)
             }
-        } catch(error) {
+        } catch (error) {
             console.log(error)
         }
     }
@@ -362,7 +362,7 @@ class GachaCommand extends Command {
                 })
                 .then(items => {
                     return this.saveRateUps(items)
-                    
+
                 }).then(items => {
                     missing = this.findMissingRateUpData(originalDictionary, items)
                     return this.createRateUpEmbed(items, missing)
@@ -370,7 +370,7 @@ class GachaCommand extends Command {
                 .catch(error => {
                     console.log(error)
                 })
-        } catch(error) {
+        } catch (error) {
             console.log(error)
         }
     }
@@ -379,7 +379,7 @@ class GachaCommand extends Command {
         let remainingItems = JSON.parse(JSON.stringify(dictionary))
         let ambiguousItems = []
 
-        for (var i = dictionary.length - 1; i >= 0; i--) {            
+        for (var i = dictionary.length - 1; i >= 0; i--) {
             let item = dictionary[i]
             await this.countPossibleItems(item.item)
                 .then(data => {
@@ -448,10 +448,10 @@ class GachaCommand extends Command {
                     let text = 'Sorry, there was an error communicating with the database for your last request.'
                     common.reportError(this.message, this.userId, this.context, error, text)
                 })
-            } catch(error) {
-                let text = 'Sorry, there was an error fulfilling your last request.'
-                    common.reportError(this.message, this.userId, this.context, error, text)
-            }
+        } catch (error) {
+            let text = 'Sorry, there was an error fulfilling your last request.'
+            common.reportError(this.message, this.userId, this.context, error, text)
+        }
     }
 
     async mergeRatesIntoItems(data, dictionary) {
@@ -492,7 +492,7 @@ class GachaCommand extends Command {
         let embed = this.generateRateUpString(rateups)
 
         if (missing.length > 0) {
-            embed.addField('The following items could not be found and were not added to your rateup',  `\`\`\`${missing.join(' \n')}\`\`\``)
+            embed.addField('The following items could not be found and were not added to your rateup', `\`\`\`${missing.join(' \n')}\`\`\``)
         }
 
         return embed
@@ -506,7 +506,7 @@ class GachaCommand extends Command {
             }
 
             return items
-        } catch(error) {
+        } catch (error) {
             let text = 'Sorry, there was an error fulfilling your last request.'
             common.reportError(this.message, this.userId, this.context, error, text)
         }
@@ -523,9 +523,9 @@ class GachaCommand extends Command {
 
     joinRateUpData(dict1, dict2) {
         var rateup = {
-            id       : dict1.id,
-            name     : dict1.name,
-            recruits : dict1.recruits
+            id: dict1.id,
+            name: dict1.name,
+            recruits: dict1.recruits
         }
 
         for (var i in dict2) {
@@ -543,7 +543,7 @@ class GachaCommand extends Command {
         let list = original.map(rateup => rateup.item)
         let resultNames = result.map(result => result.name)
         let resultRecruits = result.map(result => result.recruits)
-            
+
         return list.filter(e => !resultNames.includes(e) && !resultRecruits.includes(e))
     }
 
@@ -577,8 +577,8 @@ class GachaCommand extends Command {
             let splitRateup = rawRateUps[i].split(" ")
 
             rateups.push({
-                rate : splitRateup.pop(),
-                item : splitRateup.join(" ")
+                rate: splitRateup.pop(),
+                item: splitRateup.join(" ")
             })
         }
 
@@ -611,15 +611,15 @@ class GachaCommand extends Command {
         let season = message.find(item => ["halloween", "holiday", "summer", "valentine"].includes(item))
 
         return {
-            gala   : gala,
-            season : season
+            gala: gala,
+            season: season
         }
     }
 
     extractTarget(message, gala, season) {
         let indexOfGala = message.indexOf(gala)
         let indexOfSeason = message.indexOf(season)
-        
+
         var target
         if (indexOfGala > -1) {
             target = message.splice(2, indexOfGala - 2).join(" ")
@@ -656,7 +656,7 @@ class GachaCommand extends Command {
                     let text = 'Sorry, there was an error communicating with the database for your last request.'
                     common.reportError(this.message, this.userId, this.context, error, text)
                 })
-        } catch(error) {
+        } catch (error) {
             console.log(error)
         }
     }
@@ -670,7 +670,7 @@ class GachaCommand extends Command {
 
         try {
             return await Client.any(sql, [name])
-        } catch(error) {
+        } catch (error) {
             console.log(error)
         }
     }
@@ -698,7 +698,7 @@ class GachaCommand extends Command {
                     let text = 'Sorry, there was an error communicating with the database for your last request.'
                     common.reportError(this.message, this.userId, this.context, error, text)
                 })
-        } catch(error) {
+        } catch (error) {
             console.log(error)
         }
     }
@@ -716,7 +716,7 @@ class GachaCommand extends Command {
         let tenPullCost = 3000
         let exchangeRate = 106.10
         let conversion = `That's **${(numTenPulls * tenPullCost).toLocaleString()} crystals** or about **\$${Math.ceil(((numTenPulls * tenPullCost) / exchangeRate)).toLocaleString()}**!`
-        
+
         return [string, conversion].join(" ")
     }
 
@@ -724,11 +724,11 @@ class GachaCommand extends Command {
     filterSSRWeapons(el) {
         return el.rarity == 3 && el.item_type == 0
     }
-    
+
     filterSSRSummons(el) {
         return el.rarity == 3 && el.item_type == 1
     }
-    
+
     filterRateUpItems(items) {
         var totalCount = 0
         var rateups = this.rateups
@@ -746,35 +746,35 @@ class GachaCommand extends Command {
     // Render methods
     sortCharacterWeapons(results) {
         var characterWeapons = []
-    
+
         for (var item in results) {
             var hasPlacedSR = false
             var lastSRPos = 0
             var placedSSRCount = 0
-    
+
             if (results[item].recruits != null) {
                 // If you get an R, put it at the front of the list
                 if (results[item].rarity == 1) {
                     characterWeapons.unshift(results[item])
-    
+
                     if (!hasPlacedSR) {
                         lastSRPos = characterWeapons.length
                     }
                 }
-    
+
                 // If you get an SR, put it at the last SR position and record a new position
                 if (results[item].rarity == 2) {
                     characterWeapons.splice(lastSRPos, 0, results[item])
-    
+
                     if (!hasPlacedSR) {
                         hasPlacedSR = true
                     }
                 }
-    
+
                 // If you get an SSR, put it at the end of the list
                 if (results[item].rarity == 3) {
                     characterWeapons.push(results[item])
-    
+
                     if (!hasPlacedSR) {
                         placedSSRCount += 1
                         lastSRPos = characterWeapons.length - placedSSRCount
@@ -782,13 +782,13 @@ class GachaCommand extends Command {
                 }
             }
         }
-    
+
         return characterWeapons
     }
 
     responseString(result, combined = false) {
         var response = ""
-    
+
         var rarityString = ""
         if (result.rarity == 1) {
             rarityString = "R"
@@ -797,7 +797,7 @@ class GachaCommand extends Command {
         } else if (result.rarity == 3) {
             rarityString = "SSR"
         }
-    
+
         if (result.recruits != null) {
             var response = response + `<${rarityString}> ${result.name} – You recruited ${result.recruits.trim()}!`
         } else {
@@ -807,27 +807,27 @@ class GachaCommand extends Command {
                 var response = response + `<${rarityString} Summon> ${result.name}`
             }
         }
-    
+
         if (!combined) {
             response = `\`\`\`html\n${response}\n\`\`\``
         } else {
             response = `${response}\n`
         }
-    
+
         return response
     }
-    
+
     multilineResponseString(results) {
         let characterWeapons = this.sortCharacterWeapons(results)
         var gachaItems = results.filter(x => !characterWeapons.includes(x)).concat(characterWeapons.filter(x => !results.includes(x)))
-    
+
         let items = this.shuffle(gachaItems).concat(characterWeapons)
-    
+
         var string = ""
         for (var item in items) {
             string += this.responseString(items[item], true)
         }
-    
+
         return string
     }
 
@@ -839,22 +839,22 @@ class GachaCommand extends Command {
         for (var i in results.items) {
             response += this.responseString(results.items[i], true)
         }
-            
+
         let rate = Math.floor((results.count.SSR / 300) * 100)
-            
+
         embed.setDescription("```html\n" + response + "\n```")
         embed.addField("Summary", `\`\`\`${this.summaryString(results.items, results.count)}\`\`\``)
         embed.setFooter(`Your SSR rate is ${rate}%`)
 
         return embed
     }
-    
+
     summaryString(results, count) {
         let ssrWeapons = results.filter(this.filterSSRWeapons)
         let ssrSummons = results.filter(this.filterSSRSummons)
         let numRateupItems = this.filterRateUpItems(results)
 
-        let targetAcquired = results.filter(item => { 
+        let targetAcquired = results.filter(item => {
             if (this.sparkTarget != null) {
                 return item.name == this.sparkTarget.name || (item.recruits != null && item.recruits == this.sparkTarget.recruits)
             } else {
@@ -866,13 +866,13 @@ class GachaCommand extends Command {
         if (targetAcquired != null) {
             targetAcquiredString = (targetAcquired.length > 0) ? `You got your spark target! (${targetAcquired.length})` : ""
         }
-        
+
         var ssrWeaponString = `SSR Weapons: ${ssrWeapons.length}`
         var ssrSummonString = `SSR Summons: ${ssrSummons.length}`
         var rateupString = (this.rateups.length > 0) ? `Rate-up Items: ${numRateupItems}` : ""
         var srString = `SR: ${count.SR}`
         var rString = `R: ${count.R}`
-    
+
         return [targetAcquiredString, rateupString, ssrWeaponString, ssrSummonString, srString, rString].join("\n")
     }
 
@@ -880,20 +880,20 @@ class GachaCommand extends Command {
     // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
     shuffle(array) {
         var currentIndex = array.length, temporaryValue, randomIndex
-      
+
         // While there remain elements to shuffle...
         while (0 !== currentIndex) {
-      
-          // Pick a remaining element...
-          randomIndex = Math.floor(Math.random() * currentIndex)
-          currentIndex -= 1
-      
-          // And swap it with the current element.
-          temporaryValue = array[currentIndex]
-          array[currentIndex] = array[randomIndex]
-          array[randomIndex] = temporaryValue
+
+            // Pick a remaining element...
+            randomIndex = Math.floor(Math.random() * currentIndex)
+            currentIndex -= 1
+
+            // And swap it with the current element.
+            temporaryValue = array[currentIndex]
+            array[currentIndex] = array[randomIndex]
+            array[randomIndex] = temporaryValue
         }
-      
+
         return array
     }
 
