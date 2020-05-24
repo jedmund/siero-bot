@@ -7,8 +7,8 @@ const common = require('../helpers/common.js')
 const stickers = require('../resources/stickers.js')
 
 interface StickerArgs {
-    alias: string | null;
-    language: string | null;
+    alias: string | null
+    language: string | null
 }
 
 class StickerCommand extends Command {
@@ -16,12 +16,8 @@ class StickerCommand extends Command {
         super('sticker', {
             aliases: ['sticker', 'ss'],
             args: [
-                {
-                    id: 'alias'
-                },
-                {
-                    id: 'language'
-                }
+                { id: 'alias' },
+                { id: 'language' }
             ],
             regex: ['(?<=\:)(.*?)(?=\:)']
         })
