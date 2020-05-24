@@ -14,22 +14,22 @@ function exportListForGithub() {
         '|---------|-------|---------|-------|\n'
     ].join("\n")
 
-    var keys: string[] = []
-    for (const key in stickerList) {
+    const keys: string[] = []
+    for (let key in stickerList) {
         if (stickerList.hasOwnProperty(key)) {
             keys.push(key)
         }
     }
 
-    for (var i = 0; i < keys.length; i++) {
-        var alias: string = keys[i]
-        const stickerImage: string = stickerList[keys[i]].en
+    for (let i = 0; i < keys.length; i++) {
+        let alias: string = keys[i]
+        let stickerImage: string = stickerList[keys[i]].en
 
         if (alias == "at") {
             alias = "at\` or \`st"
         }
 
-        var row: string = `|![${alias}](${stickerImage})|\`${alias}\``
+        var row:string = `|![${alias}](${stickerImage})|\`${alias}\``
 
         if (i % 2 != 0) {
             row += `|\n`
