@@ -6,6 +6,7 @@ const { MessageEmbed } = require('discord.js')
 const common = require('../helpers/common.js')
 const stickers = require('../resources/stickers.js')
 
+type Sticker = string | null
 interface StickerArgs {
     alias: string | null
     language: string | null
@@ -32,7 +33,7 @@ class StickerCommand extends Command {
         if (['list', 'help'].includes(alias)) {
             message.reply(this.buildHelpEmbed())
         } else {
-            const sticker: string | null = this.sticker(alias)
+            const sticker: Sticker = this.sticker(alias)
 
             if (sticker != null) {
                 message.channel.send(this.buildStickerEmbed(sticker))
@@ -76,7 +77,7 @@ class StickerCommand extends Command {
     }
 
     private sticker(alias: string) {
-        var sticker: string | null = null
+        var sticker: Sticker = null
 
         if (Object.keys(stickers.list).includes(alias)) {
             if (this.isJapanese) {
