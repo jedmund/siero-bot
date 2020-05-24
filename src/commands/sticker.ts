@@ -43,7 +43,7 @@ class StickerCommand extends Command {
     private extractAlias() {
         var alias: string = ""
 
-        if (this.args.alias == null) {
+        if (!this.args.alias) {
             alias = this.args.match[0]
         } else {
             alias = this.args.alias
