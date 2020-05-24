@@ -1,6 +1,6 @@
-const { Cache } = require('../services/cache.js')
+const { Cache } = require('./cache.js')
 const { Chance } = require('chance')
-const { GachaBucket, ItemType, Festival, Rarity, RollsInSpark, Season, SSRRate } = require('../services/constants.js')
+const { GachaBucket, ItemType, Festival, Rarity, RollsInSpark, Season, SSRRate } = require('./constants.js')
 
 const cache = new Cache()
 const chance = new Chance()

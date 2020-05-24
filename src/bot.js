@@ -15,7 +15,8 @@ class SieroClient extends AkairoClient {
 
         // Set up command handler
         this.commandHandler = new CommandHandler(this, {
-            directory: './commands/',
+            directory: './build/dist/commands/',
+            loadFilter: filepath => filepath.slice(-3) === '.js',
             prefix: '$'
         })
 

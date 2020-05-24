@@ -1,5 +1,5 @@
-const { ItemType, Festival, Rarity, Season, SSRRate } = require('../services/constants.js')
-const { Client } = require('../services/connection.js')
+const { ItemType, Festival, Rarity, Season, SSRRate } = require('./constants.js')
+const { Client } = require('./connection.js')
 
 class Cache {
 	_characterWeapons = {}
