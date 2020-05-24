@@ -59,8 +59,8 @@ class StickerCommand extends Command {
     }
 
     private buildHelpEmbed() {
-        const link: string = 'https://github.com/jedmund/siero-bot/wiki/Using-stickers#available-stickers'
-        const description: string = `You can also see a list of stickers with images on my wiki: ${link}`
+        const link = 'https://github.com/jedmund/siero-bot/wiki/Using-stickers#available-stickers'
+        const description = `You can also see a list of stickers with images on my wiki: ${link}`
 
         return new MessageEmbed({
             title: 'Stickers',
@@ -76,8 +76,8 @@ class StickerCommand extends Command {
         })
     }
 
-    private sticker(alias: string) {
-        var sticker: Sticker = null
+    private sticker(alias: string): Sticker {
+        let sticker: Sticker = null
 
         if (Object.keys(stickers.list).includes(alias)) {
             if (this.isJapanese) {
