@@ -1,4 +1,3 @@
-# Siero
 Siero is a Discord bot for Granblue Fantasy crews. She can help you save your sparks, simulate gacha, and more.
 
 [<img src="https://i.imgur.com/bnSI8Ow.png" height=48 alt="Add to Discord"/>](https://discord.com/api/oauth2/authorize?client_id=539533389187776523&permissions=8192&scope=bot) [<img src="https://i.imgur.com/xsgDiGS.png" height=48 alt="Join granblue-tools on Discord"/>](https://discord.gg/6929HA6)
