@@ -1,6 +1,6 @@
 module.exports = {
     list: {
-            'amazing': {
+        'amazing': {
             en: 'https://gbf.wiki/images/7/74/Stamp37.png',
             jp: 'https://gbf.wiki/images/6/66/Stamp37jp.png'
         },
