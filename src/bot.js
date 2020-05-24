@@ -1,6 +1,7 @@
 require('dotenv').config()
 
 const { AkairoClient, CommandHandler, ListenerHandler } = require('discord-akairo')
+const pluralize = require('pluralize')
 
 class SieroClient extends AkairoClient {
     constructor() {
@@ -26,3 +27,8 @@ class SieroClient extends AkairoClient {
 
 const client = new SieroClient()
 client.login(process.env.DISCORD_SECRET)
+
+client.once('ready', () => {
+    console.log('Siero is online!')
+    console.log(`Currently running for ${client.users.cache.size} ${pluralize('user', client.users.cache.size)} in ${client.guilds.cache.size} ${pluralize('server', client.guilds.cache.size)}.`)
+})
