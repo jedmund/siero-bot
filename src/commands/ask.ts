@@ -1,3 +1,5 @@
+import { Message } from "discord.js"
+
 const { Command } = require('discord-akairo')
 
 const Answers = [
@@ -7,6 +9,7 @@ const Answers = [
     "I don't think so",
     "Hmm... maybe!",
     "Fufufu~",
+    "Hehehe!",
     "Definitely not",
     "Absolutely",
     "Not a chance",
@@ -17,14 +20,13 @@ const Answers = [
 class AskCommand extends Command {
     constructor() {
         super('ask', {
-            aliases: ['ask'],
-            trigger: ['\b<@539533389187776523>\b']
+            aliases: ['ask']
         })
     }
 
-    exec(message) {
-        console.log(message)
-        message.reply(Answers[Math.floor(Math.random() * Answers.length)])
+    exec(message: Message) {
+        const reply = Answers[Math.floor(Math.random() * Answers.length)]
+        message.reply(reply)
     }
 }
 
