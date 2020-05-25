@@ -26,3 +26,6 @@ class SieroClient extends AkairoClient {
 
 const client = new SieroClient()
 client.login(process.env.DISCORD_SECRET)
+
+// const utility = require('./helpers/exportStickers.js')
+// utility.exportListForGithub()
