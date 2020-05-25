@@ -4,39 +4,28 @@ interface StickerList {
     [key: string]: { en: string; jp: string; }
 }
 
-function exportListForGithub() {
-    const stickerList: StickerList = stickers.list
+module.exports = {
+    exportListForGithub: function() {
+        const stickerList: StickerList = stickers.list
 
-    delete stickerList.st
-    
-    var list: string = [
-        '| Sticker | Alias | Sticker | Alias |',
-        '|---------|-------|---------|-------|\n'
-    ].join("\n")
+        delete stickerList.st
+        
+        let stickerTable: string = [
+            '| Sticker | Alias | Sticker | Alias |',
+            '|---------|-------|---------|-------|\n'
+        ].join('\n')
 
-    const keys: string[] = []
-    for (let key in stickerList) {
-        if (stickerList.hasOwnProperty(key)) {
-            keys.push(key)
+        const keys = Object.keys(stickerList)
+        for (let i = 0; i < keys.length; i++) {
+            const key = keys[i]
+            const stickerImage = stickerList[key].en
+            const stickerAlias = key === 'at' ? 'at\` or \`st' : key
+
+            const row = `|![${stickerAlias}](${stickerImage})|\`${stickerAlias}\`${i % 2 != 0 ? '|\n' : ''}`
+
+            stickerTable += row
         }
+
+        console.log(stickerTable)
     }
-
-    for (let i = 0; i < keys.length; i++) {
-        let alias: string = keys[i]
-        let stickerImage: string = stickerList[keys[i]].en
-
-        if (alias == "at") {
-            alias = "at\` or \`st"
-        }
-
-        var row:string = `|![${alias}](${stickerImage})|\`${alias}\``
-
-        if (i % 2 != 0) {
-            row += `|\n`
-        }
-
-        list += row
-    }
-
-    console.log(list)
 }
