@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 import { Message } from "discord.js"
 
 const { Command } = require('discord-akairo')
@@ -12,7 +14,7 @@ class AdminCommand extends Command {
     }
 
     exec(message: Message) {
-        if (message.author.id === '139468879008235520') {
+        if (message.author.id === process.env.ADMIN_ID) {
             const stats = `Currently running for ${this.client.users.cache.size} ${pluralize('user', this.client.users.cache.size)} in ${this.client.guilds.cache.size} ${pluralize('server', this.client.guilds.cache.size)}.`
             message.channel.send(stats)
         }

@@ -32,3 +32,6 @@ client.once('ready', () => {
     console.log('Siero is online!')
     console.log(`Currently running for ${client.users.cache.size} ${pluralize('user', client.users.cache.size)} in ${client.guilds.cache.size} ${pluralize('server', client.guilds.cache.size)}.`)
 })
+
+// const utility = require('./helpers/exportStickers.js')
+// utility.exportListForGithub()
