@@ -46,7 +46,7 @@ class StickerCommand extends Command {
     }
 
     private extract() {
-        var alias: string = ""
+        let alias: string = ""
 
         if (!this.args.alias) {
             alias = this.args.match[0]
