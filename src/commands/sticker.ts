@@ -7,9 +7,13 @@ const common = require('../helpers/common.js')
 const stickers = require('../resources/stickers.js')
 
 type Sticker = string | null
-interface StickerArgs {
+interface NullableStickerArgs {
     alias: string | null
     language: string | null
+}
+interface StickerArgs {
+    alias: string
+    language: string
 }
 
 class StickerCommand extends Command {
@@ -24,16 +28,16 @@ class StickerCommand extends Command {
         })
     }
 
-    public exec(message: Message, args: StickerArgs) {
+    public exec(message: Message, args: NullableStickerArgs) {
         common.storeUser(this, message.author.id)
         common.storeArgs(this, args)
 
-        const alias: string = this.extractAlias()
+        const result: StickerArgs = this.extract()
 
-        if (['list', 'help'].includes(alias)) {
+        if (['list', 'help'].includes(result.alias)) {
             message.reply(this.buildHelpEmbed())
         } else {
-            const sticker: Sticker = this.sticker(alias)
+            const sticker: Sticker = this.sticker(result.alias, result.language)
 
             if (sticker != null) {
                 message.channel.send(this.buildStickerEmbed(sticker))
@@ -41,7 +45,7 @@ class StickerCommand extends Command {
         }
     }
 
-    private extractAlias() {
+    private extract() {
         var alias: string = ""
 
         if (!this.args.alias) {
@@ -50,12 +54,13 @@ class StickerCommand extends Command {
             alias = this.args.alias
         }
 
-        if (alias.startsWith('jp')) {
-            this.isJapanese = true
-            alias = alias.substring(2).charAt(0).toLowerCase() + alias.substring(2).slice(1)
-        }
+        const language = alias.startsWith('jp') ? 'jp' : 'en'
+        alias = alias.startsWith('jp') ? alias.substring(2).charAt(0).toLowerCase() + alias.substring(2).slice(1) : alias
 
-        return alias
+        return { 
+            alias: alias, 
+            language: language 
+        }
     }
 
     private buildHelpEmbed() {
@@ -76,15 +81,11 @@ class StickerCommand extends Command {
         })
     }
 
-    private sticker(alias: string): Sticker {
+    private sticker(alias: string, language: string): Sticker {
         let sticker: Sticker = null
 
         if (Object.keys(stickers.list).includes(alias)) {
-            if (this.isJapanese) {
-                sticker = stickers.list[alias].jp
-            } else {
-                sticker = stickers.list[alias].en
-            }
+            sticker = stickers.list[alias][language]
         }
 
         return sticker
