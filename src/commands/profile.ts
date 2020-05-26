@@ -1,4 +1,4 @@
-import { Collection, CollectorFilter, Guild, Message, Snowflake, User } from 'discord.js'
+import { Collection, CollectorFilter, Message, Snowflake, User } from 'discord.js'
 
 const { Client, pgpErrors } = require('../services/connection.js')
 const { Command } = require('discord-akairo')
