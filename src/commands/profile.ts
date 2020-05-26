@@ -1,4 +1,4 @@
-import { Message, User } from 'discord.js'
+import { Collection, CollectorFilter, Message, Snowflake, User } from 'discord.js'
 
 const { Client } = require('../services/connection.js')
 const { Command } = require('discord-akairo')
@@ -98,14 +98,17 @@ class ProfileCommand extends Command {
 
     private switchOperation(args: ProfileArgs) {
         switch(args.operation) {
-            case "set":
+            case 'set':
                 this.set(args)
                 break
-            case "show":
+            case 'show':
                 this.show()
                 break
-            case "help":
+            case 'help':
                 this.help()
+                break
+            case 'wizard':
+                this.wizard()
                 break
             default:
                 this.show()
@@ -157,6 +160,99 @@ class ProfileCommand extends Command {
         // }
     }
     
+    private async wizard() {
+        this.skipWord = '<skip>'
+
+        let breath = 650
+
+        let text1 = 'Let\'s set up your profile together!'
+        this.message.channel.send(text1)
+            .then(() => {
+                if (this.message.channel != this.message.author.dmChannel) {
+                    return this.sleep(breath)
+                } else {
+                    return
+                }
+            })
+            .then(() => {
+                // TODO: Check if have DM privileges
+
+                if (this.message.channel != this.message.author.dmChannel) {
+                    let text2 = 'I\'ll send you a direct message with the details.'
+                    this.message.channel.send(text2)
+                }
+            })
+            .then(() => {
+                return this.sleep(breath)
+            })
+            .then(() => {
+                let dmText = `If there\'s anything you want to skip, just let me know by typing \`${this.skipWord}\`.`
+                this.message.author.send(dmText)
+            })
+            .then(() => {
+                return this.sleep(breath * 2)
+            })
+            .then(() => {
+                this.fieldPrompts()
+            })
+    }
+
+    private async fieldPrompts() {
+        let keys = Object.keys(fieldMapping)
+        for (var i = 0; i < keys.length; i++) {
+            let field = keys[i]
+
+            if (i == 0) {
+                await this.promptUser(fieldMapping[field], field, 'First, ')
+            } else if (i == keys.length - 1) {
+                await this.promptUser(fieldMapping[field], field, 'Finally, ')
+            } else {
+                await this.promptUser(fieldMapping[field], field)
+            }
+        }
+
+        let completed = 'Great! We\'re all done. Thanks for filling out your profile!'
+        this.message.author.send(completed)
+    }
+
+    private async promptUser(field: string, key: string, prefix: string = '') {
+        let prompts: string[] = [
+            'how about we set up your ',
+            'what\'s your ',
+            'do you have a ',
+            'let\'s set your '
+        ]
+
+        let filter: CollectorFilter = (response) => {
+            return response.author.id == this.message.author.id
+        }
+
+        let rand = Math.floor(this.random(0, prompts.length))
+        let prompt = (prefix !== '') ? `${prefix}${prompts[rand]}${field}?` : `${this.capitalize(prompts[rand])}${field}?`
+
+        let promptMessage: Message = await this.message.author.dmChannel.send(prompt)
+
+        return promptMessage.channel.awaitMessages(filter, {
+            max: 1,
+            time: 90000,
+            errors: ['time']
+        })
+        .then((response: Collection<Snowflake, Message>) => {
+            if (response && response.size > 0) {
+                let value = response.first()!.content
+
+                if (value !== this.skipWord) {
+                    this.saveField(key, value)
+                } else {
+                    promptMessage.channel.send('Okay, we won\'t fill out that field.')
+                }
+            }
+        })
+        .catch((error) => {
+            console.log
+        })
+    }
+
     private extractTarget() {
         let mentions: [User] = this.message.mentions.users.array()
         return (mentions.length > 0) ? mentions[0] : this.message.author
@@ -172,7 +268,7 @@ class ProfileCommand extends Command {
             let value = profile[entry]
 
             if (value && entry != 'user_id') {
-                let title = fieldMapping[entry].charAt(0).toUpperCase() + fieldMapping[entry].slice(1)
+                let title = this.capitalize(fieldMapping[entry])
                 embed.addField(title, value)
             }
         }
@@ -236,48 +332,21 @@ class ProfileCommand extends Command {
                 console.error(error)
             })
     }
+
+    private capitalize(string: string) {
+        return string.charAt(0).toUpperCase() + string.slice(1)
+    }
+
+    private sleep(ms: number) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    private random(min: number, max: number) {
+        return min + Math.random() * (max - min);
+    }
 }
 
 module.exports = ProfileCommand
-
-//     async directSet(message) {
-//         message.author.send("Hello! Let's set up your profile. Type <skip> to skip a field.")
-        
-//         let nickname = "Let's start with your nickname. **What should people call you?**"
-//         let pronouns = "What are your **preferred pronouns?**"
-//         let profileName = "Okay, what is your **in-game name** in Granblue Fantasy?"
-//         let profileID = "What is your **ID** in Granblue Fantasy? You can find this in `Menu` → `Friends` → `Search` → `ID`."
-//         let psnName = "Do you have a **Playstation Network** account? What is your username?"
-//         let steamName = "Do you have a **Steam** account? What is your username?"
-
-//         await this.promptField(message, nickname, "nickname", "nickname");
-//         await this.promptField(message, pronouns, "pronouns", "pronoun preference");
-//         await this.promptField(message, profileName, "granblue_name", "Granblue Fantasy name");
-//         await this.promptField(message, profileID, "granblue_id", "Granblue Fantasy ID");
-//         await this.promptField(message, psnName, "psn", "Playstation Network username");
-//         await this.promptField(message, steamName, "steam", "Steam username");
-
-//         message.author.send("That's all for now. Thanks for filling out your profile!");
-//     }
-
-//     async promptField(message, prompt, key, readable_key) {
-//         let firstMessage = await message.author.send(prompt)
-
-//         let filter = (response) => {
-//             return response.author.id == message.author.id
-//         }
-        
-//         let collected = await firstMessage.channel.awaitMessages(filter, {
-//             maxMatches: 1,
-//             time: 60000
-//         }).catch(console.log)
-
-//         if (collected && collected.size > 0) {
-//             let value = collected.first().content
-//             this.saveField(message.author.id, key, value)
-//             message.author.send(`Your ${readable_key} has been set to \`${value}\`.`)
-//         } else await firstMessage.edit("Sorry, this command timed out.")
-//     }
 
 //     help(message) {
 //         var embed = new MessageEmbed()
