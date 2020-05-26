@@ -86,7 +86,7 @@ class ProfileCommand extends Command {
                 if (!this.hasField(field)) {
                     let text = `Sorry, it looks like we don't accept the profile field \`${field}\`.`
                     let error = `[${this.table}] invalid profile field`
-                    
+
                     common.reportError(this.message, this.userId, this.context, error, text)
 
                     return
@@ -161,6 +161,41 @@ class ProfileCommand extends Command {
             .catch((error: Error) => {
                 console.error(error)
             })
+    }
+
+    private help() {
+        let profileOptions = [
+            '```html\n',
+            '<show>',
+            'Show your profile, or tag another Discord member to see their profile\n',
+            '<set>',
+            'Specify a single field to update\n',
+            '<wizard>',
+            'Set all fields at once with the profile creation wizard',
+            '```'
+        ].join('\n')
+
+        let embed = new MessageEmbed({
+            title: 'Profile',
+            description: 'Welcome! You can make a profile here for others in your server to see!',
+            color: 0xdc322f,
+            fields: [
+                {
+                    name  : 'Command syntax',
+                    value : '```profile <option> <key> <value>```'
+                },
+                {
+                    name: 'Profile options',
+                    value: profileOptions
+                },
+                {
+                    name: 'Profile fields',
+                    value: '```nickname pronouns granblue_name granblue_id psn steam switch xbox gog```'
+                }
+            ]
+        })
+        
+        this.message.channel.send(embed)
     }
 
     private hasField(field: string) {
@@ -363,38 +398,3 @@ class ProfileCommand extends Command {
 }
 
 module.exports = ProfileCommand
-
-//     help(message) {
-//         var embed = new MessageEmbed()
-//         embed.setTitle("Profile")
-//         embed.setDescription("Welcome! You can make a profile here that others can see!")
-//         embed.setColor(0xdc322f)
-//         embed.addField("Command syntax", "```profile <option> <key> <value>```")
-//         embed.addField("Spark options", `\`\`\`html\n
-// <show>
-// Show your profile, or tag another Discord member to see their profile\n
-// <set>
-// Run the profile setup wizard, or you can specify a single field from the keys below to update a single key
-//     \`\`\``)
-//         embed.addField("Settable fields", `You can set the following fields individually: 
-//         \`\`\`nickname pronouns granblue_name granblue_id psn steam\`\`\``)
-    
-//         message.channel.send(embed)
-//     }
-
-//     // Helper methods
-//     switchOperation(message, args) {
-//         switch(args.operation) {
-//             case "set":
-//                 this.set(message, args)
-//                 break
-//             case "show":
-//                 this.show(message, args)
-//                 break
-//             case "help":
-//                 this.help(message)
-//                 break
-//             default:
-//                 break
-//         }
-//     }
