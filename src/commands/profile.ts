@@ -149,7 +149,7 @@ class ProfileCommand extends Command {
                 this.message.channel.send(embed)
             })
             .catch((error) => {
-
+                console.error(error)
             })
        
         // TODO: Add error messages
@@ -195,6 +195,9 @@ class ProfileCommand extends Command {
             .then(() => {
                 this.fieldPrompts()
             })
+            .catch((error) => {
+                console.error(error)
+            })
     }
 
     private async fieldPrompts() {
@@ -211,8 +214,20 @@ class ProfileCommand extends Command {
             }
         }
 
-        let completed = 'Great! We\'re all done. Thanks for filling out your profile!'
-        this.message.author.send(completed)
+        this.fetchProfileData(this.userId)
+            .then((data: StringResult) => {
+                console.log(data)
+                let embed = this.renderProfile(this.message.author, data)
+                let completed = 'Great! We\'re all done. Thanks for filling out your profile!'
+                
+                this.message.author.send({
+                    content: completed,
+                    embed: embed
+                })
+            })
+            .catch((error) => {
+                console.error(error)
+            })
     }
 
     private async promptUser(field: string, key: string, prefix: string = '') {
@@ -249,7 +264,7 @@ class ProfileCommand extends Command {
             }
         })
         .catch((error) => {
-            console.log
+            console.error(error)
         })
     }
 
@@ -259,18 +274,36 @@ class ProfileCommand extends Command {
     }
 
     private renderProfile(target: User, profile: StringResult) {
+        let embedMapping: StringResult = {
+            'nickname'      : 'nickname',
+            'pronouns'      : 'pronouns',
+            'granblue_name' : 'Granblue Fantasy name',
+            'granblue_id'   : 'Granblue Fantasy ID',
+            'steam'         : 'Steam username',
+            'psn'           : 'Playstation Network',
+            'switch'        : 'Nintendo Switch',
+            'xbox'          : 'Xbox Live',
+            'gog'           : 'GOG'
+        }
+
         const embed = new MessageEmbed({
             title: `${target.username} 's profile`,
             color: 0xb58900
         })
 
-        for (const entry in profile) {
-            let value = profile[entry]
+        let fields = Object.keys(profile)
+        let filteredFields = fields.filter((value) => { 
+            return (value != 'user_id' && value != 'guild_ids')
+        })
 
-            if (value && entry != 'user_id') {
-                let title = this.capitalize(fieldMapping[entry])
-                embed.addField(title, value)
-            }
+        let inline: boolean = (fields.length > 5) ? true : false
+
+        for (var i = 0; i < filteredFields.length; i++) {
+            let entry = filteredFields[i]
+            let value = profile[entry]
+            let title = this.capitalize(embedMapping[entry])
+
+            embed.addField(title, value, inline)
         }
 
         return embed
@@ -285,7 +318,7 @@ class ProfileCommand extends Command {
                 .then((result: NumberResult) => {
                     return result.count
                 })
-                .catch(error => {
+                .catch((error) => {
                     console.error(error)
                 })
         } catch(error) {
