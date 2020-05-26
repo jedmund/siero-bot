@@ -1,6 +1,6 @@
 import { Collection, CollectorFilter, Message, Snowflake, User } from 'discord.js'
 
-const { Client } = require('../services/connection.js')
+const { Client, pgpErrors } = require('../services/connection.js')
 const { Command } = require('discord-akairo')
 const { MessageEmbed } = require('discord.js')
 
@@ -14,45 +14,6 @@ interface ProfileArgs {
     field: string | null
     value: string | null
 }
-
-// let fieldMapping = [
-//     {
-//         key: 'nickname',
-//         value: 'nickname'
-//     },
-//     {
-//         key: 'pronouns',
-//         value: 'pronouns'
-//     },
-//     {
-//         key: 'granblue_name',
-//         value: 'Granblue Fantasy name'
-//     },
-//     {
-//         key: 'granblue_id',
-//         value: 'Granblue Fantasy ID'
-//     },
-//     {
-//         key: 'steam',
-//         value: 'Steam username'
-//     },
-//     {
-//         key: 'psn',
-//         value: 'Playstation Network username'
-//     },
-//     {
-//         key: 'switch',
-//         value: 'Nintendo Switch friend code'
-//     },
-//     {
-//         key: 'xbox',
-//         value: 'Xbox Live gamertag'
-//     },
-//     {
-//         key: 'gog',
-//         value: 'GOG username'
-//     }
-// ]
 
 let fieldMapping: StringResult = {
     'nickname'      : 'nickname',
@@ -122,7 +83,15 @@ class ProfileCommand extends Command {
                 let field: string = args.field
                 let value: string = args.value
 
-                // TODO: Check if field is accepted
+                if (!this.hasField(field)) {
+                    let text = `Sorry, it looks like we don't accept the profile field \`${field}\`.`
+                    let error = `[${this.table}] invalid profile field`
+                    
+                    common.reportError(this.message, this.userId, this.context, error, text)
+
+                    return
+                }
+
                 this.saveField(field, value)
                     .then((result: StringResult) => {
                         if (result.user_id === this.userId && result[field] === value) {
@@ -151,13 +120,6 @@ class ProfileCommand extends Command {
             .catch((error) => {
                 console.error(error)
             })
-       
-        // TODO: Add error messages
-        // if (mentions.length > 0 && message.author.id != user.id) {
-        //     reply = `Sorry, ${user} hasn't filled out their profile yet.`
-        // } else {
-        //     reply = `Sorry, you haven't filled out your profile yet.`
-        // }
     }
     
     private async wizard() {
@@ -175,10 +137,8 @@ class ProfileCommand extends Command {
                 }
             })
             .then(() => {
-                // TODO: Check if have DM privileges
-
                 if (this.message.channel != this.message.author.dmChannel) {
-                    let text2 = 'I\'ll send you a direct message with the details.'
+                    let text2 = 'I\'ll try to send you a direct message with the details.'
                     this.message.channel.send(text2)
                 }
             })
@@ -188,16 +148,24 @@ class ProfileCommand extends Command {
             .then(() => {
                 let dmText = `If there\'s anything you want to skip, just let me know by typing \`${this.skipWord}\`.`
                 this.message.author.send(dmText)
+                    .catch(() => {
+                        this.message.reply('It looks like you don\'t accept direct messages! You can set up your profile with `$profile set` instead.')
+                    })
             })
             .then(() => {
-                return this.sleep(breath * 2)
+                return this.sleep(breath)
             })
             .then(() => {
                 this.fieldPrompts()
             })
-            .catch((error) => {
+            .catch((error: Error) => {
                 console.error(error)
             })
+    }
+
+    private hasField(field: string) {
+        let fields = Object.keys(fieldMapping)
+        return fields.indexOf(field) != -1
     }
 
     private async fieldPrompts() {
@@ -226,6 +194,7 @@ class ProfileCommand extends Command {
                 })
             })
             .catch((error) => {
+                common.reportError(this.message, this.userId, this.table, )
                 console.error(error)
             })
     }
@@ -263,8 +232,8 @@ class ProfileCommand extends Command {
                 }
             }
         })
-        .catch((error) => {
-            console.error(error)
+        .catch((_: Collection<Snowflake, Message>) => {
+            promptMessage.channel.send(`It looks like you didn\'t send me your ${field} in time. Feel free to try again later!`)
         })
     }
 
@@ -318,7 +287,7 @@ class ProfileCommand extends Command {
                 .then((result: NumberResult) => {
                     return result.count
                 })
-                .catch((error) => {
+                .catch((error: Error) => {
                     console.error(error)
                 })
         } catch(error) {
@@ -335,7 +304,7 @@ class ProfileCommand extends Command {
                 .then((_: StringResult) => {
                     console.log(`[${table}] New user created: ${this.userId}`)
                 })
-                .catch(error => {
+                .catch((error: Error) =>  {
                     console.error(error)
                 })
         } catch(error) {
@@ -350,8 +319,9 @@ class ProfileCommand extends Command {
             .then((result: StringResult) => {
                 return result
             })
-            .catch((error) => {
-                console.error(error)
+            .catch((error: Error) => {
+                let text = 'Sorry, there was an error communicating with the database to save your profile.'
+                common.reportError(this.message, this.userId, this.context, error, text)
             })
     }
 
@@ -361,8 +331,21 @@ class ProfileCommand extends Command {
             .then((result: StringResult) => {
                 return result
             })
-            .catch((error) => {
-                console.error(error)
+            .catch((error: Error) => {
+                if (error instanceof pgpErrors.QueryResultError) {
+                    var reply = ''
+
+                    if (this.message.mentions.length > 0 && this.userId != userId) {
+                        reply = `It looks like ${this.message.mentions[0].username} hasn't filled out their profile yet.`
+                    } else {
+                        reply = 'Oops, you haven\'t filled out your profile yet.'
+                    }
+
+                    this.message.reply(reply)
+                } else {
+                    let text = 'Sorry, there was an error communicating with the database to fetch that profile.'
+                    common.reportError(this.message, this.userId, this.context, error, text)
+                }
             })
     }
 
