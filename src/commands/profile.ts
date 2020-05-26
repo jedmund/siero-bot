@@ -1,4 +1,4 @@
-import { Collection, CollectorFilter, Message, Snowflake, User } from 'discord.js'
+import { Collection, CollectorFilter, Guild, Message, Snowflake, User } from 'discord.js'
 
 const { Client, pgpErrors } = require('../services/connection.js')
 const { Command } = require('discord-akairo')
@@ -53,6 +53,10 @@ class ProfileCommand extends Command {
 
                 return
             }).then(() => {
+                if (message.channel.type !== 'dm') {
+                    this.checkGuildAssociation(table)
+                }
+            }).then(() => {
                 this.switchOperation(args)
             })
     }
@@ -84,8 +88,8 @@ class ProfileCommand extends Command {
                 let value: string = args.value
 
                 if (!this.hasField(field)) {
-                    let text = `Sorry, it looks like we don't accept the profile field \`${field}\`.`
-                    let error = `[${this.table}] invalid profile field`
+                    let text = `Sorry, we don't currently accept the profile field \`${field}\`.`
+                    let error = `[profile] invalid profile field`
 
                     common.reportError(this.message, this.userId, this.context, error, text)
 
@@ -114,8 +118,14 @@ class ProfileCommand extends Command {
 
         this.fetchProfileData(target.id)
             .then((data: StringResult) => {
-                let embed = this.renderProfile(target, data)
-                this.message.channel.send(embed)
+                if (data.guild_ids.includes(this.message.guild.id)) {
+                    let embed = this.renderProfile(target, data)
+                    this.message.channel.send(embed)
+                } else {
+                    let text = 'Sorry, I can\'t show that profile on this server.'
+                    let error = '[profile] foreign server'
+                    common.reportError(this.message, this.userId, this.context, error, text)
+                }
             })
             .catch((error) => {
                 console.error(error)
@@ -219,7 +229,6 @@ class ProfileCommand extends Command {
 
         this.fetchProfileData(this.userId)
             .then((data: StringResult) => {
-                console.log(data)
                 let embed = this.renderProfile(this.message.author, data)
                 let completed = 'Great! We\'re all done. Thanks for filling out your profile!'
                 
@@ -227,10 +236,6 @@ class ProfileCommand extends Command {
                     content: completed,
                     embed: embed
                 })
-            })
-            .catch((error) => {
-                common.reportError(this.message, this.userId, this.table, )
-                console.error(error)
             })
     }
 
@@ -337,7 +342,7 @@ class ProfileCommand extends Command {
         try {
             Client.one(sql, this.userId)
                 .then((_: StringResult) => {
-                    console.log(`[${table}] New user created: ${this.userId}`)
+                    console.log(`[profile] New user created: ${this.userId}`)
                 })
                 .catch((error: Error) =>  {
                     console.error(error)
@@ -345,6 +350,38 @@ class ProfileCommand extends Command {
         } catch(error) {
             console.error(error)
         }
+    }
+
+    checkGuildAssociation(table: string) {
+        let sql = [
+            `SELECT user_id, guild_ids FROM ${table}`,
+            'WHERE user_id = $1',
+            'LIMIT 1'
+        ].join(" ")
+
+        Client.one(sql, this.userId)
+            .then((result: StringResult) => {
+                let guilds = result.guild_ids
+                if (!guilds || guilds && !guilds.includes(this.message.guild.id)) {
+                    this.createGuildAssociation(table)
+                }
+            })
+            .catch((error: Error) => {
+                console.error(error)
+            })
+    }
+
+    createGuildAssociation(table: string) {
+        let sql = [
+            `UPDATE ${table}`,
+            'SET guild_ids = array_cat(guild_ids, $1)',
+            'WHERE user_id = $2'
+        ].join(" ")
+
+        Client.any(sql, ['{' + this.message.guild.id + '}', this.userId])
+            .catch((error: Error) => {
+                console.error(error)
+            })
     }
 
     private async saveField(field: string, value: string): Promise<StringResult> {
