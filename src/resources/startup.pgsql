@@ -42,14 +42,17 @@ CREATE TABLE IF NOT EXISTS gacha (
 
 CREATE TABLE IF NOT EXISTS profiles (
     user_id TEXT PRIMARY KEY,
-    server_id TEXT,
+    guild_ids TEXT[],
     crew_id INTEGER,
     nickname TEXT,
     pronouns TEXT,
     granblue_id INTEGER,
     granblue_name TEXT,
+    gog TEXT,
     psn TEXT,
-    steam TEXT
+    steam TEXT,
+    switch TEXT,
+    xbox TEXT
 );
 
 CREATE TABLE rateups (
