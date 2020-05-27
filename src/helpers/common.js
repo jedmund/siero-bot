@@ -108,14 +108,14 @@ module.exports = {
         message.author.send(response)
             .catch(function(error) {
                 if (error instanceof DiscordAPIError) {
-                    console.error(`Cannot send private messages to this user: ${userId}`)
+                    console.log(`Cannot send private messages to this user: ${userId}`)
                     message.reply("There was an error, but it looks like I'm not allowed to send you direct messages! Check your Discord privacy settings if you'd like help with commands via DM.")
 
                 }
             })
         
         if (!error instanceof pgpErrors.QueryResultError) {
-            console.error(error)
+            console.log(error)
         }
     },
 }
