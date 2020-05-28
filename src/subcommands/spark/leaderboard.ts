@@ -1,9 +1,6 @@
-import { Message } from 'discord.js'
-
-const { Client } = require('../../services/connection.js')
-const { MessageEmbed } = require('discord.js')
-
-const common = require('../../helpers/common.js')
+import { Client } from '../../services/connection.js'
+import { MessageEmbed } from 'discord.js'
+import common from '../../helpers/common.js'
 
 interface Result {
     username: string,
