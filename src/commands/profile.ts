@@ -43,18 +43,18 @@ class ProfileCommand extends Command {
         common.storeMessage(this, message)
         common.storeUser(this, message.author.id)
 
-        let table: string = 'profiles'
+        let commandType: string = 'profiles'
 
-        this.checkIfUserExists(table)
+        this.checkIfUserExists(commandType)
             .then((count: number) => {
                 if (count == 0) {
-                    this.createRowForUser(table)
+                    this.createRowForUser(commandType)
                 }
 
                 return
             }).then(() => {
                 if (message.channel.type !== 'dm') {
-                    this.checkGuildAssociation(table)
+                    this.checkGuildAssociation(commandType)
                 }
             }).then(() => {
                 this.switchOperation(args)
@@ -89,7 +89,7 @@ class ProfileCommand extends Command {
 
                 if (!this.hasField(field)) {
                     let text = `Sorry, we don't currently accept the profile field \`${field}\`.`
-                    let error = `[profile] invalid profile field`
+                    let error = `[${this.commandType}] invalid profile field`
 
                     common.reportError(this.message, this.userId, this.context, error, text)
 
@@ -123,7 +123,7 @@ class ProfileCommand extends Command {
                     this.message.channel.send(embed)
                 } else {
                     let text = 'Sorry, I can\'t show that profile on this server.'
-                    let error = '[profile] foreign server'
+                    let error = `[${this.commandType}] foreign server`
                     common.reportError(this.message, this.userId, this.context, error, text)
                 }
             })
@@ -342,7 +342,7 @@ class ProfileCommand extends Command {
         try {
             Client.one(sql, this.userId)
                 .then((_: StringResult) => {
-                    console.log(`[profile] New user created: ${this.userId}`)
+                    console.log(`[${this.commandType}] New user created: ${this.userId}`)
                 })
                 .catch((error: Error) =>  {
                     console.error(error)
