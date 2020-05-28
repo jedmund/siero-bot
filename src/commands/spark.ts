@@ -1,9 +1,12 @@
 import { Message } from 'discord.js'
+import { MessageEmbed, MessageOptions } from 'discord.js'
 
 const { Client, pgpErrors } = require('../services/connection.js')
 const { Command } = require('discord-akairo')
-const { MessageEmbed } = require('discord.js')
+
 const { Leaderboard } = require('../subcommands/spark/leaderboard.js')
+const { Target } = require('../subcommands/spark/target.js')
+
 
 const common = require('../helpers/common.js')
 const pluralize = require('pluralize')
@@ -134,6 +137,11 @@ class SparkCommand extends Command {
                 this.status()
                 break
 
+            // Manage your spark target
+            case 'target':
+                this.target()
+                break
+
             default:
                 this.status()
                 break
@@ -210,6 +218,11 @@ class SparkCommand extends Command {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
                 common.reportError(this.message, this.userId, this.context, error, text)
             })
+    }
+
+    async target() {
+        let target = new Target(this.message)
+        target.execute()
     }
 
     help() {
@@ -492,7 +505,6 @@ class SparkCommand extends Command {
         let draws = this.calculateDraws(crystals, tickets, tenTickets)
         let numSparks = Math.floor(draws / 300)
         
-        let isOwnSpark = this.message.mentions.users.values().next().value == true
         let isOwnSpark = this.message.mentions.users.values().next().value == null
         let username = (!isOwnSpark) ? this.message.mentions.users.values().next().value.username : null
 

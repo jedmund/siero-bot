@@ -78,40 +78,36 @@ module.exports = {
             return possibleOptions.includes(reaction.emoji.name) && user.id === userId
         }
 
-        try {
-            return await message.awaitReactions(filter, { max: 1, time: 60000, errors: ['time'] })
-                .then(collected => {
-                    const reaction = collected.first();
-                
-                    if (reaction.emoji.name === '1️⃣') {
-                        return 0
-                    } else if (reaction.emoji.name === '2️⃣') {
-                        return 1
-                    } else if (reaction.emoji.name === '3️⃣') {
-                        return 2
-                    } else if (reaction.emoji.name === '4️⃣') {
-                        return 3
-                    } else if (reaction.emoji.name === '5️⃣') {
-                        return 4
-                    } else if (reaction.emoji.name === '6️⃣') {
-                        return 5
-                    } else if (reaction.emoji.name === '7️⃣') {
-                        return 6
-                    } else if (reaction.emoji.name === '8️⃣') {
-                        return 7
-                    } else if (reaction.emoji.name === '9️⃣') {
-                        return 8
-                    } else {
-                        return -1
-                    }
-                })
-                .catch(error => {
-                    console.log(error)
-                    message.reply('You didn\'t react with a valid emoji.');
-                })
-        } catch (error) {
-            console.log(error)
-        }
+        return await message.awaitReactions(filter, { max: 1, time: 60000, errors: ['time'] })
+            .then(collected => {
+                const reaction = collected.first();
+            
+                if (reaction.emoji.name === '1️⃣') {
+                    return 0
+                } else if (reaction.emoji.name === '2️⃣') {
+                    return 1
+                } else if (reaction.emoji.name === '3️⃣') {
+                    return 2
+                } else if (reaction.emoji.name === '4️⃣') {
+                    return 3
+                } else if (reaction.emoji.name === '5️⃣') {
+                    return 4
+                } else if (reaction.emoji.name === '6️⃣') {
+                    return 5
+                } else if (reaction.emoji.name === '7️⃣') {
+                    return 6
+                } else if (reaction.emoji.name === '8️⃣') {
+                    return 7
+                } else if (reaction.emoji.name === '9️⃣') {
+                    return 8
+                } else {
+                    return -1
+                }
+            })
+            .catch(error => {
+                console.log(error)
+                message.reply('You didn\'t react with a valid emoji.');
+            })
     },
     buildDuplicateEmbed: function(data, target) {
         var options = this.generateOptions(data, target)
