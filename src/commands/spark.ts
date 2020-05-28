@@ -347,6 +347,22 @@ class SparkCommand extends Command {
         return valid
     }
 
+    private compareProgress(a: LeaderboardResult, b: LeaderboardResult, order: LeaderboardSort = LeaderboardSort.Descending) {
+        let aDraws = this.calculateDraws(a.crystals, a.tickets, a.ten_tickets)
+        let bDraws = this.calculateDraws(b.crystals, b.tickets, b.ten_tickets)
+
+        let comparison = 0
+        if (aDraws > bDraws) {
+            comparison = 1
+        } else if (aDraws < bDraws) {
+            comparison = -1
+        }
+
+        return (
+            (order == LeaderboardSort.Descending) ? (comparison * -1) : comparison
+        )
+    }
+
     private transposeCurrency(currency: string) {
         if (['tenticket', 'tentickets', '10ticket', '10tickets'].includes(currency)) {
             return 'ten_tickets'
@@ -563,8 +579,8 @@ class SparkCommand extends Command {
             return 'No one has updated their sparks in the last two weeks!'
         } else {
             let rows = (order == LeaderboardSort.Descending) ? 
-                data.sort(this.compareProgress) : 
-                data.sort(this.compareProgress).reverse()
+                data.sort(this.compareProgress.bind(this)) : 
+                data.sort(this.compareProgress.bind(this)).reverse()
 
 
             let maxRows = (rows.length > 10) ? 10 : rows.length
