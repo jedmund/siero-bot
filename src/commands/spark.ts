@@ -203,7 +203,7 @@ class SparkCommand extends Command {
     
         Client.query(sql, this.userId)
             .then(() => {
-                this.message.reply("Your spark has been reset!")
+                this.message.reply('Your spark has been reset!')
             })
             .catch((error: Error) => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
@@ -229,7 +229,7 @@ class SparkCommand extends Command {
         var embed = new MessageEmbed()
         embed.setColor(0xb58900)
 
-        let guildId = "{" + this.message.guild.id + "}"
+        let guildId = '{' + this.message.guild.id + '}'
         await Client.query(sql, guildId)
             .then((response: LeaderboardResult[]) => {
                 return this.renderLeaderboard(response, order)
@@ -241,6 +241,81 @@ class SparkCommand extends Command {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
                 common.reportError(this.message, this.userId, this.context, error, text)
             })
+    }
+
+    help() {
+        let sparkOptions = [
+            '```html\n',
+            '<status>',
+            'See how much you\'ve saved\n',
+            '<set>',
+            'Save an absolute value for a currency\n',
+            '<add/save>',
+            'Add an amount of currency to your total\n',
+            '<remove/spend>',
+            'Remove an amount of currency from your total\n',
+            '<quicksave>',
+            'Quickly save all currencies\n',
+            '<reset>',
+            'Reset your spark\n',
+            '<target>',
+            'Set a target for your spark\n',
+            '<leaderboard>',
+            'See a leaderboard of everyone\'s spark progress```'
+        ].join('\n')
+
+        let currencies = [
+            'You can use both singular and plural words for currencies',
+            '```crystals tickets tenticket```'
+        ].join('\n')
+
+        let quicksave = [
+            'This is the proper formatting for quicksave:',
+            '```spark quicksave <crystals> <tickets> <tentickets>```'
+        ].join('\n')
+
+        let usingTargets = [
+            '```html\n',
+            '<target set @item>',
+            'Set the provided @item as your spark target\n',
+            '<target show>',
+            'Show your current spark target\n',
+            '<target reset>',
+            'Reset your current spark target',
+            '```'
+        ].join('\n')
+
+        let link = 'https://github.com/jedmund/siero-bot/wiki/Saving-sparks'
+
+        var embed = new MessageEmbed({
+            title: 'Spark',
+            description: 'Welcome! I can help you save your spark!',
+            color: 0xdc322f,
+            fields: [
+                {
+                    name: 'Command syntax',
+                    value: '```spark <option> <amount> <currency>```'
+                },
+                {
+                    name: 'Spark options',
+                    value: sparkOptions
+                },
+                {
+                    name: 'Currencies',
+                    value: currencies
+                },
+                {
+                    name: 'Quicksave',
+                    value: quicksave
+                },
+                {
+                    name: 'Full documentation',
+                    value: link
+                }
+            ]
+        })
+    
+        this.message.channel.send(embed)
     }
 
     // Helper methods
@@ -261,10 +336,10 @@ class SparkCommand extends Command {
     }
 
     private checkCurrency(currency: string) {
-        let currencies = ["crystals", "tickets", "toclets", "tentickets"]
+        let currencies = ['crystals', 'tickets', 'toclets', 'tentickets']
         var valid = true
     
-        if (!currencies.includes(currency) && !currencies.includes(currency + "s")) {
+        if (!currencies.includes(currency) && !currencies.includes(currency + 's')) {
             valid = false
             this.invalidCurrency(currency)
         }
@@ -299,25 +374,25 @@ class SparkCommand extends Command {
         if (!isNaN(parseInt(currency))) {
             text = `You might have reversed the currency and amount! \`${currency}\` is a number.`
             section = {
-                title: "You might mean...",
+                title: 'You might mean...',
                 content: [
-                    "```html\n",
+                    '```html\n',
                     `$spark ${this.args.operation} ${this.args.currency} tickets`,
                     `$spark ${this.args.operation} ${this.args.currency} crystals`,
-                    "```"
-                ].join("\n")
+                    '```'
+                ].join('\n')
             }
         } else {
             text = `\`${currency}\` isn't a valid currency.`
             section = {
-                title: "Valid currencies",
+                title: 'Valid currencies',
                 content: [
                     `The valid currencies are \`crystal\`, \`ticket\`, and \`tenticket\`. They also work pluralized!`,
-                    "```html\n",
+                    '```html\n',
                     `$spark ${this.args.operation} 1 ticket`,
                     `$spark ${this.args.operation} 300 crystals`,
-                    "```"
-                ].join("\n")
+                    '```'
+                ].join('\n')
             }
         }
         
@@ -507,7 +582,7 @@ class SparkCommand extends Command {
                 let spacedUsername = common.spacedString(rows[i].username, usernameMaxChars)
                 let spacedDraws = common.spacedString(`${numDraws} draws`, numDrawsMaxChars)
 
-                var spacedTarget = ""
+                var spacedTarget = ''
                 if (rows[i].recruits == null && rows[i].name == null && rows[i].target_memo != null) {
                     spacedTarget = common.spacedString(`${rows[i].target_memo} (U)`, targetMaxChars)
                 } else if (rows[i].recruits != null || rows[i].name != null) {
@@ -517,7 +592,7 @@ class SparkCommand extends Command {
                         spacedTarget = common.spacedString(rows[i].name, targetMaxChars)
                     }
                 } else {
-                    spacedTarget = common.spacedString("", targetMaxChars)
+                    spacedTarget = common.spacedString('', targetMaxChars)
                 }
 
                 let place = ((i + 1) < 10) ? `${i + 1}  ` : `${i + 1} `
