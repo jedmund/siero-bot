@@ -1,5 +1,5 @@
 import { Message } from 'discord.js'
-import { MessageEmbed, MessageOptions } from 'discord.js'
+import { MessageEmbed } from 'discord.js'
 
 const { Client, pgpErrors } = require('../services/connection.js')
 const { Command } = require('discord-akairo')
@@ -289,6 +289,10 @@ class SparkCommand extends Command {
                 {
                     name: 'Quicksave',
                     value: quicksave
+                },
+                {
+                    name: 'Using targets',
+                    value: usingTargets
                 },
                 {
                     name: 'Full documentation',
