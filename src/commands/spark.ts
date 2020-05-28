@@ -2,10 +2,10 @@ import { Message } from 'discord.js'
 
 const { Client, pgpErrors } = require('../services/connection.js')
 const { Command } = require('discord-akairo')
-const { DiscordAPIError, MessageEmbed } = require('discord.js')
+const { MessageEmbed } = require('discord.js')
+const { Leaderboard } = require('../subcommands/spark/leaderboard.js')
 
 const common = require('../helpers/common.js')
-const decision = require('../helpers/decision.js')
 const pluralize = require('pluralize')
 
 type StringResult = { [key: string]: string }
@@ -17,25 +17,9 @@ interface SparkArgs {
     currency: string | null
 }
 
-interface LeaderboardResult {
-    username: string,
-    crystals: number,
-    tickets: number,
-    ten_tickets: number,
-    target_memo: string,
-    last_updated: Date,
-    name: string,
-    recruits: string
-}
-
 enum SparkOperation {
     Addition,
     Subtraction
-}
-
-enum LeaderboardSort {
-    Ascending,
-    Descending
 }
 
 class SparkCommand extends Command {
@@ -137,7 +121,7 @@ class SparkCommand extends Command {
                 this.leaderboard()
                 break
             case 'loserboard':
-                this.leaderboard(LeaderboardSort.Ascending)
+                this.leaderboard('asc')
                 break
 
             // Command help
@@ -211,29 +195,14 @@ class SparkCommand extends Command {
             })   
     }
 
-    async leaderboard(order: LeaderboardSort = LeaderboardSort.Descending) {
+    async leaderboard(order: string = 'desc') {
         if (this.message.channel.type === 'dm') {
             this.invalidContext()
             return
         }
 
-        let sql = [
-            `SELECT username, crystals, tickets, ten_tickets,`,
-            `target_memo, last_updated, gacha.name, gacha.recruits`,
-            `FROM sparks LEFT JOIN gacha`,
-            `ON sparks.target_id = gacha.id`,
-            `WHERE last_updated > NOW() - INTERVAL '14 days'`,
-            `AND guild_ids @> $1`
-        ].join(' ')
-
-        var embed = new MessageEmbed()
-        embed.setColor(0xb58900)
-
-        let guildId = '{' + this.message.guild.id + '}'
-        await Client.query(sql, guildId)
-            .then((response: LeaderboardResult[]) => {
-                return this.renderLeaderboard(response, order)
-            })
+        let leaderboard = new Leaderboard(this.message.guild.id, order)
+        await leaderboard.fetchData()
             .then((embed: string) => {
                 this.message.channel.send(embed)
             })
@@ -345,22 +314,6 @@ class SparkCommand extends Command {
         }
     
         return valid
-    }
-
-    private compareProgress(a: LeaderboardResult, b: LeaderboardResult, order: LeaderboardSort = LeaderboardSort.Descending) {
-        let aDraws = this.calculateDraws(a.crystals, a.tickets, a.ten_tickets)
-        let bDraws = this.calculateDraws(b.crystals, b.tickets, b.ten_tickets)
-
-        let comparison = 0
-        if (aDraws > bDraws) {
-            comparison = 1
-        } else if (aDraws < bDraws) {
-            comparison = -1
-        }
-
-        return (
-            (order == LeaderboardSort.Descending) ? (comparison * -1) : comparison
-        )
     }
 
     private transposeCurrency(currency: string) {
@@ -569,60 +522,6 @@ class SparkCommand extends Command {
         let statusString = `${isOwnSpark? 'You have' : username + ' has'} ${crystals} ${pluralize('crystal', crystals)}, ${tickets} ${pluralize('ticket', tickets)}, and ${tenTickets} ${pluralize('10-ticket', tenTickets)} for a total of **${draws} draws.**`
 
         this.message.reply(`${statusString} ${progressString}`)
-    }
-
-    private renderLeaderboard(data: LeaderboardResult[], order: LeaderboardSort) {
-        let leaderboardTitle = 'Leaderboard (Last 14 days)'
-        let loserboardTitle = '~~Leader~~ Loserboard (Last 14 days)'
-
-        if (data.length == 0) {
-            return 'No one has updated their sparks in the last two weeks!'
-        } else {
-            let rows = (order == LeaderboardSort.Descending) ? 
-                data.sort(this.compareProgress.bind(this)) : 
-                data.sort(this.compareProgress.bind(this)).reverse()
-
-
-            let maxRows = (rows.length > 10) ? 10 : rows.length
-
-            let usernameMaxChars = 14
-            let numDrawsMaxChars = 11
-            let targetMaxChars = 16
-
-            let divider = '+-----+' + '-'.repeat(usernameMaxChars + 2) + '+' + '-'.repeat(numDrawsMaxChars + 1) + '+' + '-'.repeat(targetMaxChars + 2) + '+\n'
-            var result = divider
-
-            for (var i = 0; i < maxRows; i++) {
-                let numDraws = this.calculateDraws(rows[i].crystals, rows[i].tickets, rows[i].ten_tickets)
-
-                let spacedUsername = common.spacedString(rows[i].username, usernameMaxChars)
-                let spacedDraws = common.spacedString(`${numDraws} draws`, numDrawsMaxChars)
-
-                var spacedTarget = ''
-                if (rows[i].recruits == null && rows[i].name == null && rows[i].target_memo != null) {
-                    spacedTarget = common.spacedString(`${rows[i].target_memo} (U)`, targetMaxChars)
-                } else if (rows[i].recruits != null || rows[i].name != null) {
-                    if (rows[i].recruits != null) {
-                        spacedTarget = common.spacedString(rows[i].recruits, targetMaxChars)
-                    } else if (rows[i].name != null) {
-                        spacedTarget = common.spacedString(rows[i].name, targetMaxChars)
-                    }
-                } else {
-                    spacedTarget = common.spacedString('', targetMaxChars)
-                }
-
-                let place = ((i + 1) < 10) ? `${i + 1}  ` : `${i + 1} `
-
-                result += `| #${place}| ${spacedUsername} | ${spacedDraws}| ${spacedTarget} |\n`
-                result += divider
-            }
-            
-            return new MessageEmbed({
-                title: (order == LeaderboardSort.Descending) ? leaderboardTitle : loserboardTitle,
-                description: `\`\`\`html\n${result}\n\`\`\``,
-                color: 0xb58900
-            })
-        }
     }
 }
 

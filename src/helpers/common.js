@@ -61,6 +61,13 @@ module.exports = {
             embed: embed
         }
     },
+    calculateDraws: function(crystals, tickets, tenTickets) {
+        let ticketValue = tickets * 300
+        let tenTicketValue = tenTickets * 3000
+        let totalCrystalValue = crystals + ticketValue + tenTicketValue
+    
+        return Math.floor(totalCrystalValue / 300)
+    },
     getLinkForContext: function(context) {
         var link = ""
 
