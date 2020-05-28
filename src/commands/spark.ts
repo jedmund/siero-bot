@@ -17,6 +17,27 @@ interface SparkArgs {
     currency: string | null
 }
 
+interface LeaderboardResult {
+    username: string,
+    crystals: number,
+    tickets: number,
+    ten_tickets: number,
+    target_memo: string,
+    last_updated: Date,
+    name: string,
+    recruits: string
+}
+
+enum SparkOperation {
+    Addition,
+    Subtraction
+}
+
+enum LeaderboardSort {
+    Ascending,
+    Descending
+}
+
 class SparkCommand extends Command {
     public constructor() {
         super('spark', {
@@ -89,18 +110,18 @@ class SparkCommand extends Command {
 
             // Add value to one currency
             case 'add':
-                this.update(amount, currency, '+')
+                this.update(amount, currency, SparkOperation.Addition)
                 break
             case 'save':
-                this.update(amount, currency, '+')
+                this.update(amount, currency, SparkOperation.Addition)
                 break
 
             // Remove value from one currency
             case 'remove':
-                this.update(amount, currency, '-')
+                this.update(amount, currency, SparkOperation.Subtraction)
                 break
             case 'spend':
-                this.update(amount, currency, '-')
+                this.update(amount, currency, SparkOperation.Subtraction)
                 break
 
             // Clear all currencies
@@ -113,10 +134,10 @@ class SparkCommand extends Command {
 
             // Leaderboard and Loserboard
             case 'leaderboard':
-                this.leaderboard(message)
+                this.leaderboard()
                 break
             case 'loserboard':
-                this.leaderboard(message, 'asc')
+                this.leaderboard(LeaderboardSort.Ascending)
                 break
 
             // Command help
@@ -151,7 +172,7 @@ class SparkCommand extends Command {
         this.updateCurrency(amount, transposedCurrency)
     }
 
-    private async update(amount: number, currency: string, operation: string) {
+    private async update(amount: number, currency: string, operation: SparkOperation) {
         let transposedCurrency = this.transposeCurrency(currency)
         let sql = `SELECT ${transposedCurrency} AS currency FROM sparks WHERE user_id = $1 LIMIT 1`
 
@@ -159,10 +180,10 @@ class SparkCommand extends Command {
             .then((result: NumberResult) => {
                 var sum = 0
                 switch(operation) {
-                    case '+':
+                    case SparkOperation.Addition:
                         sum = this.add(result.currency, amount)
                         break
-                    case '-':
+                    case SparkOperation.Subtraction:
                         sum = this.remove(result.currency, amount)
                         break
                     default:
@@ -188,6 +209,38 @@ class SparkCommand extends Command {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
                 common.reportError(this.message, this.userId, this.context, error, text)
             })   
+    }
+
+    async leaderboard(order: LeaderboardSort = LeaderboardSort.Descending) {
+        if (this.message.channel.type === 'dm') {
+            this.invalidContext()
+            return
+        }
+
+        let sql = [
+            `SELECT username, crystals, tickets, ten_tickets,`,
+            `target_memo, last_updated, gacha.name, gacha.recruits`,
+            `FROM sparks LEFT JOIN gacha`,
+            `ON sparks.target_id = gacha.id`,
+            `WHERE last_updated > NOW() - INTERVAL '14 days'`,
+            `AND guild_ids @> $1`
+        ].join(' ')
+
+        var embed = new MessageEmbed()
+        embed.setColor(0xb58900)
+
+        let guildId = "{" + this.message.guild.id + "}"
+        await Client.query(sql, guildId)
+            .then((response: LeaderboardResult[]) => {
+                return this.renderLeaderboard(response, order)
+            })
+            .then((embed: string) => {
+                this.message.channel.send(embed)
+            })
+            .catch((error: Error) => {
+                let text = 'Sorry, there was an error communicating with the database for your last request.'
+                common.reportError(this.message, this.userId, this.context, error, text)
+            })
     }
 
     // Helper methods
@@ -232,6 +285,13 @@ class SparkCommand extends Command {
     }
 
     // Error methods
+    private invalidContext() {
+        let text = 'Sorry, I can\'t show you leaderboards in direct messages. Please send the command from a server that we\'re both in!'
+        let error = `Incorrect context: ${this.message.content}` 
+
+        common.reportError(this.message, this.userId, this.context, error, text)
+    }
+
     private invalidCurrency(currency: string) {
         var text
         var section
@@ -418,6 +478,60 @@ class SparkCommand extends Command {
         let statusString = `${isOwnSpark? 'You have' : username + ' has'} ${crystals} ${pluralize('crystal', crystals)}, ${tickets} ${pluralize('ticket', tickets)}, and ${tenTickets} ${pluralize('10-ticket', tenTickets)} for a total of **${draws} draws.**`
 
         this.message.reply(`${statusString} ${progressString}`)
+    }
+
+    private renderLeaderboard(data: LeaderboardResult[], order: LeaderboardSort) {
+        let leaderboardTitle = 'Leaderboard (Last 14 days)'
+        let loserboardTitle = '~~Leader~~ Loserboard (Last 14 days)'
+
+        if (data.length == 0) {
+            return 'No one has updated their sparks in the last two weeks!'
+        } else {
+            let rows = (order == LeaderboardSort.Descending) ? 
+                data.sort(this.compareProgress) : 
+                data.sort(this.compareProgress).reverse()
+
+
+            let maxRows = (rows.length > 10) ? 10 : rows.length
+
+            let usernameMaxChars = 14
+            let numDrawsMaxChars = 11
+            let targetMaxChars = 16
+
+            let divider = '+-----+' + '-'.repeat(usernameMaxChars + 2) + '+' + '-'.repeat(numDrawsMaxChars + 1) + '+' + '-'.repeat(targetMaxChars + 2) + '+\n'
+            var result = divider
+
+            for (var i = 0; i < maxRows; i++) {
+                let numDraws = this.calculateDraws(rows[i].crystals, rows[i].tickets, rows[i].ten_tickets)
+
+                let spacedUsername = common.spacedString(rows[i].username, usernameMaxChars)
+                let spacedDraws = common.spacedString(`${numDraws} draws`, numDrawsMaxChars)
+
+                var spacedTarget = ""
+                if (rows[i].recruits == null && rows[i].name == null && rows[i].target_memo != null) {
+                    spacedTarget = common.spacedString(`${rows[i].target_memo} (U)`, targetMaxChars)
+                } else if (rows[i].recruits != null || rows[i].name != null) {
+                    if (rows[i].recruits != null) {
+                        spacedTarget = common.spacedString(rows[i].recruits, targetMaxChars)
+                    } else if (rows[i].name != null) {
+                        spacedTarget = common.spacedString(rows[i].name, targetMaxChars)
+                    }
+                } else {
+                    spacedTarget = common.spacedString("", targetMaxChars)
+                }
+
+                let place = ((i + 1) < 10) ? `${i + 1}  ` : `${i + 1} `
+
+                result += `| #${place}| ${spacedUsername} | ${spacedDraws}| ${spacedTarget} |\n`
+                result += divider
+            }
+            
+            return new MessageEmbed({
+                title: (order == LeaderboardSort.Descending) ? leaderboardTitle : loserboardTitle,
+                description: `\`\`\`html\n${result}\n\`\`\``,
+                color: 0xb58900
+            })
+        }
     }
 }
 
