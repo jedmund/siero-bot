@@ -493,6 +493,7 @@ class SparkCommand extends Command {
         let numSparks = Math.floor(draws / 300)
         
         let isOwnSpark = this.message.mentions.users.values().next().value == true
+        let isOwnSpark = this.message.mentions.users.values().next().value == null
         let username = (!isOwnSpark) ? this.message.mentions.users.values().next().value.username : null
 
         var progressString = ''
@@ -501,7 +502,7 @@ class SparkCommand extends Command {
             let remainder = draws - (numSparks * 300)
             let drawPercentage = Math.floor((remainder / 300) * 100)
 
-            let baseString = `${isOwnSpark ? 'You have' : username + ' has'} **${numSparks} ${pluralize('spark', numSparks)}**`
+            let baseString = `${isOwnSpark ? 'You' : 'They'} have **${numSparks} ${pluralize('spark', numSparks)}**`
             let sparkString = ` and ${isOwnSpark ? 'you\'ve' : 'they\'ve'} saved **${drawPercentage}%** towards ${isOwnSpark? 'your' : 'their'} next spark.`
 
             progressString = (drawPercentage > 0) ? `${baseString}${sparkString}` : `${baseString}.`
@@ -519,9 +520,13 @@ class SparkCommand extends Command {
             }
         }
 
-        let statusString = `${isOwnSpark? 'You have' : username + ' has'} ${crystals} ${pluralize('crystal', crystals)}, ${tickets} ${pluralize('ticket', tickets)}, and ${tenTickets} ${pluralize('10-ticket', tenTickets)} for a total of **${draws} draws.**`
+        let statusString = `${isOwnSpark? 'You have' : '**' + username + '** has'} ${crystals} ${pluralize('crystal', crystals)}, ${tickets} ${pluralize('ticket', tickets)}, and ${tenTickets} ${pluralize('10-ticket', tenTickets)} for a total of **${draws} draws.**`
 
-        this.message.reply(`${statusString} ${progressString}`)
+        if (isOwnSpark) {
+            this.message.reply(`${statusString} ${progressString}`)
+        } else {
+            this.message.channel.send(`${statusString} ${progressString}`)
+        }
     }
 }
 
