@@ -1,5 +1,5 @@
 import { Client, pgpErrors } from '../../services/connection.js'
-import { Message, MessageEmbed } from 'discord.js'
+import { Message, MessageEmbed, User } from 'discord.js'
 import common from '../../helpers/common.js'
 import decision from '../../helpers/decision.js'
 
@@ -26,6 +26,7 @@ class Target {
 
     message: Message
     deciderMessage: Message | null = null
+    firstMention: User | null = null
 
     public constructor(message: Message) {
         this.userId = message.author.id
@@ -39,6 +40,8 @@ class Target {
 
     private parseRequest(request: string) {
         let splitRequest = request.split(' ').splice(2)
+
+        this.firstMention = this.message.mentions.users.values().next().value
 
         if (splitRequest.length > 0) {
             this.operation = splitRequest.shift()!
@@ -80,7 +83,10 @@ class Target {
             'WHERE user_id = $1 AND sparks.target_id IS NOT NULL'
         ].join(' ')
 
-        return await Client.one(sql, this.userId)
+        let id = (this.firstMention) ? this.firstMention.id : this.userId
+        let isOwnTarget = (id == this.userId) ? true : false
+
+        return await Client.one(sql, id)
             .then((data: Result) => {
                 this.message.channel.send(this.render(data))
             })
@@ -89,13 +95,18 @@ class Target {
                 var documentation = false
                 
                 if (error instanceof pgpErrors.QueryResultError) {
-                    text = 'It looks like you haven\'t set a spark target yet!'
-                    documentation = true
+                    text = `It looks like ${(isOwnTarget) ? 'you haven\'t' : this.firstMention!.username + ' hasn\'t'} set a spark target yet!`
+                    
+                    if (isOwnTarget) {
+                        documentation = true
+                    } else {
+                        documentation = false
+                    }
                 } else {
                     text = 'Sorry, there was an error communicating with the database for your last request.'
                 }
 
-                let section = {
+                let section = (isOwnTarget) ? {
                     title: 'Setting a spark target',
                     content: [
                         '```html\n',
@@ -103,7 +114,7 @@ class Target {
                         'Set the provided @item as your spark target',
                         '```'
                     ].join('\n')
-                }
+                } : null
 
                 common.reportError(this.message, this.userId, 'target', error, text, documentation, section)
             })
@@ -132,6 +143,7 @@ class Target {
 
     // Render methods
     private render(target: Result) {
+        let isOwnTarget = this.firstMention == null
         let rarity = common.mapRarity(target.rarity)
 
         var itemType: string = ''
@@ -147,7 +159,7 @@ class Target {
         }
 
         return new MessageEmbed({
-            title: 'Your spark target',
+            title: `${(isOwnTarget) ? 'Your' : this.firstMention!.username + '\'s'} spark target`,
             description: `\`\`\`html\n${string}\n\`\`\``,
             color: 0xdc322f
         })
