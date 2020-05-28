@@ -142,7 +142,7 @@ class SparkCommand extends Command {
 
             // Command help
             case 'help':
-                this.help(message)
+                this.help()
                 break
 
             // See your spark
