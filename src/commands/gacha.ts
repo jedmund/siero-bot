@@ -1,7 +1,6 @@
 import { Message } from 'discord.js'
 import { Gacha } from '../services/gacha.js'
 
-const { Client, pgpErrors } = require('../services/connection.js')
 const { Command } = require('discord-akairo')
 const { MessageEmbed } = require('discord.js')
 
