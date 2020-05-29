@@ -114,9 +114,9 @@ class GachaCommand extends Command {
             // case 'until':
             //     this.target()
             //     break
-            // case 'help':
-            //     this.help(message)
-            //     break
+            case 'help':
+                this.help()
+                break
             default:
                 let text = 'Sorry, I don\'t recognize that command. Are you sure it\'s the right one?'
                 let error = `[Unrecognized command] ${this.userId}: ${message.content}`
@@ -158,6 +158,83 @@ class GachaCommand extends Command {
         const siero = (this.userId === this.client.ownerID) ? this.client.user : null
         const target = new Rateup(this.message, siero)
         target.execute()
+    }
+
+    private help() {
+        const gachaOptions = [
+            '```html\n',
+            '<yolo>',
+            'A single Premium Draw pull\n',
+            '<ten>',
+            'A 10-part Premium Draw pull\n',
+            '<spark>',
+            'A whole spark\n',
+            '<until>',
+            'Roll until you get the item you want```'
+        ].join('\n')
+
+        const galasAndSeasons = [
+            '```html\n',
+            '<gala: premium flash legend ff lf>',
+            'The <gala> you choose will determine the SSR rate\n',
+            '<season: valentine summer halloween holiday>',
+            'The <season> you choose adds seasonal units to the pool```'
+        ].join('\n')
+
+        const usingRateups = [
+            '```html\n',
+            '<rateup set>',
+            'Start a new rateup\n',
+            '<rateup copy @user>',
+            'Copy the tagged user\'s rateup\n',
+            '<rateup check>',
+            'Check your current rateup\n',
+            '<rateup reset>',
+            'Clear your current rateup```'
+        ].join('\n')
+
+        const settingRateups = [
+            '```html\n',
+            '<rateup set Sky Ace 0.300, Elil 0.500>',
+            'Set rateups with the weapon or summon name followed by the desired rate',
+            'You can add multiple rateups by separating them with a comma, as seen above.```'
+        ].join('\n')
+
+        const link = 'https://github.com/jedmund/siero-bot/wiki/Pulling-gacha'
+
+        const embed = new MessageEmbed({
+            title: 'Gacha',
+            description: 'Welcome! I can help you save your money!',
+            color: 0xdc322f,
+            fields:[
+                {
+                    name: 'Command syntax',
+                    text: '```gacha spark <gala> <season>```'
+                },
+                {
+                    name: 'Gacha options',
+                    text: gachaOptions
+                },
+                {
+                    name: 'Galas and Seasons',
+                    text: galasAndSeasons
+                },
+                {
+                    name: 'Using Rate-ups',
+                    text: usingRateups
+                },
+                {
+                    name: 'Setting Rate-ups',
+                    text: settingRateups
+                },
+                {
+                    name: 'Full documentation',
+                    text: link
+                }
+            ]
+        })
+
+        this.message.channel.send(embed)
     }
 
     // Data methods
