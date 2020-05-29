@@ -71,20 +71,32 @@ class Cache {
 	// Batch fetching methods
 	private fetchAllCharacterWeapons() {
 		this.fetchCharacterWeapons(Rarity.R)
-		this.fetchCharacterWeapons(Rarity.SR)
-		this.fetchCharacterWeapons(Rarity.SSR)
+			.then(() => {
+				this.fetchCharacterWeapons(Rarity.SR)
+			})
+			.then(() => {
+				this.fetchCharacterWeapons(Rarity.SSR)
+			})
 	}
 
 	private fetchAllNonCharacterWeapons() {
 		this.fetchNonCharacterWeapons(Rarity.R)
-		this.fetchNonCharacterWeapons(Rarity.SR)
-		this.fetchNonCharacterWeapons(Rarity.SSR)
+			.then(() => {
+				this.fetchNonCharacterWeapons(Rarity.SR)
+			})
+			.then(() => {
+				this.fetchNonCharacterWeapons(Rarity.SSR)
+			})
 	}
 
-	private fetchAllSummons() {
+	private async fetchAllSummons() {
 		this.fetchSummons(Rarity.R)
-		this.fetchSummons(Rarity.SR)
-		this.fetchSummons(Rarity.SSR)
+			.then(() => {
+				this.fetchSummons(Rarity.SR)
+			})
+			.then(() => {
+				this.fetchSummons(Rarity.SSR)
+			})
 	}
 
 	// Single fetching methods
@@ -121,14 +133,14 @@ class Cache {
 	}
 
 	// Fetching methods
-	private fetchCharacterWeapons(rarity: Rarity) {
+	private async fetchCharacterWeapons(rarity: Rarity) {
 		const sql = [
 			'SELECT * FROM gacha',
 			'WHERE item_type = 0 AND rarity = $1',
 			'AND recruits IS NOT NULL'
 		].join(' ')
 
-		Client.any(sql, rarity)
+		await Client.any(sql, rarity)
 			.then((data: Result[]) => {
 				this._characterWeapons[rarity] = data
 			})
@@ -137,14 +149,14 @@ class Cache {
 			})
 	}
 
-	private fetchNonCharacterWeapons(rarity: Rarity) {
+	private async fetchNonCharacterWeapons(rarity: Rarity) {
 		const sql = [
 			'SELECT * FROM gacha',
 			'WHERE item_type = 0 AND rarity = $1',
 			'AND recruits IS NULL'
 		].join(' ')
 
-		Client.any(sql, rarity)
+		await Client.any(sql, rarity)
 			.then((data: Result[]) => {
 				this._nonCharacterWeapons[rarity] = data
 			})
@@ -153,13 +165,13 @@ class Cache {
 			})
 	}
 
-	private fetchSummons(rarity: Rarity) {
-		let sql = [
+	private async fetchSummons(rarity: Rarity) {
+		const sql = [
 			'SELECT * FROM gacha',
 			'WHERE item_type = 1 AND rarity = $1'
 		].join(' ')
 
-		Client.any(sql, rarity)
+		await Client.any(sql, rarity)
 			.then((data: Result[]) => {
 				this._summons[rarity] = data
 			})

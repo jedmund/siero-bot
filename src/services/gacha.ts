@@ -9,11 +9,6 @@ const chance = new Chance()
 
 type RateMap = { [key: string]: number }
 
-interface RarityMap {
-    string: string
-    number: number
-}
-
 interface RarityCount {
     [index: string]: number
     R: number
@@ -65,12 +60,12 @@ class Gacha {
         this.rates = this.ssrRates()
     }
 
-    singleRoll(): Result {
-        const rarity: RarityMap = this.determineRarity(false)
+    public singleRoll(): Result {
+        const rarity: Rarity = this.determineRarity(false)
         return this.determineItem(rarity)
     }
 
-    tenPartRoll(times = 1, fetchAllItems = true): RollResult {
+    public tenPartRoll(times = 1, fetchAllItems = true): RollResult {
         // Create an object to store counts
         let count: RarityCount = {
             R: 0, 
@@ -91,9 +86,9 @@ class Gacha {
                     rarity = this.determineRarity(true)
                 }
 
-                count[rarity.string] += 1
+                count[this.mapRarity(rarity)] += 1
 
-                if (rarity.number == Rarity.SSR || (rarity.number != Rarity.SSR && fetchAllItems)) {
+                if (rarity == Rarity.SSR || ((rarity == Rarity.R || rarity == Rarity.SR) && fetchAllItems)) {
                     items.push(this.determineItem(rarity))
                 }
             }
@@ -105,14 +100,14 @@ class Gacha {
         }
     }
 
-    spark(): RollResult {
+    public spark(): RollResult {
         let maxRolls = RollsInSpark / 10
         return this.tenPartRoll(maxRolls, false)
     }
 
-    currentRates(final = false): RateMap {
+    private currentRates(final = false): RateMap {
         let rates: RateMap = {}
-        const rateUp = (this.gala != null)
+        const rateUp = (this.gala !== 'premium')
 
         if (rateUp && !final) {
             rates = {
@@ -147,7 +142,7 @@ class Gacha {
         return rates
     }
 
-    ssrRates(): CategoryMap {
+    private ssrRates(): CategoryMap {
         let rate = (this.gala != null) ? SSRRate * 2 : SSRRate
 
         let remainingWeapons = cache.characterWeapons(Rarity.SSR, this.gala, this.season).length
@@ -207,26 +202,41 @@ class Gacha {
         }
     }
 
-    determineRarity(final = false): RarityMap {
+    private mapRarity(number: number) {
+        let rarity = ''
+
+        switch(number) {
+            case Rarity.R:
+                rarity = 'R'
+                break
+            case Rarity.SR:
+                rarity = 'SR'
+                break
+            case Rarity.SSR:
+                rarity = 'SSR'
+                break
+        }
+
+        return rarity
+    }
+
+    private determineRarity(final = false): Rarity {
         let rates = this.currentRates(final)
 
         let r: number
         if (final) {
-            r = chance.weighted(['SR', 'SSR'], [rates.SR, rates.SSR])
+            r = chance.weighted([Rarity.SR, Rarity.SSR], [rates.SR, rates.SSR])
         } else {
-            r = chance.weighted(['R', 'SR', 'SSR'], [rates.R, rates.SR, rates.SSR])
+            r = chance.weighted([Rarity.R, Rarity.SR, Rarity.SSR], [rates.R, rates.SR, rates.SSR])
         }
 
-        return {
-            string: Rarity[r],
-            number: r
-        }
+        return r
     }
 
-    determineItem(rarity: RarityMap) {
+    private determineItem(rarity: Rarity): Result {
         var item: Result
 
-        if (rarity.number === Rarity.SSR) {
+        if (rarity === Rarity.SSR) {
             item = this.determineSSRItem()
         } else {
             item = cache.fetchItem(rarity, this.gala, this.season)
@@ -235,12 +245,9 @@ class Gacha {
         return item
     }
 
-    determineSSRItem() {
+    private determineSSRItem(): Result {
         // Fixed rarity that matches the output of determineRarity
-        const rarity = {
-            int: 3,
-            string: 'SSR'
-        }
+        const rarity = Rarity.SSR
 
         // Fetch the rates and determine a bucket
         let bucket = this.determineSSRBucket(this.rates)
@@ -270,7 +277,7 @@ class Gacha {
         return item
     }
 
-    filterItems(item: Result, gala: string | null, season: string | null) {
+    private filterItems(item: Result, gala: string | null, season: string | null): boolean {
         // If both a gala and a season are specified, 
         // and the item appears in both
         if (
@@ -304,15 +311,15 @@ class Gacha {
         return true
     }
 
-    isLimited(item: Result) {
+    private isLimited(item: Result): boolean {
         return (item.flash == true || item.legend == true) && item.premium == false
     }
 
-    isSeasonal(item: Result) {
+    private isSeasonal(item: Result): boolean {
         return (item.halloween == true || item.holiday == true || item.summer == true || item.valentines == true) && item.premium == false
     }
 
-    getGala(item: Result) {
+    public getGala(item: Result): string {
         let string = ''
 
         if (item.flash == true) {
@@ -326,7 +333,7 @@ class Gacha {
         return string
     }
 
-    getSeason(item: Result) {
+    public getSeason(item: Result): string {
         var string = ''
 
         if (item.summer == true) {
@@ -344,11 +351,12 @@ class Gacha {
         return string
     }
 
-    determineSSRBucket(rates: CategoryMap) {
+    private determineSSRBucket(rates: CategoryMap): number {
         // Calculate the total rate of all rateup items
-        var rateupSum = 0
-        for (var i in this.rateups) {
-            rateupSum += this.rateups[i].rate
+        let rateupSum: number = 0
+        for (let i in this.rateups) {
+            // TODO: Why won't these add as numbers if they are technically numbers?
+            rateupSum = parseFloat(rateupSum) + parseFloat(this.rateups[i].rate)
         }
 
         // Store all the rates
