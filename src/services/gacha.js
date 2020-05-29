@@ -28,7 +28,7 @@ class Gacha {
             case "holiday":
                 this.season = Season.HOLIDAY
                 break
-            case "valentine":
+            case "valentines":
                 this.season = Season.VALENTINE
                 break
         }

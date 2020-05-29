@@ -4,7 +4,9 @@ import { Gacha } from '../services/gacha.js'
 const { Command } = require('discord-akairo')
 const { MessageEmbed } = require('discord.js')
 
+// Subcommands
 const { Rateup } = require('../subcommands/gacha/rateup.js')
+const { Until } = require('../subcommands/gacha/until.js')
 const { Target } = require('../subcommands/spark/target.js')
 
 const common = require('../helpers/common.js')
@@ -103,22 +105,15 @@ class GachaCommand extends Command {
             case 'rateup':
                 this.rateup()
                 break
-            //     try {
-            //         await this.rateup(message)
-            //     } catch (error) {
-            //         console.log(error)
-            //     }
-
-            //     break
-            // case 'until':
-            //     this.target()
-            //     break
+            case 'until':
+                this.until()
+                break
             case 'help':
                 this.help()
                 break
             default:
                 let text = 'Sorry, I don\'t recognize that command. Are you sure it\'s the right one?'
-                let error = `[Unrecognized command] ${this.userId}: ${message.content}`
+                let error = `[Unrecognized command] ${this.userId}: ${this.message.content}`
 
                 common.reportError(this.message, this.userId, this.context, error, text)
 
@@ -153,10 +148,15 @@ class GachaCommand extends Command {
         this.message.channel.send(this.renderSpark(items))
     }
 
+    private until() {
+        const until = new Until(this.message, this.rateups)
+        until.execute()
+    }
+
     async rateup() {
         const siero = (this.userId === this.client.ownerID) ? this.client.user : null
-        const target = new Rateup(this.message, siero)
-        target.execute()
+        const rateup = new Rateup(this.message, siero)
+        rateup.execute()
     }
 
     private help() {

@@ -1,5 +1,5 @@
 
-import { Client, pgpErrors } from '../../services/connection.js'
+import { Client } from '../../services/connection.js'
 import { Message, MessageEmbed, User } from 'discord.js'
 
 import common from '../../helpers/common.js'
@@ -18,6 +18,13 @@ interface Result {
     recruits: string | null
     rarity: number
     item_type: number | null
+    premium: boolean
+    flash: boolean
+    legend: boolean
+    halloween: boolean
+    holiday: boolean
+    summer: boolean
+    valentines: boolean
 }
 
 interface RateResult {
@@ -26,6 +33,13 @@ interface RateResult {
     recruits: string | null
     rarity: number
     item_type: number | null
+    premium: boolean
+    flash: boolean
+    legend: boolean
+    halloween: boolean
+    holiday: boolean
+    summer: boolean
+    valentines: boolean
     rate: number
 }
 
