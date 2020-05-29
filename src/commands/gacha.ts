@@ -4,10 +4,11 @@ import { Gacha } from '../services/gacha.js'
 const { Client, pgpErrors } = require('../services/connection.js')
 const { Command } = require('discord-akairo')
 const { MessageEmbed } = require('discord.js')
+
 const { Rateup } = require('../subcommands/gacha/rateup.js')
+const { Target } = require('../subcommands/spark/target.js')
 
 const common = require('../helpers/common.js')
-const decision = require('../helpers/decision.js')
 
 interface GachaArgs {
     operation: string
@@ -83,8 +84,8 @@ class GachaCommand extends Command {
         common.storeMessage(this, message)
         common.storeUser(this, message.author.id)
 
-        // await this.storeRateups()
-        // await this.storeSparkTarget()
+        await this.storeRateups()
+        await this.storeSparkTarget()
 
         this.switchOperation()
     }
@@ -147,7 +148,7 @@ class GachaCommand extends Command {
     }
 
     private spark() {
-        let gacha = new Gacha(this.args.gala, this.args.season, [])
+        let gacha = new Gacha(this.args.gala, this.args.season, this.rateups)
         let items = gacha.spark()
 
         this.message.channel.send(this.renderSpark(items))
@@ -157,6 +158,15 @@ class GachaCommand extends Command {
         const siero = (this.userId === this.client.ownerID) ? this.client.user : null
         const target = new Rateup(this.message, siero)
         target.execute()
+    }
+
+    // Data methods
+    private async storeRateups() {
+        this.rateups = await Rateup.fetch(this.userId, this.message)
+    }
+
+    private async storeSparkTarget() {
+        this.sparkTarget = await Target.fetch(this.userId, this.message)
     }
 
     // Render methods
@@ -180,7 +190,7 @@ class GachaCommand extends Command {
 
         let items = this.shuffle(gachaItems).concat(characterWeapons)
 
-        var string = ""
+        var string = ''
         for (var item in items) {
             string += this.renderItem(items[item], true)
         }
@@ -216,30 +226,30 @@ class GachaCommand extends Command {
     private renderSummary(results: Spark) {
         let ssrWeapons = results.items.filter(this.filterSSRWeapons)
         let ssrSummons = results.items.filter(this.filterSSRSummons)
-        // let numRateupItems = this.filterRateUpItems(results)
+        let numRateupItems = this.filterRateUpItems(results)
 
         // TODO: Extract into helper method
-        // let targetsAcquired = results.items.filter((item: Item) => {
-        //     if (this.sparkTarget != null) {
-        //         return item.name == this.sparkTarget.name || (item.recruits != null && item.recruits == this.sparkTarget.recruits)
-        //     } else {
-        //         return null
-        //     }
-        // })
+        let targetsAcquired = results.items.filter((item: Item) => {
+            if (this.sparkTarget != null) {
+                return item.name == this.sparkTarget.name || (item.recruits != null && item.recruits == this.sparkTarget.recruits)
+            } else {
+                return null
+            }
+        })
 
-        // var targetAcquiredString = ""
-        // if (targetsAcquired != null) {
-        //     targetAcquiredString = (targetsAcquired.length > 0) ? `You got your spark target! (${targetsAcquired.length})` : ""
-        // }
+        let targetAcquiredString = ''
+        if (targetsAcquired != null) {
+            targetAcquiredString = (targetsAcquired.length > 0) ? `You got your spark target! (${targetsAcquired.length})` : ''
+        }
 
         return [
-            // targetAcquiredString
-            // (this.rateups.length > 0) ? `Rate-up Items: ${numRateupItems}` : '', 
+            targetAcquiredString,
+            (this.rateups.length > 0) ? `Rate-up Items: ${numRateupItems}` : '', 
             `SSR Weapons: ${ssrWeapons.length}`, 
             `SSR Summons: ${ssrSummons.length}`, 
             `SR: ${results.count.SR}`, 
             `R: ${results.count.R}`
-        ].join("\n")
+        ].join('\n')
     }
 
     // Filter and sort methods
@@ -251,19 +261,18 @@ class GachaCommand extends Command {
         return item.rarity == Rarity.SSR && item.item_type == ItemType.Summon
     }
 
-    // private filterRateUpItems(items) {
-    //     var totalCount = 0
-    //     var rateups = this.rateups
+    private filterRateUpItems(spark: Spark) {
+        let totalCount = 0
 
-    //     for (var i in rateups) {
-    //         let rateupItem = this.rateups[i]
-    //         totalCount += items.reduce(function (n, item) {
-    //             return n + (rateupItem.gacha_id == item.gacha_id)
-    //         }, 0)
-    //     }
-
-    //     return totalCount
-    // }
+        for (let i in this.rateups) {
+            let rateupItem: Item = this.rateups[i]
+            totalCount += spark.items.reduce((n: number, item: Item) => {
+                return n + ((rateupItem.id == item.id) ? 1 : 0)
+            }, 0)
+        }
+        
+        return totalCount
+    }
 
     private sortCharacterWeapons(results: Item[]) {
         let weapons: Item[] = []

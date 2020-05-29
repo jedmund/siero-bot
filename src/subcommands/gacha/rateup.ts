@@ -139,7 +139,7 @@ class Rateup {
             await Client.any(sql, [this.userId, this.firstMention.id])
                 .then(() => {
                     this.firstMention = null
-                    return this.fetch(this.userId)
+                    return Rateup.fetch(this.userId, this.message)
                 })
                 .then((data: RateResult[]) => {
                     this.message.channel.send(
@@ -191,7 +191,7 @@ class Rateup {
         const user = (this.firstMention) ? this.firstMention : this.message.author
         const isOwnTarget = (user.id == this.userId) ? true : false
 
-        await this.fetch(user.id)
+        await Rateup.fetch(user.id, this.message)
             .then((data: RateResult[]) => {
                 if (data.length > 0) {
                     this.message.channel.send(this.render(user, data))
@@ -235,7 +235,7 @@ class Rateup {
         }
     }
 
-    private async fetch(id: string) {
+    public static async fetch(id: string, message: Message) {
         const sql = [
             'SELECT rateups.gacha_id AS id, rateups.rate, gacha.name, gacha.recruits, gacha.rarity, gacha.item_type',
             'FROM rateups LEFT JOIN gacha ON rateups.gacha_id = gacha.id',
@@ -246,7 +246,7 @@ class Rateup {
         return await Client.any(sql, id)
             .catch((error: Error) => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                common.reportError(this.message, this.userId, 'rateup', error, text)
+                common.reportError(message, id, 'rateup', error, text)
             })
     }
 
