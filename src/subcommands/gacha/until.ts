@@ -18,21 +18,6 @@ interface Properties {
 }
 
 interface Result {
-    id: string
-    name: string
-    recruits: string | null
-    rarity: number
-    item_type: number | null
-    premium: boolean
-    flash: boolean
-    legend: boolean
-    halloween: boolean
-    holiday: boolean
-    summer: boolean
-    valentines: boolean
-}
-
-interface RateResult {
     [index: string]: string | number | boolean | null
     id: string
     name: string
@@ -46,25 +31,24 @@ interface RateResult {
     holiday: boolean
     summer: boolean
     valentines: boolean
-    rate: number
 }
 
 interface Rolls {
-    item: RateResult,
+    item: Result,
     count: number
 }
 
 class Until {
     target: string
     properties: Properties
-    rateups: RateResult[] = []
+    rateups: Result[] = []
     currency: string = 'USD'
 
     userId: string
     message: Message
     deciderMessage: Message | null = null
 
-    public constructor(message: Message, rateups: RateResult[]) {
+    public constructor(message: Message, rateups: Result[]) {
         this.userId = message.author.id
         this.message = message
         this.rateups = rateups
@@ -80,7 +64,7 @@ class Until {
             .then((data: NumberResult) => {
                 return this.parsePossibleItems(data.count)
             })
-            .then((chosenItem: RateResult | null) => {
+            .then((chosenItem: Result | null) => {
                 if (!chosenItem) {
                     common.missingItem(this.message, this.userId, 'until', this.target)
                     throw Error('Item not found')
@@ -93,7 +77,7 @@ class Until {
 
                 return chosenItem!
             })
-            .then((item: RateResult) => {
+            .then((item: Result) => {
                 const rolls = this.roll(gacha, item)
 
                 return {
@@ -148,7 +132,7 @@ class Until {
     }
 
     // Action methods
-    private roll(gacha: Gacha, target: RateResult) {
+    private roll(gacha: Gacha, target: Result) {
         let count = 0
         let found = false
 
@@ -226,7 +210,7 @@ class Until {
     }
 
     private async parsePossibleItems(possibilities: number) {
-        let result: RateResult | null
+        let result: Result | null
 
         if (possibilities > 1) {
             result = await this.resolveDuplicate(this.target)
@@ -274,7 +258,7 @@ class Until {
             })
     }
 
-    private testProperties(gacha: Gacha, item: RateResult) {
+    private testProperties(gacha: Gacha, item: Result) {
         if (this.properties.gala == null && this.properties.season == null && (gacha.isLimited(item) || gacha.isSeasonal(item))) {
             return false
         }
@@ -295,7 +279,7 @@ class Until {
     }
 
     // Error methods
-    private notAvailableError(gacha: Gacha, target: RateResult) {
+    private notAvailableError(gacha: Gacha, target: Result) {
         const text = `It looks like **${target.name}** doesn't appear in the gala or season you selected.`
         const error = `[Incorrect gala or season] ${this.userId}: ${this.message.content}`
 
