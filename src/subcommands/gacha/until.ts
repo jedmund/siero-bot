@@ -1,6 +1,6 @@
 
 import { Client } from '../../services/connection.js'
-import { Message, MessageEmbed, User } from 'discord.js'
+import { Message, MessageEmbed } from 'discord.js'
 import { Gacha } from '../../services/gacha.js'
 
 const fetch = require('make-fetch-happen').defaults({
@@ -219,7 +219,7 @@ class Until {
         const url = `https://api.exchangeratesapi.io/latest?base=JPY&symbols=${currency.toUpperCase()}`
 
         try {
-            const obj = await (await fetch(url)).json()
+            return await (await fetch(url)).json()
         } catch(error) {
             console.error(error)
         }
