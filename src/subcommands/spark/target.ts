@@ -34,8 +34,8 @@ class Target {
         this.parseRequest(message.content)
     }
 
-    public async execute() {
-        return await this.switchOperation()
+    public execute() {
+        this.switchOperation()
     }
 
     private parseRequest(request: string) {
@@ -77,16 +77,10 @@ class Target {
     
     // Command methods
     private async show() {
-        let sql = [
-            'SELECT sparks.target_id AS id, gacha.name, gacha.recruits, gacha.rarity, gacha.item_type FROM sparks',
-            'LEFT JOIN gacha ON sparks.target_id = gacha.id',
-            'WHERE user_id = $1 AND sparks.target_id IS NOT NULL'
-        ].join(' ')
-
         let id = (this.firstMention) ? this.firstMention.id : this.userId
-        let isOwnTarget = (id == this.userId) ? true : false
+        let isOwnTarget = (id === this.userId) ? true : false
 
-        return await Client.one(sql, id)
+        return await Target.fetch(id, this.message)
             .then((data: Result) => {
                 this.message.channel.send(this.render(data))
             })
@@ -120,7 +114,7 @@ class Target {
             })
     }
 
-    private async set() {
+    private set() {
         this.reset(false)
 
         if (this.isUnreleased) {
@@ -166,7 +160,21 @@ class Target {
     }
 
     // Database methods
-    saveTarget() {
+    public static async fetch(id: string, message: Message) {
+        const sql = [
+            'SELECT sparks.target_id AS id, gacha.name, gacha.recruits, gacha.rarity, gacha.item_type FROM sparks',
+            'LEFT JOIN gacha ON sparks.target_id = gacha.id',
+            'WHERE user_id = $1 AND sparks.target_id IS NOT NULL'
+        ].join(' ')
+
+        return await Client.one(sql, id)
+            .catch((error: Error) => {
+                let text = 'Sorry, there was an error communicating with the database for your last request.'
+                common.reportError(message, id, 'rateup', error, text)
+            })
+    }
+
+    private async saveTarget() {
         let sql = this.buildSaveQuery(Method.name)
         
         Client.one(sql, [this.targetName, this.userId])

@@ -7,7 +7,6 @@ const { Command } = require('discord-akairo')
 const { Leaderboard } = require('../subcommands/spark/leaderboard.js')
 const { Target } = require('../subcommands/spark/target.js')
 
-
 const common = require('../helpers/common.js')
 const pluralize = require('pluralize')
 
