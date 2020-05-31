@@ -121,8 +121,7 @@ module.exports = {
                 }
             })
         
-        if (!error instanceof pgpErrors.QueryResultError) {
-            console.error(error)
-        }
+
+        console.error(error)
     },
 }
