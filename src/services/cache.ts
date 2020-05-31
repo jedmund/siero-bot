@@ -1,8 +1,8 @@
-import { Festival, Rarity, Result } from './constants.js'
+import { Festival, Rarity, Item } from './constants.js'
 
 const { Client } = require('./connection.js')
 
-type ItemMap = { [key: number]: Result[] }
+type ItemMap = { [key: number]: Item[] }
 
 class Cache {
 	_characterWeapons: ItemMap = {}
@@ -37,7 +37,7 @@ class Cache {
 		return this._summons[rarity].filter(item => this.filterItem(item, gala, season))
 	}
 
-	public filterItem(item: Result, gala: string | null = null, season: string | null = null) {
+	public filterItem(item: Item, gala: string | null = null, season: string | null = null) {
 		if (season != null && gala != null) {
 			return item[season] == true && item[gala] == true
 
@@ -53,7 +53,7 @@ class Cache {
 	}
 
 	public limitedWeapons(gala: string) {
-		let limitedWeapons: Result[] = []
+		let limitedWeapons: Item[] = []
 
 		if (gala == Festival.FLASH) {
 			limitedWeapons = this._characterWeapons[Rarity.SSR].filter(item => {
@@ -141,7 +141,7 @@ class Cache {
 		].join(' ')
 
 		await Client.any(sql, rarity)
-			.then((data: Result[]) => {
+			.then((data: Item[]) => {
 				this._characterWeapons[rarity] = data
 			})
 			.catch((error: Error) => {
@@ -157,7 +157,7 @@ class Cache {
 		].join(' ')
 
 		await Client.any(sql, rarity)
-			.then((data: Result[]) => {
+			.then((data: Item[]) => {
 				this._nonCharacterWeapons[rarity] = data
 			})
 			.catch((error: Error) => {
@@ -172,7 +172,7 @@ class Cache {
 		].join(' ')
 
 		await Client.any(sql, rarity)
-			.then((data: Result[]) => {
+			.then((data: Item[]) => {
 				this._summons[rarity] = data
 			})
 			.catch((error: Error) => {

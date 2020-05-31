@@ -40,7 +40,11 @@ interface Rolls {
 
 class Until {
     target: string
-    properties: Properties
+    properties: Properties = {
+        gala: 'premium',
+        season: undefined
+    }
+
     rateups: Result[] = []
     currency: string = 'USD'
 
@@ -58,13 +62,13 @@ class Until {
     }
 
     public async execute() {
-        const gacha = new Gacha(this.properties.gala, this.properties.season, this.rateups)
+        const gacha = new Gacha(this.properties.gala!, this.properties.season!, this.rateups)
 
         await this.countPossibleItems(this.target)
             .then((data: NumberResult) => {
                 return this.parsePossibleItems(data.count)
             })
-            .then((chosenItem: Result | null) => {
+            .then((chosenItem: Result | void) => {
                 if (!chosenItem) {
                     common.missingItem(this.message, this.userId, 'until', this.target)
                     throw Error('Item not found')
@@ -182,7 +186,7 @@ class Until {
 
     // Render methods
     private async render(rolls: Rolls) {
-        const exchange: number = await this.getExchangeRate(this.currency)
+        const exchange = await this.getExchangeRate(this.currency)
 
         var string = ''
         if (rolls.item.recruits != null) {
@@ -193,6 +197,7 @@ class Until {
 
         let numTenPulls = rolls.count / 10
         let tenPullCost = 3150
+
         let conversion = `That's **${(numTenPulls * tenPullCost).toLocaleString()} crystals** or about **\$${Math.ceil(((numTenPulls * tenPullCost) * exchange)).toLocaleString()}**!`
 
         return [string, conversion].join(" ")
@@ -203,27 +208,26 @@ class Until {
         const url = `https://api.exchangeratesapi.io/latest?base=JPY&symbols=${currency.toUpperCase()}`
 
         try {
-            return await (await fetch(url)).json()
+            const result = await (await fetch(url)).json()
+            return result['rates'][currency]
         } catch(error) {
             console.error(error)
         }
     }
 
     private async parsePossibleItems(possibilities: number) {
-        let result: Result | null
+        let result: Result | void
 
         if (possibilities > 1) {
             result = await this.resolveDuplicate(this.target)
         } else if (possibilities == 1) {
             result = await this.fetchItem(this.target)
-        } else {
-            result = null
         }
 
         return result
     }
 
-    private async resolveDuplicate(targetName: string) {
+    private async resolveDuplicate(targetName: string): Promise<Result | void> {
         const sql = [
             'SELECT id, name, recruits, rarity, item_type',
             'FROM gacha',

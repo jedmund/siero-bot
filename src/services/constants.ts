@@ -34,7 +34,7 @@ export enum Rarity {
 }
 
 // Interfaces
-export interface Result {
+export interface Item {
     [index: string]: string | number | boolean | null
     id: string
     name: string

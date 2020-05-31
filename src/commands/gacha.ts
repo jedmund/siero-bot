@@ -1,5 +1,6 @@
 import { Message } from 'discord.js'
 import { Gacha } from '../services/gacha.js'
+import { Item } from '../services/constants.js'
 
 const { Command } = require('discord-akairo')
 const { MessageEmbed } = require('discord.js')
@@ -15,21 +16,6 @@ interface GachaArgs {
     operation: string
     gala: string
     season: string | null
-}
-
-interface Item {
-    id: string,
-    name: string,
-    rarity: number,
-    item_type: number,
-    recruits: string | null,
-    premium: boolean,
-    flash: boolean,
-    legend: boolean,
-    halloween: boolean,
-    holiday: boolean,
-    summer: boolean
-    valentine: boolean
 }
 
 interface Spark {
@@ -275,6 +261,7 @@ class GachaCommand extends Command {
     }
 
     private renderSpark(results: Spark) {
+
         let rate = Math.floor((results.count.SSR / 300) * 100)
         let summary = `\`\`\`${this.renderSummary(results)}\`\`\``
 

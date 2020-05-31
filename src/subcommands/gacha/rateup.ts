@@ -1,6 +1,7 @@
 
 import { Client } from '../../services/connection.js'
 import { Message, MessageEmbed, User } from 'discord.js'
+import { Item } from '../../services/constants.js'
 
 import common from '../../helpers/common.js'
 import decision from '../../helpers/decision.js'
@@ -12,39 +13,8 @@ interface Rate {
     rate: number
 }
 
-interface Result {
-    id: string
-    name: string
-    recruits: string | null
-    rarity: number
-    item_type: number | null
-    premium: boolean
-    flash: boolean
-    legend: boolean
-    halloween: boolean
-    holiday: boolean
-    summer: boolean
-    valentines: boolean
-}
-
-interface RateResult {
-    id: string
-    name: string
-    recruits: string | null
-    rarity: number
-    item_type: number | null
-    premium: boolean
-    flash: boolean
-    legend: boolean
-    halloween: boolean
-    holiday: boolean
-    summer: boolean
-    valentines: boolean
-    rate: number
-}
-
 interface RateSet {
-    rates: RateResult[]
+    rates: Item[]
     ambiguous: Rate[]
 }
 
@@ -155,13 +125,15 @@ class Rateup {
                     this.firstMention = null
                     return Rateup.fetch(this.userId, this.message)
                 })
-                .then((data: RateResult[]) => {
-                    this.message.channel.send(
-                        {
-                            content: `You successfully copied ${sourceUser}'s rate up!`,
-                            embed: this.render(this.message.author, data)
-                        }
-                    )
+                .then((data: Item[] | void) => {
+                    if (data) {
+                        this.message.channel.send(
+                            {
+                                content: `You successfully copied ${sourceUser}'s rate up!`,
+                                embed: this.render(this.message.author, data)
+                            }
+                        )
+                    }
                 })
                 .catch((error: Error) => {
                     const text = `Sorry, there was an error communicating with the database to copy ${sourceUser}'s rate-up.`
@@ -206,8 +178,8 @@ class Rateup {
         const isOwnTarget = (user.id == this.userId) ? true : false
 
         await Rateup.fetch(user.id, this.message)
-            .then((data: RateResult[]) => {
-                if (data.length > 0) {
+            .then((data: Item[] | void) => {
+                if (data && data.length > 0) {
                     this.message.channel.send(this.render(user, data))
                 } else {
                     this.message.author.send(this.notFoundError(isOwnTarget))
@@ -249,7 +221,7 @@ class Rateup {
         }
     }
 
-    public static async fetch(id: string, message: Message) {
+    public static async fetch(id: string, message: Message): Promise<Item[] | void> {
         const sql = [
             'SELECT rateups.gacha_id AS id, rateups.rate, gacha.name, gacha.recruits, gacha.rarity, gacha.item_type',
             'FROM rateups LEFT JOIN gacha ON rateups.gacha_id = gacha.id',
@@ -282,7 +254,7 @@ class Rateup {
         }
     }
 
-    private async save(item: RateResult, admin: boolean = false) {
+    private async save(item: Item, admin: boolean = false) {
         const id = (admin) ? this.siero!.id : this.userId
         const sql = 'INSERT INTO rateups (gacha_id, user_id, rate) VALUES ($1, $2, $3)'
         
@@ -294,7 +266,7 @@ class Rateup {
     }
 
     // Render methods
-    private render(user: User, rateups: RateResult[], missing: Rate[] | null = null) {
+    private render(user: User, rateups: Item[], missing: Rate[] | null = null) {
         let string = ''
         for (let i in rateups) {
             let rateup = rateups[i]
@@ -360,7 +332,7 @@ class Rateup {
     }
 
     private async validate() {
-        let items: RateResult[] = []
+        let items: Item[] = []
         let ambiguousItems: Rate[] = []
 
         for (let i = this.rates.length - 1; i >= 0; i--) {
@@ -370,7 +342,7 @@ class Rateup {
                 .then((data: NumberResult) => {
                     return this.parsePossibleItems(item, data.count)
                 })
-                .then((chosenItem: RateResult | null) => {
+                .then((chosenItem: Item | void) => {
                     if (chosenItem) {
                         items.push(chosenItem)
                     } else {
@@ -395,9 +367,9 @@ class Rateup {
             'WHERE name = $1 OR recruits = $1'
         ].join(' ')
 
-        let results: Result[] = []
+        let results: Item[] = []
         return await Client.any(sql, targetName)
-            .then((data: Result[]) => {
+            .then((data: Item[]) => {
                 results = data
                 return decision.buildDuplicateEmbed(data, targetName)
             })
@@ -438,14 +410,12 @@ class Rateup {
     }
     
     private async parsePossibleItems(item: Rate, possibilities: number) {
-        let result: RateResult | null
+        let result: Item | void
 
         if (possibilities > 1) {
             result = await this.resolveDuplicate(item.name)
         } else if (possibilities == 1) {
             result = await this.fetchItem(item.name)
-        } else {
-            result = null
         }
 
         if (result) {
