@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "module": "esNext",
+    "module": "esnext",
     "allowJs": true,
     "declaration": true,
     "outDir": "build/dist/",
