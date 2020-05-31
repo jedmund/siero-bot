@@ -2,7 +2,7 @@
   "name": "siero-bot",
   "version": "1.0.0",
   "engines": {
-    "node": "13.8.0"
+    "node": "14.2.0"
   },
   "description": "",
   "main": "build/dist/bot.js",
