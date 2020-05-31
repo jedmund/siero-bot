@@ -268,19 +268,21 @@ class Rateup {
     // Render methods
     private render(user: User, rateups: Item[], missing: Rate[] | null = null) {
         let string = ''
-        for (let i in rateups) {
-            let rateup = rateups[i]
 
-            if (rateup.recruits != null) {
-                string += `${rateup.name} - ${rateup.recruits}: ${rateup.rate}%\n`
-            } else {
-                string += `${rateup.name}: ${rateup.rate}%\n`
+        if (rateups.length > 0) {
+            for (let i in rateups) {
+                let rateup = rateups[i]
+
+                if (rateup.recruits != null) {
+                    string += `${rateup.name} - ${rateup.recruits}: ${rateup.rate}%\n`
+                } else {
+                    string += `${rateup.name}: ${rateup.rate}%\n`
+                }
             }
         }
 
         let embed = new MessageEmbed({
             title: 'Your current rate-up',
-            description: `\`\`\`html\n${string}\n\`\`\``,
             color: 0xb58900,
             footer: {
                 iconURL: user.displayAvatarURL(),
@@ -288,13 +290,19 @@ class Rateup {
             }
         })
 
+        if (string.length > 0) {
+            embed.setDescription(`\`\`\`html\n${string}\n\`\`\``)
+        }
+
         if (missing && missing.length > 0) {
-            let missingString = ''
+            let missingStrings = []
+
             for (let i in missing) {
-                missingString += `${missing[i].name}\n`
+                missingStrings.push(`${missing[i].name} `)
             }
 
-            embed.addField('The following items could not be found and were not added to your rateup', `\`\`\`${missingString}\`\`\``)
+            const title = 'The following items could not be found and were not added to your rateup'
+            embed.addField(title, `\`\`\`${missingStrings.join('\n')}\`\`\``)
         }
 
         return embed
