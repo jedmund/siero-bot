@@ -1,35 +1,58 @@
+// import { Category } from "discord-akairo"
+
 const { Cache } = require('./cache.js')
 const { Chance } = require('chance')
-const { GachaBucket, ItemType, Festival, Rarity, RollsInSpark, Season, SSRRate } = require('./constants.js')
+import { GachaBucket, ItemType, Festival, Rarity, Item, RollsInSpark, Season, SSRRate } from './constants.js'
 
 const cache = new Cache()
 const chance = new Chance()
 
-class Gacha {
-    gala
-    season
-    rateups
-    rates
+type RateMap = { [key: string]: number }
 
-    constructor(gala, season, rateups) {
-        if (["flash", "ff"].includes(gala)) {
+interface RarityCount {
+    [index: string]: number
+    R: number
+    SR: number
+    SSR: number
+}
+
+interface RollResult {
+    count: RarityCount,
+    items: Item[]
+}
+
+type CategoryMap = { [key: string]: Category }
+
+interface Category {
+    rate: number,
+    count: number
+}
+
+export class Gacha {
+    gala: string = 'premium'
+    season: string | null = null
+    rateups: Item[]
+    rates: CategoryMap
+
+    constructor(gala: string, season: string, rateups: Item[]) {
+        if (['flash', 'flashfest', 'ff'].includes(gala)) {
             this.gala = Festival.FLASH
-        } else if (["legend", "lf"].includes(gala)) {
+        } else if (['legend', 'legfest', 'lf'].includes(gala)) {
             this.gala = Festival.LEGEND
         }
 
         switch(season) {
-            case "summer":
+            case 'summer':
                 this.season = Season.SUMMER
                 break
-            case "halloween":
+            case 'halloween':
                 this.season = Season.HALLOWEEN
                 break
-            case "holiday":
+            case 'holiday':
                 this.season = Season.HOLIDAY
                 break
-            case "valentine":
-                this.season = Season.VALENTINE
+            case 'valentines':
+                this.season = Season.VALENTINES
                 break
         }
 
@@ -37,24 +60,24 @@ class Gacha {
         this.rates = this.ssrRates()
     }
 
-    singleRoll() {
-        let rarity = this.determineRarity(false)
+    public singleRoll(): Item {
+        const rarity: Rarity = this.determineRarity(false)
         return this.determineItem(rarity)
     }
 
-    tenPartRoll(times = 1, fetchAllItems = true) {
+    public tenPartRoll(times = 1, fetchAllItems = true): RollResult {
         // Create an object to store counts
-        var count = { 
+        let count: RarityCount = {
             R: 0, 
             SR: 0, 
             SSR: 0 
         }
 
         let maxPulls = 10
-        var items = []
+        var items: Item[] = []
 
-        for (var i = 0; i < times; i++) {
-            for (var j = 0; j < maxPulls; j++) {
+        for (let i = 0; i < times; i++) {
+            for (let j = 0; j < maxPulls; j++) {
                 var rarity
 
                 if (j != maxPulls - 1) {
@@ -63,9 +86,9 @@ class Gacha {
                     rarity = this.determineRarity(true)
                 }
 
-                count[rarity.string] += 1
+                count[this.mapRarity(rarity)] += 1
 
-                if (rarity.int == Rarity.SSR || (rarity != Rarity.SSR && fetchAllItems)) {
+                if (rarity == Rarity.SSR || ((rarity == Rarity.R || rarity == Rarity.SR) && fetchAllItems)) {
                     items.push(this.determineItem(rarity))
                 }
             }
@@ -77,59 +100,58 @@ class Gacha {
         }
     }
 
-    spark() {
+    public spark(): RollResult {
         let maxRolls = RollsInSpark / 10
-        var items = this.tenPartRoll(maxRolls, false)
-
-        return items
+        return this.tenPartRoll(maxRolls, false)
     }
 
-    currentRates(final = false) {
-        var rates = {}
-        var rateUp = this.gala != null
+    private currentRates(final = false): RateMap {
+        let rates: RateMap = {}
+        const rateUp = (this.gala !== 'premium')
 
         if (rateUp && !final) {
             rates = {
-                "R":   0.76,
-                "SR":  0.15,
-                "SSR": 0.06
+                'R':   0.76,
+                'SR':  0.15,
+                'SSR': 0.06
             }
         }
 
         if (rateUp && final) {
             rates = {
-                "SR":  0.94,
-                "SSR": 0.06
+                'SR':  0.94,
+                'SSR': 0.06
             }
         }
 
         if (!rateUp && !final) {
             rates = {
-                "R":   0.82,
-                "SR":  0.15,
-                "SSR": 0.03
+                'R':   0.82,
+                'SR':  0.15,
+                'SSR': 0.03
             }
         }
 
         if (!rateUp && final) {
             rates = {
-                "SR":  0.97,
-                "SSR": 0.03
+                'SR':  0.97,
+                'SSR': 0.03
             }
         }
     
         return rates
     }
 
-    ssrRates() {
-        var rate = (this.gala != null) ? SSRRate * 2 : SSRRate
+    private ssrRates(): CategoryMap {
+        let rate = (this.gala != null) ? SSRRate * 2 : SSRRate
 
-        var remainingWeapons = cache.characterWeapons(Rarity.SSR, this.gala, this.season).length
-        var remainingSummons = cache.summons(Rarity.SSR, this.gala, this.season).length 
+        let remainingWeapons = cache.characterWeapons(Rarity.SSR, this.gala, this.season).length
+        let remainingSummons = cache.summons(Rarity.SSR, this.gala, this.season).length 
 
         // First, subtract the sum of the rates of any rate-up characters from the total rate.
-        for (var r in this.rateups) {
-            rate = rate - this.rateups[r].rate
+        for (let i in this.rateups) {
+            const item: Item = this.rateups[i]
+            rate = rate - (item.rate as number)
         }
 
         // Remove rateups from the total count of character weapons and summons
@@ -152,9 +174,9 @@ class Gacha {
                 var isLimited = false
 
                 if (this.gala == Festival.FLASH) {
-                    isLimited = rateup.flash === 1
+                    isLimited = rateup.flash == true
                 } else if (this.gala == Festival.LEGEND) {
-                    isLimited = rateup.legend === 1
+                    isLimited = rateup.legend == true
                 }
 
                 return isLimited
@@ -166,41 +188,56 @@ class Gacha {
         }
 
         return {
-            "weapon"  : {
-                "rate"  : rate,
-                "count" : remainingWeapons - remainingLimiteds
+            'weapon'  : {
+                'rate'  : rate,
+                'count' : remainingWeapons - remainingLimiteds
             },
-            "limited" : {
-                "rate"  : rate * 2,
-                "count" : remainingLimiteds
+            'limited' : {
+                'rate'  : rate * 2,
+                'count' : remainingLimiteds
             },
-            "summon"  : {
-                "rate"  : summonRate,
-                "count" : remainingSummons
+            'summon'  : {
+                'rate'  : summonRate,
+                'count' : remainingSummons
             }
         }
     }
 
-    determineRarity(final = false) {
-        let rates = this.currentRates(final)
+    private mapRarity(number: number) {
+        let rarity = ''
 
-        var r
-        if (final) {
-            r = chance.weighted(["SR", "SSR"], [rates.SR, rates.SSR])
-        } else {
-            r = chance.weighted(["R", "SR", "SSR"], [rates.R, rates.SR, rates.SSR])
+        switch(number) {
+            case Rarity.R:
+                rarity = 'R'
+                break
+            case Rarity.SR:
+                rarity = 'SR'
+                break
+            case Rarity.SSR:
+                rarity = 'SSR'
+                break
         }
 
-        return {
-            int    : Rarity[r],
-            string : r
-        }
+        return rarity
     }
 
-    determineItem(rarity) {
-        var item
+    private determineRarity(final = false): Rarity {
+        let rates = this.currentRates(final)
 
-        if (rarity.int === Rarity.SSR) {
+        let r: number
+        if (final) {
+            r = chance.weighted([Rarity.SR, Rarity.SSR], [rates.SR, rates.SSR])
+        } else {
+            r = chance.weighted([Rarity.R, Rarity.SR, Rarity.SSR], [rates.R, rates.SR, rates.SSR])
+        }
+
+        return r
+    }
+
+    private determineItem(rarity: Rarity): Item {
+        var item: Item
+
+        if (rarity === Rarity.SSR) {
             item = this.determineSSRItem()
         } else {
             item = cache.fetchItem(rarity, this.gala, this.season)
@@ -209,12 +246,9 @@ class Gacha {
         return item
     }
 
-    determineSSRItem() {
+    private determineSSRItem(): Item {
         // Fixed rarity that matches the output of determineRarity
-        let rarity = {
-            int     : 3,
-            string  : "SSR"
-        }
+        const rarity = Rarity.SSR
 
         // Fetch the rates and determine a bucket
         let bucket = this.determineSSRBucket(this.rates)
@@ -235,16 +269,16 @@ class Gacha {
             }
         } else {
             let rateupItems = this.rateups.map(item => item.name)
-            let rateupRates = this.rateups.map(item => parseFloat(item.rate))
+            let rateupRates = this.rateups.map(item => item.rate)
             
             let result = chance.weighted(rateupItems, rateupRates)
-            return this.rateups.find(item => item.name == result)
+            item = this.rateups.find(item => item.name == result)!
         }
 
         return item
     }
 
-    filterItems(item, gala, season) {
+    private filterItems(item: Item, gala: string | null, season: string | null): boolean {
         // If both a gala and a season are specified, 
         // and the item appears in both
         if (
@@ -278,51 +312,53 @@ class Gacha {
         return true
     }
 
-    isLimited(item) {
-        return (item.flash == 1 || item.legend == 1) && item.premium == 0
+    public isLimited(item: Item): boolean {
+        return (item.flash == true || item.legend == true) && item.premium == false
     }
 
-    isSeasonal(item) {
-        return (item.halloween == 1 || item.holiday == 1 || item.summer == 1 || item.valentine == 1) && item.premium == 0
+    public isSeasonal(item: Item): boolean {
+        return (item.halloween == true || item.holiday == true || item.summer == true || item.valentines == true) && item.premium == false
     }
 
-    getGala(item) {
-        var string = ""
+    public getGala(item: Item): string {
+        let string = ''
 
-        if (item.flash == 1) {
-            string = "flash"
-        } else if (item.legend == 1) {
-            string = "legend"
+        if (item.flash == true) {
+            string = 'flash'
+        } else if (item.legend == true) {
+            string = 'legend'
         } else {
-            string = "premium"
+            string = 'premium'
         }
 
         return string
     }
 
-    getSeason(item) {
-        var string = ""
+    public getSeason(item: Item): string {
+        var string = ''
 
-        if (item.summer == 1) {
-            string = "summer"
-        } else if (item.holiday == 1) {
-            string = "holiday"
-        } else if (item.halloween == 1) {
-            string = "halloween"
-        } else if (item.valentine == 1) {
-            string = "valentine"
+        if (item.summer == true) {
+            string = 'summer'
+        } else if (item.holiday == true) {
+            string = 'holiday'
+        } else if (item.halloween == true) {
+            string = 'halloween'
+        } else if (item.valentines == true) {
+            string = 'valentines'
         } else {
-            string = "all seasons"
+            string = 'all seasons'
         }
         
         return string
     }
 
-    determineSSRBucket(rates) {
+    private determineSSRBucket(rates: CategoryMap): number {
         // Calculate the total rate of all rateup items
-        var rateupSum = 0
-        for (var i in this.rateups) {
-            rateupSum += parseFloat(this.rateups[i].rate)
+        let rateupSum: number = 0
+        for (let i in this.rateups) {
+            // TODO: Why won't these add as numbers if they are technically numbers?
+            let item: Item = this.rateups[i]
+            rateupSum = rateupSum + parseFloat(item.rate as string)
         }
 
         // Store all the rates
@@ -338,5 +374,3 @@ class Gacha {
         return chance.weighted(bucketKeys, bucketRates)
     }
 }
-
-exports.Gacha = Gacha
