@@ -49,7 +49,7 @@ class GachaCommand extends Command {
                 {
                     id: 'operation',
                     type: 'string',
-                    default: 'status'
+                    default: 'help'
                 },
                 {
                     id: 'gala',
