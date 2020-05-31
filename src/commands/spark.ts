@@ -8,6 +8,7 @@ const { Leaderboard } = require('../subcommands/spark/leaderboard.js')
 const { Target } = require('../subcommands/spark/target.js')
 
 const common = require('../helpers/common.js')
+const dayjs = require('dayjs')
 const pluralize = require('pluralize')
 
 type StringResult = { [key: string]: string }
@@ -51,7 +52,7 @@ class SparkCommand extends Command {
     public exec(message: Message, args: SparkArgs) {
         this.commandType = 'sparks'
 
-        console.log(`[${message.author.id}] ${message.content}`)
+        console.log(`(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${message.author.id}] ${message.content}`)
 
         // Store values for later use
         common.storeArgs(this, args)

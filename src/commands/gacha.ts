@@ -12,6 +12,7 @@ const { Target } = require('../subcommands/spark/target.js')
 
 const { Command } = require('discord-akairo')
 const common = require('../helpers/common.js')
+const dayjs = require('dayjs')
 
 interface GachaArgs {
     operation: string
@@ -66,7 +67,7 @@ class GachaCommand extends Command {
     }
 
     async exec(message: Message, args: GachaArgs) {
-        console.log(`[${message.author.id}] ${message.content}`)
+        console.log(`(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${message.author.id}] ${message.content}`)
         this.commandType = 'gacha'
 
         common.storeArgs(this, args)

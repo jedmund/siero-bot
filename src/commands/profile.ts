@@ -5,6 +5,7 @@ const { Command } = require('discord-akairo')
 const { MessageEmbed } = require('discord.js')
 
 const common = require('../helpers/common.js')
+const dayjs = require('dayjs')
 
 type StringResult = { [key: string]: string }
 type NumberResult = { [key: string]: number}
@@ -43,7 +44,7 @@ class ProfileCommand extends Command {
         common.storeMessage(this, message)
         common.storeUser(this, message.author.id)
 
-        console.log(`[${message.author.id}] ${message.content}`)
+        console.log(`(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${message.author.id}] ${message.content}`)
 
         let commandType: string = 'profiles'
 

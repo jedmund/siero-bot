@@ -4,6 +4,7 @@ const { Command } = require('discord-akairo')
 const { MessageEmbed } = require('discord.js')
 
 const common = require('../helpers/common.js')
+const dayjs = require('dayjs')
 const stickers = require('../resources/stickers.js')
 
 type Sticker = string | null
@@ -30,9 +31,7 @@ class StickerCommand extends Command {
 
     public exec(message: Message, args: NullableStickerArgs) {
         common.storeUser(this, message.author.id)
-        common.storeArgs(this, args)
-
-        console.log(`[${message.author.id}] ${message.content}`)
+        common.storeArgs(this, args) 
 
         const result: StickerArgs = this.extract()
 
@@ -42,6 +41,7 @@ class StickerCommand extends Command {
             const sticker: Sticker = this.sticker(result.alias, result.language)
 
             if (sticker != null) {
+                console.log(`(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${message.author.id}] ${message.content}`)
                 message.channel.send(this.buildStickerEmbed(sticker))
             }
         }

@@ -1,5 +1,6 @@
 const { Command } = require('discord-akairo')
 const { MessageEmbed } = require('discord.js')
+const dayjs = require('dayjs')
 
 class HelpCommand extends Command {
     constructor() {
@@ -10,7 +11,7 @@ class HelpCommand extends Command {
     }
 
     exec(message, args) {        
-        console.log(`[${message.author.id}] ${message.content}`)
+        console.log(`(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${message.author.id}] ${message.content}`)
         
         var embed = new MessageEmbed()
         embed.setTitle("Help")
