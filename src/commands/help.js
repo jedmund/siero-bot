@@ -25,6 +25,7 @@ Log your progress while saving a spark\n
 Use a Granblue sticker in Discord\`\`\``)
         embed.addField("Even more help", `You can get help on any of the above commands by typing \`help\` after the command, like so: 
 \`\`\`$gacha help\`\`\``)
+        embed.addField("Support Discord", 'Come help with development or get support in Siero\'s Discord:\nhttps://discord.gg/37u2uz7')
 
         message.channel.send(embed)
     }

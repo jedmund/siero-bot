@@ -186,6 +186,13 @@ class GachaCommand extends Command {
             'You can add multiple rateups by separating them with a comma, as seen above.```'
         ].join('\n')
 
+        const currentRateup = [
+            '```html\n',
+            'Get the current banner\'s rateup',
+            '$gacha rateup copy @Siero',
+            '```'
+        ]
+
         const link = 'https://github.com/jedmund/siero-bot/wiki/Pulling-gacha'
 
         const embed = new MessageEmbed({
@@ -212,6 +219,10 @@ class GachaCommand extends Command {
                 {
                     name: 'Setting Rate-ups',
                     value: settingRateups
+                },
+                {
+                    name: 'Current Banner',
+                    value: currentRateup
                 },
                 {
                     name: 'Full documentation',
