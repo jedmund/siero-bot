@@ -51,6 +51,8 @@ class SparkCommand extends Command {
     public exec(message: Message, args: SparkArgs) {
         this.commandType = 'sparks'
 
+        console.log(`[${message.author.id}] ${message.content}`)
+
         // Store values for later use
         common.storeArgs(this, args)
         common.storeMessage(this, message)

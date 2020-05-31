@@ -25,6 +25,8 @@ class AskCommand extends Command {
     }
 
     exec(message: Message) {
+        console.log(`[${message.author.id}] ${message.content}`)
+        
         const reply = Answers[Math.floor(Math.random() * Answers.length)]
         message.reply(reply)
     }

@@ -66,6 +66,7 @@ class GachaCommand extends Command {
     }
 
     async exec(message: Message, args: GachaArgs) {
+        console.log(`[${message.author.id}] ${message.content}`)
         this.commandType = 'gacha'
 
         common.storeArgs(this, args)

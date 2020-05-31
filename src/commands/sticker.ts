@@ -32,6 +32,8 @@ class StickerCommand extends Command {
         common.storeUser(this, message.author.id)
         common.storeArgs(this, args)
 
+        console.log(`[${message.author.id}] ${message.content}`)
+
         const result: StickerArgs = this.extract()
 
         if (['list', 'help'].includes(result.alias)) {

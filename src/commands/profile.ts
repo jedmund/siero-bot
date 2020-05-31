@@ -43,6 +43,8 @@ class ProfileCommand extends Command {
         common.storeMessage(this, message)
         common.storeUser(this, message.author.id)
 
+        console.log(`[${message.author.id}] ${message.content}`)
+
         let commandType: string = 'profiles'
 
         this.checkIfUserExists(commandType)

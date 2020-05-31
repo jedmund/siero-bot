@@ -10,6 +10,8 @@ class HelpCommand extends Command {
     }
 
     exec(message, args) {        
+        console.log(`[${message.author.id}] ${message.content}`)
+        
         var embed = new MessageEmbed()
         embed.setTitle("Help")
         embed.setDescription("Welcome! Here are all the things I can do!")
