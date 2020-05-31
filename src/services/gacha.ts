@@ -269,10 +269,12 @@ export class Gacha {
             }
         } else {
             let rateupItems = this.rateups.map(item => item.name)
-            let rateupRates = this.rateups.map(item => item.rate)
-            
+            let rateupRates = this.rateups.map(item => parseFloat(item.rate as string))
             let result = chance.weighted(rateupItems, rateupRates)
             item = this.rateups.find(item => item.name == result)!
+
+            // This isn't working right
+            console.log(result)
         }
 
         return item
