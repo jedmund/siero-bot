@@ -1,15 +1,16 @@
 import { Message } from 'discord.js'
-import { Gacha } from '../services/gacha.js'
-import { Item } from '../services/constants.js'
+import { MessageEmbed } from 'discord.js'
 
-const { Command } = require('discord-akairo')
-const { MessageEmbed } = require('discord.js')
+// Services
+import { Item } from '../services/constants.js'
+import { Gacha } from '../services/gacha.js'
 
 // Subcommands
 const { Rateup } = require('../subcommands/gacha/rateup.js')
 const { Until } = require('../subcommands/gacha/until.js')
 const { Target } = require('../subcommands/spark/target.js')
 
+const { Command } = require('discord-akairo')
 const common = require('../helpers/common.js')
 
 interface GachaArgs {
@@ -194,27 +195,27 @@ class GachaCommand extends Command {
             fields:[
                 {
                     name: 'Command syntax',
-                    text: '```gacha spark <gala> <season>```'
+                    value: '```gacha spark <gala> <season>```'
                 },
                 {
                     name: 'Gacha options',
-                    text: gachaOptions
+                    value: gachaOptions
                 },
                 {
                     name: 'Galas and Seasons',
-                    text: galasAndSeasons
+                    value: galasAndSeasons
                 },
                 {
                     name: 'Using Rate-ups',
-                    text: usingRateups
+                    value: usingRateups
                 },
                 {
                     name: 'Setting Rate-ups',
-                    text: settingRateups
+                    value: settingRateups
                 },
                 {
                     name: 'Full documentation',
-                    text: link
+                    value: link
                 }
             ]
         })
