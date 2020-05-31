@@ -4,6 +4,9 @@
 # compilation output
 /build
 
+# cache
+/cache
+
 # misc
 .DS_Store
 .env*

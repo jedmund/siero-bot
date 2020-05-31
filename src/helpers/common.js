@@ -61,6 +61,13 @@ module.exports = {
             embed: embed
         }
     },
+    calculateDraws: function(crystals, tickets, tenTickets) {
+        let ticketValue = tickets * 300
+        let tenTicketValue = tenTickets * 3000
+        let totalCrystalValue = crystals + ticketValue + tenTicketValue
+    
+        return Math.floor(totalCrystalValue / 300)
+    },
     getLinkForContext: function(context) {
         var link = ""
 
@@ -108,14 +115,13 @@ module.exports = {
         message.author.send(response)
             .catch(function(error) {
                 if (error instanceof DiscordAPIError) {
-                    console.log(`Cannot send private messages to this user: ${userId}`)
+                    console.error(`Cannot send private messages to this user: ${userId}`)
                     message.reply("There was an error, but it looks like I'm not allowed to send you direct messages! Check your Discord privacy settings if you'd like help with commands via DM.")
 
                 }
             })
         
-        if (!error instanceof pgpErrors.QueryResultError) {
-            console.log(error)
-        }
+
+        console.error(error)
     },
 }
