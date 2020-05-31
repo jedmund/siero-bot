@@ -20,13 +20,13 @@ class Cache {
 	}
 
 	// Cache methods
-	private isExpired() {
-		return (this.lastUpdated.getTime() + this.ttl) < new Date().getTime()
-	}
+	// private isExpired() {
+	// 	return (this.lastUpdated.getTime() + this.ttl) < new Date().getTime()
+	// }
 
-	private resetCache() {
-		this.lastUpdated = new Date(0)
-	}
+	// private resetCache() {
+	// 	this.lastUpdated = new Date(0)
+	// }
 
 	// Subset retrieval methods
 	public characterWeapons(rarity: Rarity, gala: string | null = null, season: string | null = null) {
