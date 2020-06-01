@@ -71,12 +71,12 @@ class Until {
             .then((chosenItem: Result | void) => {
                 if (!chosenItem) {
                     common.missingItem(this.message, this.userId, 'until', this.target)
-                    throw Error('Item not found')
+                    return Promise.reject('missingItem')
                 }
 
                 if (chosenItem && !this.testProperties(gacha, chosenItem)) {
                     this.notAvailableError(gacha, chosenItem)
-                    throw Error('Item not available')
+                    return Promise.reject('itemNotAvailable')
                 }
 
                 return chosenItem!
@@ -166,14 +166,13 @@ class Until {
         try {
             return await Client.one(sql, name)
         } catch (error) {
-            console.log(error)
+            console.error(error)
         }
     }
 
     private async fetchItem(name: string) {
         const sql = [
-            'SELECT id, name, recruits, rarity, item_type',
-            'FROM gacha',
+            'SELECT * FROM gacha',
             'WHERE name = $1 OR recruits = $1 LIMIT 1'
         ].join(' ')
 
