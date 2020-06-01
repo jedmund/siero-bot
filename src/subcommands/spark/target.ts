@@ -169,8 +169,10 @@ class Target {
 
         return await Client.one(sql, id)
             .catch((error: Error) => {
-                let text = 'Sorry, there was an error communicating with the database for your last request.'
-                common.reportError(message, id, 'rateup', error, text)
+                if (error instanceof pgpErrors.QueryResultError && error.code != pgpErrors.queryResultErrorCode.noData) {
+                    let text = 'Sorry, there was an error communicating with the database for your last request.'
+                    common.reportError(message, id, 'rateup', error, text)
+                }
             })
     }
 
