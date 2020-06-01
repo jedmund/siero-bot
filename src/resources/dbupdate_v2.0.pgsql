@@ -1,0 +1,1 @@
+ALTER TABLE sparks DROP COLUMN guild_ids;

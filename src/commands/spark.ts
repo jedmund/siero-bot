@@ -1,5 +1,7 @@
 import { Message } from 'discord.js'
 import { MessageEmbed } from 'discord.js'
+import { GuildMember } from 'discord.js'
+import { Snowflake } from 'discord.js'
 
 const { Client, pgpErrors } = require('../services/connection.js')
 const { Command } = require('discord-akairo')
@@ -66,10 +68,6 @@ class SparkCommand extends Command {
                 }
 
                 return
-            }).then(() => {
-                if (message.channel.type !== 'dm') {
-                    this.checkGuildAssociation(this.commandType)
-                }
             }).then(() => {
                 this.switchOperation(args)
             })
@@ -210,8 +208,9 @@ class SparkCommand extends Command {
             this.invalidContext()
             return
         }
-
-        let leaderboard = new Leaderboard(this.message.guild.id, order)
+        
+        let memberIds: Snowflake[] = (await this.message.guild.members.fetch()).map((g: GuildMember) => g.id);
+        let leaderboard = new Leaderboard(memberIds, order)
         await leaderboard.fetchData()
             .then((embed: string) => {
                 this.message.channel.send(embed)
@@ -472,38 +471,6 @@ class SparkCommand extends Command {
         } catch(error) {
             console.error(error)
         }
-    }
-
-    private checkGuildAssociation(table: string) {
-        let sql = [
-            `SELECT user_id, guild_ids FROM ${table}`,
-            'WHERE user_id = $1',
-            'LIMIT 1'
-        ].join(' ')
-
-        Client.one(sql, this.userId)
-            .then((result: StringResult) => {
-                let guilds = result.guild_ids
-                if (!guilds || guilds && !guilds.includes(this.message.guild.id)) {
-                    this.createGuildAssociation(table)
-                }
-            })
-            .catch((error: Error) => {
-                console.error(error)
-            })
-    }
-
-    private createGuildAssociation(table: string) {
-        let sql = [
-            `UPDATE ${table}`,
-            'SET guild_ids = array_cat(guild_ids, $1)',
-            'WHERE user_id = $2'
-        ].join(' ')
-
-        Client.any(sql, ['{' + this.message.guild.id + '}', this.userId])
-            .catch((error: Error) => {
-                console.error(error)
-            })
     }
 
     // Render methods
