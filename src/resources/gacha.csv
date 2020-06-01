@@ -1,6 +1,6 @@
 name,rarity,type,recruits,premium,flash,legend,valentine,summer,halloween,holiday
 Dainsleif,3,0,Altair,1,1,1,1,1,1,1
-Lohengrin,3,0,Percival,1,1,1,1,1,1,1
+Lohengrin,3,0,Percival (Fire),1,1,1,1,1,1,1
 Claíomh Solais,3,0,Charlotta (Water),1,1,1,1,1,1,1
 Gottfried,3,0,Aglovale,1,1,1,1,1,1,1
 Nagelring,3,0,Izmir,1,1,1,1,1,1,1
@@ -95,6 +95,7 @@ Gandiva,3,0,Ilsa,1,1,1,1,1,1,1
 Aetherial Bow,3,0,Metera (Wind),1,1,1,1,1,1,1
 Heroic Bow,3,0,Feena,1,1,1,1,1,1,1
 Levin Shooter,3,0,Levin Sisters,1,1,1,1,1,1,1
+Returner Staff,3,0,Yurius,1,1,1,1,1,1,1
 Mobius Strip,3,0,Clarisse (Fire),1,1,1,1,1,1,1
 Melodic Sphere,3,0,Lilele,1,1,1,1,1,1,1
 Ocean Harp,3,0,Sophia,1,1,1,1,1,1,1
@@ -109,7 +110,6 @@ Venustas,3,0,Narmaya,1,1,1,1,1,1,1
 Dragon Slayer,3,0,Amira,1,1,1,1,1,1,1
 Fudo-Kuniyuki,3,0,Yodarha,1,1,1,1,1,1,1
 Gigante Slicer,3,0,Nicholas,1,1,1,1,1,1,1
-Returner Staff,3,0,Yurius,1,1,1,1,1,1,1
 Agni,3,1,,1,1,1,1,1,1,1
 Athena,3,1,,1,1,1,1,1,1,1
 Michael,3,1,,1,1,1,1,1,1,1
@@ -662,3 +662,6 @@ Teiwaz,3,0,Shura,1,1,1,1,1,1,1
 Charybdis,3,1,,1,1,1,1,1,1,1
 Mystic Spray Gun,3,0,Illnott,1,1,1,1,1,1,1
 Predator Claw,3,0,Predator,1,1,1,1,1,1,1
+Sikinnis,3,0,Satyr,1,1,1,1,1,1,1
+Walthari,3,0,Percival (Light),1,1,1,1,1,1,1
+Owlcat,3,1,,1,1,1,1,1,1,1
