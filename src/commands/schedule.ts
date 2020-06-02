@@ -91,6 +91,9 @@ class ScheduleCommand extends Command {
                 this.current()
                 break
 
+            case 'help':
+                this.help()
+
             default:
                 break
         }
@@ -115,6 +118,42 @@ class ScheduleCommand extends Command {
         const event: Event = this.schedule.events[index]
         const embed: MessageEmbed = this.renderEvent(event)
 
+        this.message.channel.send(embed)
+    }
+
+    private help(): void {
+        let options = [
+            '```html\n',
+            '<show>',
+            'Show the upcoming schedule\n',
+            '<now>',
+            'Show the current event\n',
+            '<next>',
+            'Show the upcoming event```'
+        ].join('\n')
+
+        let link = 'https://github.com/jedmund/siero-bot/wiki/Viewing-the-schedule'
+
+        var embed = new MessageEmbed({
+            title: 'Schedule',
+            description: 'Welcome! I can tell you what events are coming up in Granblue Fantasy!',
+            color: 0xdc322f,
+            fields: [
+                {
+                    name: 'Command syntax',
+                    value: '```schedule <option>```'
+                },
+                {
+                    name: 'Schedule options',
+                    value: options
+                },
+                {
+                    name: 'Full documentation',
+                    value: link
+                }
+            ]
+        })
+    
         this.message.channel.send(embed)
     }
 
