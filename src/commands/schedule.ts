@@ -177,11 +177,11 @@ class ScheduleCommand extends Command {
             let event: Event = events[i]
             
             const isCurrentEvent: boolean = (dayjs(event.starts).isBefore(dayjs()) && dayjs(event.ends).isAfter(dayjs()))
-            const startsString: string = `Starts ${dayjs().to(event.starts)}\n${dayjs(event.starts).format('LLLL')} JST`
-            const endsString: string = `Ends ${dayjs().to(event.ends)}\n${dayjs(event.ends).format('LLLL')} JST`
+            const startsString: string = `<Starts in ${dayjs().to(event.starts, true)}>\n${dayjs(event.starts).format('LLLL')} JST`
+            const endsString: string = `<Ends in ${dayjs().to(event.ends, true)}>\n${dayjs(event.ends).format('LLLL')} JST`
             const dateString: string = (isCurrentEvent) ? endsString : startsString
 
-            let duration: string = `\`\`\`\nhtml${dateString}\n\`\`\``
+            let duration: string = `\`\`\`html\n${dateString}\n\`\`\``
             embed.addField(event.name.en, duration)
         }
 
