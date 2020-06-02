@@ -1,23 +1,19 @@
-require('dotenv').config()
-
-import { Message } from "discord.js"
-
-const { Command } = require('discord-akairo')
+import { Message } from 'discord.js'
+import { Command } from 'discord-akairo'
 
 const pluralize = require('pluralize')
 
 class AdminCommand extends Command {
     constructor() {
         super('admin', {
-            aliases: ['admin']
+            aliases: ['admin'],
+            ownerOnly: true
         })
     }
 
     exec(message: Message) {
-        if (message.author.id == process.env.OWNER_ID) {
-            const stats = `Currently running for ${this.client.users.cache.size} ${pluralize('user', this.client.users.cache.size)} in ${this.client.guilds.cache.size} ${pluralize('server', this.client.guilds.cache.size)}.`
-            message.channel.send(stats)
-        }
+        const stats = `Currently running for ${this.client.users.cache.size} ${pluralize('user', this.client.users.cache.size)} in ${this.client.guilds.cache.size} ${pluralize('server', this.client.guilds.cache.size)}.`
+        message.channel.send(stats)
     }
 }
 
