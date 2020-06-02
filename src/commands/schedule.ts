@@ -181,7 +181,7 @@ class ScheduleCommand extends Command {
             const endsString: string = `Ends ${dayjs().to(event.ends)}\n${dayjs(event.ends).format('LLLL')} JST`
             const dateString: string = (isCurrentEvent) ? endsString : startsString
 
-            let duration: string = `\`\`\`html${dateString}\`\`\``
+            let duration: string = `\`\`\`\nhtml${dateString}\n\`\`\``
             embed.addField(event.name.en, duration)
         }
 
