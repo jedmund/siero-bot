@@ -18,15 +18,15 @@ class ChooseCommand extends Command {
         console.log(`[${message.author.id}] ${message.content}`)
 
         let options: string[] = this.parseRequest(message.content)
-        const reply = options[Math.floor(Math.random() * options.length)]
+        const reply: string = options[Math.floor(Math.random() * options.length)]
 
         message.reply(`Hmm... I choose ${reply}!`)
     }
 
     private parseRequest(request: string): string[] {
-        const splitRequest = request.split(' ').splice(1).join('').split(',')
-
         let options: string[] = []
+        const splitRequest: string[] = request.split(' ').splice(1).join('').split(',')
+
         for (let i in splitRequest) {
             options.push(splitRequest[i].trim())
         }
