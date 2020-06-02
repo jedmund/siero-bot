@@ -26,6 +26,7 @@
                 "en": "Xeno Ifrit Showdown",
                 "jp": "ゼノイフリート撃滅戦"
             },
+            "banner": "https://gbf.wiki/images/7/7c/Xeno_Ifrit_Clash_top.png",
             "type": "farming",
             "advantage": "water",
             "starts": "2020-06-13T17:00:00+09:00",
@@ -36,6 +37,7 @@
                 "en": "Unite and Fight",
                 "jp": "決戦！星の古戦場 - 火有利"
             },
+            "banner": "https://gbf.wiki/images/0/09/UniteAndFight.png",
             "type": "guild-wars",
             "advantage": "fire",
             "starts": "2020-06-20T19:00:00+09:00",
@@ -46,6 +48,7 @@
                 "en": "Premium Friday",
                 "jp": "プレミウムフライデークエスト"
             },
+            "banner": "https://gbf.wiki/images/8/81/Premium_Friday_top.png",
             "type": "friday",
             "starts": "2020-06-26T15:00:00+09:00",
             "ends": "2020-06-28T23:59:00+09:00"
