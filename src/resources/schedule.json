@@ -38,7 +38,7 @@
             },
             "type": "guild-wars",
             "advantage": "fire",
-            "starts": "2020-06-20T7:00:00+09:00",
+            "starts": "2020-06-20T19:00:00+09:00",
             "ends": "2020-06-27T23:59:00+09:00"
         },
         {
@@ -47,7 +47,6 @@
                 "jp": "プレミウムフライデークエスト"
             },
             "type": "friday",
-            "advantage": "null",
             "starts": "2020-06-26T15:00:00+09:00",
             "ends": "2020-06-28T23:59:00+09:00"
         },
@@ -57,7 +56,6 @@
                 "jp": "シナリオイベント"
             },
             "type": "scenario",
-            "advantage": "unknown",
             "starts": "2020-06-28T17:00:00+09:00",
             "ends": "2020-07-06T18:59:00+09:00"
         }
@@ -80,29 +78,29 @@
     ],
     "scheduled": [
         {
-            "june": {
-                "period": "middle",
-                "events": {
-                    "en": [
-                        "New Class IV Job: Monk",
-                        "Treasure Trade Shop redesign"
-                    ],
-                    "jp": [
-                        "新クラスⅣジョブ「モンク」実装",
-                        "「ショップ」の「トレジャー交換」ページ改修"
-                    ]
-                }
-            },
-            "july": {
-                "period": "end",
-                "events": {
-                    "en": [
-                        "Main Story Quest update - 8 chapters"
-                    ],
-                    "jp": [
-                        "メインクエスト追加 - 8章"
-                    ]
-                }
+            "month": "june",
+            "period": "middle",
+            "events": {
+                "en": [
+                    "New Class IV Job: Monk",
+                    "Treasure Trade Shop redesign"
+                ],
+                "jp": [
+                    "新クラスⅣジョブ「モンク」実装",
+                    "「ショップ」の「トレジャー交換」ページ改修"
+                ]
+            }
+        },
+        {
+            "month": "july",
+            "period": "end",
+            "events": {
+                "en": [
+                    "Main Story Quest update - 8 chapters"
+                ],
+                "jp": [
+                    "メインクエスト追加 - 8章"
+                ]
             }
         }
     ]
