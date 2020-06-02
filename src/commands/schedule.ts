@@ -43,7 +43,7 @@ interface LocalizedString {
 }
 
 class ScheduleCommand extends Command {
-    message: Message
+    message: Message | null = null
     schedule: Schedule = {
         events: [],
         scheduled: []
@@ -102,7 +102,7 @@ class ScheduleCommand extends Command {
     // Command methods
     private async show() {
         const embed: MessageEmbed = this.renderSchedule()
-        this.message.channel.send(embed)
+        this.message!.channel.send(embed)
     }
 
     private next(): void {
@@ -110,7 +110,7 @@ class ScheduleCommand extends Command {
         const event: Event = this.schedule.events[index]
         const embed: MessageEmbed = this.renderEvent(event, false)
 
-        this.message.channel.send(embed)
+        this.message!.channel.send(embed)
     }
 
     private current(): void {
@@ -118,7 +118,7 @@ class ScheduleCommand extends Command {
         const event: Event = this.schedule.events[index]
         const embed: MessageEmbed = this.renderEvent(event)
 
-        this.message.channel.send(embed)
+        this.message!.channel.send(embed)
     }
 
     private help(): void {
@@ -154,7 +154,7 @@ class ScheduleCommand extends Command {
             ]
         })
     
-        this.message.channel.send(embed)
+        this.message!.channel.send(embed)
     }
 
     // File methods
