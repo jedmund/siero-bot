@@ -20,7 +20,11 @@ class ChooseCommand extends Command {
         let options: string[] = this.parseRequest(message.content)
         const reply: string = options[Math.floor(Math.random() * options.length)]
 
-        message.reply(`Hmm... I choose ${reply}!`)
+        if (options.length > 1) {
+            message.reply(`Hmm... I choose ${reply}!`)
+        } else {
+            message.reply('Um... you only gave me one thing to choose from!')
+        }
     }
 
     private parseRequest(request: string): string[] {
