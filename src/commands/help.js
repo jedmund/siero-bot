@@ -24,6 +24,8 @@ Roll the virtual gacha\n
 Save useful information in your profile or see someone else's\n
 <$spark $s> 
 Log your progress while saving a spark\n
+<$schedule $sc> 
+Show the upcoming schedule in Granblue Fantasy\n
 <$sticker $ss>
 Use a Granblue sticker in Discord\`\`\``)
         embed.addField("Even more help", `You can get help on any of the above commands by typing \`help\` after the command, like so: 
