@@ -1,4 +1,4 @@
-import { Client, pgpErrors } from '../../services/connection.js'
+import { Client } from '../../services/connection.js'
 import { Message, MessageEmbed, User } from 'discord.js'
 import { Item, PromptResult } from '../../services/constants.js'
 import { Decision as decision } from '../../helpers/decision.js'
