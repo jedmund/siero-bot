@@ -57,6 +57,6 @@ export interface Result {
 }
 
 export interface PromptResult {
-    message: Message,
+    message: Message | null,
     selection: Item
 }

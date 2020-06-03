@@ -162,4 +162,5 @@ export class Decision {
                     selection: results[selection]
                 }
             })
+    }
 }
