@@ -4,7 +4,7 @@ import { Message, MessageEmbed, User } from 'discord.js'
 import { Item } from '../../services/constants.js'
 
 import common from '../../helpers/common.js'
-import decision from '../../helpers/decision.js'
+import { Decision as decision } from '../../helpers/decision.js'
 
 type NumberResult = { [key: string]: number }
 

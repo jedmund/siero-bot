@@ -3,7 +3,7 @@ import { Message, MessageEmbed, User } from 'discord.js'
 import { Item } from '../../services/constants.js'
 
 import common from '../../helpers/common.js'
-import decision from '../../helpers/decision.js'
+import { Decision as decision } from '../../helpers/decision.js'
 
 type NumberResult = { [key: string]: number }
 
@@ -213,7 +213,14 @@ class Target {
                     name: `${this.targetName} (unreleased)`,
                     recruits: null,
                     rarity: 3,
-                    item_type: null
+                    item_type: null,
+                    premium: true,
+                    flash: true,
+                    legend: true,
+                    halloween: true,
+                    holiday: true,
+                    summer: true,
+                    valentines: true
                 }
 
                 this.message.channel.send(this.render(fauxData))
@@ -271,7 +278,7 @@ class Target {
         return await Client.any(sql, this.targetName)
             .then((data: Item[]) => {
                 results = data
-                return decision.buildDuplicateEmbed(data, this.targetName)
+                return decision.buildDuplicateEmbed(data, this.targetName!)
             })
             .then((embed: MessageEmbed) => {
                 return this.message.channel.send(embed)

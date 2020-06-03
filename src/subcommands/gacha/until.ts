@@ -9,7 +9,7 @@ const fetch = require('make-fetch-happen').defaults({
 })
   
 import common from '../../helpers/common.js'
-import decision from '../../helpers/decision.js'
+import { Decision as decision } from '../../helpers/decision.js'
 
 type NumberResult = { [key: string]: number }
 

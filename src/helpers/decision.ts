@@ -4,8 +4,8 @@ import { Item } from '../services/constants.js'
 const common = require('./common.js')
 const pluralize = require('pluralize')
 
-module.exports = {
-    addOptions: function(message: Message, count: number): void {
+export class Decision {
+    public static addOptions(message: Message, count: number): void {
         for (let i = 0; i < count; i++) {
             switch (i + 1) {
                 case 1:
@@ -40,9 +40,9 @@ module.exports = {
                     break
             }
         }
-    },
+    }
 
-    generateOptions: function(data: Item[], target: string): string {
+    public static generateOptions(data: Item[], target: string): string {
         let options: string = ""
 
         for (let [i, item] of data.entries()) {
@@ -72,9 +72,9 @@ module.exports = {
         }
 
         return options
-    },
+    }
 
-    receiveSelection: async function(message: Message, userId: string): Promise<number> {
+    public static async receiveSelection(message: Message, userId: string): Promise<number> {
         let possibleOptions: string[] = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '❓']
 
         const filter = (reaction: MessageReaction, user: User) => {
@@ -115,10 +115,10 @@ module.exports = {
             })
 
         return value
-    },
+    }
     
-    buildDuplicateEmbed: function(data: Item[], target: string): MessageEmbed {
-        const options: string = this.generateOptions(data, target)
+    public static buildDuplicateEmbed(data: Item[], target: string): MessageEmbed {
+        const options: string = Decision.generateOptions(data, target)
         const count: number = data.length
 
         return new MessageEmbed({
