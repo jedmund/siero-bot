@@ -1,17 +1,11 @@
 import { Client, pgpErrors } from '../../services/connection.js'
 import { Message, MessageEmbed, User } from 'discord.js'
+import { Item } from '../../services/constants.js'
+
 import common from '../../helpers/common.js'
 import decision from '../../helpers/decision.js'
 
 type NumberResult = { [key: string]: number }
-
-interface Result {
-    id: string
-    name: string
-    recruits: string | null
-    rarity: number
-    item_type: number | null
-}
 
 enum Method {
     id,
@@ -81,7 +75,7 @@ class Target {
         let isOwnTarget = (id === this.userId) ? true : false
 
         return await Target.fetch(id, this.message)
-            .then((data: Result) => {
+            .then((data: Item) => {
                 this.message.channel.send(this.render(data))
             })
             .catch((error: Error) => {
@@ -136,7 +130,7 @@ class Target {
     }
 
     // Render methods
-    private render(target: Result) {
+    private render(target: Item) {
         let isOwnTarget = this.firstMention == null
         let rarity = common.mapRarity(target.rarity)
 
@@ -180,7 +174,7 @@ class Target {
         let sql = this.buildSaveQuery(Method.name)
         
         Client.one(sql, [this.targetName, this.userId])
-            .then((data: Result) => {
+            .then((data: Item) => {
                 this.message.channel.send(this.render(data))
             })
             .catch((error: Error) => {
@@ -193,7 +187,7 @@ class Target {
         let sql = this.buildSaveQuery(Method.id)
 
         Client.one(sql, [targetId, this.userId])
-            .then((data: Result) => {
+            .then((data: Item) => {
                 this.deciderMessage?.edit(this.render(data))
 
                 if (this.message.channel.type !== 'dm') {
@@ -273,9 +267,9 @@ class Target {
             'WHERE name = $1 OR recruits = $1'
         ].join(' ')
 
-        var results: Result[]
+        var results: Item[]
         return await Client.any(sql, this.targetName)
-            .then((data: Result[]) => {
+            .then((data: Item[]) => {
                 results = data
                 return decision.buildDuplicateEmbed(data, this.targetName)
             })

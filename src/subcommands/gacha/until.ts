@@ -2,6 +2,7 @@
 import { Client } from '../../services/connection.js'
 import { Message, MessageEmbed } from 'discord.js'
 import { Gacha } from '../../services/gacha.js'
+import { Item } from '../../services/constants.js'
 
 const fetch = require('make-fetch-happen').defaults({
     cacheManager: './cache' // path where cache will be written (and read)
@@ -17,24 +18,8 @@ interface Properties {
     season: string | undefined
 }
 
-interface Result {
-    [index: string]: string | number | boolean | null
-    id: string
-    name: string
-    recruits: string | null
-    rarity: number
-    item_type: number | null
-    premium: boolean
-    flash: boolean
-    legend: boolean
-    halloween: boolean
-    holiday: boolean
-    summer: boolean
-    valentines: boolean
-}
-
 interface Rolls {
-    item: Result,
+    item: Item,
     count: number
 }
 
@@ -45,14 +30,14 @@ class Until {
         season: undefined
     }
 
-    rateups: Result[] = []
+    rateups: Item[] = []
     currency: string = 'USD'
 
     userId: string
     message: Message
     deciderMessage: Message | null = null
 
-    public constructor(message: Message, rateups: Result[]) {
+    public constructor(message: Message, rateups: Item[]) {
         this.userId = message.author.id
         this.message = message
         this.rateups = rateups
@@ -68,7 +53,7 @@ class Until {
             .then((data: NumberResult) => {
                 return this.parsePossibleItems(data.count)
             })
-            .then((chosenItem: Result | void) => {
+            .then((chosenItem: Item | void) => {
                 if (!chosenItem) {
                     common.missingItem(this.message, this.userId, 'until', this.target)
                     return Promise.reject('missingItem')
@@ -81,7 +66,7 @@ class Until {
 
                 return chosenItem!
             })
-            .then((item: Result) => {
+            .then((item: Item) => {
                 const rolls = this.roll(gacha, item)
 
                 return {
@@ -136,7 +121,7 @@ class Until {
     }
 
     // Action methods
-    private roll(gacha: Gacha, target: Result) {
+    private roll(gacha: Gacha, target: Item) {
         let count = 0
         let found = false
 
@@ -216,7 +201,7 @@ class Until {
     }
 
     private async parsePossibleItems(possibilities: number) {
-        let result: Result | void
+        let result: Item | void
 
         if (possibilities > 1) {
             result = await this.resolveDuplicate(this.target)
@@ -227,16 +212,16 @@ class Until {
         return result
     }
 
-    private async resolveDuplicate(targetName: string): Promise<Result | void> {
+    private async resolveDuplicate(targetName: string): Promise<Item | void> {
         const sql = [
             'SELECT id, name, recruits, rarity, item_type',
             'FROM gacha',
             'WHERE name = $1 OR recruits = $1'
         ].join(' ')
 
-        let results: Result[] = []
+        let results: Item[] = []
         return await Client.any(sql, targetName)
-            .then((data: Result[]) => {
+            .then((data: Item[]) => {
                 results = data
                 return decision.buildDuplicateEmbed(data, targetName)
             })
@@ -262,7 +247,7 @@ class Until {
             })
     }
 
-    private testProperties(gacha: Gacha, item: Result) {
+    private testProperties(gacha: Gacha, item: Item) {
         if (this.properties.gala == null && this.properties.season == null && (gacha.isLimited(item) || gacha.isSeasonal(item))) {
             return false
         }
@@ -283,7 +268,7 @@ class Until {
     }
 
     // Error methods
-    private notAvailableError(gacha: Gacha, target: Result) {
+    private notAvailableError(gacha: Gacha, target: Item) {
         const text = `It looks like **${target.name}** doesn't appear in the gala or season you selected.`
         const error = `[Incorrect gala or season] ${this.userId}: ${this.message.content}`
 
