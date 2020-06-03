@@ -4,6 +4,10 @@ const { pgpErrors } = require('../services/connection.js')
 const common = require('./common.js')
 
 module.exports = {
+    capitalize: function(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1)
+    },
+
     mapRarity: function(rarity) {
         var rarityString = ""
 
