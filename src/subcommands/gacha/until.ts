@@ -43,7 +43,9 @@ class Until {
         this.rateups = rateups
 
         this.properties = this.parseProperties(message.content)
-        this.target = common.parse(message.content, 2, this.properties)
+
+        const target = message.content.split(' ').splice(2).join(' ')
+        this.target = common.parse(target, this.properties)
     }
 
     public async execute() {

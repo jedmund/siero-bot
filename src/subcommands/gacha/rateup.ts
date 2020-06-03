@@ -67,7 +67,7 @@ class Rateup {
             const parts = item.split(' ')
 
             const rate = parseFloat(parts.pop()!)
-            const name = parts.join(' ').replace(quoteRe, '')
+            const name = common.capitalize(parts.join(' ').replace(quoteRe, ''), true)
 
             this.rates.push(
                 {
