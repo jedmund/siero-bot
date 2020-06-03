@@ -144,7 +144,7 @@ class Rateup {
 
     private async set(admin: boolean = false) {
         // First, clear the existing rate up
-        this.reset(false)
+        this.reset(false, admin)
 
         await this.validate()
             .then((items: RateSet) => {
@@ -191,10 +191,11 @@ class Rateup {
             })
     }
 
-    private async reset(showMessage: boolean = true) {
+    private async reset(showMessage: boolean = true, admin: boolean = false) {
+        const id = (admin) ? this.siero!.id : this.userId
         const sql = 'DELETE FROM rateups WHERE user_id = $1'
 
-        return await Client.any(sql, this.userId)
+        return await Client.any(sql, id)
             .then(() => {
                 if (showMessage) {
                     this.message.reply('Your rate-up has been cleared.')
