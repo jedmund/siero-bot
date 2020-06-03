@@ -20,35 +20,30 @@ module.exports = {
     },
 
     parse: function(request, properties = null) {
-        let rq = request
+        let target = this.capitalize(request, true)
 
-        if (properties) {
-            const splitRequest = request.split(' ')
-            const reducedRequest = [splitRequest, [properties.gala, properties.season]].reduce((a, c) => a.filter(i => !c.includes(i)))
-            rq = reducedRequest.join(' ')
-        }
-
-        console.log(`Debugging rq: ${rq}`)
-
-        let target = this.capitalize(rq, true)
-
-        // match unwrapped 'grand'
+        // match unwrapped any case 'grand'
         // ex: $g until io grand lf
-        const re1 = /(?!\()grand(?!\))/ig
+        const re1 = /((?<!\()(summer|grand|halloween|holiday|themed|valentines)(?!>\)))/i
         if (target.match(re1)) {
             const match = target.match(re1)
-            target = target.replace(match, '(Grand)')
+            target = target.replace(match[0], `(${match[0]})`)
         }
 
         // match lowercase wrapped 'grand'
         // ex: $g until io (grand) lf
-        const re2 = /\(grand\)/g
+        const re2 = /(?<=\()(grand|summer|halloween|holiday|themed|valentines)/g
         if (target.match(re2)) {
             const match = target.match(re2)
-            target = target.replace(match, '(Grand)')
+            target = target.replace(match, `${this.capitalize(match[0])}`)
         }
 
-        console.log(`[Debugging] ${target}`)
+        if (properties) {
+            const splitTarget = target.split(' ')
+            const reducedRequest = [splitTarget, [properties.gala, properties.season]].reduce((a, c) => a.filter(i => !c.includes(i.toLowerCase())))
+            target = reducedRequest.join(' ')
+        }
+
         return target
     },
 
