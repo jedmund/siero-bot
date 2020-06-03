@@ -1,8 +1,8 @@
 
 import { Client } from '../../services/connection.js'
-import { Message, MessageEmbed } from 'discord.js'
+import { Message } from 'discord.js'
 import { Gacha } from '../../services/gacha.js'
-import { Item } from '../../services/constants.js'
+import { Item, PromptResult } from '../../services/constants.js'
 
 const fetch = require('make-fetch-happen').defaults({
     cacheManager: './cache' // path where cache will be written (and read)
@@ -213,33 +213,10 @@ class Until {
     }
 
     private async resolveDuplicate(targetName: string): Promise<Item | void> {
-        const sql = [
-            'SELECT id, name, recruits, rarity, item_type',
-            'FROM gacha',
-            'WHERE name = $1 OR recruits = $1'
-        ].join(' ')
-
-        let results: Item[] = []
-        return await Client.any(sql, targetName)
-            .then((data: Item[]) => {
-                results = data
-                return decision.buildDuplicateEmbed(data, targetName)
-            })
-            .then((embed: MessageEmbed) => {
-                if (this.deciderMessage) {
-                    return this.deciderMessage.edit(embed)
-                } else {
-                    return this.message.channel.send(embed)
-                }
-            })
-            .then((newMessage: Message) => {
-                this.deciderMessage = newMessage
-                decision.addOptions(this.deciderMessage, results.length)
-
-                return decision.receiveSelection(this.deciderMessage, this.userId)
-            })
-            .then((selection: number) => {
-                return results[selection]
+        return await decision.resolveDuplicate(targetName, this.message, this.deciderMessage, this.userId)
+            .then((result: PromptResult) => {
+                this.deciderMessage = result.message
+                return result.selection
             })
             .catch((error: Error) => {
                 const text = 'Sorry, there was an error communicating with the database for your last request.'

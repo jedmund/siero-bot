@@ -1,6 +1,6 @@
 import { Client, pgpErrors } from '../../services/connection.js'
 import { Message, MessageEmbed, User } from 'discord.js'
-import { Item } from '../../services/constants.js'
+import { Item, PromptResult } from '../../services/constants.js'
 
 import common from '../../helpers/common.js'
 import { Decision as decision } from '../../helpers/decision.js'
@@ -268,29 +268,10 @@ class Target {
     }
     
     private async resolveDuplicate() {
-        let sql = [
-            'SELECT id, name, recruits, rarity, item_type',
-            'FROM gacha',
-            'WHERE name = $1 OR recruits = $1'
-        ].join(' ')
-
-        var results: Item[]
-        return await Client.any(sql, this.targetName)
-            .then((data: Item[]) => {
-                results = data
-                return decision.buildDuplicateEmbed(data, this.targetName!)
-            })
-            .then((embed: MessageEmbed) => {
-                return this.message.channel.send(embed)
-            })
-            .then((newMessage: Message) => {
-                this.deciderMessage = newMessage
-                decision.addOptions(this.deciderMessage, results.length)
-
-                return decision.receiveSelection(this.deciderMessage, this.userId)
-            })
-            .then((selection: number) => {
-                this.saveTargetById(results[selection].id)
+        return await decision.resolveDuplicate(this.targetName!, this.message, this.deciderMessage, this.userId)
+        .then((result: PromptResult) => {
+            this.deciderMessage = result.message
+                this.saveTargetById(result.selection.id)
             })
             .catch((error: Error) => {
                 let text = `Sorry, there was an error with your last request.`
