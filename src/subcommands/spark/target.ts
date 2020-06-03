@@ -1,17 +1,12 @@
 import { Client, pgpErrors } from '../../services/connection.js'
 import { Message, MessageEmbed, User } from 'discord.js'
+import { Item, PromptResult } from '../../services/constants.js'
+import { Decision as decision } from '../../helpers/decision.js'
+
 import common from '../../helpers/common.js'
-import decision from '../../helpers/decision.js'
+const dayjs = require('dayjs')
 
 type NumberResult = { [key: string]: number }
-
-interface Result {
-    id: string
-    name: string
-    recruits: string | null
-    rarity: number
-    item_type: number | null
-}
 
 enum Method {
     id,
@@ -80,8 +75,8 @@ class Target {
         let id = (this.firstMention) ? this.firstMention.id : this.userId
         let isOwnTarget = (id === this.userId) ? true : false
 
-        return await Target.fetch(id, this.message)
-            .then((data: Result) => {
+        return await Target.fetch(id)
+            .then((data: Item) => {
                 this.message.channel.send(this.render(data))
             })
             .catch((error: Error) => {
@@ -110,7 +105,8 @@ class Target {
                     ].join('\n')
                 } : null
 
-                common.reportError(this.message, this.userId, 'target', error, text, documentation, section)
+                const errorMessage: string = `(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${this.userId}] Spark not set: ${this.message.content}`
+                common.reportError(this.message, this.userId, 'target', errorMessage, text, documentation, section)
             })
     }
 
@@ -136,7 +132,7 @@ class Target {
     }
 
     // Render methods
-    private render(target: Result) {
+    private render(target: Item) {
         let isOwnTarget = this.firstMention == null
         let rarity = common.mapRarity(target.rarity)
 
@@ -160,7 +156,7 @@ class Target {
     }
 
     // Database methods
-    public static async fetch(id: string, message: Message) {
+    public static async fetch(id: string) {
         const sql = [
             'SELECT sparks.target_id AS id, gacha.name, gacha.recruits, gacha.rarity, gacha.item_type FROM sparks',
             'LEFT JOIN gacha ON sparks.target_id = gacha.id',
@@ -168,19 +164,13 @@ class Target {
         ].join(' ')
 
         return await Client.one(sql, id)
-            .catch((error: Error) => {
-                if (error instanceof pgpErrors.QueryResultError && error.code != pgpErrors.queryResultErrorCode.noData) {
-                    let text = 'Sorry, there was an error communicating with the database for your last request.'
-                    common.reportError(message, id, 'rateup', error, text)
-                }
-            })
     }
 
     private async saveTarget() {
         let sql = this.buildSaveQuery(Method.name)
         
         Client.one(sql, [this.targetName, this.userId])
-            .then((data: Result) => {
+            .then((data: Item) => {
                 this.message.channel.send(this.render(data))
             })
             .catch((error: Error) => {
@@ -193,7 +183,7 @@ class Target {
         let sql = this.buildSaveQuery(Method.id)
 
         Client.one(sql, [targetId, this.userId])
-            .then((data: Result) => {
+            .then((data: Item) => {
                 this.deciderMessage?.edit(this.render(data))
 
                 if (this.message.channel.type !== 'dm') {
@@ -219,7 +209,14 @@ class Target {
                     name: `${this.targetName} (unreleased)`,
                     recruits: null,
                     rarity: 3,
-                    item_type: null
+                    item_type: null,
+                    premium: true,
+                    flash: true,
+                    legend: true,
+                    halloween: true,
+                    holiday: true,
+                    summer: true,
+                    valentines: true
                 }
 
                 this.message.channel.send(this.render(fauxData))
@@ -267,29 +264,10 @@ class Target {
     }
     
     private async resolveDuplicate() {
-        let sql = [
-            'SELECT id, name, recruits, rarity, item_type',
-            'FROM gacha',
-            'WHERE name = $1 OR recruits = $1'
-        ].join(' ')
-
-        var results: Result[]
-        return await Client.any(sql, this.targetName)
-            .then((data: Result[]) => {
-                results = data
-                return decision.buildDuplicateEmbed(data, this.targetName)
-            })
-            .then((embed: MessageEmbed) => {
-                return this.message.channel.send(embed)
-            })
-            .then((newMessage: Message) => {
-                this.deciderMessage = newMessage
-                decision.addOptions(this.deciderMessage, results.length)
-
-                return decision.receiveSelection(this.deciderMessage, this.userId)
-            })
-            .then((selection: number) => {
-                this.saveTargetById(results[selection].id)
+        return await decision.resolveDuplicate(this.targetName!, this.message, this.deciderMessage, this.userId)
+            .then((result: PromptResult) => {
+                this.deciderMessage = result.message
+                this.saveTargetById(result.selection.id)
             })
             .catch((error: Error) => {
                 let text = `Sorry, there was an error with your last request.`
