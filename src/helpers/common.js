@@ -28,6 +28,8 @@ module.exports = {
             rq = reducedRequest.join(' ')
         }
 
+        console.log(`Debugging rq: ${rq}`)
+
         let target = this.capitalize(rq, true)
 
         // match unwrapped 'grand'
