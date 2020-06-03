@@ -28,8 +28,6 @@ module.exports = {
             rq = reducedRequest.join(' ')
         }
 
-        console.log(`Debugging rq: ${rq}`)
-
         let target = this.capitalize(rq, true)
 
         // match unwrapped 'grand'
@@ -47,8 +45,7 @@ module.exports = {
             const match = target.match(re2)
             target = target.replace(match, '(Grand)')
         }
-
-        console.log(`[Debugging] ${target}`)
+        
         return target
     },
 
