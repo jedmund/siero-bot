@@ -26,6 +26,7 @@ class Target {
     public constructor(message: Message) {
         this.userId = message.author.id
         this.message = message
+
         this.parseRequest(message.content)
     }
 
@@ -47,7 +48,7 @@ class Target {
             splitRequest.splice(splitRequest.indexOf('unreleased', 1)).join(' ')
         }
 
-        this.targetName = splitRequest.join(' ')
+        this.targetName = common.parse(splitRequest.join(' '))
     }
 
     private switchOperation() {
