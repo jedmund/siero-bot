@@ -45,14 +45,12 @@ class Until {
         this.properties = this.parseProperties(message.content)
 
         const target = message.content.split(' ').splice(2).join(' ')
-        console.log(`Logging target in constructor: ${target}`)
         this.target = common.parse(target, this.properties)
     }
 
     public async execute() {
         const gacha = new Gacha(this.properties.gala!, this.properties.season!, this.rateups)
 
-        console.log(`Logging target ${this.target}`)
         await this.countPossibleItems(this.target)
             .then((data: NumberResult) => {
                 return this.parsePossibleItems(data.count)
@@ -157,8 +155,6 @@ class Until {
             'SELECT * FROM gacha',
             'WHERE name = $1 OR recruits = $1 LIMIT 1'
         ].join(' ')
-
-        console.log(`[Debugging] Until: ${sql}`)
 
         return await Client.one(sql, name)
             .catch((error: Error) => {

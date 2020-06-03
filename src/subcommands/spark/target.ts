@@ -76,38 +76,31 @@ class Target {
         let id = (this.firstMention) ? this.firstMention.id : this.userId
         let isOwnTarget = (id === this.userId) ? true : false
 
+        const documentation: boolean = (isOwnTarget) ? true : false
+        const errorSection = (isOwnTarget) ? {
+            title: 'Setting a spark target',
+            content: [
+                '```html\n',
+                '<target set @item>',
+                'Set the provided @item as your spark target',
+                '```'
+            ].join('\n')
+        } : null
+
         return await Target.fetch(id)
-            .then((data: Item) => {
-                this.message.channel.send(this.render(data))
-            })
-            .catch((error: Error) => {
-                var text
-                var documentation = false
-                
-                if (error instanceof pgpErrors.QueryResultError) {
-                    text = `It looks like ${(isOwnTarget) ? 'you haven\'t' : this.firstMention!.username + ' hasn\'t'} set a spark target yet!`
-                    
-                    if (isOwnTarget) {
-                        documentation = true
-                    } else {
-                        documentation = false
-                    }
+            .then((data: Item | null) => {
+                if (data) {
+                    this.message.channel.send(this.render(data))
                 } else {
-                    text = 'Sorry, there was an error communicating with the database for your last request.'
+                    const text = `It looks like ${(isOwnTarget) ? 'you haven\'t' : this.firstMention!.username + ' hasn\'t'} set a spark target yet!`
+                    const errorMessage: string = `(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${this.userId}] Spark not set: ${this.message.content}`
+                    common.reportError(this.message, this.userId, 'target', errorMessage, text, documentation, errorSection)
                 }
-
-                let section = (isOwnTarget) ? {
-                    title: 'Setting a spark target',
-                    content: [
-                        '```html\n',
-                        '<target set @item>',
-                        'Set the provided @item as your spark target',
-                        '```'
-                    ].join('\n')
-                } : null
-
+            })
+            .catch((_: Error) => {
+                const text = 'Sorry, there was an error communicating with the database for your last request.'
                 const errorMessage: string = `(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${this.userId}] Spark not set: ${this.message.content}`
-                common.reportError(this.message, this.userId, 'target', errorMessage, text, documentation, section)
+                common.reportError(this.message, this.userId, 'target', errorMessage, text, documentation, errorSection)
             })
     }
 
@@ -164,7 +157,7 @@ class Target {
             'WHERE user_id = $1 AND sparks.target_id IS NOT NULL'
         ].join(' ')
 
-        return await Client.one(sql, id)
+        return await Client.oneOrNone(sql, id)
     }
 
     private async saveTarget() {
