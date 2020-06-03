@@ -4,8 +4,51 @@ const { pgpErrors } = require('../services/connection.js')
 const common = require('./common.js')
 
 module.exports = {
-    capitalize: function(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1)
+    capitalize: function(string, allWords = false) {
+        const blacklist = ['of', 'the', 'for', 'and']
+        if (allWords) {
+            const split = string.split(' ').map((item) => {
+                if (!blacklist.includes(item)) { 
+                    return item.charAt(0).toUpperCase() + item.slice(1) 
+                } else {
+                    return item
+                }
+            })
+
+            return split.join(' ')
+        } else {
+            return string.charAt(0).toUpperCase() + string.slice(1)
+        }
+    },
+
+    parse: function(request, parts = 2, properties = null) {
+        let splitRequest = request.split(' ')
+
+        if (properties) {
+            splitRequest = [splitRequest, [properties.gala, properties.season]].reduce((a, c) => a.filter(i => !c.includes(i)))
+        }
+
+        const rejoinedRequest = splitRequest.splice(parts).join(' ')
+
+        let target = this.capitalize(rejoinedRequest, true)
+
+        // match unwrapped 'grand'
+        // ex: $g until io grand lf
+        const re1 = /(?!\()grand(?!\))/ig
+        if (target.match(re1)) {
+            const match = target.match(re1)
+            target = target.replace(match, '(Grand)')
+        }
+
+        // match lowercase wrapped 'grand'
+        // ex: $g until io (grand) lf
+        const re2 = /\(grand\)/g
+        if (target.match(re2)) {
+            const match = target.match(re2)
+            target = target.replace(match, '(Grand)')
+        }
+
+        return target
     },
 
     mapRarity: function(rarity) {
