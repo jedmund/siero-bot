@@ -46,6 +46,7 @@ module.exports = {
             target = target.replace(match, '(Grand)')
         }
 
+        console.log(`[Debugging] ${target}`)
         return target
     },
 

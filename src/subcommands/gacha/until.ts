@@ -156,6 +156,8 @@ class Until {
             'WHERE name = $1 OR recruits = $1 LIMIT 1'
         ].join(' ')
 
+        console.log(`[Debugging] Until: ${sql}`)
+
         return await Client.one(sql, name)
             .catch((error: Error) => {
                 const text = 'Sorry, there was an error communicating with the database for your last request.'
