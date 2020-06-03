@@ -1,3 +1,5 @@
+import { Message } from 'discord.js'
+
 // Constants
 export const SSRRate = 3.0
 export const RollsInSpark = 300
@@ -52,4 +54,9 @@ export interface Item {
 
 export interface Result {
     rate: number
+}
+
+export interface PromptResult {
+    message: Message,
+    selection: Item
 }

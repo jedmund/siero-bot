@@ -1,5 +1,6 @@
+import { Client } from '../services/connection.js'
 import { Collection, Message, MessageEmbed, MessageReaction, User } from 'discord.js'
-import { Item } from '../services/constants.js'
+import { Item, PromptResult } from '../services/constants.js'
 
 const common = require('./common.js')
 const pluralize = require('pluralize')
@@ -127,4 +128,38 @@ export class Decision {
             color: 0xb58900
         })
     }
+
+    public static async resolveDuplicate(targetName: string, message: Message, promptMessage: Message | null, userId: string): Promise<PromptResult> {
+        const sql = [
+            'SELECT id, name, recruits, rarity, item_type',
+            'FROM gacha',
+            'WHERE name = $1 OR recruits = $1'
+        ].join(' ')
+
+        let results: Item[] = []
+        let newPromptMessage: Message | null
+        return await Client.any(sql, targetName)
+            .then((data: Item[]) => {
+                results = data
+                return Decision.buildDuplicateEmbed(data, targetName)
+            })
+            .then((embed: MessageEmbed) => {
+                if (promptMessage) {
+                    return promptMessage.edit(embed)
+                } else {
+                    return message.channel.send(embed)
+                }
+            })
+            .then((newMessage: Message) => {
+                newPromptMessage = newMessage
+                Decision.addOptions(newMessage, results.length)
+                
+                return Decision.receiveSelection(newMessage, userId)
+            })
+            .then((selection: number) => {
+                return {
+                    message: newPromptMessage,
+                    selection: results[selection]
+                }
+            })
 }
