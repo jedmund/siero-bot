@@ -1,9 +1,10 @@
 import { Client, pgpErrors } from '../../services/connection.js'
 import { Message, MessageEmbed, User } from 'discord.js'
 import { Item, PromptResult } from '../../services/constants.js'
+import { Decision as decision } from '../../helpers/decision.js'
 
 import common from '../../helpers/common.js'
-import { Decision as decision } from '../../helpers/decision.js'
+const dayjs = require('dayjs')
 
 type NumberResult = { [key: string]: number }
 
@@ -74,7 +75,7 @@ class Target {
         let id = (this.firstMention) ? this.firstMention.id : this.userId
         let isOwnTarget = (id === this.userId) ? true : false
 
-        return await Target.fetch(id, this.message)
+        return await Target.fetch(id)
             .then((data: Item) => {
                 this.message.channel.send(this.render(data))
             })
@@ -104,7 +105,8 @@ class Target {
                     ].join('\n')
                 } : null
 
-                common.reportError(this.message, this.userId, 'target', error, text, documentation, section)
+                const errorMessage: string = `(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${this.userId}] Spark not set: ${this.message.content}`
+                common.reportError(this.message, this.userId, 'target', errorMessage, text, documentation, section)
             })
     }
 
@@ -154,7 +156,7 @@ class Target {
     }
 
     // Database methods
-    public static async fetch(id: string, message: Message) {
+    public static async fetch(id: string) {
         const sql = [
             'SELECT sparks.target_id AS id, gacha.name, gacha.recruits, gacha.rarity, gacha.item_type FROM sparks',
             'LEFT JOIN gacha ON sparks.target_id = gacha.id',
@@ -162,12 +164,6 @@ class Target {
         ].join(' ')
 
         return await Client.one(sql, id)
-            .catch((error: Error) => {
-                if (error instanceof pgpErrors.QueryResultError && error.code != pgpErrors.queryResultErrorCode.noData) {
-                    let text = 'Sorry, there was an error communicating with the database for your last request.'
-                    common.reportError(message, id, 'rateup', error, text)
-                }
-            })
     }
 
     private async saveTarget() {
