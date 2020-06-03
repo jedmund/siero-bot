@@ -265,8 +265,8 @@ class Target {
     
     private async resolveDuplicate() {
         return await decision.resolveDuplicate(this.targetName!, this.message, this.deciderMessage, this.userId)
-        .then((result: PromptResult) => {
-            this.deciderMessage = result.message
+            .then((result: PromptResult) => {
+                this.deciderMessage = result.message
                 this.saveTargetById(result.selection.id)
             })
             .catch((error: Error) => {
