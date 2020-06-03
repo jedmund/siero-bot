@@ -45,6 +45,7 @@ class Until {
         this.properties = this.parseProperties(message.content)
 
         const target = message.content.split(' ').splice(2).join(' ')
+        console.log(`Logging target in constructor: ${target}`)
         this.target = common.parse(target, this.properties)
     }
 
