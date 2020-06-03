@@ -43,7 +43,7 @@ class Until {
         this.rateups = rateups
 
         this.properties = this.parseProperties(message.content)
-        this.target = this.parseTarget(message.content)
+        this.target = common.parse(message.content, 2, this.properties)
     }
 
     public async execute() {
@@ -111,31 +111,6 @@ class Until {
             gala: gala,
             season: season
         }
-    }
-
-    private parseTarget(request: string) {
-        const splitRequest = request.split(' ')
-        const reducedRequest = [splitRequest, [this.properties.gala, this.properties.season]].reduce((a, c) => a.filter(i => !c.includes(i)))
-        const rejoinedRequest = reducedRequest.splice(2).join(' ')
-        let target = common.capitalize(rejoinedRequest)
-
-        // match unwrapped 'grand'
-        // ex: $g until io grand lf
-        const re1: RegExp = /(?!\()grand(?!\))/ig
-        if (target.match(re1)) {
-            const match = target.match(re1)
-            target = target.replace(match, '(Grand)')
-        }
-
-        // match lowercase wrapped 'grand'
-        // ex: $g until io (grand) lf
-        const re2: RegExp = /\(grand\)/g
-        if (target.match(re2)) {
-            const match = target.match(re2)
-            target = target.replace(match, '(Grand)')
-        }
-
-        return target
     }
 
     // Action methods
