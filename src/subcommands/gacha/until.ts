@@ -51,6 +51,7 @@ class Until {
     public async execute() {
         const gacha = new Gacha(this.properties.gala!, this.properties.season!, this.rateups)
 
+        console.log(`Logging target ${this.target}`)
         await this.countPossibleItems(this.target)
             .then((data: NumberResult) => {
                 return this.parsePossibleItems(data.count)
