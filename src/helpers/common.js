@@ -39,7 +39,7 @@ module.exports = {
         return `(${text})`
     },
 
-    parse: function(request, properties = null) {
+    parse: function(request) {
         let item = ''
 
         // Establish keywords
@@ -72,6 +72,9 @@ module.exports = {
 
         // Extract keywords from split string using arrays
         // Don't perform an element intersection if the excluded flag is on
+
+        // TODO: How can we prevent race conditions and 
+        // match element and prefixes before the word OR after the word
         let elementCross = (excluded) ? [] : this.intersection(parts, elements)
         let galaCross = this.intersection(parts, galas)
         let seasonCross = this.intersection(parts, seasons)
@@ -88,6 +91,7 @@ module.exports = {
             constructedName = `${cleanedName} ${this.wrap(this.capitalize(elementCross[0]))}`
         }
 
+<<<<<<< HEAD
 =======
 
             return destination.includes(x)
@@ -149,6 +153,13 @@ module.exports = {
 
 >>>>>>> Fixed the item parser
         return constructedName
+=======
+        return {
+            name: constructedName,
+            gala: galaCross[0],
+            season: seasonCross[0]
+        }
+>>>>>>> Parse season & gala from parse command
     },
 
     mapRarity: function(rarity) {

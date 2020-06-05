@@ -60,3 +60,9 @@ export interface PromptResult {
     message: Message | null,
     selection: Item
 }
+
+export interface ParsedRequest {
+    name: string,
+    gala: string | null,
+    season: string | null
+}
