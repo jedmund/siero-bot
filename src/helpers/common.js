@@ -29,7 +29,6 @@ module.exports = {
             if (destination.includes(x)) {
                 source.splice(source.indexOf(x), 1)
             }
-<<<<<<< HEAD
 
             return destination.includes(x)
         })
@@ -91,75 +90,11 @@ module.exports = {
             constructedName = `${cleanedName} ${this.wrap(this.capitalize(elementCross[0]))}`
         }
 
-<<<<<<< HEAD
-=======
-
-            return destination.includes(x)
-        })
-    },
-
-    wrap(text) {
-        return `(${text})`
-    },
-
-    parse: function(request, properties = null) {
-        let item = ''
-
-        // Establish keywords
-        let galas = ['premium', 'flash', 'legend', 'p', 'ff', 'lf']
-        let elements = ['fire', 'water', 'earth', 'wind', 'dark', 'light']
-        let seasons = ['halloween', 'holiday', 'summer', 'valentine']
-        let suffixes = ['halloween', 'holiday', 'summer', 'valentine', 'themed', 'grand']
-        
-        // Establish blacklist
-        let exceptions = [
-            'fire piece', 'fire sword', 'fire baselard', 'fire glaive', 
-            'water kukri', 'water rod', 'water balloons', 
-            'earth cutlass', 'earth halberd', 'earth zaghnal', 'earth bow',
-            'wind axe', 'wind rod',
-            'light staff', 'light buckler', 'ghost light',
-            'dark angel olivia', 'dark sword', 'dark knife'
-        ]
-
-        // Sanitize and split the string
-        let string = this.sanitize(request)
-        let parts = string.split(' ')
-
-        // Determine if the target is in the exception list
-        let excluded = false
-        exceptions.forEach(x => {
-            if (request.includes(x)) {
-                excluded = true
-            }
-        })
-
-        // Extract keywords from split string using arrays
-        // Don't perform an element intersection if the excluded flag is on
-        let elementCross = (excluded) ? [] : this.intersection(parts, elements)
-        let galaCross = this.intersection(parts, galas)
-        let seasonCross = this.intersection(parts, seasons)
-        let suffixCross = this.intersection(parts, suffixes)
-
-        // Rebuild the base item name
-        const cleanedName = `${this.capitalize(parts.join(' '), true)}`
-
-        // Reconstruct the item name with its suffixes
-        let constructedName = cleanedName
-        if (suffixCross.length == 1) {
-            constructedName = `${cleanedName} ${this.wrap(this.capitalize(suffixCross[0]))}`
-        } else if (elementCross.length == 1) {
-            constructedName = `${cleanedName} ${this.wrap(this.capitalize(elementCross[0]))}`
-        }
-
->>>>>>> Fixed the item parser
-        return constructedName
-=======
         return {
             name: constructedName,
             gala: galaCross[0],
             season: seasonCross[0]
         }
->>>>>>> Parse season & gala from parse command
     },
 
     mapRarity: function(rarity) {
