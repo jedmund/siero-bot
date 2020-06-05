@@ -104,7 +104,7 @@ class Until {
         const splitRequest = request.split(' ')
 
         const galas = ['legend', 'flash', 'lf', 'ff']
-        const seasons = ['halloween', 'holiday', 'summer', 'valentines']
+        const seasons = ['halloween', 'holiday', 'summer', 'valentine']
 
         const gala = [splitRequest, galas].reduce((a, c) => a.filter(i => c.includes(i))).pop()
         const season = [splitRequest, seasons].reduce((a, c) => a.filter(i => c.includes(i))).pop()

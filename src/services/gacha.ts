@@ -51,8 +51,8 @@ export class Gacha {
             case 'holiday':
                 this.season = Season.HOLIDAY
                 break
-            case 'valentines':
-                this.season = Season.VALENTINES
+            case 'valentine':
+                this.season = Season.VALENTINE
                 break
         }
 
@@ -316,7 +316,7 @@ export class Gacha {
     }
 
     public isSeasonal(item: Item): boolean {
-        return (item.halloween == true || item.holiday == true || item.summer == true || item.valentines == true) && item.premium == false
+        return (item.halloween == true || item.holiday == true || item.summer == true || item.valentine == true) && item.premium == false
     }
 
     public getGala(item: Item): string {
@@ -342,8 +342,8 @@ export class Gacha {
             string = 'holiday'
         } else if (item.halloween == true) {
             string = 'halloween'
-        } else if (item.valentines == true) {
-            string = 'valentines'
+        } else if (item.valentine == true) {
+            string = 'valentine'
         } else {
             string = 'all seasons'
         }
