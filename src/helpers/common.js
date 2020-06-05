@@ -106,18 +106,35 @@ module.exports = {
         let elements = ['fire', 'water', 'earth', 'wind', 'dark', 'light']
         let seasons = ['halloween', 'holiday', 'summer', 'valentine']
         let suffixes = ['halloween', 'holiday', 'summer', 'valentine', 'themed', 'grand']
+        
+        // Establish blacklist
+        let exceptions = [
+            'fire piece', 'fire sword', 'fire baselard', 'fire glaive', 
+            'water kukri', 'water rod', 'water balloons', 
+            'earth cutlass', 'earth halberd', 'earth zaghnal', 'earth bow',
+            'wind axe', 'wind rod',
+            'light staff', 'light buckler', 'ghost light',
+            'dark angel olivia', 'dark sword', 'dark knife'
+        ]
 
         // Sanitize and split the string
         let string = this.sanitize(request)
         let parts = string.split(' ')
 
+        // Determine if the target is in the exception list
+        let excluded = false
+        exceptions.forEach(x => {
+            if (request.includes(x)) {
+                excluded = true
+            }
+        })
+
         // Extract keywords from split string using arrays
-        let elementCross = this.intersection(parts, elements)
+        // Don't perform an element intersection if the excluded flag is on
+        let elementCross = (excluded) ? [] : this.intersection(parts, elements)
         let galaCross = this.intersection(parts, galas)
         let seasonCross = this.intersection(parts, seasons)
         let suffixCross = this.intersection(parts, suffixes)
-
-        console.log(parts)
 
         // Rebuild the base item name
         const cleanedName = `${this.capitalize(parts.join(' '), true)}`
