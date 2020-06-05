@@ -29,6 +29,7 @@ module.exports = {
             if (destination.includes(x)) {
                 source.splice(source.indexOf(x), 1)
             }
+<<<<<<< HEAD
 
             return destination.includes(x)
         })
@@ -87,6 +88,49 @@ module.exports = {
             constructedName = `${cleanedName} ${this.wrap(this.capitalize(elementCross[0]))}`
         }
 
+=======
+
+            return destination.includes(x)
+        })
+    },
+
+    wrap(text) {
+        return `(${text})`
+    },
+
+    parse: function(request, properties = null) {
+        let item = ''
+
+        // Establish keywords
+        let galas = ['premium', 'flash', 'legend', 'p', 'ff', 'lf']
+        let elements = ['fire', 'water', 'earth', 'wind', 'dark', 'light']
+        let seasons = ['halloween', 'holiday', 'summer', 'valentine']
+        let suffixes = ['halloween', 'holiday', 'summer', 'valentine', 'themed', 'grand']
+
+        // Sanitize and split the string
+        let string = this.sanitize(request)
+        let parts = string.split(' ')
+
+        // Extract keywords from split string using arrays
+        let elementCross = this.intersection(parts, elements)
+        let galaCross = this.intersection(parts, galas)
+        let seasonCross = this.intersection(parts, seasons)
+        let suffixCross = this.intersection(parts, suffixes)
+
+        console.log(parts)
+
+        // Rebuild the base item name
+        const cleanedName = `${this.capitalize(parts.join(' '), true)}`
+
+        // Reconstruct the item name with its suffixes
+        let constructedName = cleanedName
+        if (suffixCross.length == 1) {
+            constructedName = `${cleanedName} ${this.wrap(this.capitalize(suffixCross[0]))}`
+        } else if (elementCross.length == 1) {
+            constructedName = `${cleanedName} ${this.wrap(this.capitalize(elementCross[0]))}`
+        }
+
+>>>>>>> Fixed the item parser
         return constructedName
     },
 
