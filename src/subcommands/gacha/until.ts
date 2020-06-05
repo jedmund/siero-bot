@@ -104,21 +104,6 @@ class Until {
             })
     }
 
-    private parseProperties(request: string) {
-        const splitRequest = request.split(' ')
-
-        const galas = ['legend', 'flash', 'lf', 'ff']
-        const seasons = ['halloween', 'holiday', 'summer', 'valentine']
-
-        const gala = [splitRequest, galas].reduce((a, c) => a.filter(i => c.includes(i))).pop()
-        const season = [splitRequest, seasons].reduce((a, c) => a.filter(i => c.includes(i))).pop()
-
-        return {
-            gala: gala,
-            season: season
-        }
-    }
-
     // Action methods
     private roll(gacha: Gacha, target: Item) {
         let count = 0
