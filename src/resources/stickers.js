@@ -58,15 +58,15 @@ module.exports = {
         },
         'ioAwesome' : {
             en: 'https://gbf.wiki/images/2/2f/Stamp3.png',
-            jp: '',
+            jp: 'https://gbf.wiki/images/2/2f/Stamp3jp.png',
         },
         'ioWait' : {
             en: 'https://gbf.wiki/images/7/75/Stamp16.png',
-            jp: '',
+            jp: 'https://gbf.wiki/images/d/da/Stamp16jp.png',
         },
         'ioShutUp' : {
             en: 'https://gbf.wiki/images/1/1e/Stamp101.png',
-            jp: '',
+            jp: 'https://gbf.wiki/images/6/64/Stamp101jp.png',
         },
         'jkPump': {
             en: 'https://gbf.wiki/images/f/fd/Stamp242.png',
