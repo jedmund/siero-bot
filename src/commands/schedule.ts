@@ -21,6 +21,7 @@ interface Event {
     starts: string
     ends: string
     advantage: string | null
+    link: string | null
 }
 
 interface Month {
@@ -238,6 +239,10 @@ class ScheduleCommand extends Command {
             if (key === 'advantage' && event[key]) {
                 const advantage: string = event[key]!
                 embed.addField(readableKey, this.capitalize(advantage))
+            }
+            
+            if (key === 'link') {
+                embed.addField('Wiki', event[key])
             }
         }
 
