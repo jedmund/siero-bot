@@ -48,7 +48,7 @@ class Target {
             splitRequest.splice(splitRequest.indexOf('unreleased', 1)).join(' ')
         }
 
-        this.targetName = common.parse(splitRequest.join(' '))
+        this.targetName = common.parse(splitRequest.join(' ')).name
     }
 
     private switchOperation() {
