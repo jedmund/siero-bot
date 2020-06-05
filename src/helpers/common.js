@@ -19,34 +19,58 @@ module.exports = {
         }
     },
 
+    sanitize: function(string) {
+        let re = /[|;$%@"<>()+]/g
+        return string.replace(re, '').toLowerCase()
+    },
+
+    intersection(source, destination) {
+        return source.filter(x => {
+            if (destination.includes(x)) {
+                source.splice(source.indexOf(x), 1)
+            }
+
+            return destination.includes(x)
+        })
+    },
+
+    wrap(text) {
+        return `(${text})`
+    },
+
     parse: function(request, properties = null) {
-        let rq = request
+        let item = ''
 
-        if (properties) {
-            const splitRequest = request.split(' ')
-            const reducedRequest = [splitRequest, [properties.gala, properties.season]].reduce((a, c) => a.filter(i => !c.includes(i)))
-            rq = reducedRequest.join(' ')
+        // Establish keywords
+        let galas = ['premium', 'flash', 'legend', 'p', 'ff', 'lf']
+        let elements = ['fire', 'water', 'earth', 'wind', 'dark', 'light']
+        let seasons = ['halloween', 'holiday', 'summer', 'valentine']
+        let suffixes = ['halloween', 'holiday', 'summer', 'valentine', 'themed', 'grand']
+
+        // Sanitize and split the string
+        let string = this.sanitize(request)
+        let parts = string.split(' ')
+
+        // Extract keywords from split string using arrays
+        let elementCross = this.intersection(parts, elements)
+        let galaCross = this.intersection(parts, galas)
+        let seasonCross = this.intersection(parts, seasons)
+        let suffixCross = this.intersection(parts, suffixes)
+
+        console.log(parts)
+
+        // Rebuild the base item name
+        const cleanedName = `${this.capitalize(parts.join(' '), true)}`
+
+        // Reconstruct the item name with its suffixes
+        let constructedName = cleanedName
+        if (suffixCross.length == 1) {
+            constructedName = `${cleanedName} ${this.wrap(this.capitalize(suffixCross[0]))}`
+        } else if (elementCross.length == 1) {
+            constructedName = `${cleanedName} ${this.wrap(this.capitalize(elementCross[0]))}`
         }
 
-        let target = this.capitalize(rq, true)
-
-        // match unwrapped 'grand'
-        // ex: $g until io grand lf
-        const re1 = /(?!\()grand(?!\))/ig
-        if (target.match(re1)) {
-            const match = target.match(re1)
-            target = target.replace(match, '(Grand)')
-        }
-
-        // match lowercase wrapped 'grand'
-        // ex: $g until io (grand) lf
-        const re2 = /\(grand\)/g
-        if (target.match(re2)) {
-            const match = target.match(re2)
-            target = target.replace(match, '(Grand)')
-        }
-        
-        return target
+        return constructedName
     },
 
     mapRarity: function(rarity) {
