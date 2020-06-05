@@ -21,6 +21,7 @@ interface Event {
     starts: string
     ends: string
     advantage: string | null
+    link: string | null
 }
 
 interface Month {
@@ -175,14 +176,16 @@ class ScheduleCommand extends Command {
 
         for (let i in events) {
             let event: Event = events[i]
-            
-            const isCurrentEvent: boolean = (dayjs(event.starts).isBefore(dayjs()) && dayjs(event.ends).isAfter(dayjs()))
-            const startsString: string = `<Starts in ${dayjs().to(event.starts, true)}>\n${dayjs(event.starts).format('LLLL')} JST`
-            const endsString: string = `<Ends in ${dayjs().to(event.ends, true)}>\n${dayjs(event.ends).format('LLLL')} JST`
-            const dateString: string = (isCurrentEvent) ? endsString : startsString
 
-            let duration: string = `\`\`\`html\n${dateString}\n\`\`\``
-            embed.addField(event.name.en, duration)
+            if (dayjs(event.ends).isAfter(dayjs())) {
+                const isCurrentEvent: boolean = (dayjs(event.starts).isBefore(dayjs()) && dayjs(event.ends).isAfter(dayjs()))
+                const startsString: string = `<Starts in ${dayjs().to(event.starts, true)}>\n${dayjs(event.starts).format('LLLL')} JST`
+                const endsString: string = `<Ends in ${dayjs().to(event.ends, true)}>\n${dayjs(event.ends).format('LLLL')} JST`
+                const dateString: string = (isCurrentEvent) ? endsString : startsString
+
+                let duration: string = `\`\`\`html\n${dateString}\n\`\`\``
+                embed.addField(event.name.en, duration)
+            }
         }
 
         return embed
@@ -238,6 +241,10 @@ class ScheduleCommand extends Command {
             if (key === 'advantage' && event[key]) {
                 const advantage: string = event[key]!
                 embed.addField(readableKey, this.capitalize(advantage))
+            }
+            
+            if (key === 'link') {
+                embed.addField('Wiki', event[key])
             }
         }
 

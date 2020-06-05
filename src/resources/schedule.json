@@ -2,10 +2,23 @@
     "events": [
         {
             "name": {
+                "en": "Cinderella Fantasy: To the Skies Once More",
+                "jp": "シンデレラファンタジー ふたたび始まる空の旅"
+            },
+            "banner": "https://gbf.wiki/images/6/6c/The_Doss%21_End_of_the_Line_Farewell_Tour_top.jpg",
+            "link": "https://gbf.wiki/Cinderella_Fantasy:_To_the_Skies_Once_More",
+            "type": "collab",
+            "advantage": "light",
+            "starts": "2020-05-15T17:00:00+09:00",
+            "ends": "2020-05-27T20:59:00+09:00"
+        },
+        {
+            "name": {
                 "en": "The Doss! End of the Line Farewell Tour",
                 "jp": "The End of THE DOSS"
             },
             "banner": "https://gbf.wiki/images/6/6c/The_Doss%21_End_of_the_Line_Farewell_Tour_top.jpg",
+            "link": "https://gbf.wiki/The_Doss!_End_of_the_Line_Farewell_Tour",
             "type": "scenario",
             "advantage": "fire",
             "starts": "2020-05-29T19:00:00+09:00",
@@ -17,6 +30,7 @@
                 "jp": "四象降臨"
             },
             "banner": "https://gbf.wiki/images/d/dd/Riseofthebeasts_top.png",
+            "link": "https://gbf.wiki/Rise_of_the_Beasts",
             "type": "farming",
             "starts": "2020-06-07T17:00:00+09:00",
             "ends": "2020-06-14T20:59:00+09:00"
@@ -27,6 +41,7 @@
                 "jp": "ゼノイフリート撃滅戦"
             },
             "banner": "https://gbf.wiki/images/7/7c/Xeno_Ifrit_Clash_top.png",
+            "link": "https://gbf.wiki/Xeno_Ifrit_Clash",
             "type": "farming",
             "advantage": "water",
             "starts": "2020-06-13T17:00:00+09:00",
@@ -38,6 +53,7 @@
                 "jp": "決戦！星の古戦場 - 火有利"
             },
             "banner": "https://gbf.wiki/images/0/09/UniteAndFight.png",
+            "link": "https://gbf.wiki/Unite_and_Fight",
             "type": "guild-wars",
             "advantage": "fire",
             "starts": "2020-06-20T19:00:00+09:00",
@@ -49,6 +65,7 @@
                 "jp": "プレミウムフライデークエスト"
             },
             "banner": "https://gbf.wiki/images/8/81/Premium_Friday_top.png",
+            "link": "https://gbf.wiki/Premium_Friday",
             "type": "friday",
             "starts": "2020-06-26T15:00:00+09:00",
             "ends": "2020-06-28T23:59:00+09:00"
