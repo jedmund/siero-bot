@@ -56,6 +56,18 @@ module.exports = {
             en: 'https://gbf.wiki/images/6/6a/Stamp275.png',
             jp: 'https://gbf.wiki/images/0/0a/Stamp275jp.png'
         },
+        'ioAwesome' : {
+            en: 'https://gbf.wiki/images/2/2f/Stamp3.png',
+            jp: '',
+        },
+        'ioWait' : {
+            en: 'https://gbf.wiki/images/7/75/Stamp16.png',
+            jp: '',
+        },
+        'ioShutUp' : {
+            en: 'https://gbf.wiki/images/1/1e/Stamp101.png',
+            jp: '',
+        },
         'jkPump': {
             en: 'https://gbf.wiki/images/f/fd/Stamp242.png',
             jp: 'https://gbf.wiki/images/f/f9/Stamp242jp.png'
