@@ -2,6 +2,18 @@
     "events": [
         {
             "name": {
+                "en": "Cinderella Fantasy: To the Skies Once More",
+                "jp": "シンデレラファンタジー ふたたび始まる空の旅"
+            },
+            "banner": "https://gbf.wiki/images/6/6c/The_Doss%21_End_of_the_Line_Farewell_Tour_top.jpg",
+            "link": "https://gbf.wiki/Cinderella_Fantasy:_To_the_Skies_Once_More",
+            "type": "collab",
+            "advantage": "light",
+            "starts": "2020-05-15T17:00:00+09:00",
+            "ends": "2020-05-27T20:59:00+09:00"
+        },
+        {
+            "name": {
                 "en": "The Doss! End of the Line Farewell Tour",
                 "jp": "The End of THE DOSS"
             },
