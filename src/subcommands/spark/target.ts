@@ -210,7 +210,7 @@ class Target {
                     halloween: true,
                     holiday: true,
                     summer: true,
-                    valentines: true
+                    valentine: true
                 }
 
                 this.message.channel.send(this.render(fauxData))

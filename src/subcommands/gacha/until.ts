@@ -2,7 +2,7 @@
 import { Client } from '../../services/connection.js'
 import { Message } from 'discord.js'
 import { Gacha } from '../../services/gacha.js'
-import { Item, PromptResult } from '../../services/constants.js'
+import { Item, PromptResult, ParsedRequest } from '../../services/constants.js'
 
 const fetch = require('make-fetch-happen').defaults({
     cacheManager: './cache' // path where cache will be written (and read)
@@ -14,8 +14,8 @@ import { Decision as decision } from '../../helpers/decision.js'
 type NumberResult = { [key: string]: number }
 
 interface Properties {
-    gala: string | undefined
-    season: string | undefined
+    gala: string | null
+    season: string | null
 }
 
 interface Rolls {
@@ -27,7 +27,7 @@ class Until {
     target: string
     properties: Properties = {
         gala: 'premium',
-        season: undefined
+        season: null
     }
 
     rateups: Item[] = []
@@ -42,10 +42,14 @@ class Until {
         this.message = message
         this.rateups = rateups
 
-        this.properties = this.parseProperties(message.content)
-
         const target = message.content.split(' ').splice(2).join(' ')
-        this.target = common.parse(target, this.properties)
+        const parsed: ParsedRequest = common.parse(target)
+
+        this.target = parsed.name
+        this.properties = {
+            gala: parsed.gala,
+            season: parsed.season
+        }
     }
 
     public async execute() {
@@ -104,7 +108,7 @@ class Until {
         const splitRequest = request.split(' ')
 
         const galas = ['legend', 'flash', 'lf', 'ff']
-        const seasons = ['halloween', 'holiday', 'summer', 'valentines']
+        const seasons = ['halloween', 'holiday', 'summer', 'valentine']
 
         const gala = [splitRequest, galas].reduce((a, c) => a.filter(i => c.includes(i))).pop()
         const season = [splitRequest, seasons].reduce((a, c) => a.filter(i => c.includes(i))).pop()
