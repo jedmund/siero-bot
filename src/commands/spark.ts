@@ -16,6 +16,17 @@ const pluralize = require('pluralize')
 type StringResult = { [key: string]: string }
 type NumberResult = { [key: string]: number }
 
+interface SparkResult {
+    id: string | null,
+    name: string | null,
+    recruits: string | null,
+    item_type: string | null,
+    rarity: string | null,
+    crystals: number,
+    tickets: number,
+    ten_tickets: number
+}
+
 interface SparkArgs {
     operation: string | null
     amount: number | null
@@ -160,8 +171,25 @@ class SparkCommand extends Command {
     }
 
     private set(amount: number, currency: string) {
-        let transposedCurrency = this.transposeCurrency(currency)
-        this.updateCurrency(amount, transposedCurrency)
+        if (amount && currency) {
+            let transposedCurrency = this.transposeCurrency(currency)
+            this.updateCurrency(amount, transposedCurrency)
+        } else {
+            const text = `You're missing a valid amount or currency.`
+            const section = {
+                title: 'Valid currencies',
+                content: [
+                    `The valid currencies are \`crystal\`, \`ticket\`, and \`tenticket\`. They also work pluralized!`,
+                    '```html\n',
+                    `$spark ${this.args.operation} 1 ticket`,
+                    `$spark ${this.args.operation} 300 crystals`,
+                    '```'
+                ].join('\n')
+            }
+
+            let error = `Invalid amount or currency: ${this.message.content}`
+            common.reportError(this.message, this.userId, this.context, error, text, false, section)
+        }
     }
 
     private async update(amount: number, currency: string, operation: SparkOperation) {
@@ -389,12 +417,31 @@ class SparkCommand extends Command {
 
     // Database methods
     private getProgress(targetId: string | null = null) {
-        let sql = 'SELECT crystals, tickets, ten_tickets FROM sparks WHERE user_id = $1'
+        let sql = [
+            'SELECT sparks.crystals, sparks.tickets, sparks.ten_tickets, sparks.target_id AS id,',
+            'gacha.name, gacha.recruits, gacha.rarity, gacha.item_type FROM sparks',
+            'LEFT JOIN gacha ON sparks.target_id = gacha.id',
+            'WHERE user_id = $1'
+        ].join(' ')
+        
         let id = (targetId) ? targetId : this.userId
 
         Client.one(sql, id)
-            .then((result: NumberResult) => { 
-                this.generateProgressString(result.crystals, result.tickets, result.ten_tickets)
+            .then((result: SparkResult) => {
+                let string = ''
+
+                if (['add', 'save'].includes(this.args.operation)) {
+                    string = `I've added ${this.args.amount} ${this.args.currency} to your spark, ${this.message.author}.`
+                } else if (['remove', 'spend'].includes(this.args.operation)) {
+                    string = `I've removed ${this.args.amount} ${this.args.currency} from your spark, ${this.message.author}.`
+                }
+
+                this.message.channel.send(
+                    {
+                        content: string,
+                        embed: this.renderSpark(result)
+                    }
+                )
             })
             .catch((error: Error) => {
                 var text
@@ -418,6 +465,7 @@ class SparkCommand extends Command {
     
         await Client.query(sql, data)
             .then((_: StringResult) => {
+                console.log(amount, currency)
                 this.getProgress()
             })
             .catch((error: Error) => {
@@ -474,44 +522,70 @@ class SparkCommand extends Command {
     }
 
     // Render methods
-    private generateProgressString(crystals: number, tickets: number, tenTickets: number) {
-        let draws = this.calculateDraws(crystals, tickets, tenTickets)
-        let numSparks = Math.floor(draws / 300)
-        
-        let isOwnSpark = this.message.mentions.users.values().next().value == null
-        let username = (!isOwnSpark) ? this.message.mentions.users.values().next().value.username : null
+    private renderSpark(result: SparkResult) {
+        const draws = this.calculateDraws(result.crystals, result.tickets, result.ten_tickets)
+        const numSparks = Math.floor(draws / 300)
 
-        var progressString = ''
+        const remainder = draws - (numSparks * 300)
+        const drawPercentage = (numSparks > 0) ? Math.floor((remainder / 300) * 100) : Math.floor((draws / 300) * 100)
+
+        let embed = new MessageEmbed({
+            title: this.message.author.username,
+            color: 0xdc322f,
+            thumbnail: {
+                url: this.message.author.displayAvatarURL()
+            },
+            fields: [
+                {
+                    name: 'Crystals',
+                    value: result.crystals,
+                    inline: true
+                },
+                {
+                    name: 'Tickets',
+                    value: result.tickets,
+                    inline: true
+                },
+                {
+                    name: '10-Part Tickets',
+                    value: result.ten_tickets,
+                    inline: true
+                },
+                {
+                    name: 'Progress',
+                    value: this.drawProgressBar(drawPercentage, numSparks)
+                }
+            ]
+        })
 
         if (numSparks > 0) {
-            let remainder = draws - (numSparks * 300)
-            let drawPercentage = Math.floor((remainder / 300) * 100)
-
-            let baseString = `${isOwnSpark ? 'You' : 'They'} have **${numSparks} ${pluralize('spark', numSparks)}**`
-            let sparkString = ` and ${isOwnSpark ? 'you\'ve' : 'they\'ve'} saved **${drawPercentage}%** towards ${isOwnSpark? 'your' : 'their'} next spark.`
-
-            progressString = (drawPercentage > 0) ? `${baseString}${sparkString}` : `${baseString}.`
-        } else {
-            let drawPercentage = Math.floor((draws / 300) * 100)
-
-            if (drawPercentage > 0 && drawPercentage < 25) {
-                progressString = `${isOwnSpark ? 'You\'ve' : 'They\'ve'} got just **${drawPercentage}%** of a spark.`
-            } else if (drawPercentage > 25 && drawPercentage < 75) {
-                progressString = `${isOwnSpark? 'You\'ve' : 'They\'ve'} saved **${drawPercentage}%** of a spark.`
-            } else if (drawPercentage > 75 && drawPercentage < 100) {
-                progressString = `Wow! ${isOwnSpark? 'You\'ve' : 'They\'ve'} saved **${drawPercentage}%** towards ${isOwnSpark? 'your' : 'their'} spark.`
-            } else {
-                progressString = `Time to start saving!`
-            }
+            embed.addField('Sparks', numSparks)
         }
 
-        let statusString = `${isOwnSpark? 'You have' : '**' + username + '** has'} ${crystals} ${pluralize('crystal', crystals)}, ${tickets} ${pluralize('ticket', tickets)}, and ${tenTickets} ${pluralize('10-ticket', tenTickets)} for a total of **${draws} draws.**`
-
-        if (isOwnSpark) {
-            this.message.reply(`${statusString} ${progressString}`)
-        } else {
-            this.message.channel.send(`${statusString} ${progressString}`)
+        if (result.name || result.recruits) {
+            const rarity = common.mapRarity(result.rarity)
+            const target = (result.recruits) ? `(${rarity}) ${result.name} \u2014 ${result.recruits}` : `(${rarity}) ${result.name}`
+            embed.addField('Target', target)
         }
+
+        return embed
+    }
+
+    private drawProgressBar(percentage: number, numSparks: number) {
+        const character = '='
+        const length = 15
+        const ticks = Math.floor(percentage / length)
+        const spaces = length - ticks
+        
+        return [
+            `\`\`\`Spark \#${numSparks + 1} `,
+            '[',
+            Array(ticks).fill(character).join(''),
+            '>',
+            Array(spaces).fill(' ').join(''),
+            ']',
+            ` ${percentage}%\`\`\``
+        ].join('')
     }
 }
 
