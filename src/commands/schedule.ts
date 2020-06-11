@@ -6,9 +6,11 @@ import { promises as fs } from 'fs'
 
 import common from '../helpers/common.js'
 import dayjs from 'dayjs'
+import isBetween from 'dayjs/plugin/isBetween'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 
+dayjs.extend(isBetween)
 dayjs.extend(relativeTime)
 dayjs.extend(localizedFormat)
 
@@ -34,6 +36,7 @@ interface Month {
 }
 
 interface Schedule {
+    maintenance: Duration | null
     events: Event[]
     scheduled: Month[]
 }
@@ -46,6 +49,7 @@ interface LocalizedString {
 class ScheduleCommand extends Command {
     message: Message | null = null
     schedule: Schedule = {
+        maintenance: null,
         events: [],
         scheduled: []
     }
@@ -269,10 +273,7 @@ class ScheduleCommand extends Command {
         for (let i in this.schedule.events) {
             const event: Event = this.schedule.events[i]
 
-            const startsBeforeNow: boolean = dayjs(event.starts).isBefore(dayjs())
-            const endsAfterNow: boolean = dayjs(event.ends).isAfter(dayjs())
-
-            if (startsBeforeNow && endsAfterNow) {
+            if (dayjs().isBetween(dayjs(event.starts), dayjs(event.ends))) {
                 currentEvents.push(event)
             }
         }
