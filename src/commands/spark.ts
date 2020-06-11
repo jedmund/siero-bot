@@ -465,7 +465,6 @@ class SparkCommand extends Command {
     
         await Client.query(sql, data)
             .then((_: StringResult) => {
-                console.log(amount, currency)
                 this.getProgress()
             })
             .catch((error: Error) => {
