@@ -36,14 +36,14 @@ class SieroClient extends AkairoClient {
 
         return await Client.oneOrNone(sql, guildId)
             .then((result) => {
-                if (result.prefix) {
+                if (result && result.prefix) {
                     return result.prefix
                 } else {
                     return '$'
                 }
             })
             .catch((error) => {
-                console.error(`There was an error fetching a prefix for ${guildId}`)
+                console.error(`There was an error fetching a prefix for ${guildId}: ${error}`)
             })
     }
 }

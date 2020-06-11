@@ -129,7 +129,7 @@ module.exports = {
 
         return await Client.oneOrNone(sql, guildId)
             .then((result) => {
-                if (result.prefix) {
+                if (result && result.prefix) {
                     return result.prefix
                 } else {
                     return '$'
