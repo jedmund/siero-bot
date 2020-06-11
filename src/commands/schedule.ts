@@ -5,13 +5,16 @@ import { Command } from 'discord-akairo'
 import { promises as fs } from 'fs'
 
 import common from '../helpers/common.js'
-import dayjs from 'dayjs'
 import isBetween from 'dayjs/plugin/isBetween'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 
+const dayjs = require('dayjs')
+const preciseDiff = require('dayjs-precise-range')
+
 dayjs.extend(isBetween)
 dayjs.extend(relativeTime)
+dayjs.extend(preciseDiff)
 dayjs.extend(localizedFormat)
 
 const path = require('path')
@@ -44,6 +47,11 @@ interface Schedule {
 interface LocalizedString {
     en: string
     jp: string
+}
+
+interface Duration {
+    starts: string,
+    ends: string
 }
 
 class ScheduleCommand extends Command {
@@ -106,7 +114,15 @@ class ScheduleCommand extends Command {
 
     // Command methods
     private async show() {
-        const embed: MessageEmbed = this.renderList(this.schedule.events)
+        let embed: MessageEmbed = this.renderList(this.schedule.events)
+
+        if (this.schedule.maintenance && dayjs().isBetween(dayjs(this.schedule.maintenance.starts), dayjs(this.schedule.maintenance.ends))) {
+            const difference = dayjs.preciseDiff(dayjs(), this.schedule.maintenance.ends)
+
+            embed.setTitle('Maintenance')
+            embed.setDescription(`Granblue Fantasy is currently undergoing maintenance.\nIt will end in **${difference}**.\n\u00A0`)
+        }
+
         this.message!.channel.send(embed)
     }
 
