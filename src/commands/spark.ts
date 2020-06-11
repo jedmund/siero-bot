@@ -11,7 +11,6 @@ const { Target } = require('../subcommands/spark/target.js')
 
 const common = require('../helpers/common.js')
 const dayjs = require('dayjs')
-const pluralize = require('pluralize')
 
 type StringResult = { [key: string]: string }
 type NumberResult = { [key: string]: number }
