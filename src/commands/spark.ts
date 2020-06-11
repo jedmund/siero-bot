@@ -160,8 +160,25 @@ class SparkCommand extends Command {
     }
 
     private set(amount: number, currency: string) {
-        let transposedCurrency = this.transposeCurrency(currency)
-        this.updateCurrency(amount, transposedCurrency)
+        if (amount && currency) {
+            let transposedCurrency = this.transposeCurrency(currency)
+            this.updateCurrency(amount, transposedCurrency)
+        } else {
+            const text = `You're missing a valid amount or currency.`
+            const section = {
+                title: 'Valid currencies',
+                content: [
+                    `The valid currencies are \`crystal\`, \`ticket\`, and \`tenticket\`. They also work pluralized!`,
+                    '```html\n',
+                    `$spark ${this.args.operation} 1 ticket`,
+                    `$spark ${this.args.operation} 300 crystals`,
+                    '```'
+                ].join('\n')
+            }
+
+            let error = `Invalid amount or currency: ${this.message.content}`
+            common.reportError(this.message, this.userId, this.context, error, text, false, section)
+        }
     }
 
     private async update(amount: number, currency: string, operation: SparkOperation) {
