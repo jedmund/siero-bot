@@ -5,11 +5,16 @@ import { Command } from 'discord-akairo'
 import { promises as fs } from 'fs'
 
 import common from '../helpers/common.js'
-import dayjs from 'dayjs'
+import isBetween from 'dayjs/plugin/isBetween'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 
+const dayjs = require('dayjs')
+const preciseDiff = require('dayjs-precise-range')
+
+dayjs.extend(isBetween)
 dayjs.extend(relativeTime)
+dayjs.extend(preciseDiff)
 dayjs.extend(localizedFormat)
 
 const path = require('path')
@@ -34,6 +39,7 @@ interface Month {
 }
 
 interface Schedule {
+    maintenance: Duration | null
     events: Event[]
     scheduled: Month[]
 }
@@ -43,9 +49,15 @@ interface LocalizedString {
     jp: string
 }
 
+interface Duration {
+    starts: string,
+    ends: string
+}
+
 class ScheduleCommand extends Command {
     message: Message | null = null
     schedule: Schedule = {
+        maintenance: null,
         events: [],
         scheduled: []
     }
@@ -102,24 +114,51 @@ class ScheduleCommand extends Command {
 
     // Command methods
     private async show() {
-        const embed: MessageEmbed = this.renderSchedule()
+        let embed: MessageEmbed = this.renderList(this.schedule.events)
+
+        if (this.schedule.maintenance && dayjs().isBetween(dayjs(this.schedule.maintenance.starts), dayjs(this.schedule.maintenance.ends))) {
+            const difference = dayjs.preciseDiff(dayjs(), this.schedule.maintenance.ends)
+
+            embed.setTitle('Maintenance')
+            embed.setDescription(`Granblue Fantasy is currently undergoing maintenance.\nIt will end in **${difference}**.\n\u00A0`)
+        }
+
         this.message!.channel.send(embed)
     }
 
     private next(): void {
-        const index: number = this.extractCurrentIndex() + 1
-        const event: Event = this.schedule.events[index]
-        const embed: MessageEmbed = this.renderEvent(event, false)
+        const event: Event | null = this.nextEvent()
 
-        this.message!.channel.send(embed)
+        if (event) {
+            const embed: MessageEmbed = this.renderEvent(event, false)
+            this.message!.channel.send(embed)
+        } else {
+            this.message!.channel.send('There is no event scheduled next. Is this the end?')
+        }
     }
 
     private current(): void {
-        const index: number = this.extractCurrentIndex()
-        const event: Event = this.schedule.events[index]
-        const embed: MessageEmbed = this.renderEvent(event)
+        if (this.schedule.maintenance && dayjs().isBetween(dayjs(this.schedule.maintenance.starts), dayjs(this.schedule.maintenance.ends))) {
+            const difference = dayjs.preciseDiff(dayjs(), this.schedule.maintenance.ends)
+            const embed = new MessageEmbed({
+                title: 'Maintenance',
+                description: `Granblue Fantasy is currently undergoing maintenance.\n\nIt will end in **${difference}**.\n\u00A0`
+            })
 
-        this.message!.channel.send(embed)
+            this.message!.channel.send(embed)
+        } else {
+            const currentEvents: Event[] = this.currentEvents()
+
+            if (currentEvents.length == 1) {
+                const embed: MessageEmbed = this.renderEvent(currentEvents[0])
+                this.message!.channel.send(embed)
+            } else if (currentEvents.length > 1) {
+                const embed: MessageEmbed = this.renderList(currentEvents)
+                this.message!.channel.send(embed)
+            } else {
+                this.message!.channel.send('There is no event running right now. Use `$schedule next` to find out what event is running next.')
+            }
+        }
     }
 
     private help(): void {
@@ -167,9 +206,7 @@ class ScheduleCommand extends Command {
     }
 
     // Render methods
-    private renderSchedule(): MessageEmbed {
-        const events: Event[] = this.schedule.events
-        
+    private renderList(events: Event[]): MessageEmbed {        
         let embed: MessageEmbed = new MessageEmbed({
             title: 'Schedule'
         })
@@ -256,25 +293,39 @@ class ScheduleCommand extends Command {
         return string.charAt(0).toUpperCase() + string.slice(1)
     }
 
-    private extractCurrentIndex(): number {
+    private currentEvents(): Event[] {
+        let currentEvents: Event[] = []
+
+        for (let i in this.schedule.events) {
+            const event: Event = this.schedule.events[i]
+
+            if (dayjs().isBetween(dayjs(event.starts), dayjs(event.ends))) {
+                currentEvents.push(event)
+            }
+        }
+
+        return currentEvents
+    }
+
+    private nextEvent(): Event | null {
         let found: boolean = false
         let n: number = 0
+        let event: Event | null = null
 
         while (!found) {
-            const event: Event = this.schedule.events[n]
+            const e: Event = this.schedule.events[n]
 
-            const startsBeforeNow: boolean = dayjs(event.starts).isBefore(dayjs())
-            const endsAfterNow: boolean = dayjs(event.ends).isAfter(dayjs())
+            const startsAfterNow: boolean = dayjs(e.starts).isAfter(dayjs())
 
-            if (startsBeforeNow && endsAfterNow) {
+            if (startsAfterNow) {
                 found = true
-                return n
+                event = e
             }
 
             n++
         }
 
-        return n
+        return event
     }
 }
 
