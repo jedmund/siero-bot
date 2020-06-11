@@ -54,9 +54,14 @@ CREATE TABLE IF NOT EXISTS profiles (
     xbox TEXT
 );
 
-CREATE TABLE rateups (
+CREATE TABLE IF NOT EXISTS rateups (
     id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
     gacha_id uuid,
     user_id text,
     rate numeric
+);
+
+CREATE TABLE IF NOT EXISTS guilds (
+    id text DEFAULT PRIMARY KEY,
+    prefix text
 );
