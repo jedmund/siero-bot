@@ -427,8 +427,21 @@ class SparkCommand extends Command {
         let id = (targetId) ? targetId : this.userId
 
         Client.one(sql, id)
-            .then((result: SparkResult) => { 
-                this.message.channel.send(this.renderSpark(result))
+            .then((result: SparkResult) => {
+                let string = ''
+
+                if (['add', 'save'].includes(this.args.operation)) {
+                    string = `I've added ${this.args.amount} ${this.args.currency} to your spark, ${this.message.author}.`
+                } else if (['remove', 'spend'].includes(this.args.operation)) {
+                    string = `I've removed ${this.args.amount} ${this.args.currency} from your spark, ${this.message.author}.`
+                }
+
+                this.message.channel.send(
+                    {
+                        content: string,
+                        embed: this.renderSpark(result)
+                    }
+                )
             })
             .catch((error: Error) => {
                 var text
@@ -452,6 +465,7 @@ class SparkCommand extends Command {
     
         await Client.query(sql, data)
             .then((_: StringResult) => {
+                console.log(amount, currency)
                 this.getProgress()
             })
             .catch((error: Error) => {
