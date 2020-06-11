@@ -1,4 +1,4 @@
 CREATE TABLE IF NOT EXISTS guilds (
-    id text DEFAULT PRIMARY KEY,
+    id text PRIMARY KEY,
     prefix text
 );
