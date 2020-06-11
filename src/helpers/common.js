@@ -1,3 +1,4 @@
+const { Client } = require('../services/connection.js')
 const { DiscordAPIError, MessageEmbed } = require('discord.js')
 const { pgpErrors } = require('../services/connection.js')
 
@@ -120,6 +121,23 @@ module.exports = {
         }
 
         return spacedString
+    },
+
+    // Database methods
+    fetchPrefix: async function(guildId) {
+        const sql = 'SELECT prefix FROM guilds WHERE id = $1 LIMIT 1'
+
+        return await Client.oneOrNone(sql, guildId)
+            .then((result) => {
+                if (result.prefix) {
+                    return result.prefix
+                } else {
+                    return '$'
+                }
+            })
+            .catch((error) => {
+                console.error(`There was an error fetching a prefix for ${guildId}`)
+            })
     },
 
     // Property persistance methods

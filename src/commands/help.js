@@ -1,38 +1,62 @@
 const { Command } = require('discord-akairo')
 const { MessageEmbed } = require('discord.js')
+const common = require('../helpers/common.js')
 const dayjs = require('dayjs')
 
 class HelpCommand extends Command {
     constructor() {
         super('help', {
-            aliases: ['help', 'h'],
+            aliases: ['help'],
             args: []
         })
     }
 
-    exec(message, args) {        
+    async exec(message, args) {        
         console.log(`(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${message.author.id}] ${message.content}`)
         
-        var embed = new MessageEmbed()
-        embed.setTitle("Help")
-        embed.setDescription("Welcome! Here are all the things I can do!")
-        embed.setColor(0xdc322f)
-        embed.addField("Commands", `\`\`\`html\n
-<$gacha $g>
-Roll the virtual gacha\n
-<$profile $p>
-Save useful information in your profile or see someone else's\n
-<$spark $s> 
-Log your progress while saving a spark\n
-<$schedule $sc> 
-Show the upcoming schedule in Granblue Fantasy\n
-<$sticker $ss>
-Use a Granblue sticker in Discord\`\`\``)
-        embed.addField("Even more help", `You can get help on any of the above commands by typing \`help\` after the command, like so: 
-\`\`\`$gacha help\`\`\``)
-        embed.addField("Support Discord", 'Come help with development or get support in Siero\'s Discord:\nhttps://discord.gg/37u2uz7')
+        let embed = new MessageEmbed({
+            title: 'Help',
+            description: 'Welcome! How can I help you?',
+            color: 0xdc322f
+        })
 
-        message.channel.send(embed)
+        const discord = 'Come help with development or get support in Siero\'s Discord:\nhttps://discord.gg/37u2uz7'
+
+        if (message.channel.type !== 'dm') {
+            await common.fetchPrefix(message.guild.id)
+                .then((prefix) => {
+                    const commands = this.helpContent(prefix)
+                    embed.addField('Commands', commands)
+                    embed.addField('Even more help', `You can get help on any of the above commands by typing \`help\` after the command, like so: 
+\`\`\`${prefix}gacha help\`\`\``)
+                    embed.addField('Support Discord', discord)
+                    message.channel.send(embed)
+                })
+        } else {
+            const commands = this.helpContent()
+            embed.addField('Commands', commands)
+            embed.addField('Even more help', `You can get help on any of the above commands by typing \`help\` after the command, like so: 
+\`\`\`$gacha help\`\`\``)
+            embed.addField('Support Discord', discord)
+            message.channel.send(embed)
+        }
+    }
+
+    helpContent(prefix = '$') {
+        return [
+            '```html',
+            `<${prefix}gacha> or <${prefix}g>`,
+            'Simulate gacha pulls\n',
+            `<${prefix}profile> or <${prefix}p>`,
+            'Save a profile with your gaming usernames, or see someone else\'s\n',
+            `<${prefix}schedule> or <${prefix}sc>`,
+            'Show the upcoming schedule for Granblue Fantasy\n',
+            `<${prefix}spark> or <${prefix}s>`,
+            'Log your spark progress, or see someone else\'s\n',
+            `<${prefix}sticker> or <${prefix}ss>`,
+            'Use a Granblue Fantasy sticker in Discord',
+            '```'
+        ].join('\n')
     }
 }
 
