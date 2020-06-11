@@ -138,16 +138,26 @@ class ScheduleCommand extends Command {
     }
 
     private current(): void {
-        const currentEvents: Event[] = this.currentEvents()
+        if (this.schedule.maintenance && dayjs().isBetween(dayjs(this.schedule.maintenance.starts), dayjs(this.schedule.maintenance.ends))) {
+            const difference = dayjs.preciseDiff(dayjs(), this.schedule.maintenance.ends)
+            const embed = new MessageEmbed({
+                title: 'Maintenance',
+                description: `Granblue Fantasy is currently undergoing maintenance.\n\nIt will end in **${difference}**.\n\u00A0`
+            })
 
-        if (currentEvents.length == 1) {
-            const embed: MessageEmbed = this.renderEvent(currentEvents[0])
-            this.message!.channel.send(embed)
-        } else if (currentEvents.length > 1) {
-            const embed: MessageEmbed = this.renderList(currentEvents)
             this.message!.channel.send(embed)
         } else {
-            this.message!.channel.send('There is no event running right now. Use `$schedule next` to find out what event is running next.')
+            const currentEvents: Event[] = this.currentEvents()
+
+            if (currentEvents.length == 1) {
+                const embed: MessageEmbed = this.renderEvent(currentEvents[0])
+                this.message!.channel.send(embed)
+            } else if (currentEvents.length > 1) {
+                const embed: MessageEmbed = this.renderList(currentEvents)
+                this.message!.channel.send(embed)
+            } else {
+                this.message!.channel.send('There is no event running right now. Use `$schedule next` to find out what event is running next.')
+            }
         }
     }
 
