@@ -21,6 +21,7 @@ interface RateSet {
 class Rateup {
     userId: string
     siero: User | null
+    prefix: string = '$'
 
     operation: string | null = null
     rates: Rate[] = []
@@ -37,8 +38,12 @@ class Rateup {
         this.parseRequest(message.content)
     }
 
-    public execute() {
-        return this.switchOperation()
+    public async execute() {
+        await common.fetchPrefix(this.message.guild!.id)
+            .then((prefix: string) => {
+                this.prefix = prefix
+                return this.switchOperation()
+            })
     }
 
     private parseRequest(request: string) {
@@ -287,7 +292,7 @@ class Rateup {
             color: 0xb58900,
             footer: {
                 iconURL: user.displayAvatarURL(),
-                text: `Copy with $gacha rateup copy @${user.username}`
+                text: `Copy with ${this.prefix}gacha rateup copy @${user.username}`
             }
         })
 
