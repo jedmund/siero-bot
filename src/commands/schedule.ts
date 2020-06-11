@@ -102,24 +102,33 @@ class ScheduleCommand extends Command {
 
     // Command methods
     private async show() {
-        const embed: MessageEmbed = this.renderSchedule()
+        const embed: MessageEmbed = this.renderList(this.schedule.events)
         this.message!.channel.send(embed)
     }
 
     private next(): void {
-        const index: number = this.extractCurrentIndex() + 1
-        const event: Event = this.schedule.events[index]
-        const embed: MessageEmbed = this.renderEvent(event, false)
+        const event: Event | null = this.nextEvent()
 
-        this.message!.channel.send(embed)
+        if (event) {
+            const embed: MessageEmbed = this.renderEvent(event, false)
+            this.message!.channel.send(embed)
+        } else {
+            this.message!.channel.send('There is no event scheduled next. Is this the end?')
+        }
     }
 
     private current(): void {
-        const index: number = this.extractCurrentIndex()
-        const event: Event = this.schedule.events[index]
-        const embed: MessageEmbed = this.renderEvent(event)
+        const currentEvents: Event[] = this.currentEvents()
 
-        this.message!.channel.send(embed)
+        if (currentEvents.length == 1) {
+            const embed: MessageEmbed = this.renderEvent(currentEvents[0])
+            this.message!.channel.send(embed)
+        } else if (currentEvents.length > 1) {
+            const embed: MessageEmbed = this.renderList(currentEvents)
+            this.message!.channel.send(embed)
+        } else {
+            this.message!.channel.send('There is no event running right now. Use `$schedule next` to find out what event is running next.')
+        }
     }
 
     private help(): void {
@@ -167,9 +176,7 @@ class ScheduleCommand extends Command {
     }
 
     // Render methods
-    private renderSchedule(): MessageEmbed {
-        const events: Event[] = this.schedule.events
-        
+    private renderList(events: Event[]): MessageEmbed {        
         let embed: MessageEmbed = new MessageEmbed({
             title: 'Schedule'
         })
@@ -256,25 +263,42 @@ class ScheduleCommand extends Command {
         return string.charAt(0).toUpperCase() + string.slice(1)
     }
 
-    private extractCurrentIndex(): number {
-        let found: boolean = false
-        let n: number = 0
+    private currentEvents(): Event[] {
+        let currentEvents: Event[] = []
 
-        while (!found) {
-            const event: Event = this.schedule.events[n]
+        for (let i in this.schedule.events) {
+            const event: Event = this.schedule.events[i]
 
             const startsBeforeNow: boolean = dayjs(event.starts).isBefore(dayjs())
             const endsAfterNow: boolean = dayjs(event.ends).isAfter(dayjs())
 
             if (startsBeforeNow && endsAfterNow) {
+                currentEvents.push(event)
+            }
+        }
+
+        return currentEvents
+    }
+
+    private nextEvent(): Event | null {
+        let found: boolean = false
+        let n: number = 0
+        let event: Event | null = null
+
+        while (!found) {
+            const e: Event = this.schedule.events[n]
+
+            const startsAfterNow: boolean = dayjs(e.starts).isAfter(dayjs())
+
+            if (startsAfterNow) {
                 found = true
-                return n
+                event = e
             }
 
             n++
         }
 
-        return n
+        return event
     }
 }
 
