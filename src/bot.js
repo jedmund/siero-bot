@@ -1,5 +1,6 @@
 require('dotenv').config()
 
+const { Client } = require('./services/connection.js')
 const { AkairoClient, CommandHandler, ListenerHandler } = require('discord-akairo')
 const pluralize = require('pluralize')
 
@@ -18,10 +19,32 @@ class SieroClient extends AkairoClient {
         this.commandHandler = new CommandHandler(this, {
             directory: './build/dist/commands/',
             loadFilter: filepath => filepath.slice(-3) === '.js',
-            prefix: '$'
+            prefix: async message => {
+                if (message.guild) {
+                    return await this.fetchPrefix(message.guild.id)
+                }
+
+                return '$'
+            }
         })
 
         this.commandHandler.loadAll()
+    }
+
+    async fetchPrefix(guildId) {
+        const sql = 'SELECT prefix FROM guilds WHERE id = $1 LIMIT 1'
+
+        return await Client.oneOrNone(sql, guildId)
+            .then((result) => {
+                if (result.prefix) {
+                    return result.prefix
+                } else {
+                    return '$'
+                }
+            })
+            .catch((error) => {
+                console.error(`There was an error fetching a prefix for ${guildId}`)
+            })
     }
 }
 
