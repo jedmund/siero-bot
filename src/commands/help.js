@@ -26,7 +26,9 @@ class HelpCommand extends Command {
             await common.fetchPrefix(message.guild.id)
                 .then((prefix) => {
                     const commands = this.helpContent(prefix)
+                    const ownerCommands = this.adminHelpContent(prefix)
                     embed.addField('Commands', commands)
+                    embed.addField('Owner Commands', ownerCommands)
                     embed.addField('Even more help', `You can get help on any of the above commands by typing \`help\` after the command, like so: 
 \`\`\`${prefix}gacha help\`\`\``)
                     embed.addField('Support Discord', discord)
@@ -55,6 +57,15 @@ class HelpCommand extends Command {
             'Log your spark progress, or see someone else\'s\n',
             `<${prefix}sticker> or <${prefix}ss>`,
             'Use a Granblue Fantasy sticker in Discord',
+            '```'
+        ].join('\n')
+    }
+
+    adminHelpContent(prefix = '$') {
+        return [
+            '```html',
+            `<${prefix}prefix>`,
+            'Set the command prefix for your server',
             '```'
         ].join('\n')
     }
