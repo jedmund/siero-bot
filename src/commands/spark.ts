@@ -1,5 +1,6 @@
 import { Message } from 'discord.js'
 import { MessageEmbed } from 'discord.js'
+import { User } from 'discord.js'
 import { GuildMember } from 'discord.js'
 import { Snowflake } from 'discord.js'
 
@@ -521,6 +522,8 @@ class SparkCommand extends Command {
 
     // Render methods
     private renderSpark(result: SparkResult) {
+        const user = (this.message.mentions.users.values().next().value) ? this.message.mentions.users.values().next().value : this.message.author
+
         const draws = this.calculateDraws(result.crystals, result.tickets, result.ten_tickets)
         const numSparks = Math.floor(draws / 300)
 
@@ -528,10 +531,10 @@ class SparkCommand extends Command {
         const drawPercentage = (numSparks > 0) ? Math.floor((remainder / 300) * 100) : Math.floor((draws / 300) * 100)
 
         let embed = new MessageEmbed({
-            title: this.message.author.username,
+            title: user.username,
             color: 0xdc322f,
             thumbnail: {
-                url: this.message.author.displayAvatarURL()
+                url: user.displayAvatarURL()
             },
             fields: [
                 {
@@ -572,7 +575,7 @@ class SparkCommand extends Command {
     private drawProgressBar(percentage: number, numSparks: number) {
         const character = '='
         const length = 15
-        const ticks = Math.floor(percentage / length)
+        const ticks = Math.floor(length / (100 / percentage))
         const spaces = length - ticks
         
         return [
