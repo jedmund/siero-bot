@@ -522,7 +522,7 @@ class SparkCommand extends Command {
 
     // Render methods
     private renderSpark(result: SparkResult) {
-        const user = (this.message.mentions.users.values().next().value) ? this.message.mentions.users.values().next().value : this.message.author
+        const user: User = (this.message.mentions.users.values().next().value) ? this.message.mentions.users.values().next().value : this.message.author
 
         const draws = this.calculateDraws(result.crystals, result.tickets, result.ten_tickets)
         const numSparks = Math.floor(draws / 300)
