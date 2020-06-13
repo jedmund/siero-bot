@@ -22,7 +22,7 @@
     "sqlite": "^4.0.7",
     "tslib": "^2.0.0",
     "typescript": "^3.9.3",
-    "xml-js": "^1.6.11"
+    "xml2js": "^0.4.23"
   },
   "devDependencies": {
     "concurrently": "^5.2.0",
