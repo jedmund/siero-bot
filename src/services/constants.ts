@@ -35,6 +35,90 @@ export enum Rarity {
 	SSR = 3
 }
 
+export enum Element {
+    fire,
+    water,
+    earth,
+    wind,
+    light,
+    dark,
+    null
+}
+
+export enum Race {
+    human,
+    erune,
+    draph,
+    harvin,
+    primal,
+    other
+}
+
+export enum Specialty {
+    sword,
+    dagger,
+    spear,
+    axe,
+    gun,
+    bow,
+    staff,
+    harp,
+    fist,
+    katana
+}
+
+export enum UnitType {
+    attack,
+    defense,
+    heal,
+    balanced,
+    special
+}
+
+export interface Ougi {
+    name: string
+    description: string 
+}
+
+export interface Stat {
+    min: number
+    max: number
+    flb: number
+    ulb: number
+}
+
+export interface Ability {
+    name: string
+    cooldown: AbilityNumber
+    duration: Duration
+    descriptions: AbilityDescription[]
+}
+
+export interface AbilityNumber {
+    initial: number
+    upgraded: number
+}
+
+export interface AbilityDescription {
+    text: string
+    level: number
+}
+
+export interface Duration {
+    turns: AbilityNumber
+    time: AbilityNumber
+}
+
+export interface SupportAbility {
+    name: string
+    description: string
+}
+
+export enum Gender {
+    male,
+    female
+}
+
 // Interfaces
 export interface Item {
     [index: string]: string | number | boolean | null
