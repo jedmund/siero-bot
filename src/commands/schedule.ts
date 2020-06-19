@@ -9,6 +9,8 @@ import isBetween from 'dayjs/plugin/isBetween'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 
+const pluralize = require('pluralize')
+
 const dayjs = require('dayjs')
 const preciseDiff = require('dayjs-precise-range')
 
@@ -18,6 +20,9 @@ dayjs.extend(preciseDiff)
 dayjs.extend(localizedFormat)
 
 const path = require('path')
+
+type NumberObject = { [key: string]: number }
+type NullableNumber = number | null
 
 interface Event {
     readonly [index: string]: string | LocalizedString | null
@@ -139,7 +144,8 @@ class ScheduleCommand extends Command {
 
     private current(): void {
         if (this.schedule.maintenance && dayjs().isBetween(dayjs(this.schedule.maintenance.starts), dayjs(this.schedule.maintenance.ends))) {
-            const difference = dayjs.preciseDiff(dayjs(), this.schedule.maintenance.ends)
+            const parts = dayjs.preciseDiff(dayjs(), this.schedule.maintenance.ends, true)
+            const difference = this.buildString(null, parts.hours, parts.minutes)
             const embed = new MessageEmbed({
                 title: 'Maintenance',
                 description: `Granblue Fantasy is currently undergoing maintenance.\n\nIt will end in **${difference}**.\n\u00A0`
@@ -215,9 +221,14 @@ class ScheduleCommand extends Command {
             let event: Event = events[i]
 
             if (dayjs(event.ends).isAfter(dayjs())) {
+
+                const startsDiffString = `<Starts in ${this.buildDiffString(event.starts)}>`
+                const endsDiffString = `<Ends in ${this.buildDiffString(event.ends)}>`
+                
                 const isCurrentEvent: boolean = (dayjs(event.starts).isBefore(dayjs()) && dayjs(event.ends).isAfter(dayjs()))
-                const startsString: string = `<Starts in ${dayjs().to(event.starts, true)}>\n${dayjs(event.starts).format('LLLL')} JST`
-                const endsString: string = `<Ends in ${dayjs().to(event.ends, true)}>\n${dayjs(event.ends).format('LLLL')} JST`
+
+                const startsString: string = `${startsDiffString}\n${dayjs(event.starts).format('LLLL')} JST`
+                const endsString: string = `${endsDiffString}\n${dayjs(event.ends).format('LLLL')} JST`
                 const dateString: string = (isCurrentEvent) ? endsString : startsString
 
                 let duration: string = `\`\`\`html\n${dateString}\n\`\`\``
@@ -243,10 +254,8 @@ class ScheduleCommand extends Command {
             }
 
             if (!currentEvent && key === 'starts') {
-                const formattedTo: string = dayjs().to(event[key])
                 const formattedTime: string = dayjs(event[key]).format('LLLL')
-
-                embed.addField(`${readableKey} ${formattedTo}`, `${formattedTime} JST`)
+                embed.addField(`${readableKey}`, `${formattedTime} JST`)
             }
 
             if (key === 'banner') {
@@ -260,14 +269,16 @@ class ScheduleCommand extends Command {
             }
             
             if (key === 'type') {
-                embed.setAuthor(this.capitalize(event[key]))
+                if (currentEvent) {
+                    embed.setAuthor(`Ends in ${this.buildDiffString(event['ends'])}`)
+                } else {
+                    embed.setAuthor(`Starts in ${this.buildDiffString(event['starts'])}`)
+                }
             }
             
             if (currentEvent && key === 'ends') {
-                const formattedTo: string = dayjs().to(event[key])
                 const formattedTime: string = dayjs(event[key]).format('LLLL')
-
-                embed.addField(`${readableKey} ${formattedTo}`, `${formattedTime} JST`)
+                embed.addField(`${readableKey}`, `${formattedTime} JST`)
             }
 
             if (!currentEvent && key === 'ends') {
@@ -326,6 +337,55 @@ class ScheduleCommand extends Command {
         }
 
         return event
+    }
+
+    private buildDiffString(date: string): string {
+        let string = ''
+        const parts = dayjs.preciseDiff(dayjs(), date, true)
+
+        const threshold = dayjs().add(2, 'day')
+        const afterThreshold: boolean = dayjs(threshold).isAfter(date)
+
+        if (afterThreshold) {
+            string = `${this.buildString(parts.days, parts.hours, parts.minutes)}`
+        } else {
+            string = `${this.buildString(parts.days)}`
+        }
+
+        return string
+    }
+
+    private buildString(d: NullableNumber = null, h: NullableNumber = null, m: NullableNumber = null, s: NullableNumber = null): string {
+        let string = ''
+        let strings = []
+
+        if (d) {
+            strings.push(`${d} ${pluralize('day', d)}`)
+        }
+
+        if (h) {
+            strings.push(`${h} ${pluralize('hour', h)}`)
+        }
+
+        if (m) {
+            strings.push(`${m} ${pluralize('minute', m)}`)
+        }
+        
+        if (s) {
+            strings.push(`${s} ${pluralize('second', s)}`)
+        }
+
+        for (let i = 0; i < strings.length; i++) {
+            if (i == strings.length - 2) {
+                string += strings[i] + ' and '
+            } else if (i < strings.length - 1) {
+                string += strings[i] + ' '
+            } else {
+                string += strings[i]
+            }
+        }
+
+        return string
     }
 }
 
