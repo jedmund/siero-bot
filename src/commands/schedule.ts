@@ -144,7 +144,7 @@ class ScheduleCommand extends Command {
 
     private current(): void {
         if (this.schedule.maintenance && dayjs().isBetween(dayjs(this.schedule.maintenance.starts), dayjs(this.schedule.maintenance.ends))) {
-            const parts = dayjs.preciseDiff(dayjs(), this.schedule.maintenance.ends, true)
+            const parts: NumberObject = dayjs.preciseDiff(dayjs(), this.schedule.maintenance.ends, true)
             const difference = this.buildString(null, parts.hours, parts.minutes)
             const embed = new MessageEmbed({
                 title: 'Maintenance',
@@ -341,7 +341,7 @@ class ScheduleCommand extends Command {
 
     private buildDiffString(date: string): string {
         let string = ''
-        const parts = dayjs.preciseDiff(dayjs(), date, true)
+        const parts: NumberObject = dayjs.preciseDiff(dayjs(), date, true)
 
         const threshold = dayjs().add(2, 'day')
         const afterThreshold: boolean = dayjs(threshold).isAfter(date)
