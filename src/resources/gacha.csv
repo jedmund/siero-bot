@@ -17,7 +17,7 @@ Disparia,3,0,Jeanne d'Arc (Dark),1,1,1,1,1,1,1
 Gram,3,0,Beatrix,1,1,1,1,1,1,1
 Lyst Sin,3,0,Vira,1,1,1,1,1,1,1
 Mistilteinn,3,0,Vaseraga (Dark),1,1,1,1,1,1,1
-Hoarfrost Blade Persius,3,0,Lancelot (Water),1,1,1,1,1,1,1
+Hoarfrost Blade Persius,3,0,Lancelot,1,1,1,1,1,1,1
 Phantom Thief Blade,3,0,Chat Noir,1,1,1,1,1,1,1
 Arsene,3,0,Catherine,1,1,1,1,1,1,1
 Heaven's Cloud,3,0,Petra,1,1,1,1,1,1,1
@@ -92,7 +92,7 @@ Coco & Mimi,3,0,Cerberus,1,1,1,1,1,1,1
 Ruling Pen,3,0,Lunalu,1,1,1,1,1,1,1
 Roseate Aetherial Bow,3,0,Metera (Fire),1,1,1,1,1,1,1
 Gandiva,3,0,Ilsa,1,1,1,1,1,1,1
-Aetherial Bow,3,0,Metera (Wind),1,1,1,1,1,1,1
+Aetherial Bow,3,0,Metera,1,1,1,1,1,1,1
 Heroic Bow,3,0,Feena,1,1,1,1,1,1,1
 Levin Shooter,3,0,Levin Sisters,1,1,1,1,1,1,1
 Returner Staff,3,0,Yurius,1,1,1,1,1,1,1
@@ -665,3 +665,5 @@ Predator Claw,3,0,Predator,1,1,1,1,1,1,1
 Sikinnis,3,0,Satyr,1,1,1,1,1,1,1
 Walthari,3,0,Percival (Light),1,1,1,1,1,1,1
 Owlcat,3,1,,1,1,1,1,1,1,1
+Hard Knuckle,3,0,Pengy,1,1,1,1,1,1,1
+Heavenly Fawn Bow,3,0,Naoise,1,1,1,1,1,1,1
