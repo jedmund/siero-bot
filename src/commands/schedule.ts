@@ -125,7 +125,7 @@ class ScheduleCommand extends Command {
         let embed: MessageEmbed = this.renderList(this.schedule.events)
 
         if (this.schedule.maintenance && dayjs().isBetween(dayjs(this.schedule.maintenance.starts), dayjs(this.schedule.maintenance.ends))) {
-            const difference = dayjs.preciseDiff(dayjs(), this.schedule.maintenance.ends)
+            const difference = dayjs.preciseDiff(dayjs().utcOffset(540), this.schedule.maintenance.ends)
 
             embed.setTitle('Maintenance')
             embed.setDescription(`Granblue Fantasy is currently undergoing maintenance.\nIt will end in **${difference}**.\n\u00A0`)
@@ -344,9 +344,9 @@ class ScheduleCommand extends Command {
 
     private buildDiffString(date: string): string {
         let string = ''
-        const parts: NumberObject = dayjs.preciseDiff(dayjs(), date, true)
+        const parts: NumberObject = dayjs.preciseDiff(dayjs().utcOffset(540), date, true)
 
-        const threshold = dayjs().add(2, 'day')
+        const threshold = dayjs().utcOffset(540).add(2, 'day')
         const afterThreshold: boolean = dayjs(threshold).isAfter(date)
 
         if (afterThreshold) {
