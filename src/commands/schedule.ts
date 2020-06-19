@@ -8,6 +8,7 @@ import common from '../helpers/common.js'
 import isBetween from 'dayjs/plugin/isBetween'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
+import dayjsPluginUTC from 'dayjs-plugin-utc'
 
 const pluralize = require('pluralize')
 
@@ -18,6 +19,8 @@ dayjs.extend(isBetween)
 dayjs.extend(relativeTime)
 dayjs.extend(preciseDiff)
 dayjs.extend(localizedFormat)
+dayjs.extend(dayjsPluginUTC)
+
 
 const path = require('path')
 
