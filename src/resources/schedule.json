@@ -76,9 +76,11 @@
         },
         {
             "name": {
-                "en": "Scenario Event",
-                "jp": "シナリオイベント"
+                "en": "Hot Summer Fete! Eating Bonanza!",
+                "jp": "熱闘！真夏のフードファイト！"
             },
+            "banner": "https://gbf.wiki/images/c/c6/Hot_Summer_Fete%21_Eating_Bonanza%21_top.jpg",
+            "link": "https://gbf.wiki/Hot_Summer_Fete!_Eating_Bonanza!",
             "type": "scenario",
             "starts": "2020-06-28T17:00:00+09:00",
             "ends": "2020-07-06T18:59:00+09:00"
