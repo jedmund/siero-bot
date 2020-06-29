@@ -39,11 +39,16 @@ class Rateup {
     }
 
     public async execute() {
-        await common.fetchPrefix(this.message.guild!.id)
-            .then((prefix: string) => {
-                this.prefix = prefix
-                return this.switchOperation()
-            })
+        if (this.message.guild) {
+            await common.fetchPrefix(this.message.guild.id)
+                .then((prefix: string) => {
+                    this.prefix = prefix
+                    return this.switchOperation()
+                })
+        } else {
+            this.prefix = '$'
+            this.switchOperation()
+        }
     }
 
     private parseRequest(request: string) {
