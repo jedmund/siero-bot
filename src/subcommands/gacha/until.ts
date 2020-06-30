@@ -46,8 +46,19 @@ class Until {
         const parsed: ParsedRequest = common.parse(target)
 
         this.target = parsed.name
+
+        // Transpose gala shorthands to query database results
+        let gala = ''
+        if (parsed.gala) {
+            if (['ff', 'flash'].includes(parsed.gala)) {
+                gala = 'flash'
+            } else if (['lf', 'legend'].includes(parsed.gala)) {
+                gala = 'legend'
+            }
+        }
+
         this.properties = {
-            gala: parsed.gala,
+            gala: gala,
             season: parsed.season
         }
     }
