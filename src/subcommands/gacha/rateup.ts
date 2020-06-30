@@ -235,7 +235,7 @@ class Rateup {
     public static async fetch(id: string, message: Message): Promise<Item[] | void> {
         const sql = [
             'SELECT rateups.gacha_id AS id, rateups.rate, gacha.name, gacha.recruits, gacha.rarity, gacha.item_type, ',
-            'gacha.flash, gacha.legend, gacha.summer, gacha.holiday, gacha.halloween, gacha.valentine',
+            'gacha.flash, gacha.legend, gacha.summer, gacha.holiday, gacha.halloween, gacha.valentines',
             'FROM rateups LEFT JOIN gacha ON rateups.gacha_id = gacha.id',
             'WHERE rateups.user_id = $1',
             'ORDER BY rateups.rate DESC'
