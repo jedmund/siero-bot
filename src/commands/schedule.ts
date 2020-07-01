@@ -140,23 +140,10 @@ class ScheduleCommand extends Command {
     private async show() {
         let embed: MessageEmbed = this.renderList(this.schedule.events)
 
-        const isMagfest = this.schedule.magfest && dayjs().isBetween(dayjs(this.schedule.magfest.starts), dayjs(this.schedule.magfest.ends))
-        const isMaintenance = this.schedule.maintenance && dayjs().isBetween(dayjs(this.schedule.maintenance.starts), dayjs(this.schedule.maintenance.ends))
-
-        if (this.schedule.maintenance && isMaintenance) {
-            const difference = this.buildDiffString(this.schedule.maintenance.ends)
-
-            embed.setTitle('Maintenance')
-            embed.setDescription(`Granblue Fantasy is currently undergoing maintenance.\nIt will end in **${difference}**.\n\n**Upcoming Events**\u00A0`)
-        }
-
-        if (this.schedule.magfest && isMagfest && !isMaintenance) {
-            const difference = this.buildDiffString(this.schedule.magfest.ends)
-
-            embed.setTitle(this.schedule.magfest.name)
-            embed.setDescription(`The ${this.schedule.magfest.name} is underway! It will end in **${difference}**.\nFor more info, use \`$schedule magfest\`.\n\n**Upcoming Events**\u00A0`)
-            embed.setImage(this.schedule.magfest.banner)
-        }
+        let eventInfo = this.renderServiceEvent()
+        embed.setTitle(eventInfo.name)
+        embed.setDescription(eventInfo.description)
+        embed.setImage(eventInfo.image)
 
         this.message!.channel.send(embed)
     }
@@ -327,6 +314,57 @@ class ScheduleCommand extends Command {
         }
 
         return embed
+    }
+
+    private renderServiceEvent() {
+        let name = ''
+        let description = ''
+        let image = ''
+
+        const isMagfest = this.schedule.magfest && dayjs().isBetween(dayjs(this.schedule.magfest.starts), dayjs(this.schedule.magfest.ends))
+        const isMaintenance = this.schedule.maintenance && dayjs().isBetween(dayjs(this.schedule.maintenance.starts), dayjs(this.schedule.maintenance.ends))
+
+        const upcomingMagfest = this.schedule.magfest && dayjs(this.schedule.magfest.starts).isBetween(dayjs(), dayjs().add(48, 'hours'))
+        const upcomingMaintenance = this.schedule.maintenance && dayjs(this.schedule.maintenance.starts).isBetween(dayjs(), dayjs().add(48, 'hours'))
+
+        if (this.schedule.maintenance) {
+            if (upcomingMaintenance) {
+                const parts: NumberObject = dayjs.preciseDiff(dayjs(this.schedule.maintenance.starts).utcOffset(540), dayjs(this.schedule.maintenance.ends), true)
+                const difference = this.buildDiffString(this.schedule.maintenance.starts)
+                const duration = this.buildString(null, parts.days, parts.hours)
+                
+                name = 'Upcoming Maintenance'
+                description = `Granblue Fantasy will be undergoing maintenance in **${difference}**.\nMaintenance will last for **${duration}**.\n\n**Upcoming Events**\u00A0`
+            } else if (isMaintenance) {
+                const difference = this.buildDiffString(this.schedule.maintenance.ends)
+
+                name = 'Maintenance'
+                description = `Granblue Fantasy is currently undergoing maintenance.\nIt will end in **${difference}**.\n\n**Upcoming Events**\u00A0`
+            }
+        }
+
+        if (this.schedule.magfest && !isMaintenance && !upcomingMaintenance) {
+            if (upcomingMagfest) {
+                const parts: NumberObject = dayjs.preciseDiff(dayjs(this.schedule.magfest.starts).utcOffset(540), dayjs(this.schedule.magfest.ends), true)
+                const difference = this.buildDiffString(this.schedule.magfest.starts)
+                const duration = this.buildString(null, parts.days, parts.hours)
+                
+                name = `${this.schedule.magfest.name} coming soon!`
+                description = `The ${this.schedule.magfest.name} starts in **${difference}**! It will last for **${duration}**.\n\nFor more info, use \`$schedule magfest\`.\n\n**Upcoming Events**\u00A0`
+            } else if (isMagfest) {
+                const difference = this.buildDiffString(this.schedule.magfest.ends)
+
+                name = this.schedule.magfest.name
+                image = this.schedule.magfest.banner
+                description = `The ${this.schedule.magfest.name} is underway for the next **${difference}**.\n\nFor more info, use \`$schedule magfest\`.\n\n**Upcoming Events**\u00A0`
+            }
+        }
+
+        return {
+            name: name,
+            description: description,
+            image: image
+        }
     }
 
     // Helper methods
