@@ -378,12 +378,12 @@ class ScheduleCommand extends Command {
                 const duration = this.buildString(null, parts.days, parts.hours)
                 
                 name = 'Upcoming Maintenance'
-                description = `Granblue Fantasy will be undergoing maintenance in **${difference}**.\nMaintenance will last for **${duration}**.\n\n**Upcoming Events**\u00A0`
+                description = `Granblue Fantasy will be undergoing maintenance in **${difference}**.\nMaintenance will last for **${duration}**.\n\n**Event Schedule**\u00A0`
             } else if (isMaintenance) {
                 const difference = this.buildDiffString(this.schedule.maintenance.ends)
 
                 name = 'Maintenance'
-                description = `Granblue Fantasy is currently undergoing maintenance.\nIt will end in **${difference}**.\n\n**Upcoming Events**\u00A0`
+                description = `Granblue Fantasy is currently undergoing maintenance.\nIt will end in **${difference}**.\n\n**Event Schedule**\u00A0`
             }
         }
 
@@ -394,13 +394,13 @@ class ScheduleCommand extends Command {
                 const duration = this.buildString(null, parts.days, parts.hours)
                 
                 name = `${this.schedule.magfest.name} coming soon!`
-                description = `The ${this.schedule.magfest.name} starts in **${difference}**! It will last for **${duration}**.\n\nFor more info, use \`$schedule magfest\`.\n\n**Upcoming Events**\u00A0`
+                description = `The ${this.schedule.magfest.name} starts in **${difference}**! It will last for **${duration}**.\n\nFor more info, use \`$schedule magfest\`.\n\n**Event Schedule**\u00A0`
             } else if (isMagfest) {
                 const difference = this.buildDiffString(this.schedule.magfest.ends)
 
                 name = this.schedule.magfest.name
                 image = this.schedule.magfest.banner
-                description = `The ${this.schedule.magfest.name} is underway for the next **${difference}**.\n\nFor more info, use \`$schedule magfest\`.\n\n**Upcoming Events**\u00A0`
+                description = `The ${this.schedule.magfest.name} is underway for the next **${difference}**.\n\nFor more info, use \`$schedule magfest\`.\n\n**Event Schedule**\u00A0`
             }
         }
 
