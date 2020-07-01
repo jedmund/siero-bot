@@ -1,11 +1,32 @@
 {
     "maintenance": {
-        "starts": "2020-06-09T01:00:00+09:00",
-        "ends": "2020-06-09T08:00:00+09:00"
+        "starts": "2020-01-01T01:00:00+09:00",
+        "ends": "2020-01-01T21:00:00+09:00"
     },
     "magfest": {
-        "starts": "",
-        "ends": ""
+        "name": {
+            "en": "Granblue Big Summer Surprise",
+            "jp": ""
+        },
+        "info": [
+            "Free Daily 10-Part Draw",
+            "Free Daily Premium Draw",
+            "Daily 200 Crystal Bonus",
+            "Campaign-Exclusive Quest",
+            "1.5x More RP/EXP",
+            "Half AP/EP Event",
+            "Half AP for Free Quests",
+            "Half AP for Side Story Quests",
+            "Half Off Treasure Trade Cost",
+            "Half Treasure Cost",
+            "More Renown and Prestige Pendants",
+            "2x Boost to Shop Skills",
+            "Arcarum Badge Bonus Bash"
+        ],
+        "wiki": "https://gbf.wiki/Granblue_Big_Summer_Surprise/2019",
+        "banner": "https://gbf.wiki/images/6/6a/News_2200campaign_1.png",
+        "starts": "2020-01-03T08:00:00+09:00",
+        "ends": "2020-01-16T08:00:00+09:00"
     },
     "streams": [
         {
@@ -13,8 +34,8 @@
                 "en": "Hot Hot Hot! Granblue Summer Live Stream",
                 "jp": "熱いぜ！グラブルの夏！SP"
             },
-            "airtime": "2020-08-08T18:00:00+09:00",
-            "endtime": "2020-08-08T21:00:00+09:00",
+            "starts": "2020-08-08T18:00:00+09:00",
+            "ends": "2020-08-08T21:00:00+09:00",
             "link": ""
         }
     ],
