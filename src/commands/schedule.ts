@@ -350,19 +350,21 @@ class ScheduleCommand extends Command {
         const afterThreshold: boolean = dayjs(threshold).isAfter(date)
 
         if (afterThreshold) {
-            string = `${this.buildString(parts.days, parts.hours, parts.minutes)}`
+            string = `${this.buildString(parts.months, parts.days, parts.hours, parts.minutes)}`
         } else {
-            string = `${this.buildString(parts.days)}`
+            string = `${this.buildString(parts.months, parts.days)}`
         }
 
         return string
     }
 
-    private buildString(d: NullableNumber = null, h: NullableNumber = null, m: NullableNumber = null, s: NullableNumber = null): string {
+    private buildString(m: NullableNumber = null, d: NullableNumber = null, h: NullableNumber = null, mm: NullableNumber = null, s: NullableNumber = null): string {
         let string = ''
         let strings = []
 
-        if (d) {
+        if (m && d) {
+            strings.push(`${m} ${pluralize('month', m)} ${d} ${pluralize('day', d)}`)
+        } else if (d) {
             strings.push(`${d} ${pluralize('day', d)}`)
         }
 
@@ -370,8 +372,8 @@ class ScheduleCommand extends Command {
             strings.push(`${h} ${pluralize('hour', h)}`)
         }
 
-        if (m) {
-            strings.push(`${m} ${pluralize('minute', m)}`)
+        if (mm) {
+            strings.push(`${mm} ${pluralize('minute', mm)}`)
         }
         
         if (s) {
