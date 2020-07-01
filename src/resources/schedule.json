@@ -1,8 +1,44 @@
 {
     "maintenance": {
-        "starts": "2020-06-09T01:00:00+09:00",
-        "ends": "2020-06-09T08:00:00+09:00"
+        "starts": "2020-01-01T01:00:00+09:00",
+        "ends": "2020-01-01T21:00:00+09:00"
     },
+    "magfest": {
+        "name": {
+            "en": "",
+            "jp": ""
+        },
+        "info": [
+            "Free Daily 10-Part Draw",
+            "Free Daily Premium Draw",
+            "Daily 200 Crystal Bonus",
+            "Campaign-Exclusive Quest",
+            "1.5x More RP/EXP",
+            "Half AP/EP Event",
+            "Half AP for Free Quests",
+            "Half AP for Side Story Quests",
+            "Half Off Treasure Trade Cost",
+            "Half Treasure Cost",
+            "More Renown and Prestige Pendants",
+            "2x Boost to Shop Skills",
+            "Arcarum Badge Bonus Bash"
+        ],
+        "wiki": "",
+        "banner": "",
+        "starts": "2020-01-01T08:00:00+09:00",
+        "ends": "2020-01-01T08:00:00+09:00"
+    },
+    "streams": [
+        {
+            "name": {
+                "en": "Hot Hot Hot! Granblue Summer Live Stream",
+                "jp": "熱いぜ！グラブルの夏！SP"
+            },
+            "starts": "2020-08-08T18:00:00+09:00",
+            "ends": "2020-08-08T21:00:00+09:00",
+            "link": ""
+        }
+    ],
     "events": [
         {
             "name": {
@@ -156,6 +192,27 @@
                 "jp": "2020-06 バランス調整"
             },
             "release-date": "2020-06-09T19:00:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Main Story Quest 133-140",
+                "jp": "メインクエスト133-140章"
+            },
+            "release-date": "2020-07-20T19:00:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Six Dragons HL Raids",
+                "jp": "新マルチバトル「六竜ＨＬ」追加"
+            },
+            "release-date": "2020-07-27T19:00:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Damascus Brick added to Shop",
+                "jp": "ダマスカス鋼の在庫追加"
+            },
+            "release-date": "2020-07-29T19:00:00+09:00"
         }
     ],
     "scheduled": [
@@ -175,13 +232,61 @@
         },
         {
             "month": "july",
-            "period": "end",
+            "period": "unspecified",
             "events": {
                 "en": [
-                    "Main Story Quest update - 8 chapters"
+                    "New Sidestory: By Any Other Name",
+                    "4★ Uncap for (SSR) Christina",
+                    "4 Additional EX Poses",
+                    "Update to Forge Class Champion Weapons",
+                    "Update to Awakening",
+                    "Update to reducing weapons and summons",
+                    "Update to Omens in Battle System v2"
                 ],
                 "jp": [
-                    "メインクエスト追加 - 8章"
+                    "サイドストーリーに「この想いを、何に喩えようか」追加",
+                    "SSRクリスティーナ 最終上限解放",
+                    "「EX POSE」追加",
+                    "「英雄武器の作成」ページ改修",
+                    "「覚醒Lv」アップデート",
+                    "「エレメント化」アップデート",
+                    "「バトルシステム Ver.2」における「予兆演出」のアップデート"
+                ]
+            }
+        },
+        {
+            "month": "august",
+            "period": "unspecified",
+            "events": {
+                "en": [
+                    "Battle System v2 Ability Rebalance"
+                ],
+                "jp": [
+                    "「バトルシステム Ver.2」における「一部キャラクターのアビリティ対応について」"
+                ]
+            }
+        },
+        {
+            "month": "october",
+            "period": "middle",
+            "events": {
+                "en": [
+                    "Crew Valor Badge Event"
+                ],
+                "jp": [
+                    "勲章を獲得できる新イベント"
+                ]
+            }
+        },
+        {
+            "month": "november",
+            "period": "middle",
+            "events": {
+                "en": [
+                    "Unite and Fight: Dark-advantage"
+                ],
+                "jp": [
+                    "決戦！星の古戦場 - 闇有利"
                 ]
             }
         }
