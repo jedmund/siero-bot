@@ -5,7 +5,7 @@
     },
     "magfest": {
         "name": {
-            "en": "Granblue Big Summer Surprise",
+            "en": "",
             "jp": ""
         },
         "info": [
@@ -23,10 +23,10 @@
             "2x Boost to Shop Skills",
             "Arcarum Badge Bonus Bash"
         ],
-        "wiki": "https://gbf.wiki/Granblue_Big_Summer_Surprise/2019",
-        "banner": "https://gbf.wiki/images/6/6a/News_2200campaign_1.png",
-        "starts": "2020-01-03T08:00:00+09:00",
-        "ends": "2020-01-16T08:00:00+09:00"
+        "wiki": "",
+        "banner": "",
+        "starts": "2020-01-01T08:00:00+09:00",
+        "ends": "2020-01-01T08:00:00+09:00"
     },
     "streams": [
         {
