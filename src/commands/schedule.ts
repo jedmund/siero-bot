@@ -28,12 +28,14 @@ type NumberObject = { [key: string]: number }
 type NullableNumber = number | null
 
 interface Event {
-    readonly [index: string]: string | LocalizedString | null
+    readonly [index: string]: string | LocalizedString | string[] | null
     name: LocalizedString
     type: string
     starts: string
     ends: string
     advantage: string | null
+    info: string[]
+    banner: string | null
     link: string | null
 }
 
@@ -46,18 +48,9 @@ interface Month {
     }
 }
 
-interface Magfest {
-    name: string,
-    info: string[],
-    wiki: string,
-    banner: string,
-    starts: string,
-    ends: string
-}
-
 interface Schedule {
     maintenance: Duration | null
-    magfest: Magfest | null
+    magfest: Event | null
     events: Event[]
     scheduled: Month[]
 }
@@ -78,14 +71,7 @@ class ScheduleCommand extends Command {
         maintenance: null,
         events: [],
         scheduled: [],
-        magfest: {
-            name: '',
-            info: [],
-            wiki: '',
-            banner: '',
-            starts: '',
-            ends: ''
-        }
+        magfest: null
     }
 
     public constructor() {
@@ -345,7 +331,10 @@ class ScheduleCommand extends Command {
             const magfest = this.schedule.magfest
 
             embed.setTitle(magfest.name)
-            embed.setImage(magfest.banner)
+
+            if (magfest.banner) {
+                embed.setImage(magfest.banner)
+            }
 
             if (isMagfest) {
                 embed.setAuthor(`Ends in ${this.buildDiffString(magfest.ends)}`)
@@ -398,8 +387,8 @@ class ScheduleCommand extends Command {
             } else if (isMagfest) {
                 const difference = this.buildDiffString(this.schedule.magfest.ends)
 
-                name = this.schedule.magfest.name
-                image = this.schedule.magfest.banner
+                name = this.schedule.magfest.name.en
+                image = (this.schedule.magfest.banner) ? this.schedule.magfest.banner : ''
                 description = `The ${this.schedule.magfest.name} is underway for the next **${difference}**.\n\nFor more info, use \`$schedule magfest\`.\n\n**Event Schedule**\u00A0`
             }
         }
