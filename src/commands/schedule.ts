@@ -21,7 +21,6 @@ dayjs.extend(preciseDiff)
 dayjs.extend(localizedFormat)
 dayjs.extend(dayjsPluginUTC)
 
-
 const path = require('path')
 
 type NumberObject = { [key: string]: number }
@@ -52,7 +51,8 @@ interface Schedule {
     maintenance: Duration | null
     magfest: Event | null
     events: Event[]
-    scheduled: Month[]
+    scheduled: Month[],
+    streams: Event[]
 }
 
 interface LocalizedString {
@@ -70,6 +70,7 @@ class ScheduleCommand extends Command {
     schedule: Schedule = {
         maintenance: null,
         events: [],
+        streams: [],
         scheduled: [],
         magfest: null
     }
@@ -132,9 +133,22 @@ class ScheduleCommand extends Command {
     private async show() {
         let embed: MessageEmbed = this.renderList(this.schedule.events)
 
-        let eventInfo = this.renderServiceEvent()
-        embed.setTitle(eventInfo.name)
-        embed.setDescription(eventInfo.description)
+        const eventInfo = this.renderServiceEvent()
+        const streamInfo = this.renderStreamEvent()
+
+        const name = (streamInfo.name) ? streamInfo.name : eventInfo.name
+
+        let description = ''
+        if (streamInfo.description && eventInfo.description) {
+            description = `${streamInfo.description}\n\n**${eventInfo.name}**\n${eventInfo.description}`
+        } else if (streamInfo.description && !eventInfo.description) {
+            description = streamInfo.description
+        } else {
+            description = eventInfo.description
+        }
+
+        embed.setTitle(name)
+        embed.setDescription(description)
         embed.setImage(eventInfo.image)
 
         this.message!.channel.send(embed)
@@ -242,7 +256,6 @@ class ScheduleCommand extends Command {
             let event: Event = events[i]
 
             if (dayjs(event.ends).isAfter(dayjs())) {
-
                 const startsDiffString = `<Starts in ${this.buildDiffString(event.starts)}>`
                 const endsDiffString = `<Ends in ${this.buildDiffString(event.ends)}>`
                 
@@ -349,6 +362,33 @@ class ScheduleCommand extends Command {
         return embed
     }
 
+    private renderStreamEvent() {
+        let name = ''
+        let description = ''
+
+        for (let i in this.schedule.streams) {
+            const stream = this.schedule.streams[i]
+
+            const isLive = dayjs().isBetween(dayjs(stream.starts), dayjs(stream.ends))
+            const liveSoon = dayjs(stream.starts).isBetween(dayjs(), dayjs().add(7, 'days'))
+
+            if (isLive) {
+                name = `${stream.name.en} is live now!`
+                description = `Airing live right now \u2192 ${stream.link}`
+                break
+            } else if (liveSoon) {
+                name = `${stream.name.en} airs soon!`
+                description = `Live in **${this.buildDiffString(stream.starts)}**.\n\nTune in \u2192 ${stream.link}`
+                break
+            }
+        }
+
+        return {
+            name: name,
+            description: description
+        }
+    }
+
     private renderServiceEvent() {
         let name = ''
         let description = ''
@@ -382,14 +422,14 @@ class ScheduleCommand extends Command {
                 const difference = this.buildDiffString(this.schedule.magfest.starts)
                 const duration = this.buildString(null, parts.days, parts.hours)
                 
-                name = `${this.schedule.magfest.name} coming soon!`
-                description = `The ${this.schedule.magfest.name} starts in **${difference}**! It will last for **${duration}**.\n\nFor more info, use \`$schedule magfest\`.\n\n**Event Schedule**\u00A0`
+                name = `${this.schedule.magfest.name.en} coming soon!`
+                description = `The ${this.schedule.magfest.name.en} starts in **${difference}**! It will last for **${duration}**.\n\nFor more info, use \`$schedule magfest\`.\n\n**Event Schedule**\u00A0`
             } else if (isMagfest) {
                 const difference = this.buildDiffString(this.schedule.magfest.ends)
 
                 name = this.schedule.magfest.name.en
                 image = (this.schedule.magfest.banner) ? this.schedule.magfest.banner : ''
-                description = `The ${this.schedule.magfest.name} is underway for the next **${difference}**.\n\nFor more info, use \`$schedule magfest\`.\n\n**Event Schedule**\u00A0`
+                description = `The ${this.schedule.magfest.name.en} is underway for the next **${difference}**.\n\nFor more info, use \`$schedule magfest\`.\n\n**Event Schedule**\u00A0`
             }
         }
 
