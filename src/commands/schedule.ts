@@ -49,6 +49,7 @@ interface Month {
 interface Magfest {
     name: string,
     info: string[],
+    wiki: string,
     banner: string,
     starts: string,
     ends: string
@@ -80,6 +81,7 @@ class ScheduleCommand extends Command {
         magfest: {
             name: '',
             info: [],
+            wiki: '',
             banner: '',
             starts: '',
             ends: ''
@@ -126,6 +128,10 @@ class ScheduleCommand extends Command {
 
             case 'now':
                 this.current()
+                break
+
+            case 'magfest':
+                this.magfest()
                 break
 
             case 'help':
@@ -181,6 +187,18 @@ class ScheduleCommand extends Command {
             } else {
                 this.message!.channel.send('There is no event running right now. Use `$schedule next` to find out what event is running next.')
             }
+        }
+    }
+
+    private magfest(): void {
+        const isMagfest = this.schedule.magfest && dayjs().isBetween(dayjs(this.schedule.magfest.starts), dayjs(this.schedule.magfest.ends))
+        const upcomingMagfest = this.schedule.magfest && dayjs(this.schedule.magfest.starts).isBetween(dayjs(), dayjs().add(48, 'hours'))
+
+        if (isMagfest || upcomingMagfest) {
+            const embed: MessageEmbed = this.renderMagfest()
+            this.message!.channel.send(embed)
+        } else {
+            this.message?.channel.send('There is no upcoming magfest right now.')
         }
     }
 
@@ -311,6 +329,32 @@ class ScheduleCommand extends Command {
             if (key === 'link') {
                 embed.addField('Wiki', event[key])
             }
+        }
+
+        return embed
+    }
+
+    private renderMagfest(): MessageEmbed {
+        let embed = new MessageEmbed({
+            color: 0xdc322f
+        })
+
+        const isMagfest = this.schedule.magfest && dayjs().isBetween(dayjs(this.schedule.magfest.starts), dayjs(this.schedule.magfest.ends))
+
+        if (this.schedule.magfest) {
+            const magfest = this.schedule.magfest
+
+            embed.setTitle(magfest.name)
+            embed.setImage(magfest.banner)
+
+            if (isMagfest) {
+                embed.setAuthor(`Ends in ${this.buildDiffString(magfest.ends)}`)
+            } else {
+                embed.setAuthor(`Starts in ${this.buildDiffString(magfest.starts)}`)
+            }
+
+            embed.addField('Wiki', magfest.wiki)
+            embed.addField('Content', `\`\`\`${magfest.info.join('\n')}\`\`\``)
         }
 
         return embed
