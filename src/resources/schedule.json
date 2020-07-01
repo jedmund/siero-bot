@@ -42,7 +42,7 @@
         {
             "name": {
                 "en": "Xeno Ifrit Showdown",
-                "jp": "ゼノイフリート撃滅戦"
+                "jp": "ゼノ・イフリート撃滅戦"
             },
             "banner": "https://gbf.wiki/images/7/7c/Xeno_Ifrit_Clash_top.png",
             "link": "https://gbf.wiki/Xeno_Ifrit_Clash",
@@ -84,6 +84,62 @@
             "type": "scenario",
             "starts": "2020-06-28T17:00:00+09:00",
             "ends": "2020-07-06T18:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Xeno Vohu Manah Showdown",
+                "jp": "ゼノ・ウォフマナフ撃滅戦"
+            },
+            "banner": "https://gbf.wiki/images/3/3a/Xeno_Vohu_Manah_Clash_top.png",
+            "link": "https://gbf.wiki/Xeno_Vohu_Manah_Clash",
+            "type": "farming",
+            "advantage": "wind",
+            "starts": "2020-07-07T17:00:00+09:00",
+            "ends": "2020-07-13T20:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "THE MAYDAYS",
+                "jp": "THE MAYDAYS"
+            },
+            "banner": "https://gbf.wiki/images/8/84/The_Maydays_top.jpg",
+            "link": "https://gbf.wiki/The_Maydays",
+            "type": "scenario rerun",
+            "starts": "2020-07-14T19:00:00+09:00",
+            "ends": "2020-07-21T20:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Proving Grounds",
+                "jp": "ブレイブグラウンド"
+            },
+            "banner": "https://gbf.wiki/images/e/ec/Proving_Grounds_top.png",
+            "link": "https://gbf.wiki/Proving_Grounds",
+            "type": "farming",
+            "advantage": "wind",
+            "starts": "2020-07-22T17:00:00+09:00",
+            "ends": "2020-07-28T20:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Scenario Event",
+                "jp": "シナリオイベント"
+            },
+            "type": "scenario",
+            "starts": "2020-07-29T17:00:00+09:00",
+            "ends": "2020-08-06T18:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Unite and Fight",
+                "jp": "決戦！星の古戦場 - 土有利"
+            },
+            "banner": "https://gbf.wiki/images/0/09/UniteAndFight.png",
+            "link": "https://gbf.wiki/Unite_and_Fight",
+            "type": "guild-wars",
+            "advantage": "earth",
+            "starts": "2020-08-22T19:00:00+09:00",
+            "ends": "2020-08-29T23:59:00+09:00"
         }
     ],
     "updates": [
