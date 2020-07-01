@@ -46,8 +46,17 @@ interface Month {
     }
 }
 
+interface Magfest {
+    name: string,
+    info: string[],
+    banner: string,
+    starts: string,
+    ends: string
+}
+
 interface Schedule {
     maintenance: Duration | null
+    magfest: Magfest | null
     events: Event[]
     scheduled: Month[]
 }
@@ -67,7 +76,14 @@ class ScheduleCommand extends Command {
     schedule: Schedule = {
         maintenance: null,
         events: [],
-        scheduled: []
+        scheduled: [],
+        magfest: {
+            name: '',
+            info: [],
+            banner: '',
+            starts: '',
+            ends: ''
+        }
     }
 
     public constructor() {
@@ -124,11 +140,22 @@ class ScheduleCommand extends Command {
     private async show() {
         let embed: MessageEmbed = this.renderList(this.schedule.events)
 
-        if (this.schedule.maintenance && dayjs().isBetween(dayjs(this.schedule.maintenance.starts), dayjs(this.schedule.maintenance.ends))) {
-            const difference = dayjs.preciseDiff(dayjs().utcOffset(540), this.schedule.maintenance.ends)
+        const isMagfest = this.schedule.magfest && dayjs().isBetween(dayjs(this.schedule.magfest.starts), dayjs(this.schedule.magfest.ends))
+        const isMaintenance = this.schedule.maintenance && dayjs().isBetween(dayjs(this.schedule.maintenance.starts), dayjs(this.schedule.maintenance.ends))
+
+        if (this.schedule.maintenance && isMaintenance) {
+            const difference = this.buildDiffString(this.schedule.maintenance.ends)
 
             embed.setTitle('Maintenance')
-            embed.setDescription(`Granblue Fantasy is currently undergoing maintenance.\nIt will end in **${difference}**.\n\u00A0`)
+            embed.setDescription(`Granblue Fantasy is currently undergoing maintenance.\nIt will end in **${difference}**.\n\n**Upcoming Events**\u00A0`)
+        }
+
+        if (this.schedule.magfest && isMagfest && !isMaintenance) {
+            const difference = this.buildDiffString(this.schedule.magfest.ends)
+
+            embed.setTitle(this.schedule.magfest.name)
+            embed.setDescription(`The ${this.schedule.magfest.name} is underway! It will end in **${difference}**.\nFor more info, use \`$schedule magfest\`.\n\n**Upcoming Events**\u00A0`)
+            embed.setImage(this.schedule.magfest.banner)
         }
 
         this.message!.channel.send(embed)
