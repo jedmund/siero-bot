@@ -1,10 +1,8 @@
 
-import { Message } from 'discord.js'
-import { MessageEmbed } from 'discord.js'
-import { Command } from 'discord-akairo'
+import { Message, MessageEmbed } from 'discord.js'
+import { SieroCommand } from '../helpers/SieroCommand'
 import { promises as fs } from 'fs'
 
-import common from '../helpers/common.js'
 import isBetween from 'dayjs/plugin/isBetween'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
@@ -65,8 +63,7 @@ interface Duration {
     ends: string
 }
 
-class ScheduleCommand extends Command {
-    message: Message | null = null
+class ScheduleCommand extends SieroCommand {
     schedule: Schedule = {
         maintenance: null,
         events: [],
@@ -89,9 +86,9 @@ class ScheduleCommand extends Command {
     }
 
     public async exec(message: Message, args: { operation: string }) {
-        console.log(`(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${message.author.id}] ${message.content}`)
+        this.log(message)
 
-        common.storeMessage(this, message)
+        this.message = message
 
         await this.load()
             .then(() => {
