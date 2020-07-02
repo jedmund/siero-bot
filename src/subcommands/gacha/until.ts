@@ -1,6 +1,8 @@
 
-import { Client } from '../../services/connection.js'
 import { Message } from 'discord.js'
+import { SieroCommand } from '../../helpers/SieroCommand'
+
+import { Client } from '../../services/connection.js'
 import { Gacha } from '../../services/gacha.js'
 import { Item, PromptResult, ParsedRequest } from '../../services/constants.js'
 
@@ -35,11 +37,13 @@ class Until {
 
     userId: string
     message: Message
+    command: SieroCommand
     deciderMessage: Message | null = null
 
-    public constructor(message: Message, rateups: Item[]) {
+    public constructor(command: SieroCommand, message: Message, rateups: Item[]) {
         this.userId = message.author.id
         this.message = message
+        this.command = command
         this.rateups = rateups
 
         const target = message.content.split(' ').splice(2).join(' ')
@@ -65,14 +69,15 @@ class Until {
 
     public async execute() {
         const gacha = new Gacha(this.properties.gala!, this.properties.season!, this.rateups)
-
+        
         await this.countPossibleItems(this.target)
             .then((data: NumberResult) => {
                 return this.parsePossibleItems(data.count)
             })
             .then((chosenItem: Item | void) => {
                 if (!chosenItem) {
-                    common.missingItem(this.message, this.userId, 'until', this.target)
+                    const parts = common.missingItem(this.message, this.userId, 'until', this.target)
+                    this.command.reportError(parts.error, parts.text, false, parts.section)
                     return Promise.reject('missingItem')
                 }
 
@@ -159,7 +164,7 @@ class Until {
         return await Client.one(sql, name)
             .catch((error: Error) => {
                 const text = 'Sorry, there was an error communicating with the database for your last request.'
-                common.reportError(this.message, this.userId, 'rateup', error, text)
+                this.command.reportError(error.message, text)
             })
     }
 
@@ -215,7 +220,7 @@ class Until {
             })
             .catch((error: Error) => {
                 const text = 'Sorry, there was an error communicating with the database for your last request.'
-                common.reportError(this.message, this.userId, 'rateup', error, text)
+                this.command.reportError(error.message, text)
             })
     }
 
@@ -256,7 +261,7 @@ class Until {
             content: `\`\`\`${this.message.content} ${appearance}\`\`\``
         }
 
-        common.reportError(this.message, this.userId, 'until', error, text, false, section)
+        this.command.reportError(error, text, false, section)
     }
 }
 

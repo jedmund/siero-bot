@@ -136,7 +136,7 @@ class GachaCommand extends SieroCommand {
     }
 
     private until() {
-        const until = new Until(this.message, this.rateups)
+        const until = new Until(this, this.message, this.rateups)
         until.execute()
     }
 
