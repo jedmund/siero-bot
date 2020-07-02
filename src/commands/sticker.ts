@@ -1,10 +1,6 @@
-import { Message } from 'discord.js'
+import { Message, MessageEmbed } from 'discord.js'
+import { SieroCommand } from '../helpers/SieroCommand'
 
-const { Command } = require('discord-akairo')
-const { MessageEmbed } = require('discord.js')
-
-const common = require('../helpers/common.js')
-const dayjs = require('dayjs')
 const stickers = require('../resources/stickers.js')
 
 type Sticker = string | null
@@ -17,7 +13,7 @@ interface StickerArgs {
     language: string
 }
 
-class StickerCommand extends Command {
+class StickerCommand extends SieroCommand {
     public constructor() {
         super('sticker', {
             aliases: ['sticker', 'ss'],
@@ -25,13 +21,13 @@ class StickerCommand extends Command {
                 { id: 'alias' },
                 { id: 'language' }
             ],
-            regex: ['(?<=\:)(.*?)(?=\:)']
+            regex: /(?<=\:)(.*?)(?=\:)/
         })
     }
 
     public exec(message: Message, args: NullableStickerArgs) {
-        common.storeUser(this, message.author.id)
-        common.storeArgs(this, args) 
+        this.message = message
+        this.args = args
 
         const result: StickerArgs = this.extract()
 
@@ -40,14 +36,14 @@ class StickerCommand extends Command {
         } else {
             const sticker: Sticker = this.sticker(result.alias, result.language)
 
-            if (sticker != null) {
-                console.log(`(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${message.author.id}] ${message.content}`)
+            if (sticker) {
+                this.log(message)
                 message.channel.send(this.buildStickerEmbed(sticker))
             }
         }
     }
 
-    private extract() {
+    private extract(): StickerArgs {
         let alias: string = ""
 
         if (!this.args.alias) {
@@ -56,41 +52,37 @@ class StickerCommand extends Command {
             alias = this.args.alias
         }
 
-        const language = alias.startsWith('jp') ? 'jp' : 'en'
+        const language: string = alias.startsWith('jp') ? 'jp' : 'en'
         alias = alias.startsWith('jp') ? alias.substring(2).charAt(0).toLowerCase() + alias.substring(2).slice(1) : alias
 
-        return { 
+        return {
             alias: alias, 
             language: language 
         }
     }
 
-    private buildHelpEmbed() {
+    private buildHelpEmbed(): MessageEmbed {
         const link = 'https://github.com/jedmund/siero-bot/wiki/Using-stickers#available-stickers'
         const description = `You can also see a list of stickers with images on my wiki: ${link}`
 
         return new MessageEmbed({
             title: 'Stickers',
             description: description,
-            color: 0xb58900
+            color: this.embedColor
         })
     }
 
-    private buildStickerEmbed(sticker: string) {
+    private buildStickerEmbed(sticker: string): MessageEmbed {
         return new MessageEmbed({
             image: { url: sticker },
-            color: 0xb58900
+            color: this.embedColor
         })
     }
 
     private sticker(alias: string, language: string): Sticker {
-        let sticker: Sticker = null
-
-        if (Object.keys(stickers.list).includes(alias)) {
-            sticker = stickers.list[alias][language]
-        }
-
-        return sticker
+        return (Object.keys(stickers.list).includes(alias)) ? 
+            stickers.list[alias][language] : 
+            null
     }
 }
 
