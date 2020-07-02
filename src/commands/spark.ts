@@ -247,7 +247,7 @@ class SparkCommand extends SieroCommand {
     }
 
     async target() {
-        let target = new Target(this.message)
+        let target = new Target(this, this.message)
         target.execute()
     }
 

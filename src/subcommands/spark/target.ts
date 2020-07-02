@@ -1,5 +1,8 @@
-import { Client } from '../../services/connection.js'
+import { SieroCommand } from '../../helpers/SieroCommand'
 import { Message, MessageEmbed, User } from 'discord.js'
+
+import { Client } from '../../services/connection.js'
+
 import { Item, PromptResult } from '../../services/constants.js'
 import { Decision as decision } from '../../helpers/decision.js'
 
@@ -14,6 +17,7 @@ enum Method {
 }
 
 class Target {
+    command: SieroCommand
     userId: string
     operation: string | null = null
     targetName: string | null = null
@@ -23,7 +27,8 @@ class Target {
     deciderMessage: Message | null = null
     firstMention: User | null = null
 
-    public constructor(message: Message) {
+    public constructor(command: SieroCommand, message: Message) {
+        this.command = command
         this.userId = message.author.id
         this.message = message
 
@@ -94,13 +99,13 @@ class Target {
                 } else {
                     const text = `It looks like ${(isOwnTarget) ? 'you haven\'t' : this.firstMention!.username + ' hasn\'t'} set a spark target yet!`
                     const errorMessage: string = `(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${this.userId}] Spark not set: ${this.message.content}`
-                    common.reportError(this.message, this.userId, 'target', errorMessage, text, documentation, errorSection)
+                    this.command.reportError(errorMessage, text, documentation, errorSection)
                 }
             })
             .catch((_: Error) => {
                 const text = 'Sorry, there was an error communicating with the database for your last request.'
                 const errorMessage: string = `(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${this.userId}] Spark not set: ${this.message.content}`
-                common.reportError(this.message, this.userId, 'target', errorMessage, text, documentation, errorSection)
+                this.command.reportError(errorMessage, text, documentation, errorSection)
             })
     }
 
@@ -169,7 +174,7 @@ class Target {
             })
             .catch((error: Error) => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                common.reportError(this.message, this.userId, 'target', error, text)
+                this.command.reportError(error.message, text)
             })
     }
 
@@ -186,7 +191,7 @@ class Target {
             })
             .catch((error: Error) => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                common.reportError(this.message, this.userId, 'target', error, text)
+                this.command.reportError(error.message, text)
             })
     }
 
@@ -217,7 +222,7 @@ class Target {
             })
             .catch((error: Error) => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                common.reportError(this.message, this.userId, 'target', error, text)
+                this.command.reportError(error.message, text)
             })
     }
 
@@ -265,7 +270,7 @@ class Target {
             })
             .catch((error: Error) => {
                 let text = `Sorry, there was an error with your last request.`
-                common.reportError(this.message, this.userId, 'target', error, text)
+                this.command.reportError(error.message, text)
             })
     }
 }
