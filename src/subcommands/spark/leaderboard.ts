@@ -1,5 +1,6 @@
+import { MessageEmbed, Snowflake } from 'discord.js'
+
 import { Client } from '../../services/connection.js'
-import {MessageEmbed, Snowflake} from 'discord.js'
 import common from '../../helpers/common.js'
 
 interface Result {
@@ -65,7 +66,7 @@ class Leaderboard {
             var result = divider
 
             for (var i = 0; i < maxRows; i++) {
-                let numDraws = common.calculateDraws(rows[i].crystals, rows[i].tickets, rows[i].ten_tickets)
+                let numDraws = this.calculateDraws(rows[i].crystals, rows[i].tickets, rows[i].ten_tickets)
 
                 let spacedUsername = common.spacedString(rows[i].username, usernameMaxChars)
                 let spacedDraws = common.spacedString(`${numDraws} draws`, numDrawsMaxChars)
@@ -98,9 +99,17 @@ class Leaderboard {
     }
 
     // Helper methods
+    private calculateDraws(crystals: number, tickets: number, tenTickets: number) {
+        let ticketValue = tickets * 300
+        let tenTicketValue = tenTickets * 3000
+        let totalCrystalValue = crystals + ticketValue + tenTicketValue
+    
+        return Math.floor(totalCrystalValue / 300)
+    }
+
     private compareProgress(a: Result, b: Result, order: Sort = Sort.Descending) {
-        let aDraws = common.calculateDraws(a.crystals, a.tickets, a.ten_tickets)
-        let bDraws = common.calculateDraws(b.crystals, b.tickets, b.ten_tickets)
+        let aDraws = this.calculateDraws(a.crystals, a.tickets, a.ten_tickets)
+        let bDraws = this.calculateDraws(b.crystals, b.tickets, b.ten_tickets)
 
         let comparison = 0
         if (aDraws > bDraws) {
