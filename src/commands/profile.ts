@@ -1,11 +1,7 @@
-import { Collection, CollectorFilter, Message, Snowflake, User } from 'discord.js'
+import { Collection, CollectorFilter, Message, MessageEmbed, Snowflake, User } from 'discord.js'
+import { SieroCommand } from '../helpers/SieroCommand'
 
 const { Client, pgpErrors } = require('../services/connection.js')
-const { Command } = require('discord-akairo')
-const { MessageEmbed } = require('discord.js')
-
-const common = require('../helpers/common.js')
-const dayjs = require('dayjs')
 
 type StringResult = { [key: string]: string }
 type NumberResult = { [key: string]: number}
@@ -28,7 +24,9 @@ let fieldMapping: StringResult = {
     'gog'           : 'GOG username'
 }
 
-class ProfileCommand extends Command {
+class ProfileCommand extends SieroCommand {
+    skipWord: string = '<skip>'
+
     public constructor() {
         super('profile', {
             aliases: ['profile', 'p'],
@@ -41,23 +39,23 @@ class ProfileCommand extends Command {
     }
 
     public exec(message: Message, args: ProfileArgs) {
-        common.storeMessage(this, message)
-        common.storeUser(this, message.author.id)
+        this.log(message)
 
-        console.log(`(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${message.author.id}] ${message.content}`)
+        this.args = args
+        this.message = message
 
-        let commandType: string = 'profiles'
+        this.commandType = 'profiles'
 
-        this.checkIfUserExists(commandType)
+        this.checkIfUserExists(this.commandType)
             .then((count: number) => {
                 if (count == 0) {
-                    this.createRowForUser(commandType)
+                    this.createRowForUser(this.commandType)
                 }
 
                 return
             }).then(() => {
                 if (message.channel.type !== 'dm') {
-                    this.checkGuildAssociation(commandType)
+                    this.checkGuildAssociation(this.commandType)
                 }
             }).then(() => {
                 this.switchOperation(args)
@@ -94,14 +92,14 @@ class ProfileCommand extends Command {
                     let text = `Sorry, we don't currently accept the profile field \`${field}\`.`
                     let error = `[${this.commandType}] invalid profile field`
 
-                    common.reportError(this.message, this.userId, this.context, error, text)
+                    this.reportError(error, text)
 
                     return
                 }
 
                 this.saveField(field, value)
                     .then((result: StringResult) => {
-                        if (result.user_id === this.userId && result[field] === value) {
+                        if (result.user_id === this.message.author.id && result[field] === value) {
                             this.message.reply(`Your **${fieldMapping[field]}** has been set to \`${value}\``)
                         }
                     })
@@ -121,13 +119,13 @@ class ProfileCommand extends Command {
 
         this.fetchProfileData(target.id)
             .then((data: StringResult) => {
-                if (data.guild_ids.includes(this.message.guild.id)) {
+                if (this.message.guild && data.guild_ids.includes(this.message.guild.id)) {
                     let embed = this.renderProfile(target, data)
                     this.message.channel.send(embed)
                 } else {
                     let text = 'Sorry, I can\'t show that profile on this server.'
                     let error = `[${this.commandType}] foreign server`
-                    common.reportError(this.message, this.userId, this.context, error, text)
+                    this.reportError(error, text)
                 }
             })
             .catch((error) => {
@@ -136,8 +134,6 @@ class ProfileCommand extends Command {
     }
     
     private async wizard() {
-        this.skipWord = '<skip>'
-
         let breath = 650
 
         let text1 = 'Let\'s set up your profile together!'
@@ -230,7 +226,7 @@ class ProfileCommand extends Command {
             }
         }
 
-        this.fetchProfileData(this.userId)
+        this.fetchProfileData(this.message.author.id)
             .then((data: StringResult) => {
                 let embed = this.renderProfile(this.message.author, data)
                 let completed = 'Great! We\'re all done. Thanks for filling out your profile!'
@@ -281,7 +277,7 @@ class ProfileCommand extends Command {
     }
 
     private extractTarget() {
-        let mentions: [User] = this.message.mentions.users.array()
+        let mentions: User[] = this.message.mentions.users.array()
         return (mentions.length > 0) ? mentions[0] : this.message.author
     }
 
@@ -299,7 +295,7 @@ class ProfileCommand extends Command {
         }
 
         const embed = new MessageEmbed({
-            title: `${target.username} 's profile`,
+            title: `${target.username}'s profile`,
             color: 0xb58900
         })
 
@@ -326,7 +322,7 @@ class ProfileCommand extends Command {
         let sql: string = `SELECT COUNT(*) AS count FROM ${table} WHERE user_id = $1`
 
         try {
-            return await Client.one(sql, this.userId)
+            return await Client.one(sql, this.message.author.id)
                 .then((result: NumberResult) => {
                     return result.count
                 })
@@ -343,9 +339,9 @@ class ProfileCommand extends Command {
         let sql: string = `INSERT INTO ${table} (user_id) VALUES ($1) RETURNING user_id`
         
         try {
-            Client.one(sql, this.userId)
+            Client.one(sql, this.message.author.id)
                 .then((_: StringResult) => {
-                    console.log(`[${this.commandType}] New user created: ${this.userId}`)
+                    console.log(`[${this.commandType}] New user created: ${this.message.author.id}`)
                 })
                 .catch((error: Error) =>  {
                     console.error(error)
@@ -362,10 +358,10 @@ class ProfileCommand extends Command {
             'LIMIT 1'
         ].join(" ")
 
-        Client.one(sql, this.userId)
+        Client.one(sql, this.message.author.id)
             .then((result: StringResult) => {
                 let guilds = result.guild_ids
-                if (!guilds || guilds && !guilds.includes(this.message.guild.id)) {
+                if (!guilds || guilds && this.message.guild && !guilds.includes(this.message.guild.id)) {
                     this.createGuildAssociation(table)
                 }
             })
@@ -381,22 +377,26 @@ class ProfileCommand extends Command {
             'WHERE user_id = $2'
         ].join(" ")
 
-        Client.any(sql, ['{' + this.message.guild.id + '}', this.userId])
-            .catch((error: Error) => {
-                console.error(error)
-            })
+        if (this.message.guild) {
+            Client.any(sql, ['{' + this.message.guild.id + '}', this.message.author.id])
+                .catch((error: Error) => {
+                    console.error(error)
+                })
+        } else {
+            console.error('There was a problem fetching the guild')
+        }
     }
 
     private async saveField(field: string, value: string): Promise<StringResult> {
         let sql: string = `UPDATE profiles SET ${field} = $1 WHERE user_id = $2 RETURNING user_id, ${field}`
 
-        return await Client.one(sql, [value, this.userId])
+        return await Client.one(sql, [value, this.message.author.id])
             .then((result: StringResult) => {
                 return result
             })
             .catch((error: Error) => {
                 let text = 'Sorry, there was an error communicating with the database to save your profile.'
-                common.reportError(this.message, this.userId, this.context, error, text)
+                this.reportError(error.message, text)
             })
     }
 
@@ -410,8 +410,9 @@ class ProfileCommand extends Command {
                 if (error instanceof pgpErrors.QueryResultError) {
                     var reply = ''
 
-                    if (this.message.mentions.length > 0 && this.userId != userId) {
-                        reply = `It looks like ${this.message.mentions[0].username} hasn't filled out their profile yet.`
+                    const mentions: User[] = [...this.message.mentions.users.values()]
+                    if (mentions.length > 0 && this.message.author.id != userId) {
+                        reply = `It looks like ${mentions[0].username} hasn't filled out their profile yet.`
                     } else {
                         reply = 'Oops, you haven\'t filled out your profile yet.'
                     }
@@ -419,7 +420,7 @@ class ProfileCommand extends Command {
                     this.message.reply(reply)
                 } else {
                     let text = 'Sorry, there was an error communicating with the database to fetch that profile.'
-                    common.reportError(this.message, this.userId, this.context, error, text)
+                    this.reportError(error.message, text)
                 }
             })
     }

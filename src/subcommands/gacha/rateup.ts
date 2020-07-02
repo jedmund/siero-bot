@@ -1,6 +1,7 @@
 
 import { Client } from '../../services/connection.js'
 import { Message, MessageEmbed, User } from 'discord.js'
+import { SieroCommand } from '../../helpers/SieroCommand'
 import { Item, PromptResult } from '../../services/constants.js'
 
 import common from '../../helpers/common.js'
@@ -22,6 +23,7 @@ class Rateup {
     userId: string
     siero: User | null
     prefix: string = '$'
+    command: SieroCommand
 
     operation: string | null = null
     rates: Rate[] = []
@@ -30,9 +32,10 @@ class Rateup {
     deciderMessage: Message | null = null
     firstMention: User | null = null
 
-    public constructor(message: Message, siero: User | null) {
+    public constructor(command: SieroCommand, message: Message, siero: User | null) {
         this.userId = message.author.id
         this.message = message
+        this.command = command
         this.siero = siero
 
         this.parseRequest(message.content)
@@ -40,7 +43,7 @@ class Rateup {
 
     public async execute() {
         if (this.message.guild) {
-            await common.fetchPrefix(this.message.guild.id)
+            await this.command.fetchPrefix(this.message.guild.id)
                 .then((prefix: string) => {
                     this.prefix = prefix
                     return this.switchOperation()
@@ -133,7 +136,7 @@ class Rateup {
             await Client.any(sql, [this.userId, this.firstMention.id])
                 .then(() => {
                     this.firstMention = null
-                    return Rateup.fetch(this.userId, this.message)
+                    return Rateup.fetch(this.userId)
                 })
                 .then((data: Item[] | void) => {
                     if (data) {
@@ -147,7 +150,7 @@ class Rateup {
                 })
                 .catch((error: Error) => {
                     const text = `Sorry, there was an error communicating with the database to copy ${sourceUser}'s rate-up.`
-                    common.reportError(this.message, this.userId, 'rateup', error, text)
+                    this.command.reportError(error.message, text)
                 })
         }
     }
@@ -187,7 +190,7 @@ class Rateup {
         const user = (this.firstMention) ? this.firstMention : this.message.author
         const isOwnTarget = (user.id == this.userId) ? true : false
 
-        await Rateup.fetch(user.id, this.message)
+        await Rateup.fetch(user.id)
             .then((data: Item[] | void) => {
                 if (data && data.length > 0) {
                     this.message.channel.send(this.render(user, data))
@@ -195,9 +198,9 @@ class Rateup {
                     this.message.author.send(this.notFoundError(isOwnTarget))
                 }
             })
-            .catch(error => {
+            .catch((error: Error) => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                common.reportError(this.message, this.userId, 'rateup', error, text)
+                this.command.reportError(error.message, text)
             })
     }
 
@@ -213,7 +216,7 @@ class Rateup {
             })
             .catch((error: Error) => {
                 const text = 'Sorry, there was an error communicating with the database for your last request.'
-                common.reportError(this.message, this.userId, 'rateup', error, text)
+                this.command.reportError(error.message, text)
             })
     }
 
@@ -232,7 +235,7 @@ class Rateup {
         }
     }
 
-    public static async fetch(id: string, message: Message): Promise<Item[] | void> {
+    public static async fetch(id: string): Promise<Item[] | void> {
         const sql = [
             'SELECT rateups.gacha_id AS id, rateups.rate, gacha.name, gacha.recruits, gacha.rarity, gacha.item_type, ',
             'gacha.flash, gacha.legend, gacha.summer, gacha.holiday, gacha.halloween, gacha.valentines',
@@ -242,10 +245,6 @@ class Rateup {
         ].join(' ')
 
         return await Client.any(sql, id)
-            .catch((error: Error) => {
-                let text = 'Sorry, there was an error communicating with the database for your last request.'
-                common.reportError(message, id, 'rateup', error, text)
-            })
     }
 
     private async saveAll(items: RateSet, admin: boolean = false) {
@@ -260,7 +259,7 @@ class Rateup {
             return items
         } catch(error) {
             const text = 'Sorry, there was an error fulfilling your last request.'
-            common.reportError(this.message, this.userId, 'rateup', error, text)
+            this.command.reportError(error, text)
 
             return null
         }
@@ -273,7 +272,7 @@ class Rateup {
         await Client.query(sql, [item.id, id, item.rate])
             .catch((error: Error) => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                common.reportError(this.message, id, 'rateup', error, text)
+                this.command.reportError(error.message, text)
             })
     }
 
@@ -388,7 +387,7 @@ class Rateup {
             })
             .catch((error: Error) => {
                 const text = 'Sorry, there was an error communicating with the database for your last request.'
-                common.reportError(this.message, this.userId, 'rateup', error, text)
+                this.command.reportError(error.message, text)
             })
     }
 
@@ -402,7 +401,7 @@ class Rateup {
         return await Client.one(sql, name)
             .catch((error: Error) => {
                 const text = 'Sorry, there was an error communicating with the database for your last request.'
-                common.reportError(this.message, this.userId, 'rateup', error, text)
+                this.command.reportError(error.message, text)
             })
     }
     

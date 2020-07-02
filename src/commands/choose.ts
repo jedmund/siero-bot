@@ -1,41 +1,39 @@
 import { Message } from 'discord.js'
-import { Command } from 'discord-akairo'
+import { SieroCommand } from '../helpers/SieroCommand'
 
-class ChooseCommand extends Command {
-    constructor() {
+class ChooseCommand extends SieroCommand {
+    public constructor() {
         super('choose', {
             aliases: ['choose', 'pick', 'ch'],
-            args: [
-                {
-                    id: 'options',
-                    type: 'string'
-                }
-            ]
+            args: [{ id: 'options' }]
         })
     }
 
-    exec(message: Message) {
-        console.log(`[${message.author.id}] ${message.content}`)
+    public exec(message: Message) {
+        this.log(message)
 
-        let options: string[] = this.parseRequest(message.content)
-        const reply: string = options[Math.floor(Math.random() * options.length)]
+        const options: string[] = this.parseRequest(message.content)
+        const hash: number = this.hash(message.author.id + message.content, options.length)
+        const choice: string = options[hash]
 
-        if (options.length > 1) {
-            message.reply(`Hmm... I choose ${reply}!`)
-        } else {
-            message.reply('Um... you only gave me one thing to choose from!')
-        }
+        const reply = (options.length > 1) ?
+            `Hmm... I choose **${choice}**!` :
+            `Um... you only gave me one thing to choose from!`
+
+        message.reply(reply)
     }
 
     private parseRequest(request: string): string[] {
-        let options: string[] = []
-        const splitRequest: string[] = request.split(' ').splice(1).join('').split(',')
+        const splitRequest: string[] = request.split('?')
+        return splitRequest[splitRequest.length - 1].split(',').map(Function.prototype.call, String.prototype.trim)
+    }
 
-        for (let i in splitRequest) {
-            options.push(splitRequest[i].trim())
+    private hash(string: string, size: number): number {
+        let hash = 0
+        for (let x = 0; x < string.length; x++) {
+            hash += string.charCodeAt(x)
         }
-
-        return options
+        return (hash % size)
     }
 }
 

@@ -140,61 +140,6 @@ module.exports = {
             })
     },
 
-    // Property persistance methods
-    storeArgs: function(that, args) {
-        that.args = args
-    },
-    storeMessage: function(that, message) {
-        that.message = message
-    },
-    storeUser: function(that, id) {
-        that.userId = id
-    },
-
-    // Error methods
-    buildHelpfulResponse: function(message, errorText, context, description = false, extraSection = null) {
-        var embed = new MessageEmbed({
-            color: 0xb58900
-        })
-
-        if (description) {
-            embed.setDescription(`You can find the documentation for \`\$${context}\` at ${this.getLinkForContext(context)}, or you can type \`\$${context} help\``)
-        }
-
-        if (extraSection != null) {
-            embed.addField(extraSection.title, extraSection.content)
-        }
-
-        embed.addField("You sent...", message.content)
-
-        return {
-            content: errorText,
-            embed: embed
-        }
-    },
-    calculateDraws: function(crystals, tickets, tenTickets) {
-        let ticketValue = tickets * 300
-        let tenTicketValue = tenTickets * 3000
-        let totalCrystalValue = crystals + ticketValue + tenTicketValue
-    
-        return Math.floor(totalCrystalValue / 300)
-    },
-    getLinkForContext: function(context) {
-        var link = ""
-
-        switch(context) {
-            case "gacha":
-                link = "https://github.com/jedmund/siero-bot/wiki/Pulling-gacha"
-                break
-            case "spark":
-                link = "https://github.com/jedmund/siero-bot/wiki/Saving-sparks"
-                break
-            default:
-                return false
-        }
-
-        return link
-    },
     missingItem: function(message, userId, context, name) {
         var text = ""
         var section = {
@@ -217,22 +162,11 @@ module.exports = {
         } else {
             section = null
         }
-        
-        this.reportError(message, userId, context, error, text, false, section)
-    },
-    reportError: function(message, userId, context, error, responseText, showDescription = false, extraSection = null) {                
-        let response = this.buildHelpfulResponse(message, responseText, context, showDescription, extraSection)
-        
-        message.author.send(response)
-            .catch(function(error) {
-                if (error instanceof DiscordAPIError) {
-                    console.error(`Cannot send private messages to this user: ${userId}`)
-                    message.reply("There was an error, but it looks like I'm not allowed to send you direct messages! Check your Discord privacy settings if you'd like help with commands via DM.")
 
-                }
-            })
-        
-
-        console.error(error)
-    },
+        return {
+            text: text,
+            error: error,
+            section: section
+        }
+    }
 }

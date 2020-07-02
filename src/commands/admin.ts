@@ -1,8 +1,6 @@
 import { Message, Presence, PresenceStatusData } from 'discord.js'
-import { Command } from 'discord-akairo'
+import { SieroCommand } from '../helpers/SieroCommand'
 
-const common = require('../helpers/common.js')
-const dayjs = require('dayjs')
 const pluralize = require('pluralize')
 
 interface AdminArgs {
@@ -10,14 +8,14 @@ interface AdminArgs {
     string: string | undefined
 }
 
-class AdminCommand extends Command {
-    commandType: string = 'admin'
+const emptyArgs = {
+    operation: '',
+    string: undefined
+}
 
-    message!: Message
-    args: AdminArgs = {
-        operation: '',
-        string: undefined
-    }
+class AdminCommand extends SieroCommand {
+    args: AdminArgs = emptyArgs
+    commandType: string = 'admin'
 
     public constructor() {
         super('admin', {
@@ -38,13 +36,10 @@ class AdminCommand extends Command {
     }
 
     public exec(message: Message, args: AdminArgs) {
-        console.log(`(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${message.author.id}] ${message.content}`)
+        this.log(message)
 
         this.message = message
         this.args = args
-
-        common.storeArgs(this, args)
-        common.storeMessage(this, message)
 
         this.switchOperation()
     }
@@ -88,7 +83,7 @@ class AdminCommand extends Command {
                     })
                     .catch((error: Error) => {
                         this.message.channel.send('Sorry, there was a problem updating my activity.')
-                        console.error(`(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${this.message.author.id}] ${error}`)
+                        console.error(`(${this.timestamp()}) [${this.message.author.id}] ${error}`)
                     })
             } else {
                 bot.setPresence({})
@@ -97,12 +92,12 @@ class AdminCommand extends Command {
                     })
                     .catch((error: Error) => {
                         this.message.channel.send('Sorry, there was a problem clearing my activity.')
-                        console.error(`(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${this.message.author.id}] ${error}`)
+                        console.error(`(${this.timestamp()}) [${this.message.author.id}] ${error}`)
                     })
             }
         } else {
             this.message.channel.send('Sorry, there was a problem updating my activity.')
-            console.error(`(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${this.message.author.id}] Could not instantiate bot user from client`)
+            console.error(`(${this.timestamp()}) [${this.message.author.id}] Could not instantiate bot user from client`)
         }
     }
 
@@ -119,11 +114,11 @@ class AdminCommand extends Command {
                 })
                 .catch((error: Error) => {
                     this.message.channel.send('Sorry, there was a problem updating my status.')
-                    console.error(`(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${this.message.author.id}] ${error}`)
+                    console.error(`(${this.timestamp()}) [${this.message.author.id}] ${error}`)
                 })
         } else {
             this.message.channel.send('Sorry, there was a problem updating my status.')
-            console.error(`(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${this.message.author.id}] Could not instantiate bot user from client`)
+            console.error(`(${this.timestamp()}) [${this.message.author.id}] Could not instantiate bot user from client`)
         }
     }
 }

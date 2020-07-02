@@ -1,18 +1,14 @@
-import { Client } from '../services/connection.js'
 import { Message, MessageEmbed } from 'discord.js'
-import { Command } from 'discord-akairo'
+import { SieroCommand } from '../helpers/SieroCommand'
 
-const common = require('../helpers/common.js')
-const dayjs = require('dayjs')
+import { Client } from '../services/connection.js'
 
 interface PrefixArgs {
     operation: string
     prefix: string | null
 }
 
-class PrefixCommand extends Command {
-    args?: PrefixArgs
-    message?: Message
+class PrefixCommand extends SieroCommand {
     commandType: string = 'prefix'
 
     public constructor() {
@@ -27,10 +23,10 @@ class PrefixCommand extends Command {
     }
 
     public exec(message: Message, args: PrefixArgs) {
-        console.log(`(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${message.author.id}] ${message.content}`)
+        this.log(message)
 
-        common.storeArgs(this, args)
-        common.storeMessage(this, message)
+        this.args = args
+        this.message = message
 
         this.switchOperation()
     }
@@ -123,8 +119,7 @@ class PrefixCommand extends Command {
             content: '```! $ % ^ & * ~ = : ; ?```'
         }
 
-        common.reportError(this.message, this.message?.author.id, this.commandType, error, text, false, section)
-
+        this.reportError(error, text, false, section)
     }
 }
 
