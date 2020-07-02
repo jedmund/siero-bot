@@ -1,9 +1,7 @@
-import { Message } from "discord.js"
+import { Message, MessageEmbed } from "discord.js"
+import { SieroCommand } from '../helpers/SieroCommand'
 
-const { Command } = require('discord-akairo')
-const { MessageEmbed } = require('discord.js')
-
-class IRSCommand extends Command {
+class IRSCommand extends SieroCommand {
     constructor() {
         super('taxes', {
             aliases: ['taxes', 'payup', 'collectiontime', 'audit']
@@ -12,11 +10,12 @@ class IRSCommand extends Command {
 
     exec(message: Message) {
         const embed = new MessageEmbed({
-            color: 'C8232C',
+            color: this.embedColor,
             title: 'IWASSHAAAAY!',
             description: '…ムムムム？？？？？？？',
             image: { url: 'https://i.imgur.com/GhkS14Z.png' },
         })
+        
         message.channel.send(embed)
     }
 }
