@@ -1,17 +1,12 @@
-import { Message } from 'discord.js'
-import { MessageEmbed } from 'discord.js'
-import { User } from 'discord.js'
-import { GuildMember } from 'discord.js'
-import { Snowflake } from 'discord.js'
+import { GuildMember, Message, MessageEmbed, Snowflake, User } from 'discord.js'
+import { SieroCommand } from '../helpers/SieroCommand'
 
 const { Client, pgpErrors } = require('../services/connection.js')
-const { Command } = require('discord-akairo')
 
 const { Leaderboard } = require('../subcommands/spark/leaderboard.js')
 const { Target } = require('../subcommands/spark/target.js')
 
 const common = require('../helpers/common.js')
-const dayjs = require('dayjs')
 
 type StringResult = { [key: string]: string }
 type NumberResult = { [key: string]: number }
@@ -38,7 +33,7 @@ enum SparkOperation {
     Subtraction
 }
 
-class SparkCommand extends Command {
+class SparkCommand extends SieroCommand {
     public constructor() {
         super('spark', {
             aliases: ['spark', 's'],
@@ -63,14 +58,12 @@ class SparkCommand extends Command {
     }
 
     public exec(message: Message, args: SparkArgs) {
+        this.log(message)
+
         this.commandType = 'sparks'
 
-        console.log(`(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${message.author.id}] ${message.content}`)
-
-        // Store values for later use
-        common.storeArgs(this, args)
-        common.storeMessage(this, message)
-        common.storeUser(this, message.author.id)
+        this.args = args
+        this.message = message
 
         this.checkIfUserExists(this.commandType)
             .then((count: number) => {
@@ -161,12 +154,12 @@ class SparkCommand extends Command {
 
     // Command methods
     private status() {
-        let id = (this.message.mentions.users.values().next().value) ? this.message.mentions.users.values().next().value.id : this.userId
+        let id = (this.message.mentions.users.values().next().value) ? this.message.mentions.users.values().next().value.id : this.message.author.id
         this.getProgress(id)
     }
 
     private quicksave() {
-        let values = this.message.content.split(' ').splice(2)
+        let values: number[] = this.message.content.split(' ').splice(2).map(Number)
         this.updateSpark(values[0], values[1], values[2])
     }
 
@@ -188,7 +181,7 @@ class SparkCommand extends Command {
             }
 
             let error = `Invalid amount or currency: ${this.message.content}`
-            common.reportError(this.message, this.userId, this.context, error, text, false, section)
+            this.reportError(error, text, false, section)
         }
     }
 
@@ -196,15 +189,15 @@ class SparkCommand extends Command {
         let transposedCurrency = this.transposeCurrency(currency)
         let sql = `SELECT ${transposedCurrency} AS currency FROM sparks WHERE user_id = $1 LIMIT 1`
 
-        Client.one(sql, this.userId)
+        Client.one(sql, this.message.author.id)
             .then((result: NumberResult) => {
-                var sum = 0
+                let sum = 0
                 switch(operation) {
                     case SparkOperation.Addition:
-                        sum = this.add(result.currency, amount)
+                        sum = this.addCurrency(result.currency, amount)
                         break
                     case SparkOperation.Subtraction:
-                        sum = this.remove(result.currency, amount)
+                        sum = this.removeCurrency(result.currency, amount)
                         break
                     default:
                         break
@@ -214,20 +207,20 @@ class SparkCommand extends Command {
             })
             .catch((error: Error) => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                common.reportError(this.message, this.userId, this.context, error, text)
+                this.reportError(error.message, text)
             })
     }
 
     private reset() {
         let sql = `UPDATE sparks SET crystals = 0, tickets = 0, ten_tickets = 0 WHERE user_id = $1`
     
-        Client.query(sql, this.userId)
+        Client.query(sql, this.message.author.id)
             .then(() => {
                 this.message.reply('Your spark has been reset!')
             })
             .catch((error: Error) => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                common.reportError(this.message, this.userId, this.context, error, text)
+                this.reportError(error.message, text)
             })   
     }
 
@@ -237,16 +230,20 @@ class SparkCommand extends Command {
             return
         }
         
-        let memberIds: Snowflake[] = (await this.message.guild.members.fetch()).map((g: GuildMember) => g.id);
-        let leaderboard = new Leaderboard(memberIds, order)
-        await leaderboard.fetchData()
-            .then((embed: string) => {
-                this.message.channel.send(embed)
-            })
-            .catch((error: Error) => {
-                let text = 'Sorry, there was an error communicating with the database for your last request.'
-                common.reportError(this.message, this.userId, this.context, error, text)
-            })
+        const guild = this.message.guild
+
+        if (guild) {
+            let memberIds: Snowflake[] = (await guild.members.fetch()).map((g: GuildMember) => g.id);
+            let leaderboard = new Leaderboard(memberIds, order)
+            await leaderboard.fetchData()
+                .then((embed: string) => {
+                    this.message.channel.send(embed)
+                })
+                .catch((error: Error) => {
+                    let text = 'Sorry, there was an error communicating with the database for your last request.'
+                    this.reportError(error.message, text)
+                })
+        }
     }
 
     async target() {
@@ -298,7 +295,7 @@ class SparkCommand extends Command {
 
         let link = 'https://github.com/jedmund/siero-bot/wiki/Saving-sparks'
 
-        var embed = new MessageEmbed({
+        let embed = new MessageEmbed({
             title: 'Spark',
             description: 'Welcome! I can help you save your spark!',
             color: 0xdc322f,
@@ -334,11 +331,11 @@ class SparkCommand extends Command {
     }
 
     // Helper methods
-    private add(currentAmount: number, difference: number) {
+    private addCurrency(currentAmount: number, difference: number) {
         return currentAmount + difference
     }
 
-    private remove(currentAmount: number, difference: number) {
+    private removeCurrency(currentAmount: number, difference: number) {
         return (currentAmount - difference >= 0) ? currentAmount - difference : 0
     }
 
@@ -352,7 +349,7 @@ class SparkCommand extends Command {
 
     private checkCurrency(currency: string) {
         let currencies = ['crystals', 'tickets', 'toclets', 'tentickets']
-        var valid = true
+        let valid = true
     
         if (!currencies.includes(currency) && !currencies.includes(currency + 's')) {
             valid = false
@@ -379,12 +376,12 @@ class SparkCommand extends Command {
         let text = 'Sorry, I can\'t show you leaderboards in direct messages. Please send the command from a server that we\'re both in!'
         let error = `Incorrect context: ${this.message.content}` 
 
-        common.reportError(this.message, this.userId, this.context, error, text)
+        this.reportError(error, text)
     }
 
     private invalidCurrency(currency: string) {
-        var text
-        var section
+        let text = ''
+        let section = {}
 
         if (!isNaN(parseInt(currency))) {
             text = `You might have reversed the currency and amount! \`${currency}\` is a number.`
@@ -412,7 +409,7 @@ class SparkCommand extends Command {
         }
         
         let error = `Invalid currency: ${this.message.content}`
-        common.reportError(this.message, this.userId, this.context, error, text, false, section)
+        this.reportError(error, text, false, section)
     }
 
     // Database methods
@@ -424,7 +421,7 @@ class SparkCommand extends Command {
             'WHERE user_id = $1'
         ].join(' ')
         
-        let id = (targetId) ? targetId : this.userId
+        let id = (targetId) ? targetId : this.message.author.id
 
         Client.one(sql, id)
             .then((result: SparkResult) => {
@@ -444,10 +441,10 @@ class SparkCommand extends Command {
                 )
             })
             .catch((error: Error) => {
-                var text
+                let text = ''
 
                 if (error instanceof pgpErrors.QueryResultError) {
-                    if (id !== this.userId) {
+                    if (id !== this.message.author.id) {
                         let username = this.message.mentions.users.values().next().value.username
                         text = `It looks like ${username} hasn't started saving their spark target yet!`
                     }
@@ -455,7 +452,7 @@ class SparkCommand extends Command {
                     text = 'Sorry, there was an error communicating with the database for your last request.'
                 }
 
-                common.reportError(this.message, this.userId, this.context, error, text)
+                this.reportError(error.message, text)
             })
     }
 
@@ -469,13 +466,13 @@ class SparkCommand extends Command {
             })
             .catch((error: Error) => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                common.reportError(this.message, this.userId, this.context, error, text)
+                this.reportError(error.message, text)
             })
     }
 
     private async updateSpark(crystals: number, tickets: number, tenTickets: number) {
         let sql = `UPDATE sparks SET crystals = $1, tickets = $2, ten_tickets = $3, username = $4 WHERE user_id = $5`
-        let data = [crystals, tickets, tenTickets, this.message.author.username, this.userId]
+        let data = [crystals, tickets, tenTickets, this.message.author.username, this.message.author.id]
     
         await Client.query(sql, data)
             .then(() => {
@@ -483,7 +480,7 @@ class SparkCommand extends Command {
             })
             .catch((error: Error) => {
                 let text = 'Sorry, there was an error communicating with the database for your last request.'
-                common.reportError(this.message, this.userId, error, text, this.context)
+                this.reportError(error.message, text)
             })
     }
 
@@ -491,7 +488,7 @@ class SparkCommand extends Command {
         let sql: string = `SELECT COUNT(*) AS count FROM ${table} WHERE user_id = $1`
 
         try {
-            return await Client.one(sql, this.userId)
+            return await Client.one(sql, this.message.author.id)
                 .then((result: NumberResult) => {
                     return result.count
                 })
@@ -508,9 +505,9 @@ class SparkCommand extends Command {
         let sql: string = `INSERT INTO ${table} (user_id, username) VALUES ($1, $2) RETURNING user_id`
         
         try {
-            Client.one(sql, [this.userId, this.message.author.username])
+            Client.one(sql, [this.message.author.id, this.message.author.username])
                 .then((_: StringResult) => {
-                    console.log(`[${this.commandType}] New user created: ${this.userId}`)
+                    console.log(`[${this.commandType}] New user created: ${this.message.author.id}`)
                 })
                 .catch((error: Error) =>  {
                     console.error(error)
