@@ -1,5 +1,5 @@
-import { Message } from 'discord.js'
-import { MessageEmbed } from 'discord.js'
+import { Message, MessageEmbed, User } from 'discord.js'
+import { SieroCommand } from '../helpers/SieroCommand'
 
 // Services
 import { Item } from '../services/constants.js'
@@ -10,9 +10,7 @@ const { Rateup } = require('../subcommands/gacha/rateup.js')
 const { Until } = require('../subcommands/gacha/until.js')
 const { Target } = require('../subcommands/spark/target.js')
 
-const { Command } = require('discord-akairo')
 const common = require('../helpers/common.js')
-const dayjs = require('dayjs')
 
 interface GachaArgs {
     operation: string
@@ -42,24 +40,24 @@ enum ItemType {
     Summon = 1
 }
 
-class GachaCommand extends Command {
+class GachaCommand extends SieroCommand {
+    rateups: Item[] = []
+    sparkTarget: Item | null = null
+
     public constructor() {
         super('gacha', {
             aliases: ['gacha', 'g'],
             args: [
                 {
                     id: 'operation',
-                    type: 'string',
                     default: 'help'
                 },
                 {
                     id: 'gala',
-                    type: 'string',
                     default: 'premium'
                 },
                 {
                     id: 'season',
-                    type: 'string',
                     default: 'none'
                 }
             ]
@@ -67,12 +65,12 @@ class GachaCommand extends Command {
     }
 
     async exec(message: Message, args: GachaArgs) {
-        console.log(`(${dayjs().format('YYYY-MM-DD HH:mm:ss')}) [${message.author.id}] ${message.content}`)
+        this.log(message)
+
         this.commandType = 'gacha'
 
-        common.storeArgs(this, args)
-        common.storeMessage(this, message)
-        common.storeUser(this, message.author.id)
+        this.args = args
+        this.message = message
 
         await this.storeRateups()
         await this.storeSparkTarget()
@@ -102,9 +100,9 @@ class GachaCommand extends Command {
                 break
             default:
                 let text = 'Sorry, I don\'t recognize that command. Are you sure it\'s the right one?'
-                let error = `[Unrecognized command] ${this.userId}: ${this.message.content}`
+                let error = `[Unrecognized command] ${this.message.author.id}: ${this.message.content}`
 
-                common.reportError(this.message, this.userId, this.context, error, text)
+                this.reportError(error, text)
 
                 break
         }
@@ -143,8 +141,8 @@ class GachaCommand extends Command {
     }
 
     async rateup() {
-        const siero = (this.userId === this.client.ownerID) ? this.client.user : null
-        const rateup = new Rateup(this.message, siero)
+        const siero = (this.message.author.id === this.client.ownerID) ? this.client.user : null
+        const rateup = new Rateup(this, this.message, siero)
         rateup.execute()
     }
 
@@ -238,11 +236,16 @@ class GachaCommand extends Command {
 
     // Data methods
     private async storeRateups() {
-        this.rateups = await Rateup.fetch(this.userId, this.message)
+        const sourceUser: User = this.message.mentions.users.values().next().value
+        this.rateups = await Rateup.fetch(this.message.author.id, this.message)
+            .catch((error: Error) => {
+                const text = `Sorry, there was an error communicating with the database to copy ${sourceUser}'s rate-up.`
+                this.reportError(error.message, text)
+            })
     }
 
     private async storeSparkTarget() {
-        this.sparkTarget = await Target.fetch(this.userId, this.message)
+        this.sparkTarget = await Target.fetch(this.message.author.id, this.message)
     }
 
     // Render methods
