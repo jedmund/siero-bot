@@ -16,7 +16,7 @@ import { Decision as decision } from '../../helpers/decision.js'
 type NumberResult = { [key: string]: number }
 
 interface Properties {
-    gala: string | null
+    gala: string
     season: string | null
 }
 
@@ -52,7 +52,8 @@ class Until {
         this.target = parsed.name
 
         // Transpose gala shorthands to query database results
-        let gala = ''
+        let gala = 'premium'
+
         if (parsed.gala) {
             if (['ff', 'flash'].includes(parsed.gala)) {
                 gala = 'flash'
