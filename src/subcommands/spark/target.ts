@@ -231,6 +231,7 @@ class Target {
             'UPDATE sparks SET target_id = (',
             'SELECT id FROM gacha',
             `WHERE ${(method == Method.name ? 'name' : 'id')} = $1`,
+            `${(method == Method.name) ? 'OR recruits = $1' : ''}`,
             'LIMIT 1)',
             'WHERE user_id = $2 RETURNING',
             '(SELECT name FROM gacha WHERE id = target_id),',
@@ -239,6 +240,7 @@ class Target {
             '(SELECT item_type FROM gacha WHERE id = target_id)'
         ].join(' ')
     }
+    
     private async setTarget() {
         let sql = [
             'SELECT COUNT(*)',
@@ -260,18 +262,25 @@ class Target {
                     this.command.reportError(parts.error, parts.text, false, parts.section)
                 }
             })
+            .catch((error: Error) => {
+                console.error(error)
+            })
     }
     
     private async resolveDuplicate() {
-        return await decision.resolveDuplicate(this.targetName!, this.message, this.deciderMessage, this.userId)
-            .then((result: PromptResult) => {
-                this.deciderMessage = result.message
-                this.saveTargetById(result.selection.id)
-            })
-            .catch((error: Error) => {
-                let text = `Sorry, there was an error with your last request.`
-                this.command.reportError(error.message, text)
-            })
+        if (this.targetName) {
+            return await decision.resolveDuplicate(this.targetName, this.message, this.deciderMessage, this.userId)
+                .then((result: PromptResult) => {
+                    this.deciderMessage = result.message
+                    this.saveTargetById(result.selection.id)
+                })
+                .catch((error: Error) => {
+                    let text = `Sorry, there was an error with your last request.`
+                    this.command.reportError(error.message, text)
+                })
+        } else {
+            return Promise.reject('Target name not set')
+        }
     }
 }
 
