@@ -6,7 +6,7 @@ import { Client } from '../../services/connection.js'
 import { Item, PromptResult } from '../../services/constants.js'
 import { Decision as decision } from '../../helpers/decision.js'
 
-import common from '../../helpers/common.js'
+import { mapRarity, missingItem, parse } from '../../helpers/common'
 const dayjs = require('dayjs')
 
 type NumberResult = { [key: string]: number }
@@ -53,7 +53,7 @@ class Target {
             splitRequest.splice(splitRequest.indexOf('unreleased', 1)).join(' ')
         }
 
-        this.targetName = common.parse(splitRequest.join(' ')).name
+        this.targetName = parse(splitRequest.join(' ')).name
     }
 
     private switchOperation() {
@@ -133,7 +133,7 @@ class Target {
     // Render methods
     private render(target: Item) {
         let isOwnTarget = this.firstMention == null
-        let rarity = common.mapRarity(target.rarity)
+        let rarity = mapRarity(target.rarity)
 
         var itemType: string = ''
         if (target.item_type == 0) {
@@ -167,9 +167,8 @@ class Target {
 
     private async saveTarget() {
         let sql = this.buildSaveQuery(Method.name)
-        
         Client.one(sql, [this.targetName, this.userId])
-            .then((data: Item) => {
+            .then((data: Item) => { 
                 this.message.channel.send(this.render(data))
             })
             .catch((error: Error) => {
@@ -257,7 +256,8 @@ class Target {
                 } else if (count == 1) {
                     this.saveTarget()
                 } else {
-                    common.missingItem(this.message, this.userId, 'target', this.targetName)
+                    let parts = missingItem(this.message.content, this.userId, this.targetName || '')
+                    this.command.reportError(parts.error, parts.text, false, parts.section)
                 }
             })
     }

@@ -1,7 +1,7 @@
 import { MessageEmbed, Snowflake } from 'discord.js'
 
 import { Client } from '../../services/connection.js'
-import common from '../../helpers/common.js'
+import { spacedString } from '../../helpers/common'
 
 interface Result {
     username: string,
@@ -68,20 +68,20 @@ class Leaderboard {
             for (var i = 0; i < maxRows; i++) {
                 let numDraws = this.calculateDraws(rows[i].crystals, rows[i].tickets, rows[i].ten_tickets)
 
-                let spacedUsername = common.spacedString(rows[i].username, usernameMaxChars)
-                let spacedDraws = common.spacedString(`${numDraws} draws`, numDrawsMaxChars)
+                let spacedUsername = spacedString(rows[i].username, usernameMaxChars)
+                let spacedDraws = spacedString(`${numDraws} draws`, numDrawsMaxChars)
 
                 var spacedTarget = ''
                 if (rows[i].recruits == null && rows[i].name == null && rows[i].target_memo != null) {
-                    spacedTarget = common.spacedString(`${rows[i].target_memo} (U)`, targetMaxChars)
+                    spacedTarget = spacedString(`${rows[i].target_memo} (U)`, targetMaxChars)
                 } else if (rows[i].recruits != null || rows[i].name != null) {
                     if (rows[i].recruits != null) {
-                        spacedTarget = common.spacedString(rows[i].recruits, targetMaxChars)
+                        spacedTarget = spacedString(rows[i].recruits, targetMaxChars)
                     } else if (rows[i].name != null) {
-                        spacedTarget = common.spacedString(rows[i].name, targetMaxChars)
+                        spacedTarget = spacedString(rows[i].name, targetMaxChars)
                     }
                 } else {
-                    spacedTarget = common.spacedString('', targetMaxChars)
+                    spacedTarget = spacedString('', targetMaxChars)
                 }
 
                 let place = ((i + 1) < 10) ? `${i + 1}  ` : `${i + 1} `
