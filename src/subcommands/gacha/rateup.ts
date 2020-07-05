@@ -195,7 +195,7 @@ class Rateup {
                 if (data && data.length > 0) {
                     this.message.channel.send(this.render(user, data))
                 } else {
-                    this.message.author.send(this.notFoundError(isOwnTarget))
+                    this.message.channel.send(this.notFoundError(isOwnTarget))
                 }
             })
             .catch((error: Error) => {

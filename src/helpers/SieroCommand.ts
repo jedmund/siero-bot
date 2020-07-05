@@ -45,7 +45,7 @@ export class SieroCommand extends Command {
         const response = this.buildHelpfulResponse(responseString, showDocumentationLink, targetedHelp)
         
         const that = this
-        this.message.author.send(response)
+        this.message.channel.send(response)
             .catch(function(error) {
                 if (error instanceof DiscordAPIError) {
                     console.error(`Cannot send private messages to this user: ${that.message.author.id}`)
