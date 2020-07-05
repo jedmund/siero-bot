@@ -77,7 +77,7 @@ class Until {
             })
             .then((chosenItem: Item | void) => {
                 if (!chosenItem) {
-                    const parts = missingItem(this.message, this.userId, this.target)
+                    const parts = missingItem(this.message.content, this.userId, this.target)
                     this.command.reportError(parts.error, parts.text, false, parts.section)
                     return Promise.reject('missingItem')
                 }
