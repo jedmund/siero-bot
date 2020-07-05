@@ -1,6 +1,6 @@
 import { MessageEmbed, Snowflake } from 'discord.js'
 
-import { Client } from '../../services/connection.js'
+import { Client } from '../../services/connection'
 import { spacedString } from '../../helpers/common'
 
 interface Result {

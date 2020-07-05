@@ -1,10 +1,10 @@
 import { SieroCommand } from '../../helpers/SieroCommand'
 import { Message, MessageEmbed, User } from 'discord.js'
 
-import { Client } from '../../services/connection.js'
+import { Client } from '../../services/connection'
 
-import { Item, PromptResult } from '../../services/constants.js'
-import { Decision as decision } from '../../helpers/decision.js'
+import { Item, PromptResult } from '../../services/constants'
+import { Decision as decision } from '../../helpers/decision'
 
 import { mapRarity, missingItem, parse } from '../../helpers/common'
 const dayjs = require('dayjs')

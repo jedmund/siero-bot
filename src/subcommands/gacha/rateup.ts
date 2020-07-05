@@ -1,11 +1,11 @@
 
-import { Client } from '../../services/connection.js'
+import { Client } from '../../services/connection'
 import { Message, MessageEmbed, User } from 'discord.js'
 import { SieroCommand } from '../../helpers/SieroCommand'
-import { Item, PromptResult } from '../../services/constants.js'
+import { Item, PromptResult } from '../../services/constants'
 
-import { Decision as decision } from '../../helpers/decision.js'
 import { capitalize } from '../../helpers/common'
+import { Decision as decision } from '../../helpers/decision'
 
 type NumberResult = { [key: string]: number }
 
