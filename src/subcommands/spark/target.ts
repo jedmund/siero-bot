@@ -1,12 +1,12 @@
 import { SieroCommand } from '../../helpers/SieroCommand'
 import { Message, MessageEmbed, User } from 'discord.js'
 
-import { Client } from '../../services/connection.js'
+import { Client } from '../../services/connection'
 
-import { Item, PromptResult } from '../../services/constants.js'
-import { Decision as decision } from '../../helpers/decision.js'
+import { Item, PromptResult } from '../../services/constants'
+import { Decision as decision } from '../../helpers/decision'
 
-import common from '../../helpers/common.js'
+import { mapRarity, missingItem, parse } from '../../helpers/common'
 const dayjs = require('dayjs')
 
 type NumberResult = { [key: string]: number }
@@ -53,7 +53,7 @@ class Target {
             splitRequest.splice(splitRequest.indexOf('unreleased', 1)).join(' ')
         }
 
-        this.targetName = common.parse(splitRequest.join(' ')).name
+        this.targetName = parse(splitRequest.join(' ')).name
     }
 
     private switchOperation() {
@@ -133,7 +133,7 @@ class Target {
     // Render methods
     private render(target: Item) {
         let isOwnTarget = this.firstMention == null
-        let rarity = common.mapRarity(target.rarity)
+        let rarity = mapRarity(target.rarity)
 
         var itemType: string = ''
         if (target.item_type == 0) {
@@ -167,9 +167,8 @@ class Target {
 
     private async saveTarget() {
         let sql = this.buildSaveQuery(Method.name)
-        
         Client.one(sql, [this.targetName, this.userId])
-            .then((data: Item) => {
+            .then((data: Item) => { 
                 this.message.channel.send(this.render(data))
             })
             .catch((error: Error) => {
@@ -232,6 +231,7 @@ class Target {
             'UPDATE sparks SET target_id = (',
             'SELECT id FROM gacha',
             `WHERE ${(method == Method.name ? 'name' : 'id')} = $1`,
+            `${(method == Method.name) ? 'OR recruits = $1' : ''}`,
             'LIMIT 1)',
             'WHERE user_id = $2 RETURNING',
             '(SELECT name FROM gacha WHERE id = target_id),',
@@ -240,6 +240,7 @@ class Target {
             '(SELECT item_type FROM gacha WHERE id = target_id)'
         ].join(' ')
     }
+    
     private async setTarget() {
         let sql = [
             'SELECT COUNT(*)',
@@ -257,21 +258,29 @@ class Target {
                 } else if (count == 1) {
                     this.saveTarget()
                 } else {
-                    common.missingItem(this.message, this.userId, 'target', this.targetName)
+                    let parts = missingItem(this.message.content, this.userId, this.targetName || '')
+                    this.command.reportError(parts.error, parts.text, false, parts.section)
                 }
+            })
+            .catch((error: Error) => {
+                console.error(error)
             })
     }
     
     private async resolveDuplicate() {
-        return await decision.resolveDuplicate(this.targetName!, this.message, this.deciderMessage, this.userId)
-            .then((result: PromptResult) => {
-                this.deciderMessage = result.message
-                this.saveTargetById(result.selection.id)
-            })
-            .catch((error: Error) => {
-                let text = `Sorry, there was an error with your last request.`
-                this.command.reportError(error.message, text)
-            })
+        if (this.targetName) {
+            return await decision.resolveDuplicate(this.targetName, this.message, this.deciderMessage, this.userId)
+                .then((result: PromptResult) => {
+                    this.deciderMessage = result.message
+                    this.saveTargetById(result.selection.id)
+                })
+                .catch((error: Error) => {
+                    let text = `Sorry, there was an error with your last request.`
+                    this.command.reportError(error.message, text)
+                })
+        } else {
+            return Promise.reject('Target name not set')
+        }
     }
 }
 

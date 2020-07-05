@@ -1,11 +1,11 @@
 
-import { Client } from '../../services/connection.js'
+import { Client } from '../../services/connection'
 import { Message, MessageEmbed, User } from 'discord.js'
 import { SieroCommand } from '../../helpers/SieroCommand'
-import { Item, PromptResult } from '../../services/constants.js'
+import { Item, PromptResult } from '../../services/constants'
 
-import common from '../../helpers/common.js'
-import { Decision as decision } from '../../helpers/decision.js'
+import { capitalize } from '../../helpers/common'
+import { Decision as decision } from '../../helpers/decision'
 
 type NumberResult = { [key: string]: number }
 
@@ -80,7 +80,7 @@ class Rateup {
             const parts = item.split(' ')
 
             const rate = parseFloat(parts.pop()!)
-            const name = common.capitalize(parts.join(' ').replace(quoteRe, ''), true)
+            const name = capitalize(parts.join(' ').replace(quoteRe, ''), true)
 
             this.rates.push(
                 {

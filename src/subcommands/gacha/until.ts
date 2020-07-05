@@ -2,16 +2,16 @@
 import { Message } from 'discord.js'
 import { SieroCommand } from '../../helpers/SieroCommand'
 
-import { Client } from '../../services/connection.js'
-import { Gacha } from '../../services/gacha.js'
-import { Item, PromptResult, ParsedRequest } from '../../services/constants.js'
+import { Client } from '../../services/connection'
+import { Gacha } from '../../services/gacha'
+import { Item, PromptResult, ParsedRequest } from '../../services/constants'
 
 const fetch = require('make-fetch-happen').defaults({
     cacheManager: './cache' // path where cache will be written (and read)
 })
   
-import common from '../../helpers/common.js'
-import { Decision as decision } from '../../helpers/decision.js'
+import { missingItem, parse } from '../../helpers/common'
+import { Decision as decision } from '../../helpers/decision'
 
 type NumberResult = { [key: string]: number }
 
@@ -47,7 +47,7 @@ class Until {
         this.rateups = rateups
 
         const target = message.content.split(' ').splice(2).join(' ')
-        const parsed: ParsedRequest = common.parse(target)
+        const parsed: ParsedRequest = parse(target)
 
         this.target = parsed.name
 
@@ -77,7 +77,7 @@ class Until {
             })
             .then((chosenItem: Item | void) => {
                 if (!chosenItem) {
-                    const parts = common.missingItem(this.message, this.userId, 'until', this.target)
+                    const parts = missingItem(this.message, this.userId, this.target)
                     this.command.reportError(parts.error, parts.text, false, parts.section)
                     return Promise.reject('missingItem')
                 }
