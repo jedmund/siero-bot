@@ -152,6 +152,38 @@ module.exports = {
             en: 'https://gbf.wiki/images/0/0b/Stamp244.png',
             jp: 'https://gbf.wiki/images/9/91/Stamp244jp.png'
         },
+        'nierGyun': {
+            en: 'https://i.imgur.com/fDFoel5.png',
+            jp: 'https://i.imgur.com/fDFoel5.png'
+        },
+        'nierLost': {
+            en: 'https://i.imgur.com/Hd367gX.png',
+            jp: 'https://i.imgur.com/Hd367gX.png'
+        },
+        'nierOk': {
+            en: 'https://i.imgur.com/Tx28CZG.png',
+            jp: 'https://i.imgur.com/Tx28CZG.png'
+        },
+        'nierOtsukare': {
+            en: 'https://i.imgur.com/SZYRKG1.png',
+            jp: 'https://i.imgur.com/SZYRKG1.png'
+        },
+        'nierPeek': {
+            en: 'https://i.imgur.com/iP9daSO.png',
+            jp: 'https://i.imgur.com/iP9daSO.png'
+        },
+        'nierPhalanx': {
+            en: 'https://i.imgur.com/3af8zi2.png',
+            jp: 'https://i.imgur.com/3af8zi2.png'
+        },
+        'nierSoiya': {
+            en: 'https://i.imgur.com/iOKS5rw.png',
+            jp: 'https://i.imgur.com/iOKS5rw.png'
+        },
+        'nierThanks': {
+            en: 'https://i.imgur.com/KnsqsFW.png',
+            jp: 'https://i.imgur.com/KnsqsFW.png'
+        },
         'ohNo': {
             en: 'https://gbf.wiki/images/6/69/Stamp89.png',
             jp: 'https://gbf.wiki/images/6/67/Stamp89jp.png'
