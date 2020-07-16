@@ -53,7 +53,8 @@ export function parse(request: string) {
         'earth cutlass', 'earth halberd', 'earth zaghnal', 'earth bow',
         'wind axe', 'wind rod',
         'light staff', 'light buckler', 'ghost light',
-        'dark angel olivia', 'dark sword', 'dark knife'
+        'dark angel olivia', 'dark sword', 'dark knife',
+        'summer genesis'
     ]
 
     // Sanitize and split the string
