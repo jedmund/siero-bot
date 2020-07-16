@@ -294,7 +294,10 @@ export class Gacha {
         }
 
         // If there is a gala specified, but this item doesn't appear in the gala
-        if (gala != null && item[gala] == 0) {
+        if (
+            (gala != null && item[gala] == 0) &&
+            (season != null && item[season] == 0)
+        ) {
             return false
         }
 
