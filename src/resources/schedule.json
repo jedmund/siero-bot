@@ -158,10 +158,12 @@
         },
         {
             "name": {
-                "en": "Scenario Event",
-                "jp": "シナリオイベント"
+                "en": "My Beloved Auguste",
+                "jp": "私の愛しの合うギュステ"
             },
+            "banner": "http://game-a1.granbluefantasy.jp/assets_en/img/sp/event/event_teaser_1097/assets/teaser/event_teaser_top.jpg",
             "type": "scenario",
+            "link": "https://gbf.wiki/My_Beloved_Auguste",
             "starts": "2020-07-29T17:00:00+09:00",
             "ends": "2020-08-06T18:59:00+09:00"
         },
