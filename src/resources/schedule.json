@@ -5,8 +5,8 @@
     },
     "magfest": {
         "name": {
-            "en": "",
-            "jp": ""
+            "en": "Granblue Big Summer Surprise",
+            "jp": "グラブルサマーギフトキャンペーン"
         },
         "info": [
             "Free Daily 10-Part Draw",
@@ -16,6 +16,7 @@
             "1.5x More RP/EXP",
             "Half AP/EP Event",
             "Half AP for Free Quests",
+            "Half AP for Special Quests",
             "Half AP for Side Story Quests",
             "Half Off Treasure Trade Cost",
             "Half Treasure Cost",
@@ -23,10 +24,10 @@
             "2x Boost to Shop Skills",
             "Arcarum Badge Bonus Bash"
         ],
-        "wiki": "",
-        "banner": "",
-        "starts": "2020-01-01T08:00:00+09:00",
-        "ends": "2020-01-01T08:00:00+09:00"
+        "wiki": "https://gbf.wiki/Granblue_Big_Summer_Surprise/2020",
+        "banner": "https://gbf.wiki/images/d/d5/News_2019summer_campaign_1.png",
+        "starts": "2020-08-01T05:00:00+09:00",
+        "ends": "2020-08-24T04:59:00+09:00"
     },
     "streams": [
         {
