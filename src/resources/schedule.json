@@ -170,6 +170,17 @@
         },
         {
             "name": {
+                "en": "Robomi Z",
+                "jp": "ロボミZ"
+            },
+            "banner": "https://gbf.wiki/images/0/02/Robomi_Z_top.jpg",
+            "type": "scenario rerun",
+            "link": "https://gbf.wiki/Robomi_Z",
+            "starts": "2020-08-07T17:00:00+09:00",
+            "ends": "2020-08-14T18:59:00+09:00"
+        },
+        {
+            "name": {
                 "en": "Unite and Fight",
                 "jp": "決戦！星の古戦場 - 土有利"
             },
