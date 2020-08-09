@@ -559,6 +559,8 @@ class SparkCommand extends SieroCommand {
         if (numSparks > 0) {
             embed.addField('Sparks', numSparks)
         }
+        
+        embed.addField('Draws', draws)
 
         if (result.name || result.recruits) {
             const rarity = common.mapRarity(result.rarity)
