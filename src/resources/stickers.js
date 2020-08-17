@@ -44,6 +44,10 @@ module.exports = {
             en: 'https://gbf.wiki/images/a/af/Stamp73.png',
             jp: 'https://gbf.wiki/images/5/55/Stamp73jp.png'
         },
+        'good': {
+            en: 'https://gbf.wiki/images/f/fe/Stamp214.png',
+            jp: 'https://gbf.wiki/images/e/e9/Stamp214jp.png'
+        }
         'granGives': {
             en: 'https://gbf.wiki/images/2/2b/Stamp8.png',
             jp: 'https://gbf.wiki/images/a/ad/Stamp8jp.png'
