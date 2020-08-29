@@ -204,10 +204,12 @@
         },
         {
             "name": {
-                "en": "New Scenario Event",
-                "jp": "シナリオイベント"
+                "en": "Good Night Till It Be Morrow",
+                "jp": "幾千の夜を越えて、あなたに届くのなら"
             },
             "type": "scenario",
+            "link": "https://gbf.wiki/Good_Night_Till_It_Be_Morrow",
+            "banner": "https://gbf.wiki/images/4/40/Good_Night_Till_It_Be_Morrow_top.jpg",
             "starts": "2020-08-29T17:00:00+09:00",
             "ends": "2020-09-07T18:59:00+09:00"
         }
