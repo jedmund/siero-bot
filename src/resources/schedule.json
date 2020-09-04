@@ -212,6 +212,45 @@
             "banner": "https://gbf.wiki/images/4/40/Good_Night_Till_It_Be_Morrow_top.jpg",
             "starts": "2020-08-29T17:00:00+09:00",
             "ends": "2020-09-07T18:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Xeno Sagittarius Showdown",
+                "jp": "ゼノ・サジタリウス撃滅戦"
+            },
+            "banner": "https://gbf.wiki/images/4/4d/Event_Xeno_Sagittarius_Clash_top.png",
+            "link": "https://gbf.wiki/Xeno_Sagittarius_Clash",
+            "type": "farming",
+            "advantage": "fire",
+            "starts": "2020-09-08T17:00:00+09:00",
+            "ends": "2020-09-14T20:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Shadowverse Anime Collab",
+                "jp": "シャドゥバースアニメコラボ"
+            },
+            "type": "collab",
+            "starts": "2020-09-14T17:00:00+09:00",
+            "ends": "2020-09-26T20:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Tower of Babel",
+                "jp": "バブ･イールの塔"
+            },
+            "type": "tower",
+            "starts": "2020-09-21T17:00:00+09:00",
+            "ends": "2020-09-27T20:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "New Scenario Event",
+                "jp": "新シナリオイベント"
+            },
+            "type": "scenario",
+            "starts": "2020-09-27T17:00:00+09:00",
+            "ends": "2020-10-05T20:59:00+09:00"
         }
     ],
     "updates": [
