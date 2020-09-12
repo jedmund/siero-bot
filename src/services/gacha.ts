@@ -289,25 +289,30 @@ export class Gacha {
         }
 
         // If there is no gala specified, but this is a limited item
-        if (gala == null && this.isLimited(item)) {
+        else if (gala == null && this.isLimited(item)) {
             return false
         }
 
-        // If there is a gala specified, but this item doesn't appear in the gala
-        if (
+        // If there is no season specified, but this is a seasonal item
+        else if (season == null && this.isSeasonal(item)) {
+            return false
+        }
+
+        // If there is a gala and season specified, but this item doesn't appear in either
+        else if (
             (gala != null && item[gala] == 0) &&
             (season != null && item[season] == 0)
         ) {
             return false
         }
 
-        // If there is no season specified, but this is a seasonal item
-        if (season == null && this.isSeasonal(item)) {
+        // If there is a season specified, but this item doesn't appear in that season
+        else if (season != null && item[season] == 0) {
             return false
         }
 
-        // If there is a season specified, but this item doesn't appear in that season
-        if (season != null && item[season] == 0) {
+        // If there is a gala specified, but this item doesn't appear in that gala
+        else if (gala != null && item[gala] == 0) {
             return false
         }
 
@@ -319,7 +324,7 @@ export class Gacha {
     }
 
     public isSeasonal(item: Item): boolean {
-        return (item.halloween == true || item.holiday == true || item.summer == true || item.valentine == true) && item.premium == false
+        return (item.halloween == true || item.holiday == true || item.summer == true || item.valentines == true) && item.premium == false
     }
 
     public getGala(item: Item): string {
@@ -345,7 +350,7 @@ export class Gacha {
             string = 'holiday'
         } else if (item.halloween == true) {
             string = 'halloween'
-        } else if (item.valentine == true) {
+        } else if (item.valentines == true) {
             string = 'valentine'
         } else {
             string = 'all seasons'
