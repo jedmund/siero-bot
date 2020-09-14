@@ -5,11 +5,10 @@
     },
     "magfest": {
         "name": {
-            "en": "Granblue Big Summer Surprise",
-            "jp": "グラブルサマーギフトキャンペーン"
+            "en": "26 Million Players Celebration",
+            "jp": "登録者数2600万人突破キャンペーン"
         },
         "info": [
-            "Free Daily 10-Part Draw",
             "Free Daily Premium Draw",
             "Daily 200 Crystal Bonus",
             "Campaign-Exclusive Quest",
@@ -17,17 +16,15 @@
             "Half AP/EP Event",
             "Half AP for Free Quests",
             "Half AP for Special Quests",
-            "Half AP for Side Story Quests",
-            "Half Off Treasure Trade Cost",
             "Half Treasure Cost",
             "More Renown and Prestige Pendants",
             "2x Boost to Shop Skills",
             "Arcarum Badge Bonus Bash"
         ],
-        "wiki": "https://gbf.wiki/Granblue_Big_Summer_Surprise/2020",
-        "banner": "https://gbf.wiki/images/d/d5/News_2019summer_campaign_1.png",
-        "starts": "2020-08-01T05:00:00+09:00",
-        "ends": "2020-08-24T04:59:00+09:00"
+        "wiki": "https://gbf.wiki/26_Million_Players_Celebration",
+        "banner": "https://gbf.wiki/images/f/f6/News_2600campaign_1.png",
+        "starts": "2020-09-14T05:00:00+09:00",
+        "ends": "2020-09-26T04:59:00+09:00"
     },
     "streams": [
         {
