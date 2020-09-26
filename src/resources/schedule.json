@@ -242,9 +242,11 @@
         },
         {
             "name": {
-                "en": "New Scenario Event",
-                "jp": "新シナリオイベント"
+                "en": "The Savior of Dalmore",
+                "jp": "ダルモアの奇跡"
             },
+            "banner": "http://game-a1.granbluefantasy.jp/assets/img/sp/event/event_teaser_1099/assets/teaser/event_teaser_top.jpg",
+            "link": "https://gbf.wiki/The_Savior_of_Dalmore",
             "type": "scenario",
             "starts": "2020-09-27T17:00:00+09:00",
             "ends": "2020-10-05T20:59:00+09:00"
