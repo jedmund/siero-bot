@@ -250,6 +250,17 @@
             "type": "scenario",
             "starts": "2020-09-27T17:00:00+09:00",
             "ends": "2020-10-05T20:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Make Up and Go",
+                "jp": "メイクアップ＆ゴー！"
+            },
+            "banner": "https://gbf.wiki/images/8/82/Make_Up_and_Go%21_top.jpg",
+            "link": "https://gbf.wiki/Make_Up_and_Go!",
+            "type": "scenario",
+            "starts": "2020-10-06T17:00:00+09:00",
+            "ends": "2020-10-13T18:59:00+09:00"
         }
     ],
     "updates": [
