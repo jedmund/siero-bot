@@ -111,14 +111,18 @@ export function mapRarity(rarity: number): string | null {
 }
 
 export function spacedString(string: string, maxNumChars: number) {
-    let numSpaces = maxNumChars - string.length
-    var spacedString = string
+    if (string) {
+        let numSpaces = maxNumChars - string.length
+        var spacedString = string
 
-    for (var i = 0; i < numSpaces; i++) {
-        spacedString += " "
+        for (var i = 0; i < numSpaces; i++) {
+            spacedString += " "
+        }
+
+        return spacedString
+    } else {
+        return ''
     }
-
-    return spacedString
 }
 
 // Database methods

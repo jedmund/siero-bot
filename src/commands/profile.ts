@@ -1,5 +1,6 @@
 import { Collection, CollectorFilter, Message, MessageEmbed, Snowflake, User } from 'discord.js'
 import { SieroCommand } from '../helpers/SieroCommand'
+import { spacedString } from '../helpers/common'
 
 const { Client, pgpErrors } = require('../services/connection.js')
 
@@ -10,6 +11,22 @@ interface ProfileArgs {
     operation: string | null
     field: string | null
     value: string | null
+}
+
+interface Profile {
+    [index: string]: any,
+    user_id: string,
+    nickname: string,
+    pronouns?: string,
+    granblue_name?: string,
+    granblue_id?: number,
+    psn?: string,
+    steam?: string,
+    xbox?: string,
+    gog?: string,
+    genshin?: number,
+    honkai?: string,
+    switch?: string
 }
 
 let fieldMapping: StringResult = {
@@ -64,6 +81,21 @@ class ProfileCommand extends SieroCommand {
             })
     }
 
+    private embedMapping: StringResult = {
+        'nickname'      : 'nickname',
+        'pronouns'      : 'pronouns',
+        'granblue_name' : 'Granblue Fantasy name',
+        'granblue_id'   : 'Granblue Fantasy ID',
+        'steam'         : 'Steam username',
+        'psn'           : 'Playstation Network',
+        'switch'        : 'Nintendo Switch',
+        'xbox'          : 'Xbox Live',
+        'genshin'       : 'Genshin Impact',
+        'honkai'        : 'Honkai Impact 3rd',
+        'gog'           : 'GOG'
+    }
+
+
     private switchOperation(args: ProfileArgs) {
         switch(args.operation) {
             case 'set':
@@ -71,6 +103,9 @@ class ProfileCommand extends SieroCommand {
                 break
             case 'show':
                 this.show()
+                break
+            case 'directory':
+                this.directory()
                 break
             case 'help':
                 this.help()
@@ -133,6 +168,23 @@ class ProfileCommand extends SieroCommand {
             .catch((error) => {
                 console.error(error)
             })
+    }
+
+    private async directory() {
+        let game: string = this.args.field
+
+        if (game == undefined) {
+            this.message.reply('Please specify what field you want a directory for.')
+        } else {
+            await this.fetchHandles(game, this.guildmates())
+                .then((embed: MessageEmbed) => {
+                    this.message.channel.send(embed)
+                })
+                .catch((error: Error) => {
+                    let text = 'Sorry, there was an error communicating with the database for your last request.'
+                    this.reportError(error.message, text)
+                })
+        }
     }
     
     private async wizard() {
@@ -283,21 +335,14 @@ class ProfileCommand extends SieroCommand {
         return (mentions.length > 0) ? mentions[0] : this.message.author
     }
 
-    private renderProfile(target: User, profile: StringResult) {
-        let embedMapping: StringResult = {
-            'nickname'      : 'nickname',
-            'pronouns'      : 'pronouns',
-            'granblue_name' : 'Granblue Fantasy name',
-            'granblue_id'   : 'Granblue Fantasy ID',
-            'steam'         : 'Steam username',
-            'psn'           : 'Playstation Network',
-            'switch'        : 'Nintendo Switch',
-            'xbox'          : 'Xbox Live',
-            'genshin'       : 'Genshin Impact',
-            'honkai'        : 'Honkai Impact 3rd',
-            'gog'           : 'GOG'
-        }
+    private guildmates() {
+        let memberIds: string[] = []
+        this.message.guild?.members.cache.map((member) => memberIds.push(member.id))
+        
+        return memberIds
+    }
 
+    private renderProfile(target: User, profile: StringResult) {
         const embed = new MessageEmbed({
             title: `${target.username}'s profile`,
             color: 0xb58900
@@ -313,7 +358,7 @@ class ProfileCommand extends SieroCommand {
         for (var i = 0; i < filteredFields.length; i++) {
             let entry = filteredFields[i]
             let value = profile[entry]
-            let title = this.capitalize(embedMapping[entry])
+            let title = this.capitalize(this.embedMapping[entry])
 
             embed.addField(title, value, inline)
         }
@@ -427,6 +472,43 @@ class ProfileCommand extends SieroCommand {
                     this.reportError(error.message, text)
                 }
             })
+    }
+
+    private async fetchHandles(game: string, members: string[]): Promise<MessageEmbed> {
+        let sql = `SELECT user_id, nickname, ${game} FROM profiles WHERE user_id IN ($1:csv) AND ${game} IS NOT NULL`
+        return await Client.any(sql, [members])
+            .then((result: Profile[]) => {
+                return this.renderDirectory(game, result)
+            })
+    }
+
+    private async renderDirectory(game: string, data: Profile[]) {
+        let title = this.embedMapping[game]
+
+        if (data.length == 0) {
+            return `No one has set ${title} in their profile yet.`
+        } else {
+            let usernameMaxChars = 14
+            let targetMaxChars = 14
+
+            let divider = '+-----+' + '-'.repeat(usernameMaxChars + 2) + '+' + '-'.repeat(targetMaxChars + 2) + '+\n'
+            var result = divider
+
+            for (let item in data) {
+                const user = await this.client.users.fetch(data[item].user_id)
+                let spacedUsername = spacedString(user.username, usernameMaxChars)
+                let spacedTarget = spacedString(data[item][game], targetMaxChars)
+
+                result += `| ${spacedUsername} | ${spacedTarget} |\n`
+                result += divider
+            }
+            
+            return new MessageEmbed({
+                title: title,
+                description: `\`\`\`html\n${result}\n\`\`\``,
+                color: 0xb58900
+            })
+        }
     }
 
     private capitalize(string: string) {
