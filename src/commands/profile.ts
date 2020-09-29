@@ -136,9 +136,7 @@ class ProfileCommand extends SieroCommand {
 
                 this.saveField(field, value)
                     .then((result: StringResult) => {
-                        if (result.user_id === this.message.author.id && result[field] === value) {
-                            this.message.reply(`Your **${fieldMapping[field]}** has been set to \`${value}\``)
-                        }
+                        this.message.channel.send(`Your **${fieldMapping[field]}** has been set to \`${value}\``)
                     })
                     .catch((error) => {
                         console.error(error)
