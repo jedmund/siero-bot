@@ -20,7 +20,7 @@ let fieldMapping: StringResult = {
     'steam'         : 'Steam username',
     'psn'           : 'Playstation Network username',
     'switch'        : 'Nintendo Switch friend code',
-    'honkai'        : 'Honkai Impact friend code',
+    'honkai'        : 'Honkai Impact 3rd friend code',
     'genshin'       : 'Genshin Impact friend code',
     'xbox'          : 'Xbox Live gamertag',
     'gog'           : 'GOG username'
@@ -201,7 +201,7 @@ class ProfileCommand extends SieroCommand {
                 },
                 {
                     name: 'Profile fields',
-                    value: '```nickname pronouns granblue_name granblue_id psn steam switch xbox gog```'
+                    value: '```nickname pronouns granblue_name granblue_id psn steam switch xbox genshin honkai gog```'
                 }
             ]
         })
@@ -293,6 +293,8 @@ class ProfileCommand extends SieroCommand {
             'psn'           : 'Playstation Network',
             'switch'        : 'Nintendo Switch',
             'xbox'          : 'Xbox Live',
+            'genshin'       : 'Genshin Impact',
+            'honkai'        : 'Honkai Impact 3rd',
             'gog'           : 'GOG'
         }
 
