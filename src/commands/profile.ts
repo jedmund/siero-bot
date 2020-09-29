@@ -499,7 +499,7 @@ class ProfileCommand extends SieroCommand {
                 let spacedUsername = spacedString(user.username, usernameMaxChars)
                 let spacedTarget = spacedString(data[item][game], targetMaxChars)
 
-                result += `| ${spacedUsername} | ${spacedTarget} |\n`
+                result += `| ${spacedUsername} | ${spacedTarget}\n`
                 result += divider
             }
             
