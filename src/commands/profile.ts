@@ -20,6 +20,8 @@ let fieldMapping: StringResult = {
     'steam'         : 'Steam username',
     'psn'           : 'Playstation Network username',
     'switch'        : 'Nintendo Switch friend code',
+    'honkai'        : 'Honkai Impact friend code',
+    'genshin'       : 'Genshin Impact friend code',
     'xbox'          : 'Xbox Live gamertag',
     'gog'           : 'GOG username'
 }
