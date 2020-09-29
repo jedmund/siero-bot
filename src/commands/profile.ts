@@ -135,7 +135,7 @@ class ProfileCommand extends SieroCommand {
                 }
 
                 this.saveField(field, value)
-                    .then((result: StringResult) => {
+                    .then(() => {
                         this.message.channel.send(`Your **${fieldMapping[field]}** has been set to \`${value}\``)
                     })
                     .catch((error) => {
