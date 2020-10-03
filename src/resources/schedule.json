@@ -322,7 +322,19 @@
                 "jp": "ダマスカス鋼の在庫追加"
             },
             "release-date": "2020-07-29T19:00:00+09:00"
-        }
+        },
+        {
+            "name": {
+                "en": "Unite and Fight - Dark Adv",
+                "jp": "決戦！星の古戦場 - 闇有利"
+            },
+            "banner": "https://gbf.wiki/images/0/09/UniteAndFight.png",
+            "link": "https://gbf.wiki/Unite_and_Fight",
+            "type": "guild-wars",
+            "advantage": "dark",
+            "starts": "2020-11-14T19:00:00+09:00",
+            "ends": "2020-11-21T23:59:00+09:00"
+        },
     ],
     "scheduled": [
         {
