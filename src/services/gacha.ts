@@ -51,8 +51,8 @@ export class Gacha {
             case 'holiday':
                 this.season = Season.HOLIDAY
                 break
-            case 'valentine':
-                this.season = Season.VALENTINE
+            case 'valentines':
+                this.season = Season.VALENTINES
                 break
         }
 
@@ -351,7 +351,7 @@ export class Gacha {
         } else if (item.halloween == true) {
             string = 'halloween'
         } else if (item.valentines == true) {
-            string = 'valentine'
+            string = 'valentines'
         } else {
             string = 'all seasons'
         }

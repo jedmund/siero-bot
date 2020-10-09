@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS gacha (
     premium INTEGER,
     flash INTEGER,
     legend INTEGER,
-    valentine INTEGER,
+    valentines INTEGER,
     summer INTEGER,
     halloween INTEGER,
     holiday INTEGER

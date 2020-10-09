@@ -11,7 +11,7 @@ export enum Festival {
 }
 
 export enum Season {
-    VALENTINE  = 'valentine',
+    VALENTINES = 'valentines',
     SUMMER     = 'summer',
     HALLOWEEN  = 'halloween',
     HOLIDAY    = 'holiday'
@@ -49,7 +49,7 @@ export interface Item {
     halloween: boolean
     holiday: boolean
     summer: boolean
-    valentine: boolean
+    valentines: boolean
 }
 
 export interface Result {

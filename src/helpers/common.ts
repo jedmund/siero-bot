@@ -43,8 +43,8 @@ export function parse(request: string) {
     // Establish keywords
     let galas = ['premium', 'flash', 'legend', 'p', 'ff', 'lf']
     let elements = ['fire', 'water', 'earth', 'wind', 'dark', 'light']
-    let seasons = ['halloween', 'holiday', 'summer', 'valentine']
-    let suffixes = ['halloween', 'holiday', 'summer', 'valentine', 'themed', 'grand']
+    let seasons = ['halloween', 'holiday', 'summer', 'valentines']
+    let suffixes = ['halloween', 'holiday', 'summer', 'valentines', 'themed', 'grand']
     
     // Establish blacklist
     let exceptions = [

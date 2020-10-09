@@ -163,7 +163,7 @@ class GachaCommand extends SieroCommand {
             '```html\n',
             '<gala: premium flash legend ff lf>',
             'The <gala> you choose will determine the SSR rate\n',
-            '<season: valentine summer halloween holiday>',
+            '<season: valentines summer halloween holiday>',
             'The <season> you choose adds seasonal units to the pool```'
         ].join('\n')
 
