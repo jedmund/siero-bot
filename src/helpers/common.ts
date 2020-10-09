@@ -6,7 +6,7 @@ type Section = {
 } | null
 
 export function capitalize(string: string, allWords: boolean = false): string {
-    const blacklist: string[] = ['of', 'the', 'for', 'and']
+    const blacklist: string[] = ['of', 'on', 'the', 'for', 'and']
     if (allWords) {
         return string.split(' ').map((item) => {
             if (!blacklist.includes(item)) { 
