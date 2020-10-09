@@ -1,4 +1,4 @@
-name,rarity,type,recruits,premium,flash,legend,valentine,summer,halloween,holiday
+name,rarity,type,recruits,premium,flash,legend,valentines,summer,halloween,holiday
 Dainsleif,3,0,Altair,1,1,1,1,1,1,1
 Lohengrin,3,0,Percival (Fire),1,1,1,1,1,1,1
 Claíomh Solais,3,0,Charlotta (Water),1,1,1,1,1,1,1
@@ -525,9 +525,9 @@ Cleaver,1,0,Lowain (Summer),0,0,0,0,1,0,0
 Night Air Bell,1,0,Lunalu (Summer),0,0,0,0,1,0,0
 Firecracker,1,0,Mary (Summer),0,0,0,0,1,0,0
 Wooden Dagger,1,0,Walder (Summer),0,0,0,0,1,0,0
-Medusiana Staff,3,0,Medusa (Valentine),0,0,0,1,0,0,0
-Confection Cutter,2,0,Narmaya (Valentine),0,0,0,1,0,0,0
-Scarlet Oath,2,0,Teena (Valentine),0,0,0,1,0,0,0
+Medusiana Staff,3,0,Medusa (Valentines),0,0,0,1,0,0,0
+Confection Cutter,2,0,Narmaya (Valentines),0,0,0,1,0,0,0
+Scarlet Oath,2,0,Teena (Valentines),0,0,0,1,0,0,0
 Ouroboros Treat,3,0,Cagliostro (Halloween),0,0,0,0,0,1,0
 Jack-O'-Brand,3,0,Charlotta (Halloween),0,0,0,0,0,1,0
 Snack Pole,3,0,Danua (Halloween),0,0,0,0,0,1,0
@@ -574,8 +574,8 @@ Certificus,3,0,Vira (Grand),0,1,0,0,0,0,0
 Cute Ribbon,3,0,Zooey (Grand),0,1,0,0,0,0,0
 Purifying Thunderbolt,3,0,Shiva (Grand),0,1,0,0,0,0,0
 Macula Marius (Summer),3,1,,0,0,0,0,1,0,0
-Silphium,3,0,Clarisse (Valentine),0,0,0,1,0,0,0
-Sword on the Cob,3,0,Melissabelle (Valentine),0,0,0,1,0,0,0
+Silphium,3,0,Clarisse (Valentines),0,0,0,1,0,0,0
+Sword on the Cob,3,0,Melissabelle (Valentines),0,0,0,1,0,0,0
 Unheil,3,0,Ferry (Grand),0,0,1,0,0,0,0
 Deirdre's Symbol,3,0,Heles (Wind),1,1,1,1,1,1,1
 Samurai Sword,2,0,Mirin (Light),1,1,1,1,1,1,1
@@ -645,8 +645,8 @@ Soshu Masamune,3,0,Jin,1,1,1,1,1,1,1
 Takeminakata,3,0,Ilsa (Light),1,1,1,1,1,1,1
 True Tiger's Bane,3,0,Yodarha (Wind),1,1,1,1,1,1,1
 Heimdallr,3,1,,1,1,1,1,1,1,1
-Deirdre's Heart,3,0,Scathacha (Valentine),0,0,0,1,0,0,0
-Lupercalia,3,0,Grimnir (Valentine),0,0,0,1,0,0,0
+Deirdre's Heart,3,0,Scathacha (Valentines),0,0,0,1,0,0,0
+Lupercalia,3,0,Grimnir (Valentines),0,0,0,1,0,0,0
 Sunya,3,0,Rei (Grand),0,0,1,0,0,0,0
 Commander's Sidearm,3,0,Lecia,1,1,1,1,1,1,1
 Plushie Pal,3,0,Vampy and Malinda,1,1,1,1,1,1,1
