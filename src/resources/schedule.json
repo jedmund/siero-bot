@@ -285,6 +285,49 @@
             "advantage": "dark",
             "starts": "2020-10-22T17:00:00+09:00",
             "ends": "2020-10-22T20:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Alchemist's Desire",
+                "jp": "アルケミスト・デザイア"
+            },
+            "banner": "http://game-a1.granbluefantasy.jp/assets_en/img/sp/event/event_teaser_1100/assets/teaser/event_teaser_top.jpg",
+            "link": "https://gbf.wiki/Alchemist's_Desire",
+            "type": "scenario",
+            "starts": "2020-10-28T19:00:00+09:00",
+            "ends": "2020-11-05T20:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Rise of the Beasts",
+                "jp": "四象降臨"
+            },
+            "banner": "https://gbf.wiki/images/d/dd/Riseofthebeasts_top.png",
+            "link": "https://gbf.wiki/Rise_of_the_Beasts",
+            "type": "farming",
+            "starts": "2020-11-06T17:00:00+09:00",
+            "ends": "2020-11-13T20:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Unite and Fight",
+                "jp": "決戦！星の古戦場 - 闇有利"
+            },
+            "banner": "https://gbf.wiki/images/0/09/UniteAndFight.png",
+            "link": "https://gbf.wiki/Unite_and_Fight",
+            "type": "guild-wars",
+            "advantage": "dark",
+            "starts": "2020-11-14T19:00:00+09:00",
+            "ends": "2020-11-21T23:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Scenario Event",
+                "jp": "シナリオイベント"
+            },
+            "type": "scenario",
+            "starts": "2020-11-22T19:00:00+09:00",
+            "ends": "2020-11-29T20:59:00+09:00"
         }
     ],
     "updates": [
