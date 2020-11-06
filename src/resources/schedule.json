@@ -322,12 +322,32 @@
         },
         {
             "name": {
+                "en": "Handsome Gorilla",
+                "jp": "ハンサム・ゴリラ"
+            },
+            "banner": "https://gbf.wiki/images/f/fd/Handsome_Gorilla_top.jpg",
+            "link": "https://gbf.wiki/Handsome_Gorilla",
+            "type": "scenario rerun",
+            "starts": "2020-11-21T17:00:00+09:00",
+            "ends": "2020-11-28T18:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Tower of Babel",
+                "jp": "バブ･イールの塔"
+            },
+            "type": "tower",
+            "starts": "2020-11-25T17:00:00+09:00",
+            "ends": "2020-12-01T20:59:00+09:00"
+        },
+        {
+            "name": {
                 "en": "Scenario Event",
                 "jp": "シナリオイベント"
             },
             "type": "scenario",
-            "starts": "2020-11-22T19:00:00+09:00",
-            "ends": "2020-11-29T20:59:00+09:00"
+            "starts": "2020-11-29T19:00:00+09:00",
+            "ends": "2020-12-07T20:59:00+09:00"
         }
     ],
     "updates": [
