@@ -1,18 +1,23 @@
 import { Message } from 'discord.js'
 import { SieroCommand } from '../helpers/SieroCommand'
 
+interface ChooseArgs {
+    choices: string
+}
+
 class ChooseCommand extends SieroCommand {
     public constructor() {
         super('choose', {
             aliases: ['choose', 'pick', 'ch'],
-            args: [{ id: 'options' }]
+            args: [{ id: 'choices' }],
+            separator: ';'
         })
     }
 
-    public exec(message: Message) {
+    public exec(message: Message, args: ChooseArgs) {
         this.log(message)
 
-        const options: string[] = this.parseRequest(message.content)
+        const options: string[] = args.choices.split(',').map(Function.prototype.call, String.prototype.trim)
         const hash: number = this.hash(message.author.id + message.content, options.length)
         const choice: string = options[hash]
 
@@ -21,11 +26,6 @@ class ChooseCommand extends SieroCommand {
             `Um... you only gave me one thing to choose from!`
 
         message.reply(reply)
-    }
-
-    private parseRequest(request: string): string[] {
-        const splitRequest: string[] = request.split('?')
-        return splitRequest[splitRequest.length - 1].split(',').map(Function.prototype.call, String.prototype.trim)
     }
 
     private hash(string: string, size: number): number {
