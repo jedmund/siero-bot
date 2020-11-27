@@ -305,9 +305,9 @@ class ProfileCommand extends SieroCommand {
         let rand = Math.floor(this.random(0, prompts.length))
         let prompt = (prefix !== '') ? `${prefix}${prompts[rand]}${field}?` : `${this.capitalize(prompts[rand])}${field}?`
 
-        let promptMessage: Message = await this.message.author.dmChannel.send(prompt)
+        let promptMessage: Message | undefined = await this.message.author.dmChannel?.send(prompt)
 
-        return promptMessage.channel.awaitMessages(filter, {
+        return promptMessage?.channel.awaitMessages(filter, {
             max: 1,
             time: 90000,
             errors: ['time']
@@ -319,12 +319,12 @@ class ProfileCommand extends SieroCommand {
                 if (value !== this.skipWord) {
                     this.saveField(key, value)
                 } else {
-                    promptMessage.channel.send('Okay, we won\'t fill out that field.')
+                    promptMessage?.channel.send('Okay, we won\'t fill out that field.')
                 }
             }
         })
         .catch((_: Collection<Snowflake, Message>) => {
-            promptMessage.channel.send(`It looks like you didn\'t send me your ${field} in time. Feel free to try again later!`)
+            promptMessage?.channel.send(`It looks like you didn\'t send me your ${field} in time. Feel free to try again later!`)
         })
     }
 
