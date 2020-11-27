@@ -248,7 +248,7 @@ class ScheduleCommand extends SieroCommand {
         const title = 'Upcoming'
         return this.renderEvents({
             title: title
-        }, this.schedule.events)
+        }, this.upcomingEvents())
     }
 
     private magfest(): void {
@@ -638,6 +638,20 @@ class ScheduleCommand extends SieroCommand {
         }
 
         return currentEvents
+    }
+
+    private upcomingEvents(): Event[] {
+        let upcomingEvents: Event[] = []
+
+        for (let i in this.schedule.events) {
+            const event: Event = this.schedule.events[i]
+
+            if (dayjs(event.starts).isAfter(dayjs())) {
+                upcomingEvents.push(event)
+            }
+        }
+
+        return upcomingEvents
     }
 
     private nextEvent(): Event | null {
