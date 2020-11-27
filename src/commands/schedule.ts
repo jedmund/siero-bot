@@ -129,8 +129,6 @@ class ScheduleCommand extends SieroCommand {
 
         pager.addPage('❓', this.renderHelp())
 
-        pager.listPages()
-
         pager.render(this.message)
     }
 
