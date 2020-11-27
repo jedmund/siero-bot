@@ -138,7 +138,12 @@ class ScheduleCommand extends SieroCommand {
             description: 'There are no features scheduled to be released'
         }))
 
-        // pager.selectPage('🛠')
+        if (this.schedule.magfest && dayjs().isBetween(dayjs(this.schedule.magfest.starts), dayjs(this.schedule.magfest.ends))) {
+            pager.addPage('🎉', this.renderMagfest())
+        }
+
+        pager.addPage('❓', this.renderHelp())
+
         pager.listPages()
 
         pager.render(this.message)
@@ -227,16 +232,20 @@ class ScheduleCommand extends SieroCommand {
         }, this.upcomingEvents())
     }
 
-    private magfest(): void {
-        const isMagfest = this.schedule.magfest && dayjs().isBetween(dayjs(this.schedule.magfest.starts), dayjs(this.schedule.magfest.ends))
-        const upcomingMagfest = this.schedule.magfest && dayjs(this.schedule.magfest.starts).isBetween(dayjs(), dayjs().add(48, 'hours'))
+    private renderMagfest(): Page {
+        const magfest = this.schedule.magfest!
 
-        if (isMagfest || upcomingMagfest) {
-            const embed: MessageEmbed = this.renderMagfest()
-            this.message!.channel.send(embed)
-        } else {
-            this.message?.channel.send('There is no upcoming magfest right now.')
-        }
+        return new Page({
+            title: magfest.name.en,
+            author: `Ends in ${this.buildDiffString(magfest.ends)}`,
+            image: magfest.banner || undefined
+        }, [{
+            name: 'Wiki',
+            value: magfest.wiki as string
+        }, {
+            name: 'Content',
+            value: `\`\`\`${magfest.info.join('\n')}\`\`\``
+        }])
     }
 
     private help(): void {
