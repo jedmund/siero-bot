@@ -205,8 +205,10 @@ class ScheduleCommand extends SieroCommand {
     }
 
     private renderRightNow(): Page {
-        const title = 'Right Now'
         const currentEvents: Event[] = this.currentEvents()
+        const streamInfo = this.renderStreamEvent()
+        const title = (streamInfo && streamInfo.name) ? streamInfo.name : 'Right Now'
+        const description = (streamInfo && streamInfo.value) ? streamInfo.value : ''
 
         let page: Page
         if (currentEvents.length == 1) {
@@ -214,7 +216,8 @@ class ScheduleCommand extends SieroCommand {
         } else if (currentEvents.length > 1) {
             page = this.renderEvents({ 
                 title: title,
-                image: currentEvents[0].banner || undefined
+                description: description,
+                image: image || undefined
             }, currentEvents)
         } else {
             page = new Page({
@@ -513,7 +516,7 @@ class ScheduleCommand extends SieroCommand {
         return embed
     }
 
-    private renderStreamEvent() {
+    private renderStreamEvent(): Section | null {
         let name = ''
         let description = ''
 
@@ -525,19 +528,19 @@ class ScheduleCommand extends SieroCommand {
 
             if (isLive) {
                 name = `${stream.name.en} is live now!`
-                description = `Airing live right now \u2192 ${stream.link}`
+                description = `Airing live right now \u2192 ${stream.link}\n\u200e`
                 break
             } else if (liveSoon) {
                 name = `${stream.name.en} airs soon!`
-                description = `Live in **${this.buildDiffString(stream.starts)}**.\n\nTune in \u2192 ${stream.link}`
+                description = `Live in **${this.buildDiffString(stream.starts)}**.\n\nTune in \u2192 ${stream.link}\n\u200e`
                 break
             }
         }
 
-        return {
+        return (name && description) ? {
             name: name,
-            description: description
-        }
+            value: description
+        } : null
     }
 
     private renderServiceEvent() {
