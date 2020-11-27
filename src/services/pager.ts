@@ -118,6 +118,17 @@ export class Pager {
         }
     }
 
+    private lock() {
+        if (this.message && this.embed) {
+            console.log("Locking...")
+
+            this.embed.setFooter('This embed has expired. For options, please run the command again.')
+            this.message.edit(this.embed)
+
+            this.message.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error))
+        }
+    }
+
     private async receiveReaction() {
         const filter = (reaction: MessageReaction, user: User) => {
             return Object.keys(this.pages).includes(reaction.emoji.name) && user.id === this.originalUser.id
@@ -141,8 +152,8 @@ export class Pager {
                     }
                 }
             })
-            .catch((error) => {
-                console.log(`There was an error receiving reactions: ${error}`)
+            .catch((collected: Collection<string, MessageReaction>) => {
+                this.lock()
             })
         }
     }
