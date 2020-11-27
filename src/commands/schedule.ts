@@ -1,6 +1,7 @@
 
 import { Message, MessageEmbed } from 'discord.js'
 import { SieroCommand } from '../helpers/SieroCommand'
+import { Pager, Page, PageConfig, Section } from '../services/pager'
 import { promises as fs } from 'fs'
 
 import isBetween from 'dayjs/plugin/isBetween'
@@ -106,21 +107,6 @@ class ScheduleCommand extends SieroCommand {
                 this.next()
                 break
 
-            case 'current':
-                this.current()
-                break
-
-            case 'now':
-                this.current()
-                break
-
-            case 'magfest':
-                this.magfest()
-                break
-
-            case 'help':
-                this.help()
-
             default:
                 break
         }
@@ -128,27 +114,24 @@ class ScheduleCommand extends SieroCommand {
 
     // Command methods
     private async show() {
-        let embed: MessageEmbed = this.renderList(this.schedule.events)
+        let pager: Pager = new Pager(this.message.author)
 
-        const eventInfo = this.renderServiceEvent()
-        const streamInfo = this.renderStreamEvent()
+        pager.addPage('🕒', this.renderRightNow())
+        pager.addPage('📅', this.renderUpcoming())
+        pager.addPage('🔨', new Page({
+            title: 'Planned features',
+            description: 'There are no features scheduled to be released'
+        }))
 
-        const name = (streamInfo.name) ? streamInfo.name : eventInfo.name
-
-        let description = ''
-        if (streamInfo.description && eventInfo.description) {
-            description = `${streamInfo.description}\n\n**${eventInfo.name}**\n${eventInfo.description}`
-        } else if (streamInfo.description && !eventInfo.description) {
-            description = streamInfo.description
-        } else {
-            description = eventInfo.description
+        if (this.schedule.magfest && dayjs().isBetween(dayjs(this.schedule.magfest.starts), dayjs(this.schedule.magfest.ends))) {
+            pager.addPage('🎉', this.renderMagfest())
         }
 
-        embed.setTitle(name)
-        embed.setDescription(description)
-        embed.setImage(eventInfo.image)
+        pager.addPage('❓', this.renderHelp())
 
-        this.message!.channel.send(embed)
+        pager.listPages()
+
+        pager.render(this.message)
     }
 
     private next(): void {
@@ -162,79 +145,6 @@ class ScheduleCommand extends SieroCommand {
         }
     }
 
-    private current(): void {
-        if (this.schedule.maintenance && dayjs().isBetween(dayjs(this.schedule.maintenance.starts), dayjs(this.schedule.maintenance.ends))) {
-            const parts: NumberObject = dayjs.preciseDiff(dayjs(), this.schedule.maintenance.ends, true)
-            const difference = this.buildString(null, parts.hours, parts.minutes)
-            const embed = new MessageEmbed({
-                title: 'Maintenance',
-                description: `Granblue Fantasy is currently undergoing maintenance.\n\nIt will end in **${difference}**.\n\u00A0`
-            })
-
-            this.message!.channel.send(embed)
-        } else {
-            const currentEvents: Event[] = this.currentEvents()
-
-            if (currentEvents.length == 1) {
-                const embed: MessageEmbed = this.renderEvent(currentEvents[0])
-                this.message!.channel.send(embed)
-            } else if (currentEvents.length > 1) {
-                const embed: MessageEmbed = this.renderList(currentEvents)
-                this.message!.channel.send(embed)
-            } else {
-                this.message!.channel.send('There is no event running right now. Use `$schedule next` to find out what event is running next.')
-            }
-        }
-    }
-
-    private magfest(): void {
-        const isMagfest = this.schedule.magfest && dayjs().isBetween(dayjs(this.schedule.magfest.starts), dayjs(this.schedule.magfest.ends))
-        const upcomingMagfest = this.schedule.magfest && dayjs(this.schedule.magfest.starts).isBetween(dayjs(), dayjs().add(48, 'hours'))
-
-        if (isMagfest || upcomingMagfest) {
-            const embed: MessageEmbed = this.renderMagfest()
-            this.message!.channel.send(embed)
-        } else {
-            this.message?.channel.send('There is no upcoming magfest right now.')
-        }
-    }
-
-    private help(): void {
-        let options = [
-            '```html\n',
-            '<show>',
-            'Show the upcoming schedule\n',
-            '<now>',
-            'Show the current event\n',
-            '<next>',
-            'Show the upcoming event```'
-        ].join('\n')
-
-        let link = 'https://github.com/jedmund/siero-bot/wiki/Viewing-the-schedule'
-
-        var embed = new MessageEmbed({
-            title: 'Schedule',
-            description: 'Welcome! I can tell you what events are coming up in Granblue Fantasy!',
-            color: 0xdc322f,
-            fields: [
-                {
-                    name: 'Command syntax',
-                    value: '```schedule <option>```'
-                },
-                {
-                    name: 'Schedule options',
-                    value: options
-                },
-                {
-                    name: 'Full documentation',
-                    value: link
-                }
-            ]
-        })
-    
-        this.message!.channel.send(embed)
-    }
-
     // File methods
     private async load(): Promise<void> {
         const schedule: string = path.join(__dirname, '..', '..', '..', 'src', 'resources', 'schedule.json')
@@ -243,11 +153,104 @@ class ScheduleCommand extends SieroCommand {
         this.schedule = JSON.parse(data)
     }
 
-    // Render methods
-    private renderList(events: Event[]): MessageEmbed {        
-        let embed: MessageEmbed = new MessageEmbed({
-            title: 'Schedule'
-        })
+    // Page render methods
+    private renderRightNow(): Page {
+        const currentEvents: Event[] = this.currentEvents()
+        let prefixSections: Section[] = []
+        
+        const { section: magfestInfo, image: magfestImage } = this.renderMagfestEvent() || {}
+        const maintenanceInfo = this.renderMaintenanceEvent()
+
+        if (maintenanceInfo) {
+            prefixSections.push(maintenanceInfo)
+        }
+
+        if (magfestInfo) {
+            prefixSections.push(magfestInfo)
+        }
+        const image = (magfestImage) ? magfestImage : currentEvents[0].banner
+
+        const streamInfo = this.renderStreamEvent()
+        const title = (streamInfo && streamInfo.name) ? streamInfo.name : 'Right Now'
+        const description = (streamInfo && streamInfo.value) ? streamInfo.value : ''
+
+        let page: Page
+        if (currentEvents.length == 1 && 
+            magfestInfo == null && maintenanceInfo == null && streamInfo == null) {
+            page = this.renderSingleEvent(currentEvents[0])
+        } else if (currentEvents.length > 1) {
+            page = this.renderEvents({ 
+                title: title,
+                description: description,
+                image: image || undefined
+            }, currentEvents, prefixSections)
+        } else {
+            page = new Page({
+                title: title,
+                description: 'There are no events running right now.'
+            })
+        }
+
+        return page
+    }
+
+    private renderUpcoming(): Page {
+        const title = 'Upcoming Events'
+        const events = this.upcomingEvents()
+        return this.renderEvents({
+            title: title,
+            image: events[0].banner || undefined
+        }, events)
+    }
+
+    private renderMagfest(): Page {
+        const magfest = this.schedule.magfest!
+
+        return new Page({
+            title: magfest.name.en,
+            author: `Ends in ${this.buildDiffString(magfest.ends)}`,
+            image: magfest.banner || undefined
+        }, [{
+            name: 'Wiki',
+            value: magfest.wiki as string
+        }, {
+            name: 'Content',
+            value: `\`\`\`${magfest.info.join('\n')}\`\`\``
+        }])
+    }
+
+    private renderHelp(): Page {
+        let options = [
+            '```html\n',
+            '<show>',
+            'Show the schedule\n',
+            '<next>',
+            'Only show the upcoming event```'
+        ].join('\n')
+
+        return new Page({
+            title: 'Schedule Help',
+            description: 'I can tell you what\'s coming up soon in Granblue Fantasy!'
+        }, [
+            {
+                name: 'Command syntax',
+                value: '```schedule <option>```'
+            },
+            {
+                name: 'Schedule options',
+                value: options
+            },
+            {
+                name: 'Full documentation',
+                value: 'https://github.com/jedmund/siero-bot/wiki/Viewing-the-schedule'
+            }
+        ])
+    }
+
+    // Section render methods
+
+    private renderEvents(config: PageConfig, events: Event[], prefixes: Section[] = []): Page {
+        let sections = prefixes || []
 
         for (let i in events) {
             let event: Event = events[i]
@@ -263,12 +266,188 @@ class ScheduleCommand extends SieroCommand {
                 const dateString: string = (isCurrentEvent) ? endsString : startsString
 
                 let duration: string = `\`\`\`html\n${dateString}\n\`\`\``
-                embed.addField(event.name.en, duration)
+                
+                sections.push({
+                    name: event.name.en,
+                    value: duration
+                })
             }
         }
 
-        return embed
+        return new Page(config, sections)
     }
+
+    private renderSingleEvent(event: Event, currentEvent: boolean = true): Page {
+        let config: PageConfig = {
+            title: '',
+            description: '',
+            author: '',
+            image: ''
+        }
+
+        let sections: Section[] = []
+
+        const keys = Object.keys(event)
+        for (var i = 0; i < keys.length; i++) {
+            const key: string = keys[i]
+            const readableKey: string = this.capitalize(keys[i].replace('-', ' '))
+
+            if (currentEvent && key !== 'starts') {
+                // do nothing
+            }
+
+            if (key === 'banner') {
+                if (typeof event[key] === "string") {
+                    config.image = event[key] as string
+                }
+            }
+
+            if (key === 'name') {
+                config.title = event[key].en
+            }
+
+            if (key === 'type') {
+                if (currentEvent) {
+                    config.author = `Ends in ${this.buildDiffString(event['ends'])}`
+                } else {
+                    config.author = `Starts in ${this.buildDiffString(event['starts'])}`
+                }
+            }
+
+            if (!currentEvent && key === 'starts') {
+                const formattedTime: string = dayjs(event[key]).format('LLLL')
+                sections.push({
+                    name: `${readableKey}`,
+                    value: `${formattedTime} JST`
+                })
+            }
+            
+            if (currentEvent && key === 'ends') {
+                const formattedTime: string = dayjs(event[key]).format('LLLL')
+                sections.push({
+                    name: `${readableKey}`, 
+                    value: `${formattedTime} JST`
+                })
+            }
+
+            if (!currentEvent && key === 'ends') {
+                const formattedTime: string = dayjs(event[key]).format('LLLL')
+                sections.push({
+                    name: `${readableKey}`, 
+                    value: `${formattedTime} JST`
+                })
+            }
+            
+            if (key === 'advantage' && event[key]) {
+                const advantage: string = event[key]!
+                sections.push({
+                    name: readableKey,
+                    value: this.capitalize(advantage)
+                })
+            }
+            
+            if (key === 'link') {
+                sections.push({
+                    name: 'Wiki', 
+                    value: event[key] || ''
+                })
+            }
+        }
+
+        return new Page(config, sections)
+    }
+
+    private renderStreamEvent(): Section | null {
+        let name = ''
+        let description = ''
+
+        for (let i in this.schedule.streams) {
+            const stream = this.schedule.streams[i]
+
+            const isLive = dayjs().isBetween(dayjs(stream.starts), dayjs(stream.ends))
+            const liveSoon = dayjs(stream.starts).isBetween(dayjs(), dayjs().add(7, 'days'))
+
+            if (isLive) {
+                name = `${stream.name.en} is live now!`
+                description = `Airing live right now \u2192 ${stream.link}\n\u200e`
+                break
+            } else if (liveSoon) {
+                name = `${stream.name.en} airs soon!`
+                description = `Live in **${this.buildDiffString(stream.starts)}**.\n\nTune in \u2192 ${stream.link}\n\u200e`
+                break
+            }
+        }
+
+        return (name && description) ? {
+            name: name,
+            value: description
+        } : null
+    }
+
+    private renderMaintenanceEvent(): Section | null {
+        let name = ''
+        let description = ''
+
+        const isMaintenance = this.schedule.maintenance && dayjs().isBetween(dayjs(this.schedule.maintenance.starts), dayjs(this.schedule.maintenance.ends))
+        const upcomingMaintenance = this.schedule.maintenance && dayjs(this.schedule.maintenance.starts).isBetween(dayjs(), dayjs().add(48, 'hours'))
+
+        if (this.schedule.maintenance) {
+            if (upcomingMaintenance) {
+                const parts: NumberObject = dayjs.preciseDiff(dayjs(this.schedule.maintenance.starts).utcOffset(540), dayjs(this.schedule.maintenance.ends), true)
+                const difference = this.buildDiffString(this.schedule.maintenance.starts)
+                const duration = this.buildString(null, parts.days, parts.hours)
+                
+                name = 'Upcoming Maintenance'
+                description = `Granblue Fantasy will be undergoing maintenance in **${difference}**.\nMaintenance will last for **${duration}**.\n\u200e`
+            } else if (isMaintenance) {
+                const difference = this.buildDiffString(this.schedule.maintenance.ends)
+
+                name = 'Maintenance'
+                description = `Granblue Fantasy will be undergoing maintenance for the next **${difference}**.\n\u200e`
+            }
+        }
+
+        return (name && description) ? {
+            name: name,
+            value: description
+        } : null
+    }
+
+    private renderMagfestEvent(): { section: Section, image: string } | null {
+        let name = ''
+        let description = ''
+        let image = ''
+
+        const isMagfest = this.schedule.magfest && dayjs().isBetween(dayjs(this.schedule.magfest.starts), dayjs(this.schedule.magfest.ends))
+        const upcomingMagfest = this.schedule.magfest && dayjs(this.schedule.magfest.starts).isBetween(dayjs(), dayjs().add(48, 'hours'))
+
+        if (this.schedule.magfest) {
+            if (upcomingMagfest) {
+                const parts: NumberObject = dayjs.preciseDiff(dayjs(this.schedule.magfest.starts).utcOffset(540), dayjs(this.schedule.magfest.ends), true)
+                const difference = this.buildDiffString(this.schedule.magfest.starts)
+                const duration = this.buildString(null, parts.days, parts.hours)
+                
+                name = `${this.schedule.magfest.name.en} coming soon!`
+                description = `The ${this.schedule.magfest.name.en} starts in **${difference}**! It will last for **${duration}**.\n\u200e`
+            } else if (isMagfest) {
+                const difference = this.buildDiffString(this.schedule.magfest.ends)
+
+                name = this.schedule.magfest.name.en
+                image = (this.schedule.magfest.banner) ? this.schedule.magfest.banner : ''
+                description = `The ${this.schedule.magfest.name.en} is underway for the next **${difference}**.\n\u200e`
+            }
+        }
+
+        return (name && description) ? {
+            section: {
+                name: name,
+                value: description
+            },
+            image: image
+        } : null
+    }
+
+    // MessageEmbed render methods
 
     private renderEvent(event: Event, currentEvent: boolean = true): MessageEmbed {
         let embed = new MessageEmbed({
@@ -330,113 +509,6 @@ class ScheduleCommand extends SieroCommand {
         return embed
     }
 
-    private renderMagfest(): MessageEmbed {
-        let embed = new MessageEmbed({
-            color: 0xdc322f
-        })
-
-        const isMagfest = this.schedule.magfest && dayjs().isBetween(dayjs(this.schedule.magfest.starts), dayjs(this.schedule.magfest.ends))
-
-        if (this.schedule.magfest) {
-            const magfest = this.schedule.magfest
-
-            embed.setTitle(magfest.name)
-
-            if (magfest.banner) {
-                embed.setImage(magfest.banner)
-            }
-
-            if (isMagfest) {
-                embed.setAuthor(`Ends in ${this.buildDiffString(magfest.ends)}`)
-            } else {
-                embed.setAuthor(`Starts in ${this.buildDiffString(magfest.starts)}`)
-            }
-
-            embed.addField('Wiki', magfest.wiki)
-            embed.addField('Content', `\`\`\`${magfest.info.join('\n')}\`\`\``)
-        }
-
-        return embed
-    }
-
-    private renderStreamEvent() {
-        let name = ''
-        let description = ''
-
-        for (let i in this.schedule.streams) {
-            const stream = this.schedule.streams[i]
-
-            const isLive = dayjs().isBetween(dayjs(stream.starts), dayjs(stream.ends))
-            const liveSoon = dayjs(stream.starts).isBetween(dayjs(), dayjs().add(7, 'days'))
-
-            if (isLive) {
-                name = `${stream.name.en} is live now!`
-                description = `Airing live right now \u2192 ${stream.link}`
-                break
-            } else if (liveSoon) {
-                name = `${stream.name.en} airs soon!`
-                description = `Live in **${this.buildDiffString(stream.starts)}**.\n\nTune in \u2192 ${stream.link}`
-                break
-            }
-        }
-
-        return {
-            name: name,
-            description: description
-        }
-    }
-
-    private renderServiceEvent() {
-        let name = ''
-        let description = ''
-        let image = ''
-
-        const isMagfest = this.schedule.magfest && dayjs().isBetween(dayjs(this.schedule.magfest.starts), dayjs(this.schedule.magfest.ends))
-        const isMaintenance = this.schedule.maintenance && dayjs().isBetween(dayjs(this.schedule.maintenance.starts), dayjs(this.schedule.maintenance.ends))
-
-        const upcomingMagfest = this.schedule.magfest && dayjs(this.schedule.magfest.starts).isBetween(dayjs(), dayjs().add(48, 'hours'))
-        const upcomingMaintenance = this.schedule.maintenance && dayjs(this.schedule.maintenance.starts).isBetween(dayjs(), dayjs().add(48, 'hours'))
-
-        if (this.schedule.maintenance) {
-            if (upcomingMaintenance) {
-                const parts: NumberObject = dayjs.preciseDiff(dayjs(this.schedule.maintenance.starts).utcOffset(540), dayjs(this.schedule.maintenance.ends), true)
-                const difference = this.buildDiffString(this.schedule.maintenance.starts)
-                const duration = this.buildString(null, parts.days, parts.hours)
-                
-                name = 'Upcoming Maintenance'
-                description = `Granblue Fantasy will be undergoing maintenance in **${difference}**.\nMaintenance will last for **${duration}**.\n\n**Event Schedule**\u00A0`
-            } else if (isMaintenance) {
-                const difference = this.buildDiffString(this.schedule.maintenance.ends)
-
-                name = 'Maintenance'
-                description = `Granblue Fantasy is currently undergoing maintenance.\nIt will end in **${difference}**.\n\n**Event Schedule**\u00A0`
-            }
-        }
-
-        if (this.schedule.magfest && !isMaintenance && !upcomingMaintenance) {
-            if (upcomingMagfest) {
-                const parts: NumberObject = dayjs.preciseDiff(dayjs(this.schedule.magfest.starts).utcOffset(540), dayjs(this.schedule.magfest.ends), true)
-                const difference = this.buildDiffString(this.schedule.magfest.starts)
-                const duration = this.buildString(null, parts.days, parts.hours)
-                
-                name = `${this.schedule.magfest.name.en} coming soon!`
-                description = `The ${this.schedule.magfest.name.en} starts in **${difference}**! It will last for **${duration}**.\n\nFor more info, use \`$schedule magfest\`.\n\n**Event Schedule**\u00A0`
-            } else if (isMagfest) {
-                const difference = this.buildDiffString(this.schedule.magfest.ends)
-
-                name = this.schedule.magfest.name.en
-                image = (this.schedule.magfest.banner) ? this.schedule.magfest.banner : ''
-                description = `The ${this.schedule.magfest.name.en} is underway for the next **${difference}**.\n\nFor more info, use \`$schedule magfest\`.\n\n**Event Schedule**\u00A0`
-            }
-        }
-
-        return {
-            name: name,
-            description: description,
-            image: image
-        }
-    }
-
     // Helper methods
     private capitalize(string: string): string {
         return string.charAt(0).toUpperCase() + string.slice(1)
@@ -454,6 +526,20 @@ class ScheduleCommand extends SieroCommand {
         }
 
         return currentEvents
+    }
+
+    private upcomingEvents(): Event[] {
+        let upcomingEvents: Event[] = []
+
+        for (let i in this.schedule.events) {
+            const event: Event = this.schedule.events[i]
+
+            if (dayjs(event.starts).isAfter(dayjs())) {
+                upcomingEvents.push(event)
+            }
+        }
+
+        return upcomingEvents
     }
 
     private nextEvent(): Event | null {
