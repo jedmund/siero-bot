@@ -206,19 +206,34 @@ class ScheduleCommand extends SieroCommand {
 
     private renderRightNow(): Page {
         const currentEvents: Event[] = this.currentEvents()
+        let prefixSections: Section[] = []
+        
+        const { section: magfestInfo, image: magfestImage } = this.renderMagfestEvent() || {}
+        const maintenanceInfo = this.renderMaintenanceEvent()
+
+        if (maintenanceInfo) {
+            prefixSections.push(maintenanceInfo)
+        }
+
+        if (magfestInfo) {
+            prefixSections.push(magfestInfo)
+        }
+        const image = (this.magfest) ? magfestImage : currentEvents[0].banner
+
         const streamInfo = this.renderStreamEvent()
         const title = (streamInfo && streamInfo.name) ? streamInfo.name : 'Right Now'
         const description = (streamInfo && streamInfo.value) ? streamInfo.value : ''
 
         let page: Page
-        if (currentEvents.length == 1) {
+        if (currentEvents.length == 1 && 
+            magfestInfo == null && maintenanceInfo == null && streamInfo == null) {
             page = this.renderSingleEvent(currentEvents[0])
         } else if (currentEvents.length > 1) {
             page = this.renderEvents({ 
                 title: title,
                 description: description,
                 image: image || undefined
-            }, currentEvents)
+            }, currentEvents, prefixSections)
         } else {
             page = new Page({
                 title: title,
@@ -319,8 +334,8 @@ class ScheduleCommand extends SieroCommand {
         return embed
     }
 
-    private renderEvents(config: PageConfig, events: Event[]): Page {
-        let sections = []
+    private renderEvents(config: PageConfig, events: Event[], prefixes: (Section | null)[] = []): Page {
+        let sections = prefixes
 
         for (let i in events) {
             let event: Event = events[i]
@@ -543,15 +558,11 @@ class ScheduleCommand extends SieroCommand {
         } : null
     }
 
-    private renderServiceEvent() {
+    private renderMaintenanceEvent(): Section | null {
         let name = ''
         let description = ''
-        let image = ''
 
-        const isMagfest = this.schedule.magfest && dayjs().isBetween(dayjs(this.schedule.magfest.starts), dayjs(this.schedule.magfest.ends))
         const isMaintenance = this.schedule.maintenance && dayjs().isBetween(dayjs(this.schedule.maintenance.starts), dayjs(this.schedule.maintenance.ends))
-
-        const upcomingMagfest = this.schedule.magfest && dayjs(this.schedule.magfest.starts).isBetween(dayjs(), dayjs().add(48, 'hours'))
         const upcomingMaintenance = this.schedule.maintenance && dayjs(this.schedule.maintenance.starts).isBetween(dayjs(), dayjs().add(48, 'hours'))
 
         if (this.schedule.maintenance) {
@@ -561,37 +572,53 @@ class ScheduleCommand extends SieroCommand {
                 const duration = this.buildString(null, parts.days, parts.hours)
                 
                 name = 'Upcoming Maintenance'
-                description = `Granblue Fantasy will be undergoing maintenance in **${difference}**.\nMaintenance will last for **${duration}**.\n\n**Event Schedule**\u00A0`
+                description = `Granblue Fantasy will be undergoing maintenance in **${difference}**.\nMaintenance will last for **${duration}**.\n\u200e`
             } else if (isMaintenance) {
                 const difference = this.buildDiffString(this.schedule.maintenance.ends)
 
                 name = 'Maintenance'
-                description = `Granblue Fantasy is currently undergoing maintenance.\nIt will end in **${difference}**.\n\n**Event Schedule**\u00A0`
+                description = `Granblue Fantasy will be undergoing maintenance for the next **${difference}**.\n\u200e`
             }
         }
 
-        if (this.schedule.magfest && !isMaintenance && !upcomingMaintenance) {
+        return (name && description) ? {
+            name: name,
+            value: description
+        } : null
+    }
+
+    private renderMagfestEvent(): { section: Section, image: string } | null {
+        let name = ''
+        let description = ''
+        let image = ''
+
+        const isMagfest = this.schedule.magfest && dayjs().isBetween(dayjs(this.schedule.magfest.starts), dayjs(this.schedule.magfest.ends))
+        const upcomingMagfest = this.schedule.magfest && dayjs(this.schedule.magfest.starts).isBetween(dayjs(), dayjs().add(48, 'hours'))
+
+        if (this.schedule.magfest) {
             if (upcomingMagfest) {
                 const parts: NumberObject = dayjs.preciseDiff(dayjs(this.schedule.magfest.starts).utcOffset(540), dayjs(this.schedule.magfest.ends), true)
                 const difference = this.buildDiffString(this.schedule.magfest.starts)
                 const duration = this.buildString(null, parts.days, parts.hours)
                 
                 name = `${this.schedule.magfest.name.en} coming soon!`
-                description = `The ${this.schedule.magfest.name.en} starts in **${difference}**! It will last for **${duration}**.\n\nFor more info, use \`$schedule magfest\`.\n\n**Event Schedule**\u00A0`
+                description = `The ${this.schedule.magfest.name.en} starts in **${difference}**! It will last for **${duration}**.\n\u200e`
             } else if (isMagfest) {
                 const difference = this.buildDiffString(this.schedule.magfest.ends)
 
                 name = this.schedule.magfest.name.en
                 image = (this.schedule.magfest.banner) ? this.schedule.magfest.banner : ''
-                description = `The ${this.schedule.magfest.name.en} is underway for the next **${difference}**.\n\nFor more info, use \`$schedule magfest\`.\n\n**Event Schedule**\u00A0`
+                description = `The ${this.schedule.magfest.name.en} is underway for the next **${difference}**.\n\u200e`
             }
         }
 
-        return {
-            name: name,
-            description: description,
+        return (name && description) ? {
+            section: {
+                name: name,
+                value: description
+            },
             image: image
-        }
+        } : null
     }
 
     // Helper methods
