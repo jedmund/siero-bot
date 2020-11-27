@@ -325,7 +325,7 @@
                 "en": "Handsome Gorilla",
                 "jp": "ハンサム・ゴリラ"
             },
-            "banner": "https://gbf.wiki/images/f/fd/Handsome_Gorilla_top.jpg",
+            "banner": "http://game-a.granbluefantasy.jp/assets_en/img/sp/event/solotreasure032/assets/header/bg_header.jpg",
             "link": "https://gbf.wiki/Handsome_Gorilla",
             "type": "scenario rerun",
             "starts": "2020-11-21T17:00:00+09:00",
@@ -342,13 +342,23 @@
         },
         {
             "name": {
-                "en": "Scenario Event",
-                "jp": "シナリオイベント"
+                "en": "Paliuli Pararaiha",
+                "jp": "パリウリ・パラライハ"
             },
             "type": "scenario",
             "starts": "2020-11-29T19:00:00+09:00",
             "ends": "2020-12-07T20:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Demon Slayer: Kimetsu no Yaiba Collab Event",
+                "jp": "鬼滅の刃コラボイベント"
+            },
+            "type": "collab",
+            "starts": "2020-12-08T17:00:00+09:00",
+            "ends": "2020-12-20T20:59:00+09:00"
         }
+        
     ],
     "updates": [
         {
