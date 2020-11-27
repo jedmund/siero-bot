@@ -130,11 +130,6 @@ class ScheduleCommand extends SieroCommand {
     // Command methods
     private async show() {
         let pager: Pager = new Pager(this.message.author)
-        
-        // const upcomingEvents = this.renderEvents('Upcoming', this.schedule.events)
-
-        // let eventSchedule: Page = new Page('', upcomingEvents)
-        // let featureSchedule: Page = new Page('These features have been announced.')
 
         pager.addPage('🕒', this.renderRightNow())
         pager.addPage('📅', this.renderUpcoming())
@@ -144,28 +139,6 @@ class ScheduleCommand extends SieroCommand {
         pager.listPages()
 
         pager.render(this.message)
-        
-        // let embed: MessageEmbed = this.renderList(this.schedule.events)
-
-        // const eventInfo = this.renderServiceEvent()
-        // const streamInfo = this.renderStreamEvent()
-
-        // const name = (streamInfo.name) ? streamInfo.name : eventInfo.name
-
-        // let description = ''
-        // if (streamInfo.description && eventInfo.description) {
-        //     description = `${streamInfo.description}\n\n**${eventInfo.name}**\n${eventInfo.description}`
-        // } else if (streamInfo.description && !eventInfo.description) {
-        //     description = streamInfo.description
-        // } else {
-        //     description = eventInfo.description
-        // }
-
-        // embed.setTitle(name)
-        // embed.setDescription(description)
-        // embed.setImage(eventInfo.image)
-
-        // this.message!.channel.send(embed)
     }
 
     private next(): void {
