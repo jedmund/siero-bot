@@ -175,9 +175,9 @@ class Until {
 
         var string = ''
         if (rolls.item.recruits != null) {
-            string = `It took **${rolls.count} rolls** to pull **${rolls.item.name} (${rolls.item.recruits})**.`
+            string = `It took **${rolls.count.toLocaleString()} rolls** to pull **${rolls.item.name} (${rolls.item.recruits})**.`
         } else {
-            string = `It took **${rolls.count} rolls** to pull **${rolls.item.name}**.`
+            string = `It took **${rolls.count.toLocaleString()} rolls** to pull **${rolls.item.name}**.`
         }
 
         let numTenPulls = rolls.count / 10

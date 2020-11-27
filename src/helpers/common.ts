@@ -22,7 +22,8 @@ export function capitalize(string: string, allWords: boolean = false): string {
 
 export function sanitize(string: string): string {
     let re = /[|;$%@"<>()+]/g
-    return string.replace(re, '').toLowerCase()
+    // return string.replace(re, '').toLowerCase()
+    return string.replace(re, '')
 }
 
 export function intersection(source: string[], destination: string[]): string[] {
@@ -80,7 +81,7 @@ export function parse(request: string) {
     let suffixCross = intersection(parts, suffixes)
 
     // Rebuild the base item name
-    const cleanedName = `${capitalize(parts.join(' '), true)}`
+    const cleanedName = parts.join(' ')
 
     // Reconstruct the item name with its suffixes
     let constructedName = cleanedName
