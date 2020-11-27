@@ -133,7 +133,10 @@ class ScheduleCommand extends SieroCommand {
 
         pager.addPage('🕒', this.renderRightNow())
         pager.addPage('📅', this.renderUpcoming())
-        // pager.addPage('❓', featureSchedule)
+        pager.addPage('🔨', new Page({
+            title: 'Planned features',
+            description: 'There are no features scheduled to be released'
+        }))
 
         // pager.selectPage('🛠')
         pager.listPages()
