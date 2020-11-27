@@ -6,7 +6,7 @@ type PageEntry = {
     selected: boolean
 }
 
-type Section = {
+export type Section = {
     name: string
     value: string
 }
@@ -14,15 +14,13 @@ type Section = {
 type NullableSectionList = Section[] | null
 
 export class Pager {
-    title: string
     pages: PageMap
 
     embed: MessageEmbed | null = null
     message: Message | null = null
     originalUser: User
 
-    public constructor(title: string, user: User, pages: PageMap = {}) {
-        this.title = title
+    public constructor(user: User, pages: PageMap = {}) {
         this.pages = pages
         this.originalUser = user
     }
@@ -52,7 +50,7 @@ export class Pager {
         for (let i = 0; i < keys.length; i++) {
             const key = keys[i]
             const preceding = (this.pages[key].selected) ? '->\t' : '\t'
-            console.log(`${preceding}${key}\t: ${this.pages[key].page.content}`)    
+            console.log(`${preceding}${key}\t: ${this.pages[key].page.description}`)    
         }
     }
 
@@ -64,9 +62,16 @@ export class Pager {
             console.log('There is already a message embed, let\'s update it.')
         } else {
             embed = new MessageEmbed({
-                title: this.title,
-                description: selectedPage.content
+                title: selectedPage.title,
+                description: selectedPage.description || '',
             })
+
+            embed.setImage(selectedPage.image || '')
+
+            for (let i in selectedPage.sections) {
+                const section = selectedPage.sections[i]
+                embed.addField(section.name, section.value)
+            }
         }
 
         this.embed = embed
@@ -84,7 +89,17 @@ export class Pager {
         const page = this.pages[key].page
         
         if (this.embed && this.message) {
-            this.embed.setDescription(page.content)
+            this.embed.setTitle(page.title)
+            this.embed.setDescription(page.description || '')
+            this.embed.setImage(page.image || '')
+            
+            this.embed.fields = []
+
+            for (let i in page.sections) {
+                const section = page.sections[i]
+                this.embed.addField(section.name, section.value)
+            }
+
             this.message.edit(this.embed)
 
             await this.receiveReaction()
@@ -112,7 +127,7 @@ export class Pager {
             const message: Message = this.message
             await message.awaitReactions(filter, {
                 max: 1,
-                time: 6000,
+                time: 60000,
                 errors: ['time']
             })
             .then((collected: Collection<string, MessageReaction>) => {
@@ -146,12 +161,25 @@ export class Pager {
     }
 }
 
+export type PageConfig = {
+    title: string,
+    description?: string,
+    author?: string,
+    image?: string
+}
+
 export class Page {
-    content: string
+    title: string
+    description: string | null
+    author: string | null
+    image: string | null
     sections: Section[] = []
 
-    public constructor(content: string, sections: NullableSectionList = null) {
-        this.content = content
+    public constructor(config: PageConfig, sections: NullableSectionList = null) {
+        this.title = config.title
+        this.description = config.description || null
+        this.author = config.author || null
+        this.image = config.image || null
         this.sections = (sections) ? sections : []
     }
 

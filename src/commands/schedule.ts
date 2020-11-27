@@ -1,6 +1,7 @@
 
 import { Message, MessageEmbed } from 'discord.js'
 import { SieroCommand } from '../helpers/SieroCommand'
+import { Pager, Page, PageConfig, Section } from '../services/pager'
 import { promises as fs } from 'fs'
 
 import isBetween from 'dayjs/plugin/isBetween'
@@ -128,27 +129,43 @@ class ScheduleCommand extends SieroCommand {
 
     // Command methods
     private async show() {
-        let embed: MessageEmbed = this.renderList(this.schedule.events)
+        let pager: Pager = new Pager(this.message.author)
+        
+        // const upcomingEvents = this.renderEvents('Upcoming', this.schedule.events)
 
-        const eventInfo = this.renderServiceEvent()
-        const streamInfo = this.renderStreamEvent()
+        // let eventSchedule: Page = new Page('', upcomingEvents)
+        // let featureSchedule: Page = new Page('These features have been announced.')
 
-        const name = (streamInfo.name) ? streamInfo.name : eventInfo.name
+        pager.addPage('🕒', this.renderRightNow())
+        pager.addPage('📅', this.renderUpcoming())
+        // pager.addPage('❓', featureSchedule)
 
-        let description = ''
-        if (streamInfo.description && eventInfo.description) {
-            description = `${streamInfo.description}\n\n**${eventInfo.name}**\n${eventInfo.description}`
-        } else if (streamInfo.description && !eventInfo.description) {
-            description = streamInfo.description
-        } else {
-            description = eventInfo.description
-        }
+        // pager.selectPage('🛠')
+        pager.listPages()
 
-        embed.setTitle(name)
-        embed.setDescription(description)
-        embed.setImage(eventInfo.image)
+        pager.render(this.message)
+        
+        // let embed: MessageEmbed = this.renderList(this.schedule.events)
 
-        this.message!.channel.send(embed)
+        // const eventInfo = this.renderServiceEvent()
+        // const streamInfo = this.renderStreamEvent()
+
+        // const name = (streamInfo.name) ? streamInfo.name : eventInfo.name
+
+        // let description = ''
+        // if (streamInfo.description && eventInfo.description) {
+        //     description = `${streamInfo.description}\n\n**${eventInfo.name}**\n${eventInfo.description}`
+        // } else if (streamInfo.description && !eventInfo.description) {
+        //     description = streamInfo.description
+        // } else {
+        //     description = eventInfo.description
+        // }
+
+        // embed.setTitle(name)
+        // embed.setDescription(description)
+        // embed.setImage(eventInfo.image)
+
+        // this.message!.channel.send(embed)
     }
 
     private next(): void {
@@ -185,6 +202,35 @@ class ScheduleCommand extends SieroCommand {
                 this.message!.channel.send('There is no event running right now. Use `$schedule next` to find out what event is running next.')
             }
         }
+    }
+
+    private renderRightNow(): Page {
+        const title = 'Right Now'
+        const currentEvents: Event[] = this.currentEvents()
+
+        let page: Page
+        if (currentEvents.length == 1) {
+            page = this.renderSingleEvent(currentEvents[0])
+        } else if (currentEvents.length > 1) {
+            page = this.renderEvents({ 
+                title: title,
+                image: currentEvents[0].banner || undefined
+            }, currentEvents)
+        } else {
+            page = new Page({
+                title: title,
+                description: 'There is no event running right now.'
+            })
+        }
+
+        return page
+    }
+
+    private renderUpcoming(): Page {
+        const title = 'Upcoming'
+        return this.renderEvents({
+            title: title
+        }, this.schedule.events)
     }
 
     private magfest(): void {
@@ -270,6 +316,34 @@ class ScheduleCommand extends SieroCommand {
         return embed
     }
 
+    private renderEvents(config: PageConfig, events: Event[]): Page {
+        let sections = []
+
+        for (let i in events) {
+            let event: Event = events[i]
+
+            if (dayjs(event.ends).isAfter(dayjs())) {
+                const startsDiffString = `<Starts in ${this.buildDiffString(event.starts)}>`
+                const endsDiffString = `<Ends in ${this.buildDiffString(event.ends)}>`
+                
+                const isCurrentEvent: boolean = (dayjs(event.starts).isBefore(dayjs()) && dayjs(event.ends).isAfter(dayjs()))
+
+                const startsString: string = `${startsDiffString}\n${dayjs(event.starts).format('LLLL')} JST`
+                const endsString: string = `${endsDiffString}\n${dayjs(event.ends).format('LLLL')} JST`
+                const dateString: string = (isCurrentEvent) ? endsString : startsString
+
+                let duration: string = `\`\`\`html\n${dateString}\n\`\`\``
+                
+                sections.push({
+                    name: event.name.en,
+                    value: duration
+                })
+            }
+        }
+
+        return new Page(config, sections)
+    }
+
     private renderEvent(event: Event, currentEvent: boolean = true): MessageEmbed {
         let embed = new MessageEmbed({
             color: 0xdc322f
@@ -328,6 +402,86 @@ class ScheduleCommand extends SieroCommand {
         }
 
         return embed
+    }
+
+    private renderSingleEvent(event: Event, currentEvent: boolean = true): Page {
+        let config: PageConfig = {
+            title: '',
+            description: '',
+            author: '',
+            image: ''
+        }
+
+        let sections: Section[] = []
+
+        const keys = Object.keys(event)
+        for (var i = 0; i < keys.length; i++) {
+            const key: string = keys[i]
+            const readableKey: string = this.capitalize(keys[i].replace('-', ' '))
+
+            if (currentEvent && key !== 'starts') {
+                // do nothing
+            }
+
+            if (key === 'banner') {
+                if (typeof event[key] === "string") {
+                    config.image = event[key] as string
+                }
+            }
+
+            if (key === 'name') {
+                config.title = event[key].en
+            }
+
+            if (key === 'type') {
+                if (currentEvent) {
+                    config.author = `Ends in ${this.buildDiffString(event['ends'])}`
+                } else {
+                    config.author = `Starts in ${this.buildDiffString(event['starts'])}`
+                }
+            }
+
+            if (!currentEvent && key === 'starts') {
+                const formattedTime: string = dayjs(event[key]).format('LLLL')
+                sections.push({
+                    name: `${readableKey}`,
+                    value: `${formattedTime} JST`
+                })
+            }
+            
+            if (currentEvent && key === 'ends') {
+                const formattedTime: string = dayjs(event[key]).format('LLLL')
+                sections.push({
+                    name: `${readableKey}`, 
+                    value: `${formattedTime} JST`
+                })
+            }
+
+            if (!currentEvent && key === 'ends') {
+                const formattedTime: string = dayjs(event[key]).format('LLLL')
+                sections.push({
+                    name: `${readableKey}`, 
+                    value: `${formattedTime} JST`
+                })
+            }
+            
+            if (key === 'advantage' && event[key]) {
+                const advantage: string = event[key]!
+                sections.push({
+                    name: readableKey,
+                    value: this.capitalize(advantage)
+                })
+            }
+            
+            if (key === 'link') {
+                sections.push({
+                    name: 'Wiki', 
+                    value: event[key] || ''
+                })
+            }
+        }
+
+        return new Page(config, sections)
     }
 
     private renderMagfest(): MessageEmbed {
