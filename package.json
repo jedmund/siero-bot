@@ -7,26 +7,26 @@
   "description": "",
   "main": "build/dist/bot.js",
   "dependencies": {
-    "chance": "^1.1.5",
-    "dayjs": "^1.8.28",
+    "chance": "^1.1.7",
+    "dayjs": "^1.9.6",
     "dayjs-plugin-utc": "^0.1.2",
     "dayjs-precise-range": "^1.0.1",
-    "discord-akairo": "^8.0.0",
-    "discord.js": "^12.0.0",
+    "discord-akairo": "^8.1.0",
+    "discord.js": "^12.5.1",
     "dotenv": "^6.2.0",
-    "make-fetch-happen": "^8.0.7",
+    "make-fetch-happen": "^8.0.10",
     "node-emoji": "^1.10.0",
     "pg": "^7.18.2",
-    "pg-promise": "^10.5.6",
+    "pg-promise": "^10.8.0",
     "pluralize": "^7.0.0",
-    "sqlite": "^4.0.7",
-    "tslib": "^2.0.0",
-    "typescript": "^3.9.3"
+    "sqlite": "^4.0.17",
+    "tslib": "^2.0.3",
+    "typescript": "^3.9.7"
   },
   "devDependencies": {
-    "concurrently": "^5.2.0",
+    "concurrently": "^5.3.0",
     "nodemon": "^1.19.4",
-    "sequelize": "^5.21.9"
+    "sequelize": "^5.22.3"
   },
   "scripts": {
     "build-ts": "rm -rf build/dist && tsc",
