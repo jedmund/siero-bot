@@ -237,6 +237,7 @@
                 "jp": "バブ･イールの塔"
             },
             "type": "tower",
+            "banner": "https://gbf.wiki/images/9/93/Tower_of_Babyl_top.jpg",
             "starts": "2020-09-21T17:00:00+09:00",
             "ends": "2020-09-26T20:59:00+09:00"
         },
@@ -337,6 +338,7 @@
                 "jp": "バブ･イールの塔"
             },
             "type": "tower",
+            "banner": "https://gbf.wiki/images/9/93/Tower_of_Babyl_top.jpg",
             "starts": "2020-11-25T17:00:00+09:00",
             "ends": "2020-12-01T20:59:00+09:00"
         },
