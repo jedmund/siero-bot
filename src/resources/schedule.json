@@ -29,12 +29,21 @@
     "streams": [
         {
             "name": {
-                "en": "Hot Hot Hot! Granblue Summer Live Stream",
-                "jp": "熱いぜ！グラブルの夏！SP"
+                "en": "Granblue Fantasy Fes 2020 Day 1 Livestream",
+                "jp": "g裏ブルフェス2020　1日目生放送"
             },
-            "starts": "2020-08-08T18:00:00+09:00",
-            "ends": "2020-08-08T21:00:00+09:00",
-            "link": "https://www.youtube.com/watch?v=pGM76IPtkc0"
+            "starts": "2020-12-12T18:00:00+09:00",
+            "ends": "2020-12-12T21:00:00+09:00",
+            "link": "https://www.youtube.com/"
+        },
+        {
+            "name": {
+                "en": "Granblue Fantasy Fes 2020 Day 2 Livestream",
+                "jp": "g裏ブルフェス2020　2日目生放送"
+            },
+            "starts": "2020-12-13T18:00:00+09:00",
+            "ends": "2020-12-13T21:00:00+09:00",
+            "link": "https://www.youtube.com/"
         }
     ],
     "events": [
