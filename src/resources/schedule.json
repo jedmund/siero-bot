@@ -361,8 +361,37 @@
             "type": "collab",
             "starts": "2020-12-08T17:00:00+09:00",
             "ends": "2020-12-20T20:59:00+09:00"
-        }
-        
+        },
+        {
+            "name": {
+                "en": "Xeno Corow Showdown",
+                "jp": "ゼノ・コロゥ撃滅戦"
+            },
+            "banner": "https://gbf.wiki/images/7/73/Xeno_Corow_Clash_top.png",
+            "link": "https://gbf.wiki/Xeno_Corow_Clash",
+            "type": "farming",
+            "advantage": "dark",
+            "starts": "2020-12-19T17:00:00+09:00",
+            "ends": "2020-12-26T20:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Premium Friday Collection",
+                "jp": "プレミアムフライデーコレクション"
+            },
+            "type": "challenge",
+            "starts": "2020-12-25T17:00:00+09:00",
+            "ends": "2020-12-31T20:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "New Scenario Event ",
+                "jp": "新シナリオイベント"
+            },
+            "type": "scenario",
+            "starts": "2020-12-28T19:00:00+09:00",
+            "ends": "2021-01-07T20:59:00+09:00"
+        } 
     ],
     "updates": [
         {
