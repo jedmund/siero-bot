@@ -176,7 +176,7 @@ class ScheduleCommand extends SieroCommand {
         if (currentEvents.length == 1 && 
             magfestInfo == null && maintenanceInfo == null && streamInfo == null) {
             page = this.renderSingleEvent(currentEvents[0])
-        } else if (currentEvents.length > 1) {
+        } else if (currentEvents.length >= 1) {
             page = this.renderEvents({ 
                 title: title,
                 description: description,
@@ -396,7 +396,7 @@ class ScheduleCommand extends SieroCommand {
                 const duration = this.buildString(null, parts.days, parts.hours)
                 
                 name = 'Upcoming Maintenance'
-                description = `Granblue Fantasy will be undergoing maintenance in **${difference}**.\nMaintenance will last for **${duration}**.\n\u200e`
+                description = `Granblue Fantasy will be undergoing maintenance in **${difference}**.\n\nMaintenance will last for **${duration}**.\n\u200e`
             } else if (isMaintenance) {
                 const difference = this.buildDiffString(this.schedule.maintenance.ends)
 
