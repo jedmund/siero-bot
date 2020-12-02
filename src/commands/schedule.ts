@@ -92,7 +92,8 @@ class ScheduleCommand extends SieroCommand {
         this.message = message
 
         await this.load()
-            .then(() => {
+            .then((data) => {
+                this.schedule = data
                 this.switchOperation(args.operation)
             })
     }
@@ -144,11 +145,11 @@ class ScheduleCommand extends SieroCommand {
     }
 
     // File methods
-    private async load(): Promise<void> {
-        const schedule: string = path.join(__dirname, '..', '..', '..', 'src', 'resources', 'schedule.json')
+    private async load(filename: string = "schedule.json"): Promise<any> {
+        const schedule: string = path.join(__dirname, '..', '..', '..', 'src', 'resources', filename)
         const data: string = await fs.readFile(schedule, 'utf8')
 
-        this.schedule = JSON.parse(data)
+        return JSON.parse(data)
     }
 
     // Page render methods
