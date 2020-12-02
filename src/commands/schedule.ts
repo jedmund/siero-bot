@@ -54,6 +54,20 @@ interface Schedule {
     streams: Event[]
 }
 
+interface Cast {
+    name: string,
+    role: string
+}
+
+interface FestivalEvent {
+    readonly [index: string]: string | number | LocalizedString | Cast[] | null
+    name: LocalizedString
+    day: number,
+    starts: string,
+    ends: string,
+    cast: Cast[] | null
+}
+
 interface LocalizedString {
     en: string
     jp: string
@@ -114,17 +128,18 @@ class ScheduleCommand extends SieroCommand {
     }
 
     // Command methods
-    private async show() {
+    private async show() {        
         let pager: Pager = new Pager(this.message.author)
 
         pager.addPage('🕒', this.renderRightNow())
         pager.addPage('📅', this.renderUpcoming())
+        pager.addPage('🎤', await this.renderFestival())
         pager.addPage('🔨', new Page({
             title: 'Planned features',
             description: 'There are no features scheduled to be released'
         }))
 
-        if (this.schedule.magfest && dayjs().isBetween(dayjs(this.schedule.magfest.starts), dayjs(this.schedule.magfest.ends))) {
+        if (this.schedule && this.schedule.magfest && dayjs().isBetween(dayjs(this.schedule.magfest.starts), dayjs(this.schedule.magfest.ends))) {
             pager.addPage('🎉', this.renderMagfest())
         }
 
@@ -167,7 +182,9 @@ class ScheduleCommand extends SieroCommand {
         if (magfestInfo) {
             prefixSections.push(magfestInfo)
         }
-        const image = (magfestImage) ? magfestImage : currentEvents[0].banner
+
+        const fallbackImage = (currentEvents[0].banner) ? currentEvents[0].banner : ''
+        const image = (magfestImage) ? magfestImage : fallbackImage
 
         const streamInfo = this.renderStreamEvent()
         const title = (streamInfo && streamInfo.name) ? streamInfo.name : 'Right Now'
@@ -216,6 +233,65 @@ class ScheduleCommand extends SieroCommand {
             name: 'Content',
             value: `\`\`\`${magfest.info.join('\n')}\`\`\``
         }])
+    }
+
+    private async renderFestival(): Promise<Page> {
+        const sections = await this.renderFestivalSections()
+
+        return new Page({
+            title: 'Granblue Fes 2020'
+        }, sections)
+    }
+
+    private async renderFestivalSections(): Promise<Section[]> {
+        return await this.load('festival.json')
+            .then((data) => {
+                const festival: FestivalEvent[] = data.events
+                let day1: Section[] = []
+                let day2: Section[] = []
+
+                for (let i in festival) {
+                    const event = festival[i]
+
+                    if (dayjs(event.ends).isAfter(dayjs())) {
+                        const startsDiffString = `<Starts in ${this.buildDiffString(event.starts)}>`
+                        const endsDiffString = `<Ends in ${this.buildDiffString(event.ends)}>`
+                        
+                        const isCurrentEvent: boolean = (dayjs(event.starts).isBefore(dayjs()) && dayjs(event.ends).isAfter(dayjs()))
+        
+                        const startsString: string = `${startsDiffString}\n${dayjs(event.starts).format('LLLL')} JST`
+                        const endsString: string = `${endsDiffString}\n${dayjs(event.ends).format('LLLL')} JST`
+                        const dateString: string = (isCurrentEvent) ? endsString : startsString
+        
+                        let castString = (event.cast) ? event.cast.map(member => `${member.name} (${member.role})`).join('\n') : null
+                        let value: string = `\`\`\`html\n${castString ? castString + '\n\n' : ''}${dateString}\n\`\`\``
+                        
+                        if (event.day == 1) {
+                            day1.push({
+                                name: event.name.en,
+                                value: value
+                            })
+                        } else if (event.day == 2) {
+                            day2.push({
+                                name: event.name.en,
+                                value: value
+                            })
+                        }
+                    }
+                }
+
+                day1.unshift({
+                    name: 'Day 1',
+                    value: 'Watch → https://www.youtube.com/watch?v=gEIfjAoqKjE'
+                })
+
+                day1.push({
+                    name: 'Day 2',
+                    value: 'Watch → https://www.youtube.com/watch?v=Kb8ChL3ABZA'
+                })
+
+                return day1.concat(day2)
+            })
     }
 
     private renderHelp(): Page {
