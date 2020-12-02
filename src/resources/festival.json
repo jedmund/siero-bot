@@ -1,0 +1,287 @@
+{
+    "events": [
+        {
+            "name": {
+                "en": "Opening",
+                "jp": "オープニング"
+            },
+            "day": 1,
+            "starts": "2020-12-12T13:30:00+09:00",
+            "ends": "2020-12-12T13:45:00+09:00",
+            "cast": [
+                {
+                    "name": "Ono Yuuki",
+                    "role": "Gran/Lancelot/Sagittarius"
+                },
+                {
+                    "name": "Katou Emiri",
+                    "role": "Sierokarte/Halluel and Malluel"
+                },
+                {
+                    "name": "Touyama Nao",
+                    "role": "Lyria"
+                },
+                {
+                    "name": "Kawahara Yoshihisa",
+                    "role": "Tyre"
+                },
+                {
+                    "name": "Tachibana Rika",
+                    "role": "Yuisis"
+                },
+                {
+                    "name": "Kimura Yuito",
+                    "role": "Producer"
+                },
+                {
+                    "name": "Fukuhara Tetsuya",
+                    "role": "Game Director"
+                }
+            ]
+        },
+        {
+            "name": {
+                "en": "Granblue Until Now 2020",
+                "jp": "これまでのグランブルーファンタジー2020"
+            },
+            "day": 1,
+            "starts": "2020-12-12T13:45:00+09:00",
+            "ends": "2020-12-12T14:45:00+09:00",
+            "cast": [
+                {
+                    "name": "Katou Emiri",
+                    "role": "Sierokarte/Halluel and Malluel"
+                },
+                {
+                    "name": "Touyama Nao",
+                    "role": "Lyria"
+                },
+                {
+                    "name": "Shiraishi Minoru",
+                    "role": "Lowain"
+                },
+                {
+                    "name": "Imai Asami",
+                    "role": "Vira"
+                },
+                {
+                    "name": "Kimura Yuito",
+                    "role": "Producer"
+                },
+                {
+                    "name": "Fukuhara Tetsuya",
+                    "role": "Game Director"
+                }
+            ]
+        },
+        {
+            "name": {
+                "en": "Official Cosplay Stage",
+                "jp": "オフィシャルキャストステージ"
+            },
+            "day": 1,
+            "starts": "2020-12-12T15:00:00+09:00",
+            "ends": "2020-12-12T16:00:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Granblue TV Channel Fes Edition",
+                "jp": "ぐらぶるTVちゃんねるっ！フェス出張版"
+            },
+            "day": 1,
+            "starts": "2020-12-12T16:15:00+09:00",
+            "ends": "2020-12-12T19:15:00+09:00",
+            "cast": [
+                {
+                    "name": "Ono Yuuki",
+                    "role": "Gran/Lancelot/Sagittarius"
+                },
+                {
+                    "name": "Katou Emiri",
+                    "role": "Sierokarte/Halluel and Malluel"
+                },
+                {
+                    "name": "Touyama Nao",
+                    "role": "Lyria"
+                },
+                {
+                    "name": "Kazuhiko Inoue",
+                    "role": "Siegfried"
+                },
+                {
+                    "name": "Tetsu Inada",
+                    "role": "Ladiva"
+                },
+                {
+                    "name": "Fukuyama Jun",
+                    "role": "Katoru"
+                },
+                {
+                    "name": "Imai Asami",
+                    "role": "Vira"
+                },
+                {
+                    "name": "Shiraishi Minoru",
+                    "role": "Lowain"
+                },
+                {
+                    "name": "Yonezawa Madoka",
+                    "role": "Ferry"
+                },
+                {
+                    "name": "Eguchi Takuya",
+                    "role": "Vane"
+                },
+                {
+                    "name": "Osaka Ryota",
+                    "role": "Percival"
+                },
+                {
+                    "name": "Kimura Yuito",
+                    "role": "Producer"
+                },
+                {
+                    "name": "Fukuhara Tetsuya",
+                    "role": "Game Director"
+                }
+            ]
+        },
+        {
+            "name": {
+                "en": "Granblue Night Party (Paid)",
+                "jp": "グラブルナイトパーティー (課金)"
+            },
+            "day": 1,
+            "starts": "2020-12-12T21:00:00+09:00",
+            "ends": "2020-12-12T19:23:30+09:00",
+            "cast": [
+                
+            ]
+        },
+        {
+            "name": {
+                "en": "Stella Magna Special Live in Granblue Fes 2020",
+                "jp": "Stella Magna スペシャルライブinグラブルフェス2020"
+            },
+            "day": 2,
+            "starts": "2020-12-13T14:00:00+09:00",
+            "ends": "2020-12-13T15:10:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Granblue Q&A",
+                "jp": "グラブルQ&A"
+            },
+            "day": 2,
+            "starts": "2020-12-13T15:10:00+09:00",
+            "ends": "2020-12-13T16:40:00+09:00",
+            "cast": [
+                {
+                    "name": "Ono Yuuki",
+                    "role": "Gran/Lancelot/Sagittarius"
+                },
+                {
+                    "name": "Katou Emiri",
+                    "role": "Sierokarte/Halluel and Malluel"
+                },
+                {
+                    "name": "Touyama Nao",
+                    "role": "Lyria"
+                },
+                {
+                    "name": "Nakamura Yuuichi",
+                    "role": "Romeo/Tsubasa"
+                },
+                {
+                    "name": "Kimura Yuito",
+                    "role": "Producer"
+                },
+                {
+                    "name": "Fukuhara Tetsuya",
+                    "role": "Game Director"
+                }
+            ]
+        },
+        {
+            "name": {
+                "en": "Granblue Fes Special Character Live",
+                "jp": "グラブルフェス Special Character Live"
+            },
+            "day": 2,
+            "starts": "2020-12-13T16:40:00+09:00",
+            "ends": "2020-12-13T18:00:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Granblue Special Christmas Livestream",
+                "jp": "グラブル生放送 クリスマス特別版"
+            },
+            "day": 2,
+            "starts": "2020-12-13T18:30:00+09:00",
+            "ends": "2020-12-13T21:30:00+09:00",
+            "cast": [
+                {
+                    "name": "Ono Yuuki",
+                    "role": "Gran/Lancelot/Sagittarius"
+                },
+                {
+                    "name": "Katou Emiri",
+                    "role": "Sierokarte/Halluel and Malluel"
+                },
+                {
+                    "name": "Touyama Nao",
+                    "role": "Lyria"
+                },
+                {
+                    "name": "Ueda Kana",
+                    "role": "Yuel"
+                },
+                {
+                    "name": "Shiraishi Ryoko",
+                    "role": "Societte"
+                },
+                {
+                    "name": "Nakamura Yuuichi",
+                    "role": "Romeo/Tsubasa"
+                },
+                {
+                    "name": "Kawahara Yoshihisa",
+                    "role": "Tyre"
+                },
+                {
+                    "name": "Takanori Hoshino",
+                    "role": "Dante"
+                },
+                {
+                    "name": "Tachibana Rika",
+                    "role": "Yuisis"
+                },
+                {
+                    "name": "M・A・O",
+                    "role": "Narmaya"
+                },
+                {
+                    "name": "Osaka Ryota",
+                    "role": "Percival"
+                },
+                {
+                    "name": "Kimura Yuito",
+                    "role": "Producer"
+                },
+                {
+                    "name": "Fukuhara Tetsuya",
+                    "role": "Game Director"
+                }
+            ]
+        },
+        {
+            "name": {
+                "en": "Granblue Fes 2020 Special Show: The Stars of the Sky",
+                "jp": "グラブルフェス2020 スペシャルショー 蒼の奇跡-The Stars of the Sky-"
+            },
+            "day": 2,
+            "starts": "2020-12-13T21:45:00+09:00",
+            "ends": "2020-12-13T22:35:00+09:00"
+        }
+    ]
+}
