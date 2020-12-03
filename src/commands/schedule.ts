@@ -166,7 +166,15 @@ class ScheduleCommand extends SieroCommand {
         if (magfestInfo) {
             prefixSections.push(magfestInfo)
         }
-        const image = (magfestImage) ? magfestImage : currentEvents[0].banner
+        
+        let image
+        if (maintenanceInfo) {
+            image = 'https://media.discordapp.net/attachments/436609998756249640/701883843375792280/maintanence.jpg'
+        } else if (magfestImage) {
+            image = magfestImage
+        } else {
+            image = currentEvents[0].banner
+        }
 
         const streamInfo = this.renderStreamEvent()
         const title = (streamInfo && streamInfo.name) ? streamInfo.name : 'Right Now'
