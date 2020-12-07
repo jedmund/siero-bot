@@ -172,7 +172,7 @@ class ScheduleCommand extends SieroCommand {
             image = 'https://media.discordapp.net/attachments/436609998756249640/701883843375792280/maintanence.jpg'
         } else if (magfestImage) {
             image = magfestImage
-        } else {
+        } else if (currentEvents.length > 1) {
             image = currentEvents[0].banner
         }
 
