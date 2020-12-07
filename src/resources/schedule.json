@@ -5,11 +5,11 @@
     },
     "magfest": {
         "name": {
-            "en": "26 Million Players Celebration",
-            "jp": "登録者数2600万人突破キャンペーン"
+            "en": "27 Million Players Celebration",
+            "jp": "登録者数2700万人突破キャンペーン"
         },
         "info": [
-            "Free Daily Premium Draw",
+            "Free Daily 10-Part Premium Draw",
             "Daily 200 Crystal Bonus",
             "Campaign-Exclusive Quest",
             "1.5x More RP/EXP",
@@ -21,10 +21,10 @@
             "2x Boost to Shop Skills",
             "Arcarum Badge Bonus Bash"
         ],
-        "wiki": "https://gbf.wiki/26_Million_Players_Celebration",
-        "banner": "https://gbf.wiki/images/f/f6/News_2600campaign_1.png",
-        "starts": "2020-09-14T05:00:00+09:00",
-        "ends": "2020-09-26T04:59:00+09:00"
+        "wiki": "https://gbf.wiki/27_Million_Players_Celebration",
+        "banner": "https://granbluefantasy.jp/pages/wp-content/uploads/2025/01/1daff84a6a1bfbc59b8995c56158fd98.png",
+        "starts": "2020-12-08T05:00:00+09:00",
+        "ends": "2020-12-22T04:59:00+09:00"
     },
     "streams": [
         {
