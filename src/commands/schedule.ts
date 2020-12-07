@@ -191,7 +191,7 @@ class ScheduleCommand extends SieroCommand {
                 image: image || undefined
             }, currentEvents, prefixSections)
         } else {
-            page = new Page({
+            page = this.renderEvents({
                 title: title,
                 description: 'There are no events running right now.'
             }, [], prefixSections)
