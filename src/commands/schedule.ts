@@ -194,7 +194,7 @@ class ScheduleCommand extends SieroCommand {
             page = new Page({
                 title: title,
                 description: 'There are no events running right now.'
-            })
+            }, [], prefixSections)
         }
 
         return page
