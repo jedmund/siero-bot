@@ -110,7 +110,7 @@ class ProfileCommand extends SieroCommand {
             case 'help':
                 this.help()
                 break
-            case 'wizard':
+            case 'setup':
                 this.wizard()
                 break
             default:
