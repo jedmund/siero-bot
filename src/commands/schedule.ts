@@ -54,6 +54,20 @@ interface Schedule {
     streams: Event[]
 }
 
+interface Cast {
+    name: string,
+    role: string
+}
+
+interface FestivalEvent {
+    readonly [index: string]: string | number | LocalizedString | Cast[] | null
+    name: LocalizedString
+    day: number,
+    starts: string,
+    ends: string,
+    cast: Cast[] | null
+}
+
 interface LocalizedString {
     en: string
     jp: string
@@ -92,7 +106,8 @@ class ScheduleCommand extends SieroCommand {
         this.message = message
 
         await this.load()
-            .then(() => {
+            .then((data) => {
+                this.schedule = data
                 this.switchOperation(args.operation)
             })
     }
@@ -101,6 +116,10 @@ class ScheduleCommand extends SieroCommand {
         switch (operation) {
             case 'show':
                 this.show()
+                break
+
+            case 'fes':
+                this.festival()
                 break
 
             case 'next':
@@ -113,7 +132,7 @@ class ScheduleCommand extends SieroCommand {
     }
 
     // Command methods
-    private async show() {
+    private async show() {        
         let pager: Pager = new Pager(this.message.author)
 
         pager.addPage('🕒', this.renderRightNow())
@@ -123,7 +142,7 @@ class ScheduleCommand extends SieroCommand {
             description: 'There are no features scheduled to be released'
         }))
 
-        if (this.schedule.magfest && dayjs().isBetween(dayjs(this.schedule.magfest.starts), dayjs(this.schedule.magfest.ends))) {
+        if (this.schedule && this.schedule.magfest && dayjs().isBetween(dayjs(this.schedule.magfest.starts), dayjs(this.schedule.magfest.ends))) {
             pager.addPage('🎉', this.renderMagfest())
         }
 
@@ -143,12 +162,21 @@ class ScheduleCommand extends SieroCommand {
         }
     }
 
+    private async festival() {
+        let pager: Pager = new Pager(this.message.author)
+
+        pager.addPage('1️⃣', await this.renderFestival(1))
+        pager.addPage('2️⃣', await this.renderFestival(2))
+
+        pager.render(this.message)
+    }
+
     // File methods
-    private async load(): Promise<void> {
-        const schedule: string = path.join(__dirname, '..', '..', '..', 'src', 'resources', 'schedule.json')
+    private async load(filename: string = "schedule.json"): Promise<any> {
+        const schedule: string = path.join(__dirname, '..', '..', '..', 'src', 'resources', filename)
         const data: string = await fs.readFile(schedule, 'utf8')
 
-        this.schedule = JSON.parse(data)
+        return JSON.parse(data)
     }
 
     // Page render methods
@@ -223,6 +251,58 @@ class ScheduleCommand extends SieroCommand {
             name: 'Content',
             value: `\`\`\`${magfest.info.join('\n')}\`\`\``
         }])
+    }
+
+    private async renderFestival(day: number): Promise<Page> {
+        const sections = await this.renderFestivalSections(day)
+
+        return new Page({
+            title: 'Granblue Fes 2020',
+            image: 'https://images-ext-2.discordapp.net/external/Zky9CQAg3g7hdOQR_w7YbIaqy6FRh6P5mnZAvEQEu4g/https/fes.granbluefantasy.jp/assets2020/images/share/ogp.jpg'
+        }, sections)
+    }
+
+    private async renderFestivalSections(day: number): Promise<Section[]> {
+        return await this.load('festival.json')
+            .then((data) => {
+                const festival: FestivalEvent[] = data.events
+                let events: Section[] = []
+
+                for (let i in festival) {
+                    const event = festival[i]
+
+                    if (dayjs(event.ends).isAfter(dayjs())) {
+                        const startsDiffString = `<Starts in ${this.buildDiffString(event.starts)}>`
+                        const endsDiffString = `<Ends in ${this.buildDiffString(event.ends)}>`
+                        
+                        const isCurrentEvent: boolean = (dayjs(event.starts).isBefore(dayjs()) && dayjs(event.ends).isAfter(dayjs()))
+        
+                        const startsString: string = `${startsDiffString}\n${dayjs(event.starts).format('LLLL')} JST`
+                        const endsString: string = `${endsDiffString}\n${dayjs(event.ends).format('LLLL')} JST`
+                        const dateString: string = (isCurrentEvent) ? endsString : startsString
+        
+                        let castString = (event.cast) ? event.cast.map(member => `${member.name} (${member.role})`).join('\n') : null
+                        let value: string = `\`\`\`html\n${castString ? castString + '\n\n' : ''}${dateString}\n\`\`\``
+                        
+                        if (event.day == day) {
+                            events.push({
+                                name: event.name.en,
+                                value: value
+                            })
+                        }
+                    }
+                }
+
+                const link1 = 'https://www.youtube.com/watch?v=gEIfjAoqKjE'
+                const link2 = 'https://www.youtube.com/watch?v=Kb8ChL3ABZA'
+
+                events.unshift({
+                    name: `Day ${day}`,
+                    value: `Watch → ${(day == 1) ? link1 : link2}`
+                })
+
+                return events
+            })
     }
 
     private renderHelp(): Page {
