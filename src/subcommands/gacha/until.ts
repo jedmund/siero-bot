@@ -123,17 +123,20 @@ class Until {
 
     // Action methods
     private roll(gacha: Gacha, target: Item) {
+
         let count = 0
         let found = false
 
-        while (!found) {
-            let roll = gacha.tenPartRoll()
-            count = count + 10
+        if (target.rarity > 2) {
+            while (!found) {
+                let roll = gacha.tenPartRoll()
+                count = count + 10
 
-            for (var i in roll.items) {
-                let item = roll.items[i]
-                if (item.name == target.name || (target.recruits && item.recruits == target.recruits)) {
-                    found = true
+                for (var i in roll.items) {
+                    let item = roll.items[i]
+                    if (item.name == target.name || (target.recruits && item.recruits == target.recruits)) {
+                        found = true
+                    }
                 }
             }
         }
