@@ -118,6 +118,10 @@ class ScheduleCommand extends SieroCommand {
                 this.show()
                 break
 
+            case 'fes':
+                this.festival()
+                break
+
             case 'next':
                 this.next()
                 break
@@ -133,7 +137,6 @@ class ScheduleCommand extends SieroCommand {
 
         pager.addPage('🕒', this.renderRightNow())
         pager.addPage('📅', this.renderUpcoming())
-        pager.addPage('🎤', await this.renderFestival())
         pager.addPage('🔨', new Page({
             title: 'Planned features',
             description: 'There are no features scheduled to be released'
@@ -157,6 +160,15 @@ class ScheduleCommand extends SieroCommand {
         } else {
             this.message!.channel.send('There is no event scheduled next. Is this the end?')
         }
+    }
+
+    private async festival() {
+        let pager: Pager = new Pager(this.message.author)
+
+        pager.addPage('1️⃣', await this.renderFestival(1))
+        pager.addPage('2️⃣', await this.renderFestival(2))
+
+        pager.render(this.message)
     }
 
     // File methods
@@ -235,20 +247,20 @@ class ScheduleCommand extends SieroCommand {
         }])
     }
 
-    private async renderFestival(): Promise<Page> {
-        const sections = await this.renderFestivalSections()
+    private async renderFestival(day: number): Promise<Page> {
+        const sections = await this.renderFestivalSections(day)
 
         return new Page({
-            title: 'Granblue Fes 2020'
+            title: 'Granblue Fes 2020',
+            image: 'https://images-ext-2.discordapp.net/external/Zky9CQAg3g7hdOQR_w7YbIaqy6FRh6P5mnZAvEQEu4g/https/fes.granbluefantasy.jp/assets2020/images/share/ogp.jpg'
         }, sections)
     }
 
-    private async renderFestivalSections(): Promise<Section[]> {
+    private async renderFestivalSections(day: number): Promise<Section[]> {
         return await this.load('festival.json')
             .then((data) => {
                 const festival: FestivalEvent[] = data.events
-                let day1: Section[] = []
-                let day2: Section[] = []
+                let events: Section[] = []
 
                 for (let i in festival) {
                     const event = festival[i]
@@ -266,13 +278,8 @@ class ScheduleCommand extends SieroCommand {
                         let castString = (event.cast) ? event.cast.map(member => `${member.name} (${member.role})`).join('\n') : null
                         let value: string = `\`\`\`html\n${castString ? castString + '\n\n' : ''}${dateString}\n\`\`\``
                         
-                        if (event.day == 1) {
-                            day1.push({
-                                name: event.name.en,
-                                value: value
-                            })
-                        } else if (event.day == 2) {
-                            day2.push({
+                        if (event.day == day) {
+                            events.push({
                                 name: event.name.en,
                                 value: value
                             })
@@ -280,17 +287,15 @@ class ScheduleCommand extends SieroCommand {
                     }
                 }
 
-                day1.unshift({
-                    name: 'Day 1',
-                    value: 'Watch → https://www.youtube.com/watch?v=gEIfjAoqKjE'
+                const link1 = 'https://www.youtube.com/watch?v=gEIfjAoqKjE'
+                const link2 = 'https://www.youtube.com/watch?v=Kb8ChL3ABZA'
+
+                events.unshift({
+                    name: `Day ${day}`,
+                    value: `Watch → ${(day == 1) ? link1 : link2}`
                 })
 
-                day1.push({
-                    name: 'Day 2',
-                    value: 'Watch → https://www.youtube.com/watch?v=Kb8ChL3ABZA'
-                })
-
-                return day1.concat(day2)
+                return events
             })
     }
 
