@@ -1,15 +1,15 @@
 {
     "maintenance": {
-        "starts": "2020-08-14T01:00:00+09:00",
-        "ends": "2020-08-14T07:00:00+09:00"
+        "starts": "2020-12-04T01:00:00+09:00",
+        "ends": "2020-12-04T07:00:00+09:00"
     },
     "magfest": {
         "name": {
-            "en": "26 Million Players Celebration",
-            "jp": "登録者数2600万人突破キャンペーン"
+            "en": "27 Million Players Celebration",
+            "jp": "登録者数2700万人突破キャンペーン"
         },
         "info": [
-            "Free Daily Premium Draw",
+            "Free Daily 10-Part Premium Draw",
             "Daily 200 Crystal Bonus",
             "Campaign-Exclusive Quest",
             "1.5x More RP/EXP",
@@ -21,20 +21,29 @@
             "2x Boost to Shop Skills",
             "Arcarum Badge Bonus Bash"
         ],
-        "wiki": "https://gbf.wiki/26_Million_Players_Celebration",
-        "banner": "https://gbf.wiki/images/f/f6/News_2600campaign_1.png",
-        "starts": "2020-09-14T05:00:00+09:00",
-        "ends": "2020-09-26T04:59:00+09:00"
+        "wiki": "https://gbf.wiki/27_Million_Players_Celebration",
+        "banner": "https://granbluefantasy.jp/pages/wp-content/uploads/2025/01/1daff84a6a1bfbc59b8995c56158fd98.png",
+        "starts": "2020-12-08T05:00:00+09:00",
+        "ends": "2020-12-22T04:59:00+09:00"
     },
     "streams": [
         {
             "name": {
-                "en": "Hot Hot Hot! Granblue Summer Live Stream",
-                "jp": "熱いぜ！グラブルの夏！SP"
+                "en": "Granblue Fantasy Fes 2020 Day 1 Livestream",
+                "jp": "グラブルフェス2020　1日目生放送"
             },
-            "starts": "2020-08-08T18:00:00+09:00",
-            "ends": "2020-08-08T21:00:00+09:00",
-            "link": "https://www.youtube.com/watch?v=pGM76IPtkc0"
+            "starts": "2020-12-12T18:00:00+09:00",
+            "ends": "2020-12-12T21:00:00+09:00",
+            "link": "https://www.youtube.com/"
+        },
+        {
+            "name": {
+                "en": "Granblue Fantasy Fes 2020 Day 2 Livestream",
+                "jp": "グラブルフェス2020　2日目生放送"
+            },
+            "starts": "2020-12-13T18:00:00+09:00",
+            "ends": "2020-12-13T21:00:00+09:00",
+            "link": "https://www.youtube.com/"
         }
     ],
     "events": [
@@ -237,6 +246,7 @@
                 "jp": "バブ･イールの塔"
             },
             "type": "tower",
+            "banner": "https://gbf.wiki/images/9/93/Tower_of_Babyl_top.jpg",
             "starts": "2020-09-21T17:00:00+09:00",
             "ends": "2020-09-26T20:59:00+09:00"
         },
@@ -337,6 +347,7 @@
                 "jp": "バブ･イールの塔"
             },
             "type": "tower",
+            "banner": "https://gbf.wiki/images/9/93/Tower_of_Babyl_top.jpg",
             "starts": "2020-11-25T17:00:00+09:00",
             "ends": "2020-12-01T20:59:00+09:00"
         },
@@ -353,14 +364,43 @@
         },
         {
             "name": {
-                "en": "Demon Slayer: Kimetsu no Yaiba Collab Event",
-                "jp": "鬼滅の刃コラボイベント"
+                "en": "Scent of Fate at Sky's End",
+                "jp": "因果の匂い、果ての空"
             },
             "type": "collab",
             "starts": "2020-12-08T17:00:00+09:00",
             "ends": "2020-12-20T20:59:00+09:00"
-        }
-        
+        },
+        {
+            "name": {
+                "en": "Xeno Corow Showdown",
+                "jp": "ゼノ・コロゥ撃滅戦"
+            },
+            "banner": "https://gbf.wiki/images/7/73/Xeno_Corow_Clash_top.png",
+            "link": "https://gbf.wiki/Xeno_Corow_Clash",
+            "type": "farming",
+            "advantage": "dark",
+            "starts": "2020-12-19T17:00:00+09:00",
+            "ends": "2020-12-26T20:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Premium Friday Collection",
+                "jp": "プレミアムフライデーコレクション"
+            },
+            "type": "challenge",
+            "starts": "2020-12-25T17:00:00+09:00",
+            "ends": "2020-12-31T20:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "New Scenario Event ",
+                "jp": "新シナリオイベント"
+            },
+            "type": "scenario",
+            "starts": "2020-12-28T19:00:00+09:00",
+            "ends": "2021-01-07T20:59:00+09:00"
+        } 
     ],
     "updates": [
         {

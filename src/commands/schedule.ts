@@ -194,9 +194,15 @@ class ScheduleCommand extends SieroCommand {
         if (magfestInfo) {
             prefixSections.push(magfestInfo)
         }
-
-        const fallbackImage = (currentEvents[0].banner) ? currentEvents[0].banner : ''
-        const image = (magfestImage) ? magfestImage : fallbackImage
+        
+        let image
+        if (maintenanceInfo) {
+            image = 'https://media.discordapp.net/attachments/436609998756249640/701883843375792280/maintanence.jpg'
+        } else if (magfestImage) {
+            image = magfestImage
+        } else if (currentEvents.length > 1) {
+            image = currentEvents[0].banner
+        }
 
         const streamInfo = this.renderStreamEvent()
         const title = (streamInfo && streamInfo.name) ? streamInfo.name : 'Right Now'
@@ -206,17 +212,17 @@ class ScheduleCommand extends SieroCommand {
         if (currentEvents.length == 1 && 
             magfestInfo == null && maintenanceInfo == null && streamInfo == null) {
             page = this.renderSingleEvent(currentEvents[0])
-        } else if (currentEvents.length > 1) {
+        } else if (currentEvents.length >= 1) {
             page = this.renderEvents({ 
                 title: title,
                 description: description,
                 image: image || undefined
             }, currentEvents, prefixSections)
         } else {
-            page = new Page({
+            page = this.renderEvents({
                 title: title,
                 description: 'There are no events running right now.'
-            })
+            }, [], prefixSections)
         }
 
         return page
@@ -478,7 +484,7 @@ class ScheduleCommand extends SieroCommand {
                 const duration = this.buildString(null, parts.days, parts.hours)
                 
                 name = 'Upcoming Maintenance'
-                description = `Granblue Fantasy will be undergoing maintenance in **${difference}**.\nMaintenance will last for **${duration}**.\n\u200e`
+                description = `Granblue Fantasy will be undergoing maintenance in **${difference}**.\n\nMaintenance will last for **${duration}**.\n\u200e`
             } else if (isMaintenance) {
                 const difference = this.buildDiffString(this.schedule.maintenance.ends)
 
