@@ -59,9 +59,9 @@ export function parse(request: string) {
     ]
 
     // Sanitize and split the string
-    let string = sanitize(request)
-    let parts = string.split(' ')
-
+    // let string = sanitize(request)
+    let parts = request.split(' ')
+    
     // Determine if the target is in the exception list
     let excluded = false
     exceptions.forEach(x => {
