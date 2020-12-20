@@ -1,7 +1,7 @@
 {
     "maintenance": {
-        "starts": "2020-12-04T01:00:00+09:00",
-        "ends": "2020-12-04T07:00:00+09:00"
+        "starts": "2020-12-21T01:00:00+09:00",
+        "ends": "2020-12-21T07:00:00+09:00"
     },
     "magfest": {
         "name": {
@@ -394,8 +394,8 @@
         },
         {
             "name": {
-                "en": "New Scenario Event ",
-                "jp": "新シナリオイベント"
+                "en": "Robomi and the Largest Battle in History: God Gigantes VS Arbitrator of the Skies Zooey",
+                "jp": "ロボミ：史上最大の戦い　ゴッドギガンテス対空の調停者ゾーイ"
             },
             "type": "scenario",
             "starts": "2020-12-28T19:00:00+09:00",
