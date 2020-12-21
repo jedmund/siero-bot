@@ -1,16 +1,17 @@
 {
     "maintenance": {
-        "starts": "2020-12-21T01:00:00+09:00",
-        "ends": "2020-12-21T07:00:00+09:00"
+        "starts": "2020-12-22T00:00:00+09:00",
+        "ends": "2021-01-05T16:59:00+09:00"
     },
     "magfest": {
         "name": {
-            "en": "27 Million Players Celebration",
-            "jp": "登録者数2700万人突破キャンペーン"
+            "en": "New Years Campaign",
+            "jp": "ゆく年くる年キャンペーン"
         },
         "info": [
-            "Free Daily 10-Part Premium Draw",
+            "Free Daily 200-Pull Gacha Roulette",
             "Daily 200 Crystal Bonus",
+            "Daily Skyleap Login 200 Crystal Bonus",
             "Campaign-Exclusive Quest",
             "1.5x More RP/EXP",
             "Half AP/EP Event",
