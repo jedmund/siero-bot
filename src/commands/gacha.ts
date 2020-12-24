@@ -1,5 +1,6 @@
 import { Message, MessageEmbed, User } from 'discord.js'
 import { SieroCommand } from '../helpers/SieroCommand'
+import { Page, Pager } from '../services/pager'
 
 // Services
 import { Item } from '../services/constants.js'
@@ -43,6 +44,7 @@ enum ItemType {
 class GachaCommand extends SieroCommand {
     rateups: Item[] = []
     sparkTarget: Item | null = null
+    defaultRateups: boolean = false
 
     public constructor() {
         super('gacha', {
@@ -128,11 +130,21 @@ class GachaCommand extends SieroCommand {
         this.message.reply(response)
     }
 
-    private spark() {
+    private async spark() {
         let gacha = new Gacha(this.args.gala, this.args.season, this.rateups)
         let items = gacha.spark()
 
-        this.message.channel.send(this.renderSpark(items))
+        const siero = (this.message.author.id === this.client.ownerID) ? this.client.user : null
+        const rateup = new Rateup(this, this.message, siero)
+        await rateup.setup()
+
+        const author = (this.defaultRateups) ? siero : this.message.author
+        
+        let pager: Pager = new Pager(this.message.author)
+        pager.addPage('✨', this.renderSpark(items))
+        pager.addPage('📈', rateup.renderPage(this.rateups, author))
+
+        pager.render(this.message)
     }
 
     private until() {
@@ -245,6 +257,7 @@ class GachaCommand extends SieroCommand {
             })
         
         if (this.rateups.length == 0) {
+            this.defaultRateups = true
             this.rateups = await Rateup.fetch(this.client.user?.id)
                 .catch((error: Error) => {
                     const text = `Sorry, there was an error communicating with the database to fetch the default rate-up.`
@@ -286,7 +299,7 @@ class GachaCommand extends SieroCommand {
         return string
     }
 
-    private renderSpark(results: Spark) {
+    private renderSpark(results: Spark): Page {
 
         let rate = Math.floor((results.count.SSR / 300) * 100)
         let summary = `\`\`\`${this.renderSummary(results)}\`\`\``
@@ -297,19 +310,20 @@ class GachaCommand extends SieroCommand {
         })
         details += '\n```'
 
-        return new MessageEmbed({
-            color: 0xb58900,
-            footer: {
-                text: `Your SSR rate is ${rate}%`
-            },
+        return new Page({
+            title: 'Spark',
             description: details,
-            fields: [
-                {
-                    name: 'Summary',
-                    value: summary
-                }
-            ]
-        })
+            author: this.message.author.username
+        }, [
+            {
+                name: 'Summary',
+                value: summary
+            },
+            {
+                name: 'Rate',
+                value: `Your SSR rate is **${rate}%**`
+            }
+        ])
     }
 
     private renderSummary(results: Spark) {
