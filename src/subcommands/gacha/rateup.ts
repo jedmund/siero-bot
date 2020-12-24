@@ -292,8 +292,13 @@ class Rateup {
             }
         }
 
+        let title = 'Your current rate-up'
+        if (user.id !== this.userId) {
+            title = `${user.username}'s current rate-up`
+        }
+
         let embed = new MessageEmbed({
-            title: 'Your current rate-up',
+            title: title,
             color: 0xb58900,
             footer: {
                 iconURL: user.displayAvatarURL(),
@@ -321,7 +326,7 @@ class Rateup {
 
     // Helper methods
     private notFoundError(isOwnTarget: boolean) {
-        const text = `It looks like ${(isOwnTarget) ? 'you haven\'t' : this.firstMention!.username + ' hasn\'t'} set a spark target yet!`
+        const text = `It looks like ${(isOwnTarget) ? 'you haven\'t' : this.firstMention!.username + ' hasn\'t'} set a rate-up yet!`
                     
         if (isOwnTarget) {
             let embed: MessageEmbed = new MessageEmbed({
