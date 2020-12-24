@@ -292,8 +292,13 @@ class Rateup {
             }
         }
 
+        let title = 'Your current rate-up'
+        if (user.id !== this.userId) {
+            title = `${user.username}'s current rate-up`
+        }
+
         let embed = new MessageEmbed({
-            title: 'Your current rate-up',
+            title: title,
             color: 0xb58900,
             footer: {
                 iconURL: user.displayAvatarURL(),
