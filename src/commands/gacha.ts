@@ -237,11 +237,20 @@ class GachaCommand extends SieroCommand {
     // Data methods
     private async storeRateups() {
         const sourceUser: User = this.message.mentions.users.values().next().value
+        
         this.rateups = await Rateup.fetch(this.message.author.id, this.message)
             .catch((error: Error) => {
                 const text = `Sorry, there was an error communicating with the database to copy ${sourceUser}'s rate-up.`
                 this.reportError(error.message, text)
             })
+        
+        if (this.rateups.length == 0) {
+            this.rateups = await Rateup.fetch(this.client.user?.id)
+                .catch((error: Error) => {
+                    const text = `Sorry, there was an error communicating with the database to fetch the default rate-up.`
+                    this.reportError(error.message, text)
+                })
+        }
     }
 
     private async storeSparkTarget() {
