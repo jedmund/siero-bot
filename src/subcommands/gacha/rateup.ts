@@ -6,6 +6,7 @@ import { Item, PromptResult } from '../../services/constants'
 
 import { capitalize } from '../../helpers/common'
 import { Decision as decision } from '../../helpers/decision'
+import { Page } from '../../services/pager'
 
 type NumberResult = { [key: string]: number }
 
@@ -51,6 +52,17 @@ class Rateup {
         } else {
             this.prefix = '$'
             this.switchOperation()
+        }
+    }
+
+    public async setup() {
+        if (this.message.guild) {
+            await this.command.fetchPrefix(this.message.guild.id)
+                .then((prefix: string) => {
+                    this.prefix = prefix
+                })
+        } else {
+            this.prefix = '$'
         }
     }
 
@@ -278,24 +290,12 @@ class Rateup {
 
     // Render methods
     private render(user: User, rateups: Item[], missing: Rate[] | null = null) {
-        let string = ''
-
-        if (rateups.length > 0) {
-            for (let i in rateups) {
-                let rateup = rateups[i]
-
-                if (rateup.recruits != null) {
-                    string += `${rateup.name} - ${rateup.recruits}: ${rateup.rate}%\n`
-                } else {
-                    string += `${rateup.name}: ${rateup.rate}%\n`
-                }
-            }
-        }
-
         let title = 'Your current rate-up'
         if (user.id !== this.userId) {
             title = `${user.username}'s current rate-up`
         }
+        
+        let string = this.rateupString(rateups)
 
         let embed = new MessageEmbed({
             title: title,
@@ -324,7 +324,37 @@ class Rateup {
         return embed
     }
 
+    public renderPage(rateups: Item[], author: User): Page {
+        return new Page({
+            title: 'Rateups',
+            description: `\`\`\`html\n${this.rateupString(rateups)}\n\`\`\``
+        }, [
+            {
+                name: 'Copy this rateup',
+                value: `\`\`\`${this.prefix}gacha rateup copy @${author.username}\`\`\``
+            }
+        ])
+    }
+
     // Helper methods
+    private rateupString(rateups: Item[]) {
+        let string = ''
+
+        if (rateups.length > 0) {
+            for (let i in rateups) {
+                let rateup = rateups[i]
+
+                if (rateup.recruits != null) {
+                    string += `${rateup.name} - ${rateup.recruits}: ${rateup.rate}%\n`
+                } else {
+                    string += `${rateup.name}: ${rateup.rate}%\n`
+                }
+            }
+        }
+
+        return string
+    }
+    
     private notFoundError(isOwnTarget: boolean) {
         const text = `It looks like ${(isOwnTarget) ? 'you haven\'t' : this.firstMention!.username + ' hasn\'t'} set a rate-up yet!`
                     
