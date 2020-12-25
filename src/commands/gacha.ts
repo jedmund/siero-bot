@@ -134,20 +134,19 @@ class GachaCommand extends SieroCommand {
         let gacha = new Gacha(this.args.gala, this.args.season, this.rateups)
         let items = gacha.spark()
 
-        const siero = (this.message.author.id === this.client.ownerID) ? this.client.user : null
-        const rateup = new Rateup(this, this.message, siero)
+        const rateup = new Rateup(this, this.message, this.client.user)
         await rateup.setup()
 
-        let author: User
-        if (siero && this.defaultRateups) {
-            author = siero
+        let username: string
+        if (this.defaultRateups) {
+            username = (this.client.user) ? this.client.user.username : 'Siero'
         } else {
-            author = this.message.author
+            username = this.message.author.username
         }
         
         let pager: Pager = new Pager(this.message.author)
         pager.addPage('✨', this.renderSpark(items))
-        pager.addPage('📈', rateup.renderPage(this.rateups, author.username))
+        pager.addPage('📈', rateup.renderPage(this.rateups, username))
 
         pager.render(this.message)
     }
