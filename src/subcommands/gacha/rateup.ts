@@ -324,14 +324,14 @@ class Rateup {
         return embed
     }
 
-    public renderPage(rateups: Item[], author: User): Page {
+    public renderPage(rateups: Item[], username: string): Page {
         return new Page({
             title: 'Rateups',
             description: `\`\`\`html\n${this.rateupString(rateups)}\n\`\`\``
         }, [
             {
                 name: 'Copy this rateup',
-                value: `\`\`\`${this.prefix}gacha rateup copy @${author.username}\`\`\``
+                value: `\`\`\`${this.prefix}gacha rateup copy @${username}\`\`\``
             }
         ])
     }

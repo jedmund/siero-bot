@@ -138,11 +138,16 @@ class GachaCommand extends SieroCommand {
         const rateup = new Rateup(this, this.message, siero)
         await rateup.setup()
 
-        const author = (this.defaultRateups) ? siero : this.message.author
+        let author: User
+        if (siero && this.defaultRateups) {
+            author = siero
+        } else {
+            author = this.message.author
+        }
         
         let pager: Pager = new Pager(this.message.author)
         pager.addPage('✨', this.renderSpark(items))
-        pager.addPage('📈', rateup.renderPage(this.rateups, author))
+        pager.addPage('📈', rateup.renderPage(this.rateups, author.username))
 
         pager.render(this.message)
     }
