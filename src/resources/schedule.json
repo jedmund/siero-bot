@@ -386,12 +386,12 @@
         },
         {
             "name": {
-                "en": "Premium Friday Collection",
+                "en": "Auld Lang Fry PREMIUM",
                 "jp": "プレミアムフライデーコレクション"
             },
             "type": "challenge",
-            "starts": "2020-12-25T17:00:00+09:00",
-            "ends": "2020-12-31T20:59:00+09:00"
+            "starts": "2020-12-25T15:00:00+09:00",
+            "ends": "2020-12-31T23:59:00+09:00"
         },
         {
             "name": {
