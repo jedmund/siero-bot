@@ -1,0 +1,1 @@
+ALTER TABLE sparks ADD COLUMN guild_ids TEXT[];

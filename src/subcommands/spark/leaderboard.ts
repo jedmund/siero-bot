@@ -1,4 +1,4 @@
-import { MessageEmbed, Snowflake } from 'discord.js'
+import { MessageEmbed } from 'discord.js'
 
 import { Client } from '../../services/connection'
 import { spacedString } from '../../helpers/common'
@@ -20,11 +20,12 @@ enum Sort {
 }
 
 class Leaderboard {
-    userIds: Snowflake[]
+    guildId: string
+    userIds: string[] = []
     order: Sort
 
-    public constructor(userIds: Snowflake[], order: string = 'desc') {
-        this.userIds = userIds
+    public constructor(guildId: string, order: string = 'desc') {
+        this.guildId = guildId
         this.order = (order === 'desc') ? Sort.Descending : Sort.Ascending
     }
 
@@ -35,9 +36,11 @@ class Leaderboard {
             `FROM sparks LEFT JOIN gacha`,
             `ON sparks.target_id = gacha.id`,
             `WHERE last_updated > NOW() - INTERVAL '14 days'`,
-            `AND user_id = ANY ($1)`
+            `AND guild_ids @> $1`
         ].join(' ')
-        return await Client.query(sql, [this.userIds])
+
+        let wrappedGuildId = `{${this.guildId}}`
+        return await Client.query(sql, wrappedGuildId)
             .then((response: Result[]) => {
                 return this.render(response)
             })
