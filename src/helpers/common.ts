@@ -114,7 +114,7 @@ export function mapRarity(rarity: number): string | null {
 export function spacedString(string: string, maxNumChars: number) {
     if (string) {
         let numSpaces = maxNumChars - string.length
-        var spacedString = string
+        let spacedString = string
 
         for (var i = 0; i < numSpaces; i++) {
             spacedString += " "
@@ -122,7 +122,20 @@ export function spacedString(string: string, maxNumChars: number) {
 
         return spacedString
     } else {
-        return ''
+        let spacedString = ''
+        
+        for (var i = 0; i < maxNumChars; i++) {
+            spacedString += " "
+        }
+
+        return spacedString
+    }
+}
+
+export function splitString(string: string, maxNumChars: number) {
+    return {
+        string1: string.substr(0, maxNumChars), 
+        string2: string.substr(maxNumChars)
     }
 }
 
