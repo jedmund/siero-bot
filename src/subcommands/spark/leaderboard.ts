@@ -67,15 +67,15 @@ class Leaderboard {
 
             let usernameMaxChars = 14
             let numDrawsMaxChars = 10
-            let targetMaxChars = 17
+            let targetMaxChars = 16
 
-            let divider = '+----+' + '-'.repeat(usernameMaxChars + 2) + '+' + '-'.repeat(numDrawsMaxChars + 2) + '+' + '-'.repeat(targetMaxChars + 2) + '+\n'
+            let divider = '+-----+' + '-'.repeat(usernameMaxChars + 2) + '+' + '-'.repeat(numDrawsMaxChars + 2) + '+' + '-'.repeat(targetMaxChars + 2) + '+\n'
             var result = divider
 
             for (var i = 0; i < maxRows; i++) {
                 let rowHeight = 1
 
-                let place = ((i + 1) < 10) ? `${i + 1}` : `${i + 1}`
+                let place = ((i + 1) < 10) ? `${i + 1} ` : `${i + 1}`
 
                 let numDraws = this.calculateDraws(rows[i].crystals, rows[i].tickets, rows[i].ten_tickets)
 
@@ -109,7 +109,7 @@ class Leaderboard {
                         const stringBeginning = `| #${place} | ${spacedUsername} | ${spacedDraws}`
 
                         result += `${stringBeginning} | ${splitTarget.string1} |\n`
-                        result += `|${' '.repeat(4)}|${' '.repeat(usernameMaxChars + 2)}|${' '.repeat(numDrawsMaxChars + 2)}| ${spacedString2} |\n`
+                        result += `|${' '.repeat(5)}|${' '.repeat(usernameMaxChars + 2)}|${' '.repeat(numDrawsMaxChars + 2)}| ${spacedString2} |\n`
                         result += divider
                         break
 
