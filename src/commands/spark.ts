@@ -1,4 +1,4 @@
-import { GuildMember, Message, MessageEmbed, Snowflake, User } from 'discord.js'
+import { Message, MessageEmbed, User } from 'discord.js'
 import { SieroCommand } from '../helpers/SieroCommand'
 
 const { Client, pgpErrors } = require('../services/connection.js')
@@ -72,6 +72,12 @@ class SparkCommand extends SieroCommand {
                 }
 
                 return
+            }).then(() => {
+                // This is for our manual saving of members for leaderboards.
+                // Discord won't give us permission to read the member list.
+                if (message.channel.type !== 'dm') {
+                    this.checkGuildAssociation(this.commandType)
+                }
             }).then(() => {
                 this.switchOperation(args)
             })
@@ -233,8 +239,9 @@ class SparkCommand extends SieroCommand {
         const guild = this.message.guild
 
         if (guild) {
-            let memberIds: Snowflake[] = (await guild.members.fetch()).map((g: GuildMember) => g.id);
-            let leaderboard = new Leaderboard(memberIds, order)
+            // This is disabled for now since Discord won't give us the permissions to fetch the member list
+            // let memberIds: Snowflake[] = (await guild.members.fetch()).map((g: GuildMember) => g.id);
+            let leaderboard = new Leaderboard(this.message.guild?.id, order)
             await leaderboard.fetchData()
                 .then((embed: string) => {
                     this.message.channel.send(embed)
@@ -512,6 +519,48 @@ class SparkCommand extends SieroCommand {
                 .catch((error: Error) =>  {
                     console.error(error)
                 })
+        } catch(error) {
+            console.error(error)
+        }
+    }
+
+    private checkGuildAssociation(table: string) {
+        let sql = [
+            `SELECT user_id, guild_ids FROM ${table}`,
+            'WHERE user_id = $1',
+            'LIMIT 1'
+        ].join(' ')
+
+        try {
+            Client.one(sql, this.message.author.id)
+                .then((result: StringResult) => {
+                    let guilds = result.guild_ids
+                    if (!guilds || guilds && this.message.guild && !guilds.includes(this.message.guild.id)) {
+                        this.createGuildAssociation(table)
+                    }
+                })
+                .catch((error: Error) => {
+                    console.error(error)
+                })
+        } catch(error) {
+            console.error(error)
+        }
+    }
+
+    private createGuildAssociation(table: string) {
+        let sql = [
+            `UPDATE ${table}`,
+            'SET guild_ids = array_cat(guild_ids, $1)',
+            'WHERE user_id = $2'
+        ].join(' ')
+
+        try {
+            if (this.message.guild) {
+                Client.any(sql, ['{' + this.message.guild.id + '}', this.message.author.id])
+                    .catch((error: Error) => {
+                        console.error(error)
+                    })
+            }
         } catch(error) {
             console.error(error)
         }
