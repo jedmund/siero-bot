@@ -91,7 +91,7 @@ class Leaderboard {
                     target = ''
                 }
 
-                if (target.length > targetMaxChars) {
+                if (target && target.length > targetMaxChars) {
                     rowHeight = 2
                 }
 
