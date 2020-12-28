@@ -36,13 +36,17 @@ class Leaderboard {
             `FROM sparks LEFT JOIN gacha`,
             `ON sparks.target_id = gacha.id`,
             `WHERE last_updated > NOW() - INTERVAL '14 days'`,
-            `AND guild_ids @> '$1'`
+            `AND guild_ids @> $1`
         ].join(' ')
 
         let wrappedGuildId = `{${this.guildId}}`
+
         return await Client.query(sql, wrappedGuildId)
             .then((response: Result[]) => {
                 return this.render(response)
+            })
+            .catch((error: Error) => {
+                console.log(error)
             })
     }
 
