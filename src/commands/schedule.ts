@@ -1,8 +1,14 @@
-
 import { Message, MessageEmbed } from 'discord.js'
 import { SieroCommand } from '../helpers/SieroCommand'
 import { Pager, Page, PageConfig, Section } from '../services/pager'
 import { promises as fs } from 'fs'
+
+import * as Events from '../resources/schedule/events.json'
+import * as Features from '../resources/schedule/features.json'
+import * as Festival from '../resources/schedule/festival.json'
+import * as Magfest from '../resources/schedule/magfest.json'
+import * as Maintenance from '../resources/schedule/maintenance.json'
+import * as Streams from '../resources/schedule/streams.json'
 
 import isBetween from 'dayjs/plugin/isBetween'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -26,15 +32,14 @@ type NumberObject = { [key: string]: number }
 type NullableNumber = number | null
 
 interface Event {
-    readonly [index: string]: string | LocalizedString | string[] | null
+    readonly [index: string]: string | LocalizedString | string[] | undefined | null
     name: LocalizedString
     type: string
     starts: string
     ends: string
-    advantage: string | null
-    info: string[]
-    banner: string | null
-    link: string | null
+    advantage?: string | null
+    banner?: string | null
+    link?: string | null
 }
 
 interface Month {
@@ -102,14 +107,9 @@ class ScheduleCommand extends SieroCommand {
 
     public async exec(message: Message, args: { operation: string }) {
         this.log(message)
-
         this.message = message
 
-        await this.load()
-            .then((data) => {
-                this.schedule = data
-                this.switchOperation(args.operation)
-            })
+        this.switchOperation(args.operation)
     }
 
     private switchOperation(operation: string) {
@@ -142,7 +142,9 @@ class ScheduleCommand extends SieroCommand {
             description: 'There are no features scheduled to be released'
         }))
 
-        if (this.schedule && this.schedule.magfest && dayjs().isBetween(dayjs(this.schedule.magfest.starts), dayjs(this.schedule.magfest.ends))) {
+        const magfest = Magfest.magfest.slice(-1).pop()
+
+        if (magfest && dayjs().isBetween(dayjs(magfest.starts), dayjs(magfest.ends))) {
             pager.addPage('🎉', this.renderMagfest())
         }
 
@@ -172,12 +174,6 @@ class ScheduleCommand extends SieroCommand {
     }
 
     // File methods
-    private async load(filename: string = "schedule.json"): Promise<any> {
-        const schedule: string = path.join(__dirname, '..', '..', '..', 'src', 'resources', filename)
-        const data: string = await fs.readFile(schedule, 'utf8')
-
-        return JSON.parse(data)
-    }
 
     // Page render methods
     private renderRightNow(): Page {
@@ -231,26 +227,47 @@ class ScheduleCommand extends SieroCommand {
     private renderUpcoming(): Page {
         const title = 'Upcoming Events'
         const events = this.upcomingEvents()
-        return this.renderEvents({
-            title: title,
-            image: events[0].banner || undefined
-        }, events)
+
+        let page: Page
+        if (events.length == 0) {
+            page = this.renderEvents({
+                title: "No upcoming events",
+                image: undefined
+            }, [])
+        } else {
+            page = this.renderEvents({
+                title: title,
+                image: events[0].banner || undefined
+            }, events)
+        }
+        
+        return page
     }
 
     private renderMagfest(): Page {
-        const magfest = this.schedule.magfest!
+        const magfest = Magfest.magfest.slice(-1).pop()
 
-        return new Page({
-            title: magfest.name.en,
-            author: `Ends in ${this.buildDiffString(magfest.ends)}`,
-            image: magfest.banner || undefined
-        }, [{
-            name: 'Wiki',
-            value: magfest.wiki as string
-        }, {
-            name: 'Content',
-            value: `\`\`\`${magfest.info.join('\n')}\`\`\``
-        }])
+        let page: Page
+        if (magfest) {
+            page = new Page({
+                title: magfest.name.en,
+                author: `Ends in ${this.buildDiffString(magfest.ends)}`,
+                image: magfest.banner || undefined
+            }, [{
+                name: 'Wiki',
+                value: magfest.wiki as string
+            }, {
+                name: 'Content',
+                value: `\`\`\`${magfest.info.join('\n')}\`\`\``
+            }])
+        } else {
+            page = new Page ({
+                title: "No current magfest",
+                image: undefined
+            }, [])
+        }
+
+        return page
     }
 
     private async renderFestival(day: number): Promise<Page> {
@@ -603,8 +620,8 @@ class ScheduleCommand extends SieroCommand {
     private currentEvents(): Event[] {
         let currentEvents: Event[] = []
 
-        for (let i in this.schedule.events) {
-            const event: Event = this.schedule.events[i]
+        for (let i = 0; i < Events.events.length; i++) {
+            const event: Event = Events.events[i]
 
             if (dayjs().isBetween(dayjs(event.starts), dayjs(event.ends))) {
                 currentEvents.push(event)
@@ -617,8 +634,8 @@ class ScheduleCommand extends SieroCommand {
     private upcomingEvents(): Event[] {
         let upcomingEvents: Event[] = []
 
-        for (let i in this.schedule.events) {
-            const event: Event = this.schedule.events[i]
+        for (let i = 0; i < Events.events.length; i++) {
+            const event: Event = Events.events[i]
 
             if (dayjs(event.starts).isAfter(dayjs())) {
                 upcomingEvents.push(event)
