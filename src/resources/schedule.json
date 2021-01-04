@@ -401,7 +401,50 @@
             "type": "scenario",
             "starts": "2020-12-28T19:00:00+09:00",
             "ends": "2021-01-07T20:59:00+09:00"
-        } 
+        },
+        {
+            "name": {
+                "en": "Rise of the Beasts",
+                "jp": "四象降臨"
+            },
+            "banner": "https://gbf.wiki/images/d/dd/Riseofthebeasts_top.png",
+            "link": "https://gbf.wiki/Rise_of_the_Beasts",
+            "type": "farming",
+            "starts": "2021-01-07T17:00:00+09:00",
+            "ends": "2021-01-14T20:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Unite and Fight",
+                "jp": "決戦！星の古戦場 - 闇有利"
+            },
+            "banner": "https://gbf.wiki/images/0/09/UniteAndFight.png",
+            "link": "https://gbf.wiki/Unite_and_Fight",
+            "type": "guild-wars",
+            "advantage": "light",
+            "starts": "2021-01-15T19:00:00+09:00",
+            "ends": "2021-01-22T23:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Elegy for Auld Lang Syne",
+                "jp": "除夜の終わりに響く鐘"
+            },
+            "banner": "https://gbf.wiki/images/a/a4/Elegy_for_Auld_Lang_Syne_top.jpg",
+            "link": "https://gbf.wiki/Elegy_for_Auld_Lang_Syne",
+            "type": "scenario rerun",
+            "starts": "2021-01-23T17:00:00+09:00",
+            "ends": "2021-01-31T18:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "New Scenario Event",
+                "jp": "新シナリオイベント"
+            },
+            "type": "scenario",
+            "starts": "2021-01-29T17:00:00+09:00",
+            "ends": "2021-02-06T18:59:00+09:00"
+        }
     ],
     "updates": [
         {
