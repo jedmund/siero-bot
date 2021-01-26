@@ -443,9 +443,9 @@
                 "en": "A Tale of Kindred Bonds",
                 "jp": "灯幻連理双紙"
             },
-            "advantage": "wind",
             "type": "scenario",
             "banner": "http://game-a1.granbluefantasy.jp/assets_en/img/sp/event/event_teaser_1103/assets/teaser/event_teaser_top.jpg",
+            "link": "https://gbf.wiki/A_Tale_of_Kindred_Bonds",
             "starts": "2021-01-29T17:00:00+09:00",
             "ends": "2021-02-06T18:59:00+09:00"
         },
@@ -460,7 +460,7 @@
             "advantage": "water",
             "starts": "2021-04-07T19:00:00+09:00",
             "ends": "2021-04-15T23:59:00+09:00"
-        },
+        }
     ],
     "updates": [
         {
