@@ -45,6 +45,15 @@
             "starts": "2020-12-13T18:00:00+09:00",
             "ends": "2020-12-13T21:00:00+09:00",
             "link": "https://www.youtube.com/watch?v=Kb8ChL3ABZA"
+        },
+        {
+            "name": {
+                "en": "Granblue Fantasy 7th Anniversary Livestream",
+                "jp": "グランブルーファンタジー7年記念生放送"
+            },
+            "starts": "2021-03-07T18:00:00+09:00",
+            "ends": "2021-03-07T21:00:00+09:00",
+            "link": "TBA"
         }
     ],
     "events": [
@@ -440,14 +449,56 @@
         },
         {
             "name": {
-                "en": "A Tale of Kindred Bonds",
+                "en": "A Tale of Kindled Bonds",
                 "jp": "灯幻連理双紙"
             },
             "type": "scenario",
             "banner": "http://game-a1.granbluefantasy.jp/assets_en/img/sp/event/event_teaser_1103/assets/teaser/event_teaser_top.jpg",
-            "link": "https://gbf.wiki/A_Tale_of_Kindred_Bonds",
+            "link": "https://gbf.wiki/A_Tale_of_Kindled_Bonds",
             "starts": "2021-01-29T17:00:00+09:00",
             "ends": "2021-02-06T18:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Tower of Babel",
+                "jp": "バブ･イールの塔"
+            },
+            "type": "tower",
+            "banner": "https://gbf.wiki/images/9/93/Tower_of_Babyl_top.jpg",
+            "starts": "2021-02-03T17:00:00+09:00",
+            "ends": "2021-02-09T20:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Dread Barrage: March of the Valiant",
+                "jp": "ドレッドバラージュ"
+            },
+            "banner": "https://gbf.wiki/images/4/44/Dread_Barrage_top.jpg",
+            "link": "https://gbf.wiki/Dread_Barrage",
+            "type": "valiant",
+            "advantage": "earth",
+            "starts": "2021-02-10T19:00:00+09:00",
+            "ends": "2021-02-17T18:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Spaghetti Syndrome",
+                "jp": "Spaghetti Syndrome"
+            },
+            "banner": "https://gbf.wiki/images/8/86/Spaghetti_Syndrome_top.jpg",
+            "link": "https://gbf.wiki/Spaghetti_Syndrome",
+            "type": "scenario rerun",
+            "starts": "2021-02-18T17:00:00+09:00",
+            "ends": "2021-02-26T18:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "New Scenario Event",
+                "jp": "新シナリオイベント"
+            },
+            "type": "scenario",
+            "starts": "2021-02-26T17:00:00+09:00",
+            "ends": "2021-03-22T18:59:00+09:00"
         },
         {
             "name": {
