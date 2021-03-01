@@ -46,13 +46,32 @@
         },
         {
             "name": {
+                "en": "Comfy! Granblue TV Channel Pre-Show",
+                "jp": "グランブルーファンタジー7年記念生放送"
+            },
+            "starts": "2021-03-07T15:30:00+09:00",
+            "ends": "2021-03-07T17:30:00+09:00",
+            "link": "https://www.youtube.com/watch?v=Q-1p7tewNHw"
+        },
+        {
+            "name": {
                 "en": "Granblue Fantasy 7th Anniversary Livestream",
                 "jp": "グランブルーファンタジー7年記念生放送"
             },
-            "starts": "2021-03-07T18:00:00+09:00",
+            "starts": "2021-03-07T17:30:00+09:00",
             "ends": "2021-03-07T21:00:00+09:00",
-            "link": "TBA"
-        }
+            "link": "https://www.youtube.com/watch?v=Q-1p7tewNHw"
+        },
+                {
+            "name": {
+                "en": "Comfy! Granblue TV Channel After-Show",
+                "jp": "グランブルーファンタジー7年記念生放送"
+            },
+            "starts": "2021-03-07T21:00:00+09:00",
+            "ends": "2021-03-07T21:30:00+09:00",
+            "link": "https://www.youtube.com/watch?v=Q-1p7tewNHw"
+        },
+        
     ],
     "events": [
         {
