@@ -500,6 +500,38 @@
         },
         {
             "name": {
+                "en": "Xeno Cocytus Showdown",
+                "jp": "ゼノ・コキュートス撃滅戦"
+            },
+            "banner": "https://gbf.wiki/images/7/73/Xeno_Corow_Clash_top.png",
+            "link": "https://gbf.wiki/Xeno_Cocytus_Clash",
+            "type": "farming",
+            "advantage": "earth",
+            "starts": "2021-03-16T17:00:00+09:00",
+            "ends": "2021-03-22T20:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Rise of the Beasts",
+                "jp": "四象降臨"
+            },
+            "banner": "https://gbf.wiki/images/d/dd/Riseofthebeasts_top.png",
+            "link": "https://gbf.wiki/Rise_of_the_Beasts",
+            "type": "farming",
+            "starts": "2021-03-22T17:00:00+09:00",
+            "ends": "2021-03-29T20:59:00+09:00"
+        },
+        {
+            "name": {
+                "en": "New Scenario Event",
+                "jp": "新シナリオイベント"
+            },
+            "type": "scenario",
+            "starts": "2021-03-29T17:00:00+09:00",
+            "ends": "2021-04-06T18:59:00+09:00"
+        },
+        {
+            "name": {
                 "en": "Unite and Fight",
                 "jp": "決戦！星の古戦場 - 水有利"
             },
