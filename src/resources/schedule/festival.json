@@ -282,6 +282,147 @@
             "day": 2,
             "starts": "2020-12-13T21:45:00+09:00",
             "ends": "2020-12-13T22:35:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Comfy! Granblue TV Channel Pre-Show",
+                "jp": "ゆるっと！ぐらぶるTVちゃんねるっ！"
+            },
+            "day": 1,
+            "starts": "2021-03-07T15:30:00+09:00",
+            "ends": "2021-03-07T17:30:00+09:00",
+            "cast": [
+                {
+                    "name": "Tachibana Rika",
+                    "role": "Yuisis"
+                },
+                {
+                    "name": "Kawahara Yoshihisa",
+                    "role": "Tyre/Nectar"
+                },
+                {
+                    "name": "Nakamura Yuuichi",
+                    "role": "Romeo/Tsubasa"
+                },
+                {
+                    "name": "Inuyama Inuko",
+                    "role": "Malinda"
+                },
+                {
+                    "name": "Takagi Miyu",
+                    "role": "Mirin"
+                },
+                {
+                    "name": "Shiraishi Minoru",
+                    "role": "Lowain/Tsuchinoko"
+                },
+                {
+                    "name": "Imai Asami",
+                    "role": "Vira/Friday"
+                },
+                {
+                    "name": "Hoshino Takanori",
+                    "role": "Dante"
+                },
+                {
+                    "name": "Oosaka Ryota",
+                    "role": "Percival"
+                }
+            ]
+        },
+        {
+            "name": {
+                "en": "7th Anniversary Livestream!",
+                "jp": "７周年直前生放送！グラブルアニバーサリーSP"
+            },
+            "day": 1,
+            "starts": "2021-03-07T17:30:00+09:00",
+            "ends": "2021-03-07T21:00:00+09:00",
+            "cast": [
+                {
+                    "name": "Katou Emiri",
+                    "role": "Sierokarte/Halluel and Malluel"
+                },
+                {
+                    "name": "Touyama Nao",
+                    "role": "Lyria"
+                },
+                {
+                    "name": "Nakamura Yuuichi",
+                    "role": "Romeo/Tsubasa"
+                },
+                {
+                    "name": "Kawahara Yoshihisa",
+                    "role": "Tyre/Nectar"
+                },
+                {
+                    "name": "Takanori Hoshino",
+                    "role": "Dante"
+                },
+                {
+                    "name": "Tachibana Rika",
+                    "role": "Yuisis"
+                },
+                {
+                    "name": "Osaka Ryota",
+                    "role": "Percival"
+                },
+                {
+                    "name": "Kimura Yuito",
+                    "role": "Producer"
+                },
+                {
+                    "name": "Fukuhara Tetsuya",
+                    "role": "Game Director"
+                }
+            ]
+        },
+        {
+            "name": {
+                "en": "Comfy! Granblue TV Channel Pre-Show",
+                "jp": "ゆるっと！ぐらぶるTVちゃんねるっ！"
+            },
+            "day": 1,
+            "starts": "2021-03-07T21:30:00+09:00",
+            "ends": "2021-03-07T21:30:00+09:00",
+            "cast": [
+                {
+                    "name": "Tachibana Rika",
+                    "role": "Yuisis"
+                },
+                {
+                    "name": "Kawahara Yoshihisa",
+                    "role": "Tyre/Nectar"
+                },
+                {
+                    "name": "Nakamura Yuuichi",
+                    "role": "Romeo/Tsubasa"
+                },
+                {
+                    "name": "Inuyama Inuko",
+                    "role": "Malinda"
+                },
+                {
+                    "name": "Takagi Miyu",
+                    "role": "Mirin"
+                },
+                {
+                    "name": "Shiraishi Minoru",
+                    "role": "Lowain/Tsuchinoko"
+                },
+                {
+                    "name": "Imai Asami",
+                    "role": "Vira/Friday"
+                },
+                {
+                    "name": "Hoshino Takanori",
+                    "role": "Dante"
+                },
+                {
+                    "name": "Oosaka Ryota",
+                    "role": "Percival"
+                }
+            ]
         }
     ]
 }
