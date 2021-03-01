@@ -126,13 +126,16 @@ class ScheduleCommand extends SieroCommand {
                 this.next()
                 break
 
+            case 'upcoming':
+                this.upcoming()
+                break
+
             default:
                 break
         }
     }
 
-    // Command methods
-    private async show() {        
+    private createPager(): Pager {
         let pager: Pager = new Pager(this.message.author)
 
         pager.addPage('🕒', this.renderRightNow())
@@ -148,6 +151,12 @@ class ScheduleCommand extends SieroCommand {
 
         pager.addPage('❓', this.renderHelp())
 
+        return pager
+    }
+
+    // Command methods
+    private async show() {        
+        let pager: Pager = this.createPager()
         pager.render(this.message)
     }
 
@@ -160,6 +169,12 @@ class ScheduleCommand extends SieroCommand {
         } else {
             this.message!.channel.send('There is no event scheduled next. Is this the end?')
         }
+    }
+
+    private async upcoming() {
+        let pager: Pager = this.createPager()
+        pager.selectPage('📅')
+        pager.render(this.message)
     }
 
     private async festival() {
