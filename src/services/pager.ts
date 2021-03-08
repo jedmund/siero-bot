@@ -44,8 +44,6 @@ export class Pager {
 
             this.pages[selectedKey].selected = true
 
-            console.log(selectedKey, this.pages[selectedKey].selected)
-
             if (this.hasRendered) {
                 await this.update(selectedKey)
             }
@@ -58,7 +56,7 @@ export class Pager {
         for (let i = 0; i < keys.length; i++) {
             const key = keys[i]
             const preceding = (this.pages[key].selected) ? '->\t' : '\t'
-            console.log(`${preceding}${key}\t: ${this.pages[key].page.description}`)    
+            // console.log(`${preceding}${key}\t: ${this.pages[key].page.description}`)    
         }
     }
 
@@ -129,9 +127,9 @@ export class Pager {
         }
     }
 
-    private lock() {
+    private lock() {    
         if (this.message && this.embed) {
-            console.log("Locking...")
+            // console.log("Locking...")
 
             this.embed.setFooter('This embed has expired. For options, please run the command again.')
             this.message.edit(this.embed)
@@ -171,13 +169,10 @@ export class Pager {
 
     public selectedPage(): Page {
         const defaultPage: Page = this.pages[Object.keys(this.pages)[0]].page
-        const selectedPage: Page | undefined = Object.entries(this.pages).map((entry: [string, PageEntry]) => {
-            console.log(entry[1].selected)
+        const mappedPages: (Page | undefined)[] = Object.entries(this.pages).map((entry: [string, PageEntry]) => {
             return (entry[1].selected) ? entry[1].page : undefined
-        })[1]
-        
-
-        console.log(selectedPage)
+        })
+        const selectedPage: Page | undefined = mappedPages.filter((p => p !== undefined))[0]
 
         if (selectedPage) {
             return selectedPage

@@ -1,0 +1,47 @@
+[
+    {
+        "name": {
+            "en": "Granblue Fantasy Fes 2020 Day 1 Livestream",
+            "jp": "グラブルフェス2020　1日目生放送"
+        },
+        "starts": "2020-12-12T16:15:00+09:00",
+        "ends": "2020-12-12T19:15:00+09:00",
+        "link": " https://www.youtube.com/watch?v=gEIfjAoqKjE"
+    },
+    {
+        "name": {
+            "en": "Granblue Fantasy Fes 2020 Day 2 Livestream",
+            "jp": "グラブルフェス2020　2日目生放送"
+        },
+        "starts": "2020-12-13T18:00:00+09:00",
+        "ends": "2020-12-13T21:00:00+09:00",
+        "link": "https://www.youtube.com/watch?v=Kb8ChL3ABZA"
+    },
+    {
+        "name": {
+            "en": "Comfy! Granblue TV Channel Pre-Show",
+            "jp": "グランブルーファンタジー7年記念生放送"
+        },
+        "starts": "2021-03-07T15:30:00+09:00",
+        "ends": "2021-03-07T17:30:00+09:00",
+        "link": "https://www.youtube.com/watch?v=Q-1p7tewNHw"
+    },
+    {
+        "name": {
+            "en": "Granblue Fantasy 7th Anniversary Livestream",
+            "jp": "グランブルーファンタジー7年記念生放送"
+        },
+        "starts": "2021-03-07T17:30:00+09:00",
+        "ends": "2021-03-07T21:00:00+09:00",
+        "link": "https://www.youtube.com/watch?v=Q-1p7tewNHw"
+    },
+            {
+        "name": {
+            "en": "Comfy! Granblue TV Channel After-Show",
+            "jp": "グランブルーファンタジー7年記念生放送"
+        },
+        "starts": "2021-03-07T21:00:00+09:00",
+        "ends": "2021-03-07T21:30:00+09:00",
+        "link": "https://www.youtube.com/watch?v=Q-1p7tewNHw"
+    }
+]
