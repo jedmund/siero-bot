@@ -56,7 +56,7 @@ export class Pager {
         for (let i = 0; i < keys.length; i++) {
             const key = keys[i]
             const preceding = (this.pages[key].selected) ? '->\t' : '\t'
-            // console.log(`${preceding}${key}\t: ${this.pages[key].page.description}`)    
+            console.log(`${preceding}${key}\t: ${this.pages[key].page.description}`)    
         }
     }
 
