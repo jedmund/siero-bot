@@ -1,28 +1,24 @@
-{
-    "magfest": [
-        {
-            "name": {
-                "en": "New Years Campaign",
-                "jp": "ゆく年くる年キャンペーン"
-            },
-            "info": [
-                "Free Daily 200-Pull Gacha Roulette",
-                "Daily 200 Crystal Bonus",
-                "Daily Skyleap Login 200 Crystal Bonus",
-                "Campaign-Exclusive Quest",
-                "1.5x More RP/EXP",
-                "Half AP/EP Event",
-                "Half AP for Free Quests",
-                "Half AP for Special Quests",
-                "Half Treasure Cost",
-                "More Renown and Prestige Pendants",
-                "2x Boost to Shop Skills",
-                "Arcarum Badge Bonus Bash"
-            ],
-            "wiki": "https://gbf.wiki/27_Million_Players_Celebration",
-            "banner": "https://granbluefantasy.jp/pages/wp-content/uploads/2025/01/1daff84a6a1bfbc59b8995c56158fd98.png",
-            "starts": "2020-12-22T00:00:00+09:00",
-            "ends": "2021-01-05T16:59:00+09:00"
-        }
-    ]
-}
+[
+    {
+        "name": {
+            "en": "7th Birthday Countdown",
+            "jp": "7th Anniversary 前夜祭キャンペーン"
+        },
+        "info": [
+            "Free Daily Premium Draw",
+            "7th Birthday Countdown Daily Bonus",
+            "Campaign-Exclusive Quest",
+            "1.5x More RP/EXP",
+            "Half AP/EP Event",
+            "Half AP for Free Quests",
+            "Half AP for Special Quests",
+            "More Renown and Prestige Pendants",
+            "2x Boost to Shop Skills",
+            "Arcarum Badge Bonus Bash"
+        ],
+        "wiki": "https://gbf.wiki/7th_Birthday_Countdown",
+        "banner": "https://granbluefantasy.jp/pages/wp-content/uploads/2022/02/TOP_asdfkasdkfbasdbasdfasda.png",
+        "starts": "2021-02-22T05:00:00+09:00",
+        "ends": "2021-03-10T16:59:00+09:00"
+    }
+]

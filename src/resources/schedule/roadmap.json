@@ -1,22 +1,188 @@
-{
-    "upcoming": [
-        {
-            "date": "March 22",
-            "upcoming": true,
-            "features": [
-                {
-                    "name": "Test A",
-                    "details": ""
-                },
-                {
-                    "name": "Test B",
-                    "details": ""
-                },
-                {
-                    "name": "Test C",
-                    "details": ""
-                }
-            ]
-        }
-    ]
-}
+[
+    {
+        "date": "March 10",
+        "upcoming": true,
+        "features": [
+            {
+                "name": "New EXII Job: Masquerade",
+                "details": ""
+            },
+            {
+                "name": "Update: Login Bonus renewal",
+                "details": ""
+            },
+            {
+                "name": "New Feature: Skyscope Time-based Missions",
+                "details": ""
+            },
+            {
+                "name": "Update: Character Rebalances",
+                "details": ""
+            },
+            {
+                "name": "New: Character EMPs",
+                "details": ""
+            },
+            {
+                "name": "Update: Water Grand Rebalances",
+                "details": ""
+            },
+            {
+                "name": "Update: Silver Relic Weapons reduce to 5 Relic Fragments",
+                "details": ""
+            }
+        ]
+    },
+    {
+        "date": "March 22",
+        "upcoming": true,
+        "features": [
+            {
+                "name": "Update: Rank cap increased to 300",
+                "details": ""
+            },
+            {
+                "name": "Update: Optimus-series Summon ULB",
+                "details": ""
+            },
+            {
+                "name": "New: Luminiera Malice HL raid",
+                "details": ""
+            },
+            {
+                "name": "Update: Ascendant Prayer can be used on Lucilius (Hard)",
+                "details": ""
+            },
+            {
+                "name": "New: Evoker EMPs",
+                "details": ""
+            },
+            {
+                "name": "New: Plus Bonus Stock feature",
+                "details": ""
+            },
+            {
+                "name": "Update: Weapon Upgrade UI redesign",
+                "details": ""
+            },
+            {
+                "name": "Update: Auto-Guard option for Battle System 2.0",
+                "details": ""
+            },
+            {
+                "name": "New: Auto-reserve option for dropped weapons",
+                "details": ""
+            }
+        ]
+    },
+    {
+        "date": "March 26",
+        "upcoming": true,
+        "features": [
+            {
+                "name": "New: Multi-step uncaps for Characters, Weapons and Summons",
+                "details": ""
+            }
+        ]
+    },
+    {
+        "date": "April 2021",
+        "upcoming": true,
+        "features": [
+            {
+                "name": "New: Societte (Water) uncap",
+                "details": ""
+            },
+            {
+                "name": "Update: Removal of daily trade limits in Treasure Trade",
+                "details": ""
+            },
+            {
+                "name": "Update: Treasure Trade trade materials update",
+                "details": ""
+            },
+            {
+                "name": "Update: Treasure Trade trade materials update",
+                "details": ""
+            }
+        ]
+    },
+    {
+        "date": "June 2021",
+        "upcoming": true,
+        "features": [
+            {
+                "name": "New: Main Story Update \"Circus of Liars\"",
+                "details": ""
+            }
+        ]
+    },
+    {
+        "date": "Summer 2021",
+        "upcoming": true,
+        "features": [
+            {
+                "name": "Update: New EMP skills for Row IV and EXII classes",
+                "details": ""
+            },
+            {
+                "name": "Update: Class-specific EXP for Row IV and EXII classes",
+                "details": ""
+            }
+        ]
+    },
+    {
+        "date": "2021",
+        "upcoming": true,
+        "features": [
+            {
+                "name": "Planned: Seeds of Redemption rerun",
+                "details": ""
+            },
+            {
+                "name": "Update: New permanent bonuses for crews",
+                "details": ""
+            },
+            {
+                "name": "Update: Various raids will be turned into solo quests",
+                "details": ""
+            },
+            {
+                "name": "New: 6 element raids and weapons",
+                "details": ""
+            },
+            {
+                "name": "New: Belial HL raid",
+                "details": ""
+            }
+        ]
+    },
+    {
+        "date": "Late 2021",
+        "upcoming": true,
+        "features": [
+            {
+                "name": "New: New Class Champion Weapons for Row IV classes",
+                "details": ""
+            },
+            {
+                "name": "Update: New area and guidebooks in Replicard Sandbox",
+                "details": ""
+            },
+            {
+                "name": "Update: New Foundation Weapons FLB",
+                "details": ""
+            }
+        ]
+    },
+    {
+        "date": "Spring 2022",
+        "upcoming": true,
+        "features": [
+            {
+                "name": "New: New Class Champion Weapons for EXII classes",
+                "details": ""
+            }
+        ]
+    }
+]
