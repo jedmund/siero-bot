@@ -439,6 +439,9 @@
                 "en": "Home Sweet Moon",
                 "jp": "STAY MOON"
             },
+            "advantage": "light",
+            "link": "https://gbf.wiki/Home_Sweet_Moon",
+            "banner": "https://gbf.wiki/images/4/43/Home_Sweet_Moon_top_logo.png",
             "type": "scenario",
             "starts": "2021-02-26T17:00:00+09:00",
             "ends": "2021-03-22T18:59:00+09:00"
