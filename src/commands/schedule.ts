@@ -301,8 +301,6 @@ class ScheduleCommand extends SieroCommand {
     }
 
     private renderRoadmap(): Page {
-        console.log("Rendering roadmap!!!")
-
         const roadmap: Patch[] = this.schedule.roadmap
         let patches: Section[] = []
 
