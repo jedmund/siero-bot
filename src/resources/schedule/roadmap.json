@@ -90,6 +90,14 @@
         "upcoming": true,
         "features": [
             {
+                "name": "New: Funf and Seox Transcendence",
+                "details": ""
+            },
+            {
+                "name": "New: Eternals can be transcended up to Level 130",
+                "details": ""
+            },
+            {
                 "name": "New: Societte (Water) uncap",
                 "details": ""
             },
@@ -114,6 +122,10 @@
             {
                 "name": "New: Main Story Update \"Circus of Liars\"",
                 "details": ""
+            },
+            {
+                "name": "New: Siete and Okto Transcendence",
+                "details": ""
             }
         ]
     },
@@ -127,6 +139,20 @@
             },
             {
                 "name": "Update: Class-specific EXP for Row IV and EXII classes",
+                "details": ""
+            }
+        ]
+    },
+    {
+        "date": "August 2021",
+        "upcoming": true,
+        "features": [
+            {
+                "name": "New: Nio and Esser Transcendence",
+                "details": ""
+            },
+            {
+                "name": "New: Eternals can be transcended up to Level 150",
                 "details": ""
             }
         ]
