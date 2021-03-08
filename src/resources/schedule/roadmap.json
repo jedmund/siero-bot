@@ -108,10 +108,6 @@
             {
                 "name": "Update: Treasure Trade trade materials update",
                 "details": ""
-            },
-            {
-                "name": "Update: Treasure Trade trade materials update",
-                "details": ""
             }
         ]
     },
@@ -125,6 +121,20 @@
             },
             {
                 "name": "New: Siete and Okto Transcendence",
+                "details": ""
+            }
+        ]
+    },
+    {
+        "date": "August 2021",
+        "upcoming": true,
+        "features": [
+            {
+                "name": "New: Nio and Esser Transcendence",
+                "details": ""
+            },
+            {
+                "name": "New: Eternals can be transcended up to Level 150",
                 "details": ""
             }
         ]
@@ -144,15 +154,19 @@
         ]
     },
     {
-        "date": "August 2021",
+        "date": "Late 2021",
         "upcoming": true,
         "features": [
             {
-                "name": "New: Nio and Esser Transcendence",
+                "name": "New: New Class Champion Weapons for Row IV classes",
                 "details": ""
             },
             {
-                "name": "New: Eternals can be transcended up to Level 150",
+                "name": "Update: New area and guidebooks in Replicard Sandbox",
+                "details": ""
+            },
+            {
+                "name": "Update: New Foundation Weapons FLB",
                 "details": ""
             }
         ]
@@ -179,24 +193,6 @@
             },
             {
                 "name": "New: Belial HL raid",
-                "details": ""
-            }
-        ]
-    },
-    {
-        "date": "Late 2021",
-        "upcoming": true,
-        "features": [
-            {
-                "name": "New: New Class Champion Weapons for Row IV classes",
-                "details": ""
-            },
-            {
-                "name": "Update: New area and guidebooks in Replicard Sandbox",
-                "details": ""
-            },
-            {
-                "name": "Update: New Foundation Weapons FLB",
                 "details": ""
             }
         ]
