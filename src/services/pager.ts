@@ -34,17 +34,12 @@ export class Pager {
     }
 
     public async selectPage(selectedKey: string): Promise<void> {
-        console.log("Page being selected...")
-
         if (this.pages[selectedKey]) {
-            console.log("Key found!")
             for (const [_, value] of Object.entries(this.pages)) {
                 value.selected = false
             }
 
             this.pages[selectedKey].selected = true
-
-            console.log(selectedKey, this.pages[selectedKey].selected)
 
             if (this.hasRendered) {
                 await this.update(selectedKey)
@@ -63,8 +58,6 @@ export class Pager {
     }
 
     public render(message: Message) {
-        console.log("Rendering...")
-
         let embed: MessageEmbed = new MessageEmbed
         const selectedPage: Page = this.selectedPage()
 
@@ -172,12 +165,9 @@ export class Pager {
     public selectedPage(): Page {
         const defaultPage: Page = this.pages[Object.keys(this.pages)[0]].page
         const selectedPage: Page | undefined = Object.entries(this.pages).map((entry: [string, PageEntry]) => {
-            console.log(entry[1].selected)
             return (entry[1].selected) ? entry[1].page : undefined
         })[1]
         
-
-        console.log(selectedPage)
 
         if (selectedPage) {
             return selectedPage
