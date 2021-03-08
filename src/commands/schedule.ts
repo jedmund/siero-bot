@@ -47,10 +47,11 @@ interface Month {
 }
 
 interface Schedule {
-    maintenance: Duration | null
-    magfest: Event | null
+    maintenance: Duration[]
+    magfests: Event[]
     events: Event[]
-    scheduled: Month[],
+    roadmap: Patch[]
+    scheduled: Month[]
     streams: Event[]
 }
 
@@ -91,11 +92,12 @@ interface Duration {
 
 class ScheduleCommand extends SieroCommand {
     schedule: Schedule = {
-        maintenance: null,
+        maintenance: [],
         events: [],
+        magfests: [],
+        roadmap: [],
         streams: [],
         scheduled: [],
-        magfest: null
     }
 
     public constructor() {
@@ -117,8 +119,34 @@ class ScheduleCommand extends SieroCommand {
         this.message = message
 
         await this.load('events.json')
-            .then((data) => {
-                this.schedule = data
+            .then((events: Event[]) => {
+                this.schedule.events = events
+            })
+            .then((): Promise<any> => {
+                return this.load('roadmap.json')
+            })
+            .then((roadmap: Patch[]) => {
+                this.schedule.roadmap = roadmap
+            })
+            .then((): Promise<any> => {
+                return this.load('magfest.json')
+            })
+            .then((magfests: Event[]) => {
+                this.schedule.magfests = magfests
+            })
+            .then((): Promise<any> => {
+                return this.load('maintenance.json')
+            })
+            .then((maintenance: Duration[]) => {
+                this.schedule.maintenance = maintenance
+            })
+            .then((): Promise<any> => {
+                return this.load('streams.json')
+            })
+            .then((streams: Event[]) => {
+                this.schedule.streams = streams
+            })
+            .then(() => {
                 this.switchOperation(args.operation)
             })
     }
@@ -150,14 +178,15 @@ class ScheduleCommand extends SieroCommand {
         }
     }
 
-    private async createPager(): Promise<Pager> {
+    private createPager(): Pager {
         let pager: Pager = new Pager(this.message.author)
 
         pager.addPage('🕒', this.renderRightNow())
         pager.addPage('📅', this.renderUpcoming())
-        pager.addPage('🔨', await this.renderRoadmap())
+        pager.addPage('🔨', this.renderRoadmap())
 
-        if (this.schedule && this.schedule.magfest && dayjs().isBetween(dayjs(this.schedule.magfest.starts), dayjs(this.schedule.magfest.ends))) {
+        if (this.schedule.magfests.length > 1 && this.schedule.magfests.filter(this.isCurrent) ||
+           (this.schedule.magfests.length == 1 && dayjs().isBetween(dayjs(this.schedule.magfests[0].starts), dayjs(this.schedule.magfests[0].ends)))) {
             pager.addPage('🎉', this.renderMagfest())
         }
 
@@ -167,8 +196,8 @@ class ScheduleCommand extends SieroCommand {
     }
 
     // Command methods
-    private async show() {        
-        let pager: Pager = await this.createPager()
+    private show() {        
+        let pager: Pager = this.createPager()
         pager.render(this.message)
     }
 
@@ -183,14 +212,15 @@ class ScheduleCommand extends SieroCommand {
         }
     }
 
-    private async upcoming() {
-        let pager: Pager = await this.createPager()
+    private upcoming() {
+        let pager: Pager = this.createPager()
         pager.selectPage('📅')
         pager.render(this.message)
     }
 
-    private async roadmap() {
-        let pager: Pager = await this.createPager()
+    private roadmap() {
+        // TODO: Why doesn't this work?
+        let pager: Pager = this.createPager()
         pager.selectPage('🔨')
         pager.render(this.message)
     }
@@ -205,7 +235,7 @@ class ScheduleCommand extends SieroCommand {
     }
 
     // File methods
-    private async load(filename: string = "schedule.json"): Promise<any> {
+    private async load(filename: string = "events.json"): Promise<any> {
         const file: string = path.join(__dirname, '..', '..', '..', 'src', 'resources', 'schedule', filename)
         const data: string = await fs.readFile(file, 'utf8')
 
@@ -270,31 +300,34 @@ class ScheduleCommand extends SieroCommand {
         }, events)
     }
 
-    private async renderRoadmap(): Promise<Page> {
-        return await this.load('roadmap.json')
-            .then((data) => {
-                const roadmap: Patch[] = data.upcoming
-                let patches: Section[] = []
+    private renderRoadmap(): Page {
+        console.log("Rendering roadmap!!!")
 
-                for (let i in roadmap) {
-                    const patch = roadmap[i]
-                    if (patch.upcoming) {
-                        patches.push({
-                            name: patch.date,
-                            value: `\`\`\`${patch.features.map(f => f.name).join('\n')}\`\`\``
-                        })
-                    }
-                }
+        const roadmap: Patch[] = this.schedule.roadmap
+        let patches: Section[] = []
 
-                return new Page({
-                    title: 'Feature Roadmap'
-                }, patches)
-            })
+        for (let i in roadmap) {
+            const patch = roadmap[i]
+            if (patch.upcoming) {
+                patches.push({
+                    name: patch.date,
+                    value: `\`\`\`${patch.features.map(f => f.name).join('\n')}\`\`\``
+                })
+            }
+        }
 
+        return new Page({
+            title: 'Feature Roadmap'
+        }, patches)
     }
 
     private renderMagfest(): Page {
-        const magfest = this.schedule.magfest!
+        let magfest
+        if (this.schedule.magfests.length > 1) {
+            magfest = this.schedule.magfests.filter(this.isCurrent)[0]
+        } else {
+            magfest = this.schedule.magfests[0]
+        }
 
         return new Page({
             title: magfest.name.en,
@@ -526,57 +559,53 @@ class ScheduleCommand extends SieroCommand {
         } : null
     }
 
-    private renderMaintenanceEvent(): Section | null {
-        let name = ''
-        let description = ''
+    private isCurrent(event: Event) {
+        dayjs().isBetween(dayjs(event.starts), dayjs(event.ends))
+    }
 
-        const isMaintenance = this.schedule.maintenance && dayjs().isBetween(dayjs(this.schedule.maintenance.starts), dayjs(this.schedule.maintenance.ends))
-        const upcomingMaintenance = this.schedule.maintenance && dayjs(this.schedule.maintenance.starts).isBetween(dayjs(), dayjs().add(48, 'hours'))
-
-        if (this.schedule.maintenance) {
-            if (upcomingMaintenance) {
-                const parts: NumberObject = dayjs.preciseDiff(dayjs(this.schedule.maintenance.starts).utcOffset(540), dayjs(this.schedule.maintenance.ends), true)
-                const difference = this.buildDiffString(this.schedule.maintenance.starts)
-                const duration = this.buildString(null, parts.days, parts.hours)
-                
-                name = 'Upcoming Maintenance'
-                description = `Granblue Fantasy will be undergoing maintenance in **${difference}**.\n\nMaintenance will last for **${duration}**.\n\u200e`
-            } else if (isMaintenance) {
-                const difference = this.buildDiffString(this.schedule.maintenance.ends)
-
-                name = 'Maintenance'
-                description = `Granblue Fantasy will be undergoing maintenance for the next **${difference}**.\n\u200e`
-            }
-        }
-
-        return (name && description) ? {
-            name: name,
-            value: description
-        } : null
+    private isUpcoming(event: Event) {
+        dayjs(event.starts).isBetween(dayjs(), dayjs().add(48, 'hours'))
     }
 
     private renderMagfestEvent(): { section: Section, image: string } | null {
+        let magfest: Event | null
+        let isMagfest = false
+
         let name = ''
         let description = ''
         let image = ''
 
-        const isMagfest = this.schedule.magfest && dayjs().isBetween(dayjs(this.schedule.magfest.starts), dayjs(this.schedule.magfest.ends))
-        const upcomingMagfest = this.schedule.magfest && dayjs(this.schedule.magfest.starts).isBetween(dayjs(), dayjs().add(48, 'hours'))
+        if (this.schedule.magfests.length > 1) {
+            if (this.schedule.magfests.filter(this.isCurrent).length > 0) {
+                magfest = this.schedule.magfests.filter(this.isCurrent)[0]
+                isMagfest = true
+            } else if (this.schedule.magfests.filter(this.isUpcoming).length > 0) {
+                magfest = this.schedule.magfests.filter(this.isUpcoming)[0]
+                isMagfest = false
+            } else {
+                magfest = null
+            }
+        } else {
+            magfest = this.schedule.magfests[0]
+            if (dayjs().isBetween(dayjs(magfest.starts), dayjs(magfest.ends))) {
+                isMagfest = true
+            }
+        }
 
-        if (this.schedule.magfest) {
-            if (upcomingMagfest) {
-                const parts: NumberObject = dayjs.preciseDiff(dayjs(this.schedule.magfest.starts).utcOffset(540), dayjs(this.schedule.magfest.ends), true)
-                const difference = this.buildDiffString(this.schedule.magfest.starts)
+        if (magfest) {
+            if (isMagfest) {
+                const difference = this.buildDiffString(magfest.ends)
+
+                name = magfest.name.en
+                image = (magfest.banner) ? magfest.banner : ''
+                description = `The ${magfest.name.en} is underway for the next **${difference}**.\n\u200e`
+            } else {
+                const parts: NumberObject = dayjs.preciseDiff(dayjs(magfest.starts).utcOffset(540), dayjs(magfest.ends), true)
+                const difference = this.buildDiffString(magfest.starts)
                 const duration = this.buildString(null, parts.days, parts.hours)
                 
-                name = `${this.schedule.magfest.name.en} coming soon!`
-                description = `The ${this.schedule.magfest.name.en} starts in **${difference}**! It will last for **${duration}**.\n\u200e`
-            } else if (isMagfest) {
-                const difference = this.buildDiffString(this.schedule.magfest.ends)
-
-                name = this.schedule.magfest.name.en
-                image = (this.schedule.magfest.banner) ? this.schedule.magfest.banner : ''
-                description = `The ${this.schedule.magfest.name.en} is underway for the next **${difference}**.\n\u200e`
+                name = `${magfest.name.en} coming soon!`
+                description = `The ${magfest.name.en} starts in **${difference}**! It will last for **${duration}**.\n\u200e`
             }
         }
 
@@ -588,6 +617,54 @@ class ScheduleCommand extends SieroCommand {
             image: image
         } : null
     }
+
+    private renderMaintenanceEvent(): Section | null {
+        let maintenance: Duration | null
+        let isMaintenance = false
+        let upcomingMaintenance = false
+
+        let name = ''
+        let description = ''
+
+        if (this.schedule.maintenance.length > 1) {
+            if (this.schedule.maintenance.filter((e => dayjs().isBetween(dayjs(e.starts), dayjs(e.ends)))).length > 0) {
+                maintenance = this.schedule.maintenance.filter((e => dayjs().isBetween(dayjs(e.starts), dayjs(e.ends))))[0]
+                isMaintenance = true
+            } else if (this.schedule.maintenance.filter((e => dayjs(e.starts).isBetween(dayjs(), dayjs().add(48, 'hours')))).length > 0) {
+                maintenance = this.schedule.maintenance.filter((e => dayjs(e.starts).isBetween(dayjs(), dayjs().add(48, 'hours'))))[0]
+                upcomingMaintenance = true
+            } else {
+                maintenance = null
+            }
+        } else {
+            maintenance = this.schedule.maintenance[0]
+            if (dayjs().isBetween(dayjs(maintenance.starts), dayjs(maintenance.ends))) {
+                isMaintenance = true
+            }
+        }
+
+        if (maintenance) {
+            if (isMaintenance) {
+                const difference = this.buildDiffString(maintenance.ends)
+
+                name = 'Maintenance'
+                description = `Granblue Fantasy will be undergoing maintenance for the next **${difference}**.\n\u200e`
+            } else if (upcomingMaintenance) {
+                const parts: NumberObject = dayjs.preciseDiff(dayjs(maintenance.starts).utcOffset(540), dayjs(maintenance.ends), true)
+                const difference = this.buildDiffString(maintenance.starts)
+                const duration = this.buildString(null, parts.days, parts.hours)
+                
+                name = 'Upcoming Maintenance'
+                description = `Granblue Fantasy will be undergoing maintenance in **${difference}**.\n\nMaintenance will last for **${duration}**.\n\u200e`
+            }
+        }
+
+        return (name && description) ? {
+            name: name,
+            value: description
+        } : null
+    }
+
 
     // MessageEmbed render methods
 
@@ -682,10 +759,6 @@ class ScheduleCommand extends SieroCommand {
         }
 
         return upcomingEvents
-    }
-
-    private upcomingFeatures(): void {
-        
     }
 
     private nextEvent(): Event | null {
