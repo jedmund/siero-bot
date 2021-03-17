@@ -4,6 +4,8 @@ const initOptions = {
 	promiseLib: Promise
 }
 
+let ssl = null
+
 const pgp = pgPromise(initOptions)
 const client = pgp(getConnection())
 
@@ -19,7 +21,10 @@ function getConnection() {
 			password: process.env.PG_PASSWORD
 		}
 	} else {
-		connection = `${process.env.DATABASE_URL}?ssl=true`
+		connection = {
+			connectionString: process.env.DATABASE_URL,
+			ssl: { rejectUnauthorized: false }
+		}
 	}
   
 	return connection
