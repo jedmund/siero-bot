@@ -19,7 +19,7 @@ function getConnection() {
 			password: process.env.PG_PASSWORD
 		}
 	} else {
-		connection = process.env.DATABASE_URL
+		connection = `${process.env.DATABASE_URL}?ssl=true`
 	}
   
 	return connection
