@@ -1,6 +1,6 @@
 [
     {
-        "date": "March 10",
+        "date": "March 10, 2021",
         "upcoming": false,
         "features": [
             {
@@ -46,8 +46,8 @@
         ]
     },
     {
-        "date": "March 22",
-        "upcoming": true,
+        "date": "March 22, 2021",
+        "upcoming": false,
         "features": [
             {
                 "name": "Update: Rank cap increased to 300",
@@ -76,8 +76,8 @@
         ]
     },
     {
-        "date": "March 26",
-        "upcoming": false,
+        "date": "March 26, 2021",
+        "upcoming": true,
         "features": [
             {
                 "name": "New: Multi-step uncaps for Characters, Weapons and Summons",
