@@ -470,8 +470,8 @@
     },
     {
         "name": {
-            "en": "New Scenario Event",
-            "jp": "新シナリオイベント"
+            "en": "The Divine Generals Assembly",
+            "jp": "十二神将会議"
         },
         "type": "scenario",
         "starts": "2021-03-29T17:00:00+09:00",
