@@ -77,7 +77,7 @@
     },
     {
         "date": "March 26",
-        "upcoming": true,
+        "upcoming": false,
         "features": [
             {
                 "name": "New: Multi-step uncaps for Characters, Weapons and Summons",
