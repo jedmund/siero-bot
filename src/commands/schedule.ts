@@ -296,7 +296,7 @@ class ScheduleCommand extends SieroCommand {
         const events = this.upcomingEvents()
         return this.renderEvents({
             title: title,
-            image: events[0].banner || undefined
+            image: events.length > 0 ? events[0].banner : undefined
         }, events)
     }
 
