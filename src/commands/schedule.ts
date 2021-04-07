@@ -446,12 +446,12 @@ class ScheduleCommand extends SieroCommand {
                         value: duration
                     })
                 }
-            } else {
-                sections.push({
-                    name: "No upcoming events",
-                    value: "It looks like there are no upcoming events. Huh? Did we reach Estalucia already?"
-                })
             }
+        } else {
+            sections.push({
+                name: "No upcoming events",
+                value: "It looks like there are no upcoming events. Huh? Did we reach Estalucia already?"
+            })
         }
 
         return new Page(config, sections)
