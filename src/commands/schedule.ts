@@ -425,24 +425,31 @@ class ScheduleCommand extends SieroCommand {
     private renderEvents(config: PageConfig, events: Event[], prefixes: Section[] = []): Page {
         let sections = prefixes || []
 
-        for (let i in events) {
-            let event: Event = events[i]
+        if (events.length > 0) {
+            for (let i in events) {
+                let event: Event = events[i]
 
-            if (dayjs(event.ends).isAfter(dayjs())) {
-                const startsDiffString = `<Starts in ${this.buildDiffString(event.starts)}>`
-                const endsDiffString = `<Ends in ${this.buildDiffString(event.ends)}>`
-                
-                const isCurrentEvent: boolean = (dayjs(event.starts).isBefore(dayjs()) && dayjs(event.ends).isAfter(dayjs()))
+                if (dayjs(event.ends).isAfter(dayjs())) {
+                    const startsDiffString = `<Starts in ${this.buildDiffString(event.starts)}>`
+                    const endsDiffString = `<Ends in ${this.buildDiffString(event.ends)}>`
 
-                const startsString: string = `${startsDiffString}\n${dayjs(event.starts).format('LLLL')} JST`
-                const endsString: string = `${endsDiffString}\n${dayjs(event.ends).format('LLLL')} JST`
-                const dateString: string = (isCurrentEvent) ? endsString : startsString
+                    const isCurrentEvent: boolean = (dayjs(event.starts).isBefore(dayjs()) && dayjs(event.ends).isAfter(dayjs()))
 
-                let duration: string = `\`\`\`html\n${dateString}\n\`\`\``
-                
+                    const startsString: string = `${startsDiffString}\n${dayjs(event.starts).format('LLLL')} JST`
+                    const endsString: string = `${endsDiffString}\n${dayjs(event.ends).format('LLLL')} JST`
+                    const dateString: string = (isCurrentEvent) ? endsString : startsString
+
+                    let duration: string = `\`\`\`html\n${dateString}\n\`\`\``
+
+                    sections.push({
+                        name: event.name.en,
+                        value: duration
+                    })
+                }
+            } else {
                 sections.push({
-                    name: event.name.en,
-                    value: duration
+                    name: "No upcoming events",
+                    value: "It looks like there are no upcoming events. Huh? Did we reach Estalucia already?"
                 })
             }
         }
