@@ -488,16 +488,5 @@
         "advantage": "water",
         "starts": "2021-04-07T19:00:00+09:00",
         "ends": "2021-04-15T23:59:00+09:00"
-    },
-        {
-        "name": {
-            "en": "Welcome to Bistro Feendrache",
-            "jp": "ビストロ･フェードラッヘ"
-        },
-        "banner": "https://gbf.wiki/images/6/6f/Welcome_to_Bistro_Feendrache_top.jpg",
-        "link": "https://gbf.wiki/Welcome_to_Bistro_Feendrache",
-        "type": "scenario rerun",
-        "starts": "2021-04-15T17:00:00+09:00",
-        "ends": "2021-04-15T18:59:00+09:00"
     }
 ]
