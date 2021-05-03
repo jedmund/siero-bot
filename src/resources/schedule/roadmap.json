@@ -77,7 +77,7 @@
     },
     {
         "date": "March 26, 2021",
-        "upcoming": true,
+        "upcoming": false,
         "features": [
             {
                 "name": "New: Multi-step uncaps for Characters, Weapons and Summons",
@@ -87,7 +87,7 @@
     },
     {
         "date": "April 2021",
-        "upcoming": true,
+        "upcoming": false,
         "features": [
             {
                 "name": "New: Funf and Seox Transcendence",
@@ -107,6 +107,20 @@
             },
             {
                 "name": "Update: Treasure Trade trade materials update",
+                "details": ""
+            }
+        ]
+    },
+    {
+        "date": "May 2021",
+        "upcoming": true,
+        "features": [
+            {
+                "name": "New sidestory: Forgiveness and Gratitude",
+                "details": ""
+            },
+            {
+                "name": "Eugen (Grand) FLB",
                 "details": ""
             }
         ]
@@ -149,6 +163,10 @@
             },
             {
                 "name": "Update: Class-specific EXP for Row IV and EXII classes",
+                "details": ""
+            },
+            {
+                "name": "New: Multi-step awakening for characters",
                 "details": ""
             }
         ]
