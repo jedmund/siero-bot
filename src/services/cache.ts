@@ -111,22 +111,22 @@ class Cache {
 		return set[rand]
 	}
 
-	public fetchWeapon(rarity: Rarity, season: string | null = null) {
-		const list = this.characterWeapons(rarity, null, season)
+	public fetchWeapon(rarity: Rarity, season: string | null = null, exclusions: Item[]) {
+		const list = this.characterWeapons(rarity, null, season).filter((item: Item) => !exclusions.includes(item))
 		const r = Math.floor(Math.random() * list.length)
 
 		return list[r]
 	}
 
-	public fetchSummon(rarity: Rarity, season: string | null = null) {
-		const list = this.summons(rarity, null, season)
+	public fetchSummon(rarity: Rarity, season: string | null = null, exclusions: Item[]) {
+		const list = this.summons(rarity, null, season).filter((item: Item) => !exclusions.includes(item))
 		const r = Math.floor(Math.random() * list.length)
 
 		return list[r]
 	}
 
-	public fetchLimited(gala: string) {
-		const list = this.characterWeapons(Rarity.SSR, gala, null)
+	public fetchLimited(gala: string, exclusions: Item[]) {
+		const list = this.limitedWeapons(gala).filter((item: Item) => !exclusions.includes(item))
 		const r = Math.floor(Math.random() * list.length)
 
 		return list[r]

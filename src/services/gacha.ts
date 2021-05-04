@@ -258,13 +258,13 @@ export class Gacha {
             // pick a random item from that bucket
             switch(bucket) {
                 case GachaBucket.WEAPON:
-                    item = cache.fetchWeapon(rarity, this.season) 
+                    item = cache.fetchWeapon(rarity, this.season, this.rateups) 
                     break
                 case GachaBucket.SUMMON:
-                    item = cache.fetchSummon(rarity, this.season)
+                    item = cache.fetchSummon(rarity, this.season, this.rateups)
                     break
                 case GachaBucket.LIMITED:
-                    item = cache.fetchLimited(this.gala)
+                    item = cache.fetchLimited(this.gala, this.rateups)
                     break
             }
         } else {
@@ -273,6 +273,26 @@ export class Gacha {
             let result = chance.weighted(rateupItems, rateupRates)
             item = this.rateups.find(item => item.name == result)!
         }
+
+        // Debug what is being pulled by uncommenting this line
+        // let bucketName = ''
+        // switch (bucket) {
+        //     case 1:
+        //         bucketName = 'Weapon'
+        //         break
+        //     case 2:
+        //         bucketName = 'Summon'
+        //         break
+        //     case 3:
+        //         bucketName = 'Limited'
+        //         break
+        //     case 4:
+        //         bucketName = 'Rate-up'
+        //         break
+        //     default:
+        //         break
+        // }
+        // console.log(`${bucketName}: ${item.name}`)
 
         return item
     }
@@ -361,20 +381,26 @@ export class Gacha {
 
     private determineSSRBucket(rates: CategoryMap): number {
         // Calculate the total rate of all rateup items
-        let rateupSum: number = 0
+        let allRateups: number = 0
         for (let i in this.rateups) {
             // TODO: Why won't these add as numbers if they are technically numbers?
             let item: Item = this.rateups[i]
-            rateupSum = rateupSum + parseFloat(item.rate as string)
+            allRateups = allRateups + parseFloat(item.rate as string)
         }
 
+        let limitedRate = rates.limited.rate * rates.limited.count
+        let summonRate = rates.summon.rate * rates.summon.count
+        let weaponRate = rates.weapon.rate * rates.weapon.count
+
         // Store all the rates
+        // allRateups = 1
         let bucketRates = [
-            rateupSum, 
-            rates.limited.rate * rates.limited.count, 
-            rates.summon.rate * rates.summon.count, 
-            rates.weapon.rate * rates.weapon.count
+            1,
+            limitedRate / allRateups,
+            summonRate  / allRateups,
+            weaponRate  / allRateups
         ]
+
         let bucketKeys = [GachaBucket.RATEUP, GachaBucket.LIMITED, GachaBucket.SUMMON, GachaBucket.WEAPON]
 
         // Use Chance.js to determine a bucket
