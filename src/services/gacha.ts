@@ -258,13 +258,13 @@ export class Gacha {
             // pick a random item from that bucket
             switch(bucket) {
                 case GachaBucket.WEAPON:
-                    item = cache.fetchWeapon(rarity, this.season) 
+                    item = cache.fetchWeapon(rarity, this.season, this.rateups) 
                     break
                 case GachaBucket.SUMMON:
-                    item = cache.fetchSummon(rarity, this.season)
+                    item = cache.fetchSummon(rarity, this.season, this.rateups)
                     break
                 case GachaBucket.LIMITED:
-                    item = cache.fetchLimited(this.gala)
+                    item = cache.fetchLimited(this.gala, this.rateups)
                     break
             }
         } else {
