@@ -126,7 +126,7 @@ class Cache {
 	}
 
 	public fetchLimited(gala: string) {
-		const list = this.characterWeapons(Rarity.SSR, gala, null)
+		const list = this.limitedWeapons(gala)
 		const r = Math.floor(Math.random() * list.length)
 
 		return list[r]
