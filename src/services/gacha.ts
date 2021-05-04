@@ -361,20 +361,26 @@ export class Gacha {
 
     private determineSSRBucket(rates: CategoryMap): number {
         // Calculate the total rate of all rateup items
-        let rateupSum: number = 0
+        let allRateups: number = 0
         for (let i in this.rateups) {
             // TODO: Why won't these add as numbers if they are technically numbers?
             let item: Item = this.rateups[i]
-            rateupSum = rateupSum + parseFloat(item.rate as string)
+            allRateups = allRateups + parseFloat(item.rate as string)
         }
 
+        let limitedRate = rates.limited.rate * rates.limited.count
+        let summonRate = rates.summon.rate * rates.summon.count
+        let weaponRate = rates.weapon.rate * rates.weapon.count
+
         // Store all the rates
+        // allRateups = 1
         let bucketRates = [
-            rateupSum, 
-            rates.limited.rate * rates.limited.count, 
-            rates.summon.rate * rates.summon.count, 
-            rates.weapon.rate * rates.weapon.count
+            1,
+            limitedRate / allRateups,
+            summonRate  / allRateups,
+            weaponRate  / allRateups
         ]
+
         let bucketKeys = [GachaBucket.RATEUP, GachaBucket.LIMITED, GachaBucket.SUMMON, GachaBucket.WEAPON]
 
         // Use Chance.js to determine a bucket
