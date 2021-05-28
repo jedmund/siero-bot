@@ -251,11 +251,11 @@ class ScheduleCommand extends SieroCommand {
         const maintenanceInfo = this.renderMaintenanceEvent()
 
         if (maintenanceInfo) {
-            prefixSections.push(maintenanceInfo)
+            // prefixSections.push(maintenanceInfo)
         }
 
         if (magfestInfo) {
-            prefixSections.push(magfestInfo)
+            // prefixSections.push(magfestInfo)
         }
         
         let image
