@@ -517,6 +517,8 @@
             "en": "False Heroes",
             "jp": "偽りの英雄達"
         },
+        "banner": "https://gbf.wiki/images/5/50/False_Heroes_top.jpg",
+        "link": "https://gbf.wiki/False_Heroes",
         "type": "scenario",
         "starts": "2021-04-29T17:00:00+09:00",
         "ends": "2021-05-07T18:59:00+09:00"
@@ -557,9 +559,11 @@
     },
     {
         "name": {
-            "en": "New Scenario Event",
-            "jp": "新シナリオイベント"
+            "en": "Showtime: Legend of the Blue Yonder",
+            "jp": "蒼空伝説・翔堕威夢"
         },
+        "banner": "https://gbf.wiki/images/8/8a/Showtime_Legend_of_the_Blue_Yonder_top.jpg",
+        "link": "https://gbf.wiki/Showtime:_Legend_of_the_Blue_Yonder",
         "type": "scenario",
         "starts": "2021-05-29T17:00:00+09:00",
         "ends": "2021-06-05T20:59:00+09:00"
