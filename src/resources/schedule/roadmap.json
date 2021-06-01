@@ -113,7 +113,7 @@
     },
     {
         "date": "May 2021",
-        "upcoming": true,
+        "upcoming": false,
         "features": [
             {
                 "name": "New sidestory: Forgiveness and Gratitude",
@@ -126,15 +126,33 @@
         ]
     },
     {
+        "date": "June 16, 2021",
+        "upcoming": true,
+        "features": [
+            {
+                "name": "New raid: Belial HL (Null)",
+                "details": ""
+            }
+        ]
+    },
+    {
         "date": "June 2021",
         "upcoming": true,
         "features": [
+            {
+                "name": "Athena FLB",
+                "details": ""
+            },
             {
                 "name": "New: Main Story Update \"Circus of Liars\"",
                 "details": ""
             },
             {
                 "name": "New: Siete and Okto Transcendence",
+                "details": ""
+            },
+            {
+                "name": "Update: Select equipped/locked weapons and summons can be upgraded",
                 "details": ""
             }
         ]
