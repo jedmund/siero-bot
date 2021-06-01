@@ -570,6 +570,39 @@
     },
     {
         "name": {
+            "en": "Xeno Vohu Manah Showdown",
+            "jp": "ゼノウォフ撃滅戦"
+        },
+        "banner": "https://gbf.wiki/images/3/3a/Xeno_Vohu_Manah_Clash_top.png",
+        "link": "https://gbf.wiki/Xeno_Vohu_Manah_Clash",
+        "type": "farming",
+        "advantage": "wind",
+        "starts": "2021-06-06T17:00:00+09:00",
+        "ends": "2021-06-12T20:59:00+09:00"
+    },
+    {
+        "name": {
+            "en": "Tower of Babel",
+            "jp": "バブ･イールの塔"
+        },
+        "type": "tower",
+        "banner": "https://gbf.wiki/images/9/93/Tower_of_Babyl_top.jpg",
+        "starts": "2021-06-08T17:00:00+09:00",
+        "ends": "2021-06-14T20:59:00+09:00"
+    },
+    {
+        "name": {
+            "en": "Seeds of Redemption",
+            "jp": "こくう、しんしん"
+        },
+        "banner": "https://gbf.wiki/images/2/28/Seeds_of_Redemption_top.jpg",
+        "link": "https://gbf.wiki/Seeds_of_Redemption",
+        "type": "scenario rerun",
+        "starts": "2021-06-13T17:00:00+09:00",
+        "ends": "2021-06-21T18:59:00+09:00"
+    },
+    {
+        "name": {
             "en": "Dread Barrage: March of the Valiant",
             "jp": "ドレッドバラージュ"
         },
@@ -579,5 +612,14 @@
         "advantage": "fire",
         "starts": "2021-06-22T19:00:00+09:00",
         "ends": "2021-06-29T18:59:00+09:00"
+    },
+    {
+        "name": {
+            "en": "New Scenario Event",
+            "jp": "新シナリオイベント"
+        },
+        "type": "scenario",
+        "starts": "2021-06-29T17:00:00+09:00",
+        "ends": "2021-07-07T18:59:00+09:00"
     }
 ]
