@@ -5,10 +5,6 @@ import { SieroCommand } from '../../helpers/SieroCommand'
 import { Client } from '../../services/connection'
 import { Gacha } from '../../services/gacha'
 import { Item, PromptResult, ParsedRequest } from '../../services/constants'
-
-const fetch = require('make-fetch-happen').defaults({
-    cacheManager: './cache' // path where cache will be written (and read)
-})
   
 import { missingItem, parse } from '../../helpers/common'
 import { Decision as decision } from '../../helpers/decision'
