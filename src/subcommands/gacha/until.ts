@@ -174,8 +174,6 @@ class Until {
 
     // Render methods
     private async render(rolls: Rolls) {
-        const exchange = await this.getExchangeRate(this.currency)
-
         var string = ''
         if (rolls.item.recruits != null) {
             string = `It took **${rolls.count.toLocaleString()} rolls** to pull **${rolls.item.name} (${rolls.item.recruits})**.`
@@ -187,23 +185,12 @@ class Until {
         let tenPullCost = 3000
         let mobacoinCost = 3150
 
-        let conversion = `That's **${(numTenPulls * tenPullCost).toLocaleString()} crystals** or about **\$${Math.ceil(((numTenPulls * mobacoinCost) * exchange)).toLocaleString()}**!`
+        let conversion = `That's **${(numTenPulls * tenPullCost).toLocaleString()} crystals** or about **\$${Math.ceil(((numTenPulls * mobacoinCost) / 110)).toLocaleString()}**!`
 
         return [string, conversion].join(" ")
     }
 
     // Helper methods
-    private async getExchangeRate(currency: string = 'USD') {
-        const url = `https://api.exchangeratesapi.io/latest?base=JPY&symbols=${currency.toUpperCase()}`
-
-        try {
-            const result = await (await fetch(url)).json()
-            return result['rates'][currency]
-        } catch(error) {
-            console.error(error)
-        }
-    }
-
     private async parsePossibleItems(possibilities: number) {
         let result: Item | void
 
