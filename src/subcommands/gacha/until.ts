@@ -181,7 +181,7 @@ class Until {
         let tenPullCost = 3000
         let mobacoinCost = 3150
 
-        let conversion = `That's **${(numTenPulls * tenPullCost).toLocaleString()} crystals** or about **\$${Math.ceil(((numTenPulls * mobacoinCost) / 110)).toLocaleString()}**!`
+        let conversion = `That's **${(numTenPulls * tenPullCost).toLocaleString()} crystals** or about **\$${Math.ceil(((numTenPulls * mobacoinCost) * 0.0091)).toLocaleString()} USD**!`
 
         return [string, conversion].join(" ")
     }
