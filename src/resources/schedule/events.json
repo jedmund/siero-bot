@@ -615,11 +615,23 @@
     },
     {
         "name": {
-            "en": "New Scenario Event",
-            "jp": "新シナリオイベント"
+            "en": "The Time a 37-Year-Old Former Imperial Soldier Got His Life in Order by Awakening to the Greatness That is Saunas",
+            "jp": "元帝国軍人のおじさん（３７歳）がサウナに目覚めたら人生もととのった話"
         },
         "type": "scenario",
         "starts": "2021-06-29T17:00:00+09:00",
         "ends": "2021-07-07T18:59:00+09:00"
-    }
+    },
+        {
+        "name": {
+            "en": "Proving Grounds",
+            "jp": "ブレイブグラウンド"
+        },
+        "banner": "https://gbf.wiki/images/e/ec/Proving_Grounds_top.png",
+        "link": "https://gbf.wiki/Proving_Grounds",
+        "type": "farming",
+        "advantage": "wind",
+        "starts": "2021-07-08T17:00:00+09:00",
+        "ends": "2021-07-12T20:59:00+09:00"
+    }   
 ]
