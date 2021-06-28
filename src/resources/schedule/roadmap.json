@@ -137,16 +137,18 @@
     },
     {
         "date": "June 2021",
-        "upcoming": true,
+        "upcoming": false,
         "features": [
             {
                 "name": "Athena FLB",
                 "details": ""
-            },
-            {
-                "name": "New: Main Story Update \"Circus of Liars\"",
-                "details": ""
-            },
+            }
+        ]
+    },
+    {
+        "date": "June 2021",
+        "upcoming": true,
+        "features": [
             {
                 "name": "New: Siete and Okto Transcendence",
                 "details": ""
@@ -161,6 +163,10 @@
         "date": "August 2021",
         "upcoming": true,
         "features": [
+            {
+                "name": "New: Main Story Update \"Circus of Liars\"",
+                "details": ""
+            },
             {
                 "name": "New: Nio and Esser Transcendence",
                 "details": ""
