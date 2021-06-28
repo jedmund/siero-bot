@@ -619,10 +619,12 @@
             "jp": "元帝国軍人のおじさん（３７歳）がサウナに目覚めたら人生もととのった話"
         },
         "type": "scenario",
+        "wiki": "https://gbf.wiki/The_Time_a_37-Year-Old_Former_Imperial_Soldier_Got_His_Life_in_Order_by_Awakening_to_the_Greatness_That_Is_Saunas",
+        "banner": "http://game-a1.granbluefantasy.jp/assets_en/img/sp/event/event_teaser_1109/assets/teaser/event_teaser_top.jpg",
         "starts": "2021-06-29T17:00:00+09:00",
         "ends": "2021-07-07T18:59:00+09:00"
     },
-        {
+    {
         "name": {
             "en": "Proving Grounds",
             "jp": "ブレイブグラウンド"
