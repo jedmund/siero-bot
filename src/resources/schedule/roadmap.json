@@ -147,7 +147,7 @@
     },
     {
         "date": "June 2021",
-        "upcoming": true,
+        "upcoming": false,
         "features": [
             {
                 "name": "New: Siete and Okto Transcendence",
@@ -173,6 +173,10 @@
             },
             {
                 "name": "New: Eternals can be transcended up to Level 150",
+                "details": ""
+            },
+            {
+                "name": "Weapon Skill rebalance",
                 "details": ""
             }
         ]
