@@ -635,5 +635,37 @@
         "advantage": "wind",
         "starts": "2021-07-08T17:00:00+09:00",
         "ends": "2021-07-12T20:59:00+09:00"
-    }   
+    },
+    {
+        "name": {
+            "en": "Kappa Summer Chronicle",
+            "jp": "カッパサマークロニクル"
+        },
+        "type": "scenario rerun",
+        "wiki": "https://gbf.wiki/Kappa_Summer_Chronicle",
+        "banner": "https://gbf.wiki/images/4/42/Kappa_Summer_Chronicle_Redux_top.jpg",
+        "starts": "2021-07-14T17:00:00+09:00",
+        "ends": "2021-07-21T18:59:00+09:00"
+    },
+    {
+        "name": {
+            "en": "Unite and Fight",
+            "jp": "決戦！星の古戦場 - 土有利"
+        },
+        "banner": "https://gbf.wiki/images/0/09/UniteAndFight.png",
+        "link": "https://gbf.wiki/Unite_and_Fight",
+        "type": "guild-wars",
+        "advantage": "earth",
+        "starts": "2021-07-21T19:00:00+09:00",
+        "ends": "2021-07-28T23:59:00+09:00"
+    },
+    {
+        "name": {
+            "en": "New Scenario Event",
+            "jp": "新シナリオイベント"
+        },
+        "type": "scenario",
+        "starts": "2021-07-29T17:00:00+09:00",
+        "ends": "2021-08-06T18:59:00+09:00"
+    }
 ]
