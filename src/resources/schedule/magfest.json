@@ -21,5 +21,29 @@
         "banner": "https://granbluefantasy.jp/pages/wp-content/uploads/2025/07/001oshgauhwgha.png",
         "starts": "2021-07-04T07:00:00+09:00",
         "ends": "2021-08-01T16:59:00+09:00"
+    },
+    {
+        "name": {
+            "en": "Granblue Big Summer Surprise Campaign",
+            "jp": "グラブルサマーギフトキャンペーン"
+        },
+        "info": [
+            "Free Daily 10-Part Premium Draw (until 8/13)",
+            "Free Daily Premium Draw (8/13 to 8/24)",
+            "7th Birthday Countdown Daily Bonus",
+            "Campaign-Exclusive Quest",
+            "1.5x More RP/EXP",
+            "Half AP/EP Event",
+            "Half AP for Free Quests",
+            "Half AP for Special Quests",
+            "More Renown and Prestige Pendants",
+            "2x Boost to Shop Skills",
+            "Arcarum Badge Bonus Bash",
+            "Sephira Gauge Increased"
+        ],
+        "wiki": "https://gbf.wiki/Granblue_Big_Summer_Surprise/2021",
+        "banner": "https://gbf.wiki/images/7/7d/News_2021summer_campaign_1.png",
+        "starts": "2021-08-01T07:00:00+09:00",
+        "ends": "2021-08-24T16:59:00+09:00"
     }
 ]
