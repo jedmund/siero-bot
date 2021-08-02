@@ -666,6 +666,61 @@
         },
         "type": "scenario",
         "starts": "2021-07-29T17:00:00+09:00",
-        "ends": "2021-08-06T18:59:00+09:00"
-    }
+        "ends": "2021-08-06T20:59:00+09:00"
+    },
+    {
+        "name": {
+            "en": "Rise of the Beasts",
+            "jp": "四象降臨"
+        },
+        "banner": "https://gbf.wiki/images/d/dd/Riseofthebeasts_top.png",
+        "link": "https://gbf.wiki/Rise_of_the_Beasts",
+        "type": "farming",
+        "starts": "2021-08-08T17:00:00+09:00",
+        "ends": "2021-08-15T16:59:00+09:00"
+    },
+    {
+        "name": {
+            "en": "A Walk on the Wild Side",
+            "jp": "ポブさんぽ～とりまトッポブで。3rd Anniversary～"
+        },
+        "type": "scenario rerun",
+        "wiki": "https://gbf.wiki/A_Walk_on_the_Wild_Side",
+        "banner": "https://gbf.wiki/images/1/1e/A_Walk_on_the_Wild_Side_top.jpg",
+        "starts": "2021-08-16T17:00:00+09:00",
+        "ends": "2021-08-24T16:59:00+09:00"
+    },
+        {
+        "name": {
+            "en": "Xeno Ifrit Showdown",
+            "jp": "ゼノいフリート撃滅戦"
+        },
+        "banner": "https://gbf.wiki/images/7/7c/Xeno_Ifrit_Clash_top.png",
+        "link": "https://gbf.wiki/Xeno_Ifrit_Clash",
+        "type": "farming",
+        "advantage": "fire",
+        "starts": "2021-08-23T17:00:00+09:00",
+        "ends": "2021-08-29T18:59:00+09:00"
+    },
+    {
+        "name": {
+            "en": "New Scenario Event",
+            "jp": "新シナリオイベント"
+        },
+        "type": "scenario",
+        "starts": "2021-08-29T17:00:00+09:00",
+        "ends": "2021-09-07T20:59:00+09:00"
+    },
+    {
+        "name": {
+            "en": "Unite and Fight",
+            "jp": "決戦！星の古戦場 - 火有利"
+        },
+        "banner": "https://gbf.wiki/images/0/09/UniteAndFight.png",
+        "link": "https://gbf.wiki/Unite_and_Fight",
+        "type": "guild-wars",
+        "advantage": "fire",
+        "starts": "2021-09-08T19:00:00+09:00",
+        "ends": "2021-09-15T23:59:00+09:00"
+    },
 ]
