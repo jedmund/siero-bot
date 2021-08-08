@@ -270,6 +270,7 @@ export class Gacha {
         } else {
             let rateupItems = this.rateups.map(item => item.name)
             let rateupRates = this.rateups.map(item => parseFloat(item.rate as string))
+
             let result = chance.weighted(rateupItems, rateupRates)
             item = this.rateups.find(item => item.name == result)!
         }
@@ -380,30 +381,31 @@ export class Gacha {
     }
 
     private determineSSRBucket(rates: CategoryMap): number {
-        // Calculate the total rate of all rateup items
-        let allRateups: number = 0
-        for (let i in this.rateups) {
-            // TODO: Why won't these add as numbers if they are technically numbers?
-            let item: Item = this.rateups[i]
-            allRateups = allRateups + parseFloat(item.rate as string)
-        }
+        let allRateups: number 
+        let bucketKeys: number[]
+        let bucketRates: number[]
 
         let limitedRate = rates.limited.rate * rates.limited.count
         let summonRate = rates.summon.rate * rates.summon.count
         let weaponRate = rates.weapon.rate * rates.weapon.count
 
-        // Store all the rates
-        // allRateups = 1
-        let bucketRates = [
-            1,
-            limitedRate / allRateups,
-            summonRate  / allRateups,
-            weaponRate  / allRateups
-        ]
+        if (this.rateups.length > 0) {
+            allRateups = 0
+            bucketKeys = [GachaBucket.RATEUP, GachaBucket.LIMITED, GachaBucket.SUMMON, GachaBucket.WEAPON]
+            bucketRates = [1, limitedRate / allRateups, summonRate  / allRateups, weaponRate  / allRateups]
 
-        let bucketKeys = [GachaBucket.RATEUP, GachaBucket.LIMITED, GachaBucket.SUMMON, GachaBucket.WEAPON]
+            for (let i in this.rateups) {
+                // TODO: Why won't these add as numbers if they are technically numbers?
+                let item: Item = this.rateups[i]
+                allRateups = allRateups + parseFloat(item.rate as string)
+            }
+        } else {
+            allRateups = 1
+            bucketKeys = [GachaBucket.LIMITED, GachaBucket.SUMMON, GachaBucket.WEAPON]
+            bucketRates = [limitedRate / allRateups, summonRate  / allRateups, weaponRate  / allRateups]
+        }
 
         // Use Chance.js to determine a bucket
-        return chance.weighted(bucketKeys, bucketRates)
+        return chance.weighted(bucketKeys, bucketRates) 
     }
 }
