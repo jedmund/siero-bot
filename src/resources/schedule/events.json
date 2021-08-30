@@ -704,10 +704,12 @@
     },
     {
         "name": {
-            "en": "New Scenario Event",
-            "jp": "新シナリオイベント"
+            "en": "The Dragonblood War",
+            "jp": "龍血戦争"
         },
         "type": "scenario",
+        "banner": "https://gbf.wiki/images/f/f4/The_Dragonblood_War_top.jpg",
+        "link": "https://gbf.wiki/The_Dragonblood_War",
         "starts": "2021-08-29T17:00:00+09:00",
         "ends": "2021-09-07T20:59:00+09:00"
     },
