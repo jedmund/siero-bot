@@ -247,7 +247,7 @@ class ScheduleCommand extends SieroCommand {
         const currentEvents: Event[] = this.currentEvents()
         let prefixSections: Section[] = []
         
-        const { section: magfestInfo, image: magfestImage } = this.renderMagfestEvent() || {}
+        let { section: magfestInfo, image: magfestImage } = this.renderMagfestEvent() || {}
         const maintenanceInfo = this.renderMaintenanceEvent()
 
         if (maintenanceInfo) {
@@ -256,6 +256,8 @@ class ScheduleCommand extends SieroCommand {
 
         if (magfestInfo && this.schedule.magfests.length == 1 && dayjs().isBetween(dayjs(this.schedule.magfests[0].starts), dayjs(this.schedule.magfests[0].ends))) {
             prefixSections.push(magfestInfo)
+        } else {
+            magfestInfo = null
         }
         
         let image
