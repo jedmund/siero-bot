@@ -254,7 +254,7 @@ class ScheduleCommand extends SieroCommand {
             prefixSections.push(maintenanceInfo)
         }
 
-        if (magfestInfo) {
+        if (magfestInfo && this.schedule.magfests.length == 1 && dayjs().isBetween(dayjs(this.schedule.magfests[0].starts), dayjs(this.schedule.magfests[0].ends))) {
             prefixSections.push(magfestInfo)
         }
         
