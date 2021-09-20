@@ -257,7 +257,7 @@ class ScheduleCommand extends SieroCommand {
         if (magfestInfo && this.schedule.magfests.length == 1 && dayjs().isBetween(dayjs(this.schedule.magfests[0].starts), dayjs(this.schedule.magfests[0].ends))) {
             prefixSections.push(magfestInfo)
         } else {
-            magfestInfo = null
+            magfestInfo = undefined
         }
         
         let image
