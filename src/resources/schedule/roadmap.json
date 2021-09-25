@@ -127,7 +127,7 @@
     },
     {
         "date": "June 16, 2021",
-        "upcoming": true,
+        "upcoming": false,
         "features": [
             {
                 "name": "New raid: Belial HL (Null)",
@@ -161,7 +161,7 @@
     },
     {
         "date": "August 2021",
-        "upcoming": true,
+        "upcoming": false,
         "features": [
             {
                 "name": "New: Main Story Update \"Circus of Liars\"",
@@ -178,20 +178,6 @@
             {
                 "name": "Weapon Skill rebalance",
                 "details": ""
-            }
-        ]
-    },
-    {
-        "date": "Summer 2021",
-        "upcoming": true,
-        "features": [
-            {
-                "name": "Update: New EMP skills for Row IV and EXII classes",
-                "details": ""
-            },
-            {
-                "name": "Update: Class-specific EXP for Row IV and EXII classes",
-                "details": ""
             },
             {
                 "name": "New: Multi-step awakening for characters",
@@ -203,6 +189,14 @@
         "date": "Late 2021",
         "upcoming": true,
         "features": [
+            {
+                "name": "Update: New EMP skills for Row IV and EXII classes",
+                "details": ""
+            },
+            {
+                "name": "Update: Class-specific EXP for Row IV and EXII classes",
+                "details": ""
+            },
             {
                 "name": "New: New Class Champion Weapons for Row IV classes",
                 "details": ""
@@ -222,10 +216,6 @@
         "upcoming": true,
         "features": [
             {
-                "name": "Planned: Seeds of Redemption rerun",
-                "details": ""
-            },
-            {
                 "name": "Update: New permanent bonuses for crews",
                 "details": ""
             },
@@ -235,10 +225,6 @@
             },
             {
                 "name": "New: 6 element raids and weapons",
-                "details": ""
-            },
-            {
-                "name": "New: Belial HL raid",
                 "details": ""
             }
         ]
