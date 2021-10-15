@@ -1,22 +1,25 @@
 [
     {
         "name": {
-            "en": "Granblue Big Summer Surprise Reloaded Campaign",
-            "jp": "グラブルサマーギフトキャンペーン"
+            "en": "29 Million Players Campaign",
+            "jp": "2900万人突破キャンペーン"
         },
         "info": [
+            "Free Daily Premium Draw",
             "200 Free Crystals Daily",
+            "Campaign Exclusive Quest",
             "1.5x More RP/EXP",
             "Half AP/EP Event",
             "Half AP for Free Quests",
             "Half AP for Special Quests",
             "Half Treasure Cost",
             "More Renown and Prestige Pendants",
-            "2x Boost to Shop Skills"
+            "2x Boost to Shop Skills",
+            "Arcarum Badge Bonus Bash"
         ],
-        "wiki": "https://gbf.wiki/Granblue_Big_Summer_Surprise_Reloaded/2021",
+        "wiki": "https://gbf.wiki/29_Million_Players_Celebration",
         "banner": "https://gbf.wiki/images/5/51/News_2021summer_campaign_again_1.png",
-        "starts": "2021-08-24T05:00:00+09:00",
-        "ends": "2021-09-07T16:59:00+09:00"
+        "starts": "2021-10-15T05:00:00+09:00",
+        "ends": "2021-10-28T20:59:00+09:00"
     }
 ]
