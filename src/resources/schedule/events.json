@@ -772,8 +772,31 @@
             "en": "Gin Tama: Shonen Jump Is Best Enjoyed Cover to Cover",
             "jp": "銀魂 少年ならジャンプの裏表紙までちゃんと楽しめ"
         },
+        "banner": "https://gbf.wiki/images/5/53/Gin_Tama_top.jpg",
+        "link": "https://gbf.wiki/Gin_Tama:_Shonen_Jump_Is_Best_Enjoyed_Cover_to_Cover",
         "type": "collab",
         "starts": "2021-10-15T17:00:00+09:00",
         "ends": "2021-10-28T20:59:00+09:00"
+    },
+    {
+        "name": {
+            "en": "New Scenario Event",
+            "jp": "新シナリオイベント"
+        },
+        "type": "scenario",
+        "starts": "2021-10-29T17:00:00+09:00",
+        "ends": "2021-11-06T20:59:00+09:00"
+    },
+    {
+        "name": {
+            "en": "Unite and Fight",
+            "jp": "決戦！星の古戦場 - 風有利"
+        },
+        "banner": "https://gbf.wiki/images/0/09/UniteAndFight.png",
+        "link": "https://gbf.wiki/Unite_and_Fight",
+        "type": "guild-wars",
+        "advantage": "wind",
+        "starts": "2021-11-21T19:00:00+09:00",
+        "ends": "2021-11-28T23:59:00+09:00"
     }
 ]
