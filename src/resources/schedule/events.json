@@ -754,5 +754,26 @@
         "type": "scenario",
         "starts": "2021-09-27T17:00:00+09:00",
         "ends": "2021-10-06T20:59:00+09:00"
+    },
+    {
+        "name": {
+            "en": "Proving Grounds",
+            "jp": "ブレイブグラウンド"
+        },
+        "banner": "https://gbf.wiki/images/e/ec/Proving_Grounds_top.png",
+        "link": "https://gbf.wiki/Proving_Grounds",
+        "type": "farming",
+        "advantage": "fire",
+        "starts": "2021-10-07T17:00:00+09:00",
+        "ends": "2021-10-14T16:59:00+09:00"
+    },
+    {
+        "name": {
+            "en": "Gin Tama: Shonen Jump Is Best Enjoyed Cover to Cover",
+            "jp": "銀魂 少年ならジャンプの裏表紙までちゃんと楽しめ"
+        },
+        "type": "collab",
+        "starts": "2021-10-15T17:00:00+09:00",
+        "ends": "2021-10-28T20:59:00+09:00"
     }
 ]
