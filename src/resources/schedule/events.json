@@ -752,6 +752,8 @@
             "jp": "剣は何に応えるものぞ"
         },
         "type": "scenario",
+        "banner": "https://gbf.wiki/images/9/91/The_Strength_to_Wield_top.jpg",
+        "link": "https://gbf.wiki/The_Strength_to_Wield",
         "starts": "2021-09-27T17:00:00+09:00",
         "ends": "2021-10-06T20:59:00+09:00"
     },
@@ -780,12 +782,25 @@
     },
     {
         "name": {
-            "en": "New Scenario Event",
-            "jp": "新シナリオイベント"
+            "en": "Imagination Overdrive",
+            "jp": "いめちゅん！"
         },
         "type": "scenario",
+        "banner": "https://gbf.wiki/images/9/9f/Imagination_Overdrive_top.jpg",
+        "link": "https://gbf.wiki/Imagination_Overdrive",
         "starts": "2021-10-29T17:00:00+09:00",
         "ends": "2021-11-06T20:59:00+09:00"
+    },
+    {
+        "name": {
+            "en": "Rise of the Beasts",
+            "jp": "四象降臨"
+        },
+        "banner": "https://gbf.wiki/images/d/dd/Riseofthebeasts_top.png",
+        "link": "https://gbf.wiki/Rise_of_the_Beasts",
+        "type": "farming",
+        "starts": "2021-11-07T17:00:00+09:00",
+        "ends": "2021-11-14T16:59:00+09:00"
     },
     {
         "name": {
@@ -798,5 +813,14 @@
         "advantage": "wind",
         "starts": "2021-11-21T19:00:00+09:00",
         "ends": "2021-11-28T23:59:00+09:00"
+    },
+    {
+        "name": {
+            "en": "New Scenario Event",
+            "jp": "新シナリオイベント"
+        },
+        "type": "scenario",
+        "starts": "2021-11-29T17:00:00+09:00",
+        "ends": "2021-12-06T20:59:00+09:00"
     }
 ]
