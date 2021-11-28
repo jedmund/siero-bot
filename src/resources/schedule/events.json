@@ -827,11 +827,23 @@
     },
     {
         "name": {
-            "en": "New Scenario Event",
-            "jp": "新シナリオイベント"
+            "en": "Marionette Stars",
+            "jp": "Marionette Stars"
         },
         "type": "scenario",
         "starts": "2021-11-29T17:00:00+09:00",
-        "ends": "2021-12-06T20:59:00+09:00"
+        "ends": "2021-12-06T20:59:00+09:00",
+        "advantage": "water",
+        "banner": "http://game-a1.granbluefantasy.jp/assets/img/sp/event/event_teaser_1114/assets/teaser/event_teaser_top.jpg",
+        "link": "https://gbf.wiki/Marionette_Stars"
+    },
+    {
+        "name": {
+            "en": "Doraemon: Nobita's Sky-Flying Ship",
+            "jp": "ドラえもん のび太の空飛ぶ船"
+        },
+        "type": "scenario",
+        "starts": "2021-12-08T17:00:00+09:00",
+        "ends": "2021-12-22T20:59:00+09:00"
     }
 ]
