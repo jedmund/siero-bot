@@ -186,6 +186,24 @@
         ]
     },
     {
+        "date": "December 8, 2021",
+        "upcoming": true,
+        "features": [
+            {
+                "name": "New: Super Ultimate Bahamut HL",
+                "details": ""
+            },
+            {
+                "name": "New: Ultima Weapon FLB",
+                "details": ""
+            },
+            {
+                "name": "New: Bahamut Weapon FLB",
+                "details": ""
+            }
+        ]
+    },
+    {
         "date": "Late 2021",
         "upcoming": true,
         "features": [
