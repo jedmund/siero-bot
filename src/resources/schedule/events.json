@@ -839,11 +839,12 @@
     },
     {
         "name": {
-            "en": "Doraemon: Nobita's Sky-Flying Ship",
+            "en": "Doraemon: Nobita's Skyfaring Boat",
             "jp": "ドラえもん のび太の空飛ぶ船"
         },
         "type": "scenario",
         "starts": "2021-12-08T17:00:00+09:00",
-        "ends": "2021-12-22T20:59:00+09:00"
+        "ends": "2021-12-22T20:59:00+09:00",
+        "banner": "http://game-a1.granbluefantasy.jp/assets_en/img/sp/event/event_teaser_6031/assets/teaser/event_teaser_top.jpg"
     }
 ]
