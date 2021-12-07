@@ -6,8 +6,8 @@
                 "jp": "オープニング"
             },
             "day": 1,
-            "starts": "2020-12-12T13:30:00+09:00",
-            "ends": "2020-12-12T13:45:00+09:00",
+            "starts": "2021-12-11T12:45:00+09:00",
+            "ends": "2021-12-11T13:45:00+09:00",
             "cast": [
                 {
                     "name": "Ono Yuuki",
@@ -41,12 +41,12 @@
         },
         {
             "name": {
-                "en": "Granblue Until Now 2020",
-                "jp": "これまでのグランブルーファンタジー2020"
+                "en": "This Year in Granblue 2021",
+                "jp": "これまでのグランブルーファンタジー2021"
             },
             "day": 1,
-            "starts": "2020-12-12T13:45:00+09:00",
-            "ends": "2020-12-12T14:45:00+09:00",
+            "starts": "2021-12-11T14:00:00+09:00",
+            "ends": "2021-12-11T15:00:00+09:00",
             "cast": [
                 {
                     "name": "Katou Emiri",
@@ -62,7 +62,11 @@
                 },
                 {
                     "name": "Imai Asami",
-                    "role": "Vira"
+                    "role": "Vira/Friday"
+                },
+                {
+                    "name": "Narita Tsutomu",
+                    "role": "Composer"
                 },
                 {
                     "name": "Kimura Yuito",
@@ -76,12 +80,12 @@
         },
         {
             "name": {
-                "en": "Official Cosplay Stage",
-                "jp": "オフィシャルキャストステージ"
+                "en": "Special Character Live",
+                "jp": "グラブルフェス Special Character Live"
             },
             "day": 1,
-            "starts": "2020-12-12T15:00:00+09:00",
-            "ends": "2020-12-12T16:00:00+09:00"
+            "starts": "2021-12-11T15:00:00+09:00",
+            "ends": "2021-11-11T16:30:00+09:00"
         },
         {
             "name": {
@@ -89,8 +93,8 @@
                 "jp": "ぐらぶるTVちゃんねるっ！フェス出張版"
             },
             "day": 1,
-            "starts": "2020-12-12T16:15:00+09:00",
-            "ends": "2020-12-12T19:15:00+09:00",
+            "starts": "2021-12-11T17:00:00+09:00",
+            "ends": "2021-12-11T20:00:00+09:00",
             "cast": [
                 {
                     "name": "Ono Yuuki",
@@ -105,32 +109,32 @@
                     "role": "Lyria"
                 },
                 {
-                    "name": "Kazuhiko Inoue",
-                    "role": "Siegfried"
+                    "name": "Taniyama Kishou",
+                    "role": "Aoidos/Sho"
                 },
                 {
                     "name": "Tetsu Inada",
                     "role": "Ladiva"
                 },
                 {
-                    "name": "Fukuyama Jun",
-                    "role": "Katoru"
+                    "name": "Shitaya Noriko",
+                    "role": "Nier"
                 },
                 {
-                    "name": "Imai Asami",
-                    "role": "Vira"
+                    "name": "Takagi Miyu",
+                    "role": "Mirin"
                 },
                 {
-                    "name": "Shiraishi Minoru",
-                    "role": "Lowain"
+                    "name": "Hoshino Takanori",
+                    "role": "Dante"
                 },
                 {
                     "name": "Yonezawa Madoka",
                     "role": "Ferry"
                 },
                 {
-                    "name": "Eguchi Takuya",
-                    "role": "Vane"
+                    "name": "Takamori Natsumi",
+                    "role": "Aliza"
                 },
                 {
                     "name": "Osaka Ryota",
@@ -148,24 +152,15 @@
         },
         {
             "name": {
-                "en": "Granblue Night Party (Paid)",
-                "jp": "グラブルナイトパーティー (課金)"
+                "en": "Granblue Night Party",
+                "jp": "グラブルナイトパーティー"
             },
             "day": 1,
-            "starts": "2020-12-12T21:00:00+09:00",
-            "ends": "2020-12-12T19:23:30+09:00",
+            "starts": "2021-12-11T21:00:00+09:00",
+            "ends": "2021-12-11T24:00:00+09:00",
             "cast": [
                 
             ]
-        },
-        {
-            "name": {
-                "en": "Stella Magna Special Live in Granblue Fes 2020",
-                "jp": "Stella Magna スペシャルライブinグラブルフェス2020"
-            },
-            "day": 2,
-            "starts": "2020-12-13T14:00:00+09:00",
-            "ends": "2020-12-13T15:10:00+09:00"
         },
         {
             "name": {
@@ -173,8 +168,8 @@
                 "jp": "グラブルQ&A"
             },
             "day": 2,
-            "starts": "2020-12-13T15:10:00+09:00",
-            "ends": "2020-12-13T16:40:00+09:00",
+            "starts": "2021-12-12T13:00:00+09:00",
+            "ends": "2021-12-12T14:00:00+09:00",
             "cast": [
                 {
                     "name": "Ono Yuuki",
@@ -204,12 +199,60 @@
         },
         {
             "name": {
-                "en": "Granblue Fes Special Character Live",
-                "jp": "グラブルフェス Special Character Live"
+                "en": "Stella Magna Special Live in Granblue Fes 2021",
+                "jp": "Stella Magna スペシャルライブinグラブルフェス2021"
             },
             "day": 2,
-            "starts": "2020-12-13T16:40:00+09:00",
-            "ends": "2020-12-13T18:00:00+09:00"
+            "starts": "2021-12-12T14:00:00+09:00",
+            "ends": "2021-12-12T15:10:00+09:00"
+        },
+        {
+            "name": {
+                "en": "Official Cast Stage (Cosplay)",
+                "jp": "オフィシャルキャストステージ"
+            },
+            "day": 2,
+            "starts": "2021-12-12T15:45:00+09:00",
+            "ends": "2021-12-12T16:30:00+09:00"
+        },
+        {
+            "name": {
+                "en": "GBVS / Relink Latest News",
+                "jp": "GBVS / Relink 最新NEWS"
+            },
+            "day": 2,
+            "starts": "2021-12-12T17:00:00+09:00",
+            "ends": "2021-12-12T17:40:00+09:00",
+            "cast": [
+                {
+                    "name": "Ono Yuuki",
+                    "role": "Gran/Lancelot/Sagittarius"
+                },
+                {
+                    "name": "Katou Emiri",
+                    "role": "Sierokarte/Halluel and Malluel"
+                },
+                {
+                    "name": "Touyama Nao",
+                    "role": "Lyria"
+                },
+                {
+                    "name": "Imai Asami",
+                    "role": "Vira/Friday"
+                },
+                {
+                    "name": "Shiraishi Minoru",
+                    "role": "Lowain"
+                },
+                {
+                    "name": "Osaka Ryota",
+                    "role": "Percival"
+                },
+                {
+                    "name": "Fukuhara Tetsuya",
+                    "role": "Game Director"
+                }
+            ]
         },
         {
             "name": {
@@ -217,8 +260,8 @@
                 "jp": "グラブル生放送 クリスマス特別版"
             },
             "day": 2,
-            "starts": "2020-12-13T18:30:00+09:00",
-            "ends": "2020-12-13T21:30:00+09:00",
+            "starts": "2021-12-12T17:40:00+09:00",
+            "ends": "2021-12-12T20:00:00+09:00",
             "cast": [
                 {
                     "name": "Ono Yuuki",
@@ -233,36 +276,40 @@
                     "role": "Lyria"
                 },
                 {
-                    "name": "Ueda Kana",
-                    "role": "Yuel"
+                    "name": "Inoue Kazuhiko",
+                    "role": "Siegfried"
                 },
                 {
-                    "name": "Shiraishi Ryoko",
-                    "role": "Societte"
+                    "name": "Imai Asami",
+                    "role": "Vira/Friday"
                 },
                 {
-                    "name": "Nakamura Yuuichi",
-                    "role": "Romeo/Tsubasa"
+                    "name": "Shiraishi Minoru",
+                    "role": "Lowain"
                 },
                 {
                     "name": "Kawahara Yoshihisa",
                     "role": "Tyre"
                 },
                 {
-                    "name": "Takanori Hoshino",
-                    "role": "Dante"
+                    "name": "Okubo Rumi",
+                    "role": "Lunalu"
                 },
                 {
                     "name": "Tachibana Rika",
                     "role": "Yuisis"
                 },
                 {
-                    "name": "M・A・O",
-                    "role": "Narmaya"
+                    "name": "Shirai Yusume",
+                    "role": "Mordred"
                 },
                 {
                     "name": "Osaka Ryota",
                     "role": "Percival"
+                },
+                {
+                    "name": "Kurosawa Tomoyo",
+                    "role": "Meg"
                 },
                 {
                     "name": "Kimura Yuito",
@@ -276,12 +323,12 @@
         },
         {
             "name": {
-                "en": "Granblue Fes 2020 Special Show: The Stars of the Sky",
-                "jp": "グラブルフェス2020 スペシャルショー 蒼の奇跡-The Stars of the Sky-"
+                "en": "Granblue Fes 2021 Special Show: Blue Miracle -Recursion & Reunion-",
+                "jp": "グラブルフェス2021 スペシャルショー 蒼の軌跡 -Recursion＆Reunion-"
             },
             "day": 2,
-            "starts": "2020-12-13T21:45:00+09:00",
-            "ends": "2020-12-13T22:35:00+09:00"
+            "starts": "2021-12-12T20:00:00+09:00",
+            "ends": "2021-12-12T21:00:00+09:00"
         },
         {
             "name": {
