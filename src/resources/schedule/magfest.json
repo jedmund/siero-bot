@@ -1,8 +1,8 @@
 [
     {
         "name": {
-            "en": "29 Million Players Campaign",
-            "jp": "2900万人突破キャンペーン"
+            "en": "30 Million Players Campaign",
+            "jp": "3000万人突破キャンペーン"
         },
         "info": [
             "Free Daily Premium Draw",
@@ -13,13 +13,14 @@
             "Half AP for Free Quests",
             "Half AP for Special Quests",
             "Half Treasure Cost",
+            "Arcarum Sandbox Defender 2x Spawn",
             "More Renown and Prestige Pendants",
             "2x Boost to Shop Skills",
             "Arcarum Badge Bonus Bash"
         ],
-        "wiki": "https://gbf.wiki/29_Million_Players_Celebration",
-        "banner": "https://gbf.wiki/images/d/de/News_2900campaign_1.png",
-        "starts": "2021-10-15T05:00:00+09:00",
-        "ends": "2021-10-28T20:59:00+09:00"
+        "wiki": "https://gbf.wiki/30_Million_Players_Celebration",
+        "banner": "https://granbluefantasy.jp/pages/wp-content/uploads/2021/12/00_pdd8v3vmk8.png",
+        "starts": "2021-12-8T05:00:00+09:00",
+        "ends": "2021-12-22T20:59:00+09:00"
     }
 ]
