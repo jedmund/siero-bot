@@ -846,5 +846,26 @@
         "starts": "2021-12-08T17:00:00+09:00",
         "ends": "2021-12-22T20:59:00+09:00",
         "banner": "http://game-a1.granbluefantasy.jp/assets_en/img/sp/event/event_teaser_6031/assets/teaser/event_teaser_top.jpg"
+    },
+    {
+        "name": {
+            "en": "Primal Resonance",
+            "jp": "星の獣のレゾナンス"
+        },
+        "type": "scenario rerun",
+        "wiki": "https://gbf.wiki/Primal_Resonance",
+        "banner": "https://gbf.wiki/images/1/1a/Primal_Resonance_top.jpg",
+        "advantage": "earth",
+        "starts": "2021-12-20T17:00:00+09:00",
+        "ends": "2021-12-28T20:59:00+09:00"
+    },
+    {
+        "name": {
+            "en": "New Scenario Event",
+            "jp": "新シナリオイベント"
+        },
+        "type": "scenario",
+        "starts": "2021-12-28T17:00:00+09:00",
+        "ends": "2022-01-07T20:59:00+09:00"
     }
 ]
