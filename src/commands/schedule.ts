@@ -346,8 +346,8 @@ class ScheduleCommand extends SieroCommand {
         const sections = await this.renderFestivalSections(day)
 
         return new Page({
-            title: 'Granblue Fes 2020',
-            image: 'https://images-ext-2.discordapp.net/external/Zky9CQAg3g7hdOQR_w7YbIaqy6FRh6P5mnZAvEQEu4g/https/fes.granbluefantasy.jp/assets2020/images/share/ogp.jpg'
+            title: 'Granblue Fes 2021',
+            image: 'https://pbs.twimg.com/media/FEYjU99aAAE-4M1?format=jpg&name=large'
         }, sections)
     }
 
