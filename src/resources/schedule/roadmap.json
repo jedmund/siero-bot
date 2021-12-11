@@ -204,17 +204,37 @@
         ]
     },
     {
-        "date": "Late 2021",
+        "date": "December 14, 2021",
         "upcoming": true,
         "features": [
             {
-                "name": "Update: New EMP skills for Row IV and EXII classes",
+                "name": "New: Job Class Updates (Up to Lv30)",
                 "details": ""
             },
             {
-                "name": "Update: Class-specific EXP for Row IV and EXII classes",
+                "name": "New: Job Class Color Skins",
+                "details": ""
+            }
+        ]
+    },
+    {
+        "date": "Late December 2021",
+        "upcoming": true,
+        "features": [
+            {
+                "name": "New: Ennead Series Raids",
                 "details": ""
             },
+            {
+                "name": "New: D.Jeanne, D.Cagliostro, Veight, Freezie rebalances",
+                "details": ""
+            }
+        ]
+    },
+        {
+        "date": "Late 2021",
+        "upcoming": true,
+        "features": [
             {
                 "name": "New: New Class Champion Weapons for Row IV classes",
                 "details": ""
@@ -240,19 +260,29 @@
             {
                 "name": "Update: Various raids will be turned into solo quests",
                 "details": ""
-            },
-            {
-                "name": "New: 6 element raids and weapons",
-                "details": ""
             }
         ]
     },
     {
+        "date": "March 2022",
+        "upcoming": true,
+        "features": [
+            {
+                "name": "New: Trade treasure to strengthen Ennead Series weapons",
+                "details": ""
+            }
+        ]
+    },
+        {
         "date": "Spring 2022",
         "upcoming": true,
         "features": [
             {
                 "name": "New: New Class Champion Weapons for EXII classes",
+                "details": ""
+            },
+            {
+                "name": "New: Main Story Update \"War of the Ruby Pop\"",
                 "details": ""
             }
         ]
