@@ -861,6 +861,15 @@
     },
     {
         "name": {
+            "en": "Auld Lang Syne 2021",
+            "jp": "年年歳歳"
+        },
+        "type": "special",
+        "starts": "2021-12-22T17:00:00+09:00",
+        "ends": "2021-12-31T23:59:00+09:00"
+    },
+    {
+        "name": {
             "en": "Old Bond",
             "jp": "OLD BOND"
         },
