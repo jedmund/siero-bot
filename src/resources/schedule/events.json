@@ -861,11 +861,56 @@
     },
     {
         "name": {
-            "en": "New Scenario Event",
-            "jp": "新シナリオイベント"
+            "en": "Old Bond",
+            "jp": "OLD BOND"
         },
         "type": "scenario",
         "starts": "2021-12-28T17:00:00+09:00",
         "ends": "2022-01-07T20:59:00+09:00"
+    },
+    {
+        "name": {
+            "en": "Xeno Diablo Showdown",
+            "jp": "ゼノディアボロス撃滅戦"
+        },
+        "banner": "https://gbf.wiki/images/1/1e/Xeno_Diablo_Clash_top.png",
+        "link": "https://gbf.wiki/Xeno_Diablo_Clash",
+        "type": "farming",
+        "advantage": "light",
+        "starts": "2022-01-08T17:00:00+09:00",
+        "ends": "2022-01-14T18:59:00+09:00"
+    },
+    {
+        "name": {
+            "en": "Unite and Fight",
+            "jp": "決戦！星の古戦場 - 闇有利"
+        },
+        "banner": "https://gbf.wiki/images/0/09/UniteAndFight.png",
+        "link": "https://gbf.wiki/Unite_and_Fight",
+        "type": "guild-wars",
+        "advantage": "dark",
+        "starts": "2022-01-15T19:00:00+09:00",
+        "ends": "2022-01-22T23:59:00+09:00"
+    },
+    {
+        "name": {
+            "en": "The Many Lives of Cats",
+            "jp": "猫島狂詩曲"
+        },
+        "type": "scenario rerun",
+        "wiki": "https://gbf.wiki/The_Many_Lives_of_Cats",
+        "banner": "http://game-a1.granbluefantasy.jp/assets/img/sp/event/event_teaser_11039/assets/teaser/event_teaser_top.jpg",
+        "starts": "2022-01-23T17:00:00+09:00",
+        "ends": "2022-01-30T20:59:00+09:00"
+    },
+        {
+        "name": {
+            "en": "Tower of Babel",
+            "jp": "バブ･イールの塔"
+        },
+        "type": "tower",
+        "banner": "https://gbf.wiki/images/9/93/Tower_of_Babyl_top.jpg",
+        "starts": "2022-01-24T17:00:00+09:00",
+        "ends": "2022-01-29T20:59:00+09:00"
     }
 ]
