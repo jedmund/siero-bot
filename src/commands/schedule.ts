@@ -383,7 +383,7 @@ class ScheduleCommand extends SieroCommand {
                 }
 
                 const link1 = 'https://www.youtube.com/watch?v=gEIfjAoqKjE'
-                const link2 = 'https://www.youtube.com/watch?v=Kb8ChL3ABZA'
+                const link2 = 'https://www.youtube.com/watch?v=14-OxByFQvk'
 
                 events.unshift({
                     name: `Day ${day}`,
