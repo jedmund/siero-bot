@@ -205,7 +205,7 @@
     },
     {
         "date": "December 14, 2021",
-        "upcoming": true,
+        "upcoming": false,
         "features": [
             {
                 "name": "New: Job Class Updates (Up to Lv30)",
@@ -232,13 +232,9 @@
         ]
     },
         {
-        "date": "Late 2021",
+        "date": "February 2022",
         "upcoming": true,
         "features": [
-            {
-                "name": "New: New Class Champion Weapons for Row IV classes",
-                "details": ""
-            },
             {
                 "name": "Update: New area and guidebooks in Replicard Sandbox",
                 "details": ""
@@ -246,19 +242,31 @@
             {
                 "name": "Update: New Foundation Weapons FLB",
                 "details": ""
+            },
+            {
+                "name": "New: 12th Weapon Slot in Extra parties",
+                "details": ""
+            },
+            {
+                "name": "New: 12 new weapons from new Sandbox bosses",
+                "details": ""
+            },
+            {
+                "name": "New: AX skills on Primal and Olden Primal series weapons",
+                "details": ""
+            },
+            {
+                "name": "New: Umamusume collab",
+                "details": ""
             }
         ]
     },
     {
-        "date": "2021",
+        "date": "March 10, 2022",
         "upcoming": true,
         "features": [
             {
-                "name": "Update: New permanent bonuses for crews",
-                "details": ""
-            },
-            {
-                "name": "Update: Various raids will be turned into solo quests",
+                "name": "New: Resort Island function for crews",
                 "details": ""
             }
         ]
@@ -273,16 +281,54 @@
             }
         ]
     },
-        {
+    {
         "date": "Spring 2022",
         "upcoming": true,
         "features": [
+            {
+                "name": "New: Main Story Update \"War of the Ruby Pop\"",
+                "details": ""
+            },
+            {
+                "name": "Update: Replacing Basic Treasure, Six Dragons and Elemental Treasure solo quests",
+                "details": ""
+            },
+            {
+                "name": "New: Diaspora HL raid",
+                "details": "" 
+            },
+        ]
+    },
+    {
+        "date": "2022",
+        "upcoming": true,
+        "features": [
+            {
+                "name": "New: Row V classes: Viking and Paladin",
+                "details": "" 
+            },
+            {
+                "name": "New: Archangel Summon Series FLB",
+                "details": "" 
+            },
+            {
+                "name": "New: Classic Gacha for items from 2014/3/10 to 2016/3/9",
+                "details": ""
+            },
+            {
+                "name": "Update: New prizes for accumulating Cerulean Sparks",
+                "details": ""
+            },
+            {
+                "name": "New: New Class Champion Weapons for Row IV classes",
+                "details": ""
+            },
             {
                 "name": "New: New Class Champion Weapons for EXII classes",
                 "details": ""
             },
             {
-                "name": "New: Main Story Update \"War of the Ruby Pop\"",
+                "name": "Update: Various raids will be turned into solo quests",
                 "details": ""
             }
         ]
