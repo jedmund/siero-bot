@@ -219,7 +219,7 @@
     },
     {
         "date": "Late December 2021",
-        "upcoming": true,
+        "upcoming": false,
         "features": [
             {
                 "name": "New: Ennead Series Raids",
