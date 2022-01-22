@@ -874,6 +874,8 @@
             "jp": "OLD BOND"
         },
         "type": "scenario",
+        "link": "https://gbf.wiki/Old_Bond",
+        "banner": "https://gbf.wiki/images/0/06/Old_Bond_top.jpg",
         "starts": "2021-12-28T17:00:00+09:00",
         "ends": "2022-01-07T20:59:00+09:00"
     },
@@ -921,5 +923,38 @@
         "banner": "https://gbf.wiki/images/9/93/Tower_of_Babyl_top.jpg",
         "starts": "2022-01-24T17:00:00+09:00",
         "ends": "2022-01-29T20:59:00+09:00"
+    },
+    {
+        "name": {
+            "en": "New Scenario Event",
+            "jp": "新シナリオイベント"
+        },
+        "type": "scenario",
+        "starts": "2022-01-30T17:00:00+09:00",
+        "ends": "2022-02-07T20:59:00+09:00"
+    },
+        {
+        "name": {
+            "en": "Dread Barrage: March of the Valiant",
+            "jp": "ドレッドバラージュ"
+        },
+        "banner": "https://gbf.wiki/images/4/44/Dread_Barrage_top.jpg",
+        "link": "https://gbf.wiki/Dread_Barrage",
+        "type": "valiant",
+        "advantage": "wind",
+        "starts": "2022-02-22T19:00:00+09:00",
+        "ends": "2022-02-29T18:59:00+09:00"
+    },
+        {
+        "name": {
+            "en": "Unite and Fight",
+            "jp": "決戦！星の古戦場 - 光有利"
+        },
+        "banner": "https://gbf.wiki/images/0/09/UniteAndFight.png",
+        "link": "https://gbf.wiki/Unite_and_Fight",
+        "type": "guild-wars",
+        "advantage": "light",
+        "starts": "2022-04-21T19:00:00+09:00",
+        "ends": "2022-04-28T23:59:00+09:00"
     }
 ]
