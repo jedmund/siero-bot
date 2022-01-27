@@ -926,9 +926,10 @@
     },
     {
         "name": {
-            "en": "New Scenario Event",
-            "jp": "新シナリオイベント"
+            "en": "Ramen Travels with Cassius",
+            "jp": "カシウスのらぁめん旅行記"
         },
+        "banner": "http://game-a1.granbluefantasy.jp/assets_en/img/sp/event/event_teaser_1116/assets/teaser/event_teaser_top.jpg",
         "type": "scenario",
         "starts": "2022-01-30T17:00:00+09:00",
         "ends": "2022-02-07T20:59:00+09:00"
