@@ -52,5 +52,14 @@
         "starts": "2021-08-07T18:00:00+09:00",
         "ends": "2021-08-07T21:00:00+09:00",
         "link": "https://www.youtube.com/watch?v=X942ANcQGoo"
+    },
+    {
+        "name": {
+            "en": "Granblue Fantasy 8th Anniversary Livestream",
+            "jp": "グランブルーファンタジー8年記念生放送"
+        },
+        "starts": "2022-03-06T18:00:00+09:00",
+        "ends": "2022-03-06T21:00:00+09:00",
+        "link": ""
     }
 ]
