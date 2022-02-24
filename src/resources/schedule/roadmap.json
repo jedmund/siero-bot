@@ -233,7 +233,7 @@
     },
         {
         "date": "February 2022",
-        "upcoming": true,
+        "upcoming": false,
         "features": [
             {
                 "name": "Update: New area and guidebooks in Replicard Sandbox",
