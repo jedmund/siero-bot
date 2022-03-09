@@ -964,6 +964,8 @@
             "jp": "星のおとし子、空のいとし子"
         },
         "type": "scenario",
+        "banner": "https://gbf.wiki/images/1/14/Created_by_the_Stars_top.png",
+        "link": "https://gbf.wiki/Created_by_the_Stars,_Loved_by_the_Skies",
         "starts": "2022-02-28T19:00:00+09:00",
         "ends": "2022-03-24T20:59:00+09:00"
     },
