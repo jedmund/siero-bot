@@ -1,0 +1,12 @@
+{
+  "name": "siero-bot",
+  "version": "2.0.0",
+  "description": "A rewrite of siero-bot using Sapphire",
+  "main": "index.js",
+  "author": "Justin Edmund <justin@jedmund.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@sapphire/framework": "^4.2.2",
+    "discord.js": "14.x"
+  }
+}
