@@ -7,6 +7,7 @@ import { sql } from "kysely"
 
 interface GachaResult {
   id: string | null
+  item_id: string | null
   character_id?: string | null
   premium: boolean
   classic: boolean
@@ -177,6 +178,7 @@ class Cache {
   private transformIntoDrawableItem(item: GachaResult, type: DrawableItemType) {
     let drawableItem: DrawableItem = {
       id: item.id || "",
+      item_id: item.item_id || "",
       granblue_id: item.granblue_id || "",
       name: {
         en: item.name_en || "",
@@ -218,7 +220,8 @@ class Cache {
       .leftJoin("weapons", "weapons.id", "gacha.drawable_id")
       .leftJoin("characters", "characters.id", "weapons.recruits_id")
       .select([
-        "weapons.id",
+        "gacha.id",
+        "weapons.id as item_id",
         "weapons.granblue_id",
         "weapons.name_en",
         "weapons.name_jp",
@@ -251,7 +254,8 @@ class Cache {
     const items = await Client.selectFrom("gacha")
       .leftJoin("weapons", "weapons.id", "gacha.drawable_id")
       .select([
-        "weapons.id",
+        "gacha.id",
+        "weapons.id as item_id",
         "weapons.granblue_id",
         "weapons.name_en",
         "weapons.name_jp",
@@ -280,7 +284,8 @@ class Cache {
     const items = await Client.selectFrom("gacha")
       .leftJoin("summons", "summons.id", "gacha.drawable_id")
       .select([
-        "summons.id",
+        "gacha.id",
+        "summons.id as item_id",
         "summons.granblue_id",
         "summons.name_en",
         "summons.name_jp",

@@ -1,14 +1,18 @@
 interface RawResult {
+  id: string | null
+  character_id: string | null
   character_name_en: string | null
   character_name_jp: string | null
   character_granblue_id: string | null
   character_rarity: number | null
   character_element: number | null
+  weapon_id: string | null
   weapon_name_en: string | null
   weapon_name_jp: string | null
   weapon_granblue_id: string | null
   weapon_rarity: number | null
   weapon_element: number | null
+  summon_id: string | null
   summon_name_en: string | null
   summon_name_jp: string | null
   summon_granblue_id: string | null
