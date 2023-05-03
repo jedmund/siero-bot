@@ -14,7 +14,7 @@ import { readableRarity } from "../utils/readable"
 import { DrawableItemType, Promotion, Rarity, Season } from "../utils/enums"
 
 import type DrawableItem from "../interfaces/DrawableItem"
-import type Spark from "../interfaces/Spark"
+import type SparkResult from "../interfaces/SparkResult"
 import fetchRateups from "../utils/fetchRateups"
 import { ItemRateMap } from "../utils/types"
 
@@ -288,7 +288,7 @@ export class GachaCommand extends Subcommand {
     return string
   }
 
-  private renderSpark(results: Spark) {
+  private renderSpark(results: SparkResult) {
     let rate = Math.floor((results.count.SSR / 300) * 100)
     let summary = `\`\`\`${this.renderSummary(results)}\`\`\``
 
@@ -326,7 +326,7 @@ export class GachaCommand extends Subcommand {
     return !combined ? `\`\`\`html\n${response}\n\`\`\`` : `${response}\n`
   }
 
-  private renderSummary(results: Spark) {
+  private renderSummary(results: SparkResult) {
     let ssrWeapons = results.items.filter(this.filterSSRWeapons)
     let ssrSummons = results.items.filter(this.filterSSRSummons)
     let numRateupItems = this.filterRateUpItems(results)
@@ -371,7 +371,7 @@ export class GachaCommand extends Subcommand {
     return item.rarity == Rarity.SSR && item.type === DrawableItemType.SUMMON
   }
 
-  private filterRateUpItems(spark: Spark) {
+  private filterRateUpItems(spark: SparkResult) {
     let totalCount = 0
     for (let i in this.rateups) {
       let rateupItem: DrawableItem = this.rateups[i].item

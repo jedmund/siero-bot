@@ -1,6 +1,6 @@
-import DrawableItem from "./DrawableItem"
-
-export default interface Spark {
-  count: RarityCount
-  items: DrawableItem[]
+interface Spark {
+  [key: string]: number
+  crystals: number
+  tickets: number
+  ten_tickets: number
 }
