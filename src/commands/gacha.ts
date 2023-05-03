@@ -15,6 +15,8 @@ import { DrawableItemType, Promotion, Rarity, Season } from "../utils/enums"
 
 import type DrawableItem from "../interfaces/DrawableItem"
 import type Spark from "../interfaces/Spark"
+import fetchRateups from "../utils/fetchRateups"
+import { ItemRateMap } from "../utils/types"
 
 @ApplyOptions<Subcommand.Options>({
   description: "Simulate the gacha",
@@ -39,6 +41,8 @@ import type Spark from "../interfaces/Spark"
   ],
 })
 export class GachaCommand extends Subcommand {
+  rateups: ItemRateMap = []
+
   // Methods: Register application commands
 
   public override registerApplicationCommands(registry: Subcommand.Registry) {
@@ -63,13 +67,17 @@ export class GachaCommand extends Subcommand {
           .addSubcommand((command) => {
             const description =
               "Simulate the gacha until a specific item is drawn."
-            return this.gachaCommand(command, "until", description)
+            return command
+              .setName("until")
+              .setDescription(description)
               .addStringOption((option) =>
                 option
                   .setName("name")
                   .setDescription("The name of the item or its Granblue ID")
                   .setRequired(true)
               )
+              .addStringOption(this.promotionOption())
+              .addStringOption(this.seasonOption())
               .addStringOption((option) =>
                 option
                   .setName("currency")
@@ -83,7 +91,7 @@ export class GachaCommand extends Subcommand {
       },
       {
         guildIds: [process.env.DISCORD_GUILD_ID || ""],
-        idHints: ["1099571255344103433"],
+        idHints: ["1102647266973581312"],
       }
     )
   }
@@ -105,7 +113,7 @@ export class GachaCommand extends Subcommand {
     let optionBuilder: SlashCommandStringOption = new SlashCommandStringOption()
     optionBuilder.setName("promotion")
     optionBuilder.setDescription(
-      "The promotion to simulate (Premium, Classic, Flash, Legend"
+      "The promotion to simulate (Premium, Classic, Flash, Legend)"
     )
     optionBuilder.addChoices(
       {
@@ -163,12 +171,15 @@ export class GachaCommand extends Subcommand {
 
   // Methods: Instantiation
 
-  private createGacha(interaction: Subcommand.ChatInputCommandInteraction) {
+  private async createGacha(
+    interaction: Subcommand.ChatInputCommandInteraction
+  ) {
     // prettier-ignore
     const promotion = this.getPromotion(interaction.options.getString("promotion"))
     const season = this.getSeason(interaction.options.getString("season"))
 
-    return new Gacha([], promotion, season)
+    this.rateups = await fetchRateups(interaction.user.id)
+    return new Gacha(this.rateups, promotion, season)
   }
 
   // Methods: Slash Commands
@@ -181,7 +192,7 @@ export class GachaCommand extends Subcommand {
       fetchReply: true,
     })
 
-    const gacha = this.createGacha(interaction)
+    const gacha = await this.createGacha(interaction)
     const item = gacha.singleRoll()
 
     if (isMessageInstance(msg)) {
@@ -199,7 +210,7 @@ export class GachaCommand extends Subcommand {
       fetchReply: true,
     })
 
-    const gacha = this.createGacha(interaction)
+    const gacha = await this.createGacha(interaction)
     const result = gacha.tenPartRoll()
 
     if (isMessageInstance(msg)) {
@@ -219,7 +230,7 @@ export class GachaCommand extends Subcommand {
       fetchReply: true,
     })
 
-    const gacha = this.createGacha(interaction)
+    const gacha = await this.createGacha(interaction)
     const result = gacha.spark()
 
     if (isMessageInstance(msg)) {
@@ -251,7 +262,6 @@ export class GachaCommand extends Subcommand {
       const until = new Until(
         interaction,
         identifier,
-        [],
         currency,
         promotion,
         season
@@ -319,7 +329,7 @@ export class GachaCommand extends Subcommand {
   private renderSummary(results: Spark) {
     let ssrWeapons = results.items.filter(this.filterSSRWeapons)
     let ssrSummons = results.items.filter(this.filterSSRSummons)
-    // let numRateupItems = this.filterRateUpItems(results)
+    let numRateupItems = this.filterRateUpItems(results)
 
     // TODO: Extract into helper method
     // let targetsAcquired = results.items.filter((item: Item) => {
@@ -343,7 +353,7 @@ export class GachaCommand extends Subcommand {
 
     return [
       // targetAcquiredString,
-      // this.rateups.length > 0 ? `Rate-up Items: ${numRateupItems}` : "",
+      this.rateups.length > 0 ? `Rate-up Items: ${numRateupItems}` : "",
       `SSR Weapons: ${ssrWeapons.length}`,
       `SSR Summons: ${ssrSummons.length}`,
       `SR: ${results.count.SR}`,
@@ -362,14 +372,14 @@ export class GachaCommand extends Subcommand {
   }
 
   private filterRateUpItems(spark: Spark) {
-    // let totalCount = 0
-    // for (let i in this.rateups) {
-    //   let rateupItem: DrawableItem = this.rateups[i]
-    //   totalCount += spark.items.reduce((n: number, item: DrawableItem) => {
-    //     return n + (rateupItem.id == item.id ? 1 : 0)
-    //   }, 0)
-    // }
-    // return totalCount
+    let totalCount = 0
+    for (let i in this.rateups) {
+      let rateupItem: DrawableItem = this.rateups[i].item
+      totalCount += spark.items.reduce((n: number, item: DrawableItem) => {
+        return n + (rateupItem.id == item.id ? 1 : 0)
+      }, 0)
+    }
+    return totalCount
   }
 
   private sortCharacterWeapons(results: DrawableItem[]) {

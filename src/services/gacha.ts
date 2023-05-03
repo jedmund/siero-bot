@@ -3,7 +3,7 @@ import Cache from "./cache"
 
 import type DrawableItem from "../interfaces/DrawableItem"
 
-import { CategoryMap, RateMap } from "../utils/types"
+import { CategoryMap, ItemRateMap, RarityRateMap } from "../utils/types"
 import {
   Rarity,
   Promotion,
@@ -19,15 +19,17 @@ const chance = new Chance()
 export default class Gacha {
   gala: Promotion = Promotion.PREMIUM
   season: Season | undefined = undefined
-  rateups: DrawableItem[] = []
+  rateups: ItemRateMap = []
   rates: CategoryMap = {}
 
-  constructor(rateups: DrawableItem[], gala: Promotion, season?: Season) {
+  constructor(rateups: ItemRateMap, gala: Promotion, season?: Season) {
     this.gala = gala
     this.season = season
 
-    this.rateups = rateups.filter((item) =>
-      this.filterItems(item, this.gala, this.season)
+    // You need to get the gala and season from the db i guess
+
+    this.rateups = rateups.filter((rateup) =>
+      this.filterItems(rateup.item, this.gala, this.season)
     )
     this.rates = this.ssrRates()
   }
@@ -80,7 +82,7 @@ export default class Gacha {
   }
 
   private currentRates(final = false) {
-    let rates: RateMap = {}
+    let rates: RarityRateMap = {}
     const rateUp = ![Promotion.PREMIUM, Promotion.CLASSIC].includes(this.gala)
 
     if (rateUp && !final) {
@@ -132,15 +134,15 @@ export default class Gacha {
 
     // First, subtract the sum of the rates of any rate-up items (characters or summons) from the total rate.
     for (let i in this.rateups) {
-      const item = this.rateups[i]
-      rate = rate - (item.rate as number)
+      const rateup = this.rateups[i]
+      rate = rate - rateup.rate
     }
 
     // Remove the quantity of rateups from the total count of character weapons and summons
     // prettier-ignore
-    remainingWeapons = remainingWeapons - this.rateups.filter(rateup => rateup.itemType == DrawableItemType.WEAPON).length
+    remainingWeapons = remainingWeapons - this.rateups.filter(rateup => rateup.item.type == DrawableItemType.WEAPON).length
     // prettier-ignore
-    remainingSummons = remainingSummons - this.rateups.filter(rateup => rateup.itemType == DrawableItemType.SUMMON).length
+    remainingSummons = remainingSummons - this.rateups.filter(rateup => rateup.item.type == DrawableItemType.SUMMON).length
 
     // Divide the difference evenly among all other items in the pool.
     // The quotient is the summon rate.
@@ -161,9 +163,9 @@ export default class Gacha {
           let isLimited
 
           if (this.gala === Promotion.FLASH) {
-            isLimited = rateup.flash === true
+            isLimited = rateup.item.promotions.flash === true
           } else if (this.gala === Promotion.LEGEND) {
-            isLimited = rateup.legend === true
+            isLimited = rateup.item.promotions.legend === true
           }
 
           return isLimited
@@ -255,27 +257,61 @@ export default class Gacha {
       // Pick a random item from the appropriate bucket
       switch (bucket) {
         case GachaBucket.WEAPON:
-          item = cache.fetchWeapon(rarity, this.rateups, this.season)
+          item = cache.fetchWeapon(
+            rarity,
+            this.rateups.map((rateup) => rateup.item),
+            this.season
+          )
           break
         case GachaBucket.SUMMON:
-          item = cache.fetchSummon(rarity, this.rateups, this.season)
+          item = cache.fetchSummon(
+            rarity,
+            this.rateups.map((rateup) => rateup.item),
+            this.season
+          )
           break
         case GachaBucket.LIMITED:
-          item = cache.fetchLimited(this.gala, this.rateups)
+          item = cache.fetchLimited(
+            this.gala,
+            this.rateups.map((rateup) => rateup.item)
+          )
           break
         default:
-          item = cache.fetchWeapon(rarity, this.rateups, this.season)
+          item = cache.fetchWeapon(
+            rarity,
+            this.rateups.map((rateup) => rateup.item),
+            this.season
+          )
           break
       }
     } else {
-      let rateupItems = this.rateups.map((item) => item.name)
-      let rateupRates = this.rateups.map((item) =>
-        parseFloat(item.rate as string)
-      )
+      let rateupItems = this.rateups.map((rateup) => rateup.item.name.en)
+      let rateupRates = this.rateups.map((rateup) => rateup.rate)
 
       let result = chance.weighted(rateupItems, rateupRates)
+
       // NOTE: Why is this forced?
-      item = this.rateups.find((item) => item.name === result)!
+      let found = this.rateups.find((rateup) => rateup.item.name.en === result)
+      item = found!.item
+    }
+
+    // Debug what is being pulled by uncommenting this line
+    let bucketName = ""
+    switch (bucket) {
+      case 1:
+        bucketName = "Weapon"
+        break
+      case 2:
+        bucketName = "Summon"
+        break
+      case 3:
+        bucketName = "Limited"
+        break
+      case 4:
+        bucketName = "Rate-up"
+        break
+      default:
+        break
     }
 
     return item
@@ -295,7 +331,7 @@ export default class Gacha {
 
       for (let i in this.rateups) {
         let item = this.rateups[i]
-        allRateups = allRateups + parseFloat(item.rate as string)
+        allRateups = allRateups + item.rate
       }
 
       bucketKeys = [

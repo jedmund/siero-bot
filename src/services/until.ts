@@ -33,14 +33,12 @@ class Until {
   constructor(
     interaction: Subcommand.ChatInputCommandInteraction,
     identifier: string,
-    rateups: DrawableItem[],
     currency: string,
     promotion: Promotion,
     season?: Season
   ) {
     this.interaction = interaction
     this.identifier = identifier
-    this.rateups = rateups
     this.promotion = promotion
     this.season = season
     this.currency = currency
@@ -119,10 +117,12 @@ class Until {
       this.validateSimulation()
     }
 
+    const rateups = await fetchRateups(this.interaction.user.id)
+
     // Proceed with simulation if it is valid
     // At this point, we should only be searching by Granblue ID, which is unique
     // so we no longer need to COUNT(*) the database for possibilities
-    const gacha = new Gacha(this.rateups, this.promotion, this.season)
+    const gacha = new Gacha(rateups, this.promotion, this.season)
     const count = this.roll(gacha)
 
     return {
