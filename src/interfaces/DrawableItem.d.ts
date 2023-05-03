@@ -3,6 +3,7 @@ import { DrawableItemType, Rarity } from "../utils/enums"
 export default interface DrawableItem {
   [index: string]: any | string | number | boolean | null
   id: string
+  item_id: string
   granblue_id: string
   type: DrawableItemType
   name: {

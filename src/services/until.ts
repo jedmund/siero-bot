@@ -6,16 +6,10 @@ import {
 } from "@discordjs/builders"
 import { Subcommand } from "@sapphire/plugin-subcommands"
 
-import { Client } from "./connection"
+import Api from "./api"
 import Gacha from "./gacha"
 
-import {
-  DrawableItemType,
-  Element,
-  Promotion,
-  Rarity,
-  Season,
-} from "../utils/enums"
+import { DrawableItemType, Promotion, Season } from "../utils/enums"
 import {
   readableElement,
   readableRarity,
@@ -23,17 +17,16 @@ import {
 } from "../utils/readable"
 
 import type DrawableItem from "../interfaces/DrawableItem"
-import type UntilResult from "../interfaces/UntilResult"
+import isGranblueID from "../utils/isGranblueID"
+import fetchRateups from "../utils/fetchRateups"
 
 class Until {
   identifier: string
-  rateups: DrawableItem[] = []
-
   currency: string
   promotion: Promotion
   season?: Season
 
-  item?: UntilResult
+  item?: DrawableItem
 
   interaction: Subcommand.ChatInputCommandInteraction
 
@@ -54,12 +47,12 @@ class Until {
   }
 
   public async execute() {
-    if (this.isGranblueID(this.identifier)) {
+    if (isGranblueID(this.identifier)) {
       // Fetch the item's info via Granblue ID
       this.fetchItemAndSimulate()
     } else {
       // Find possible items via provided string
-      const options = await this.findItems(this.identifier)
+      const options = await Api.findItem(this.identifier)
 
       if (options.length > 1) {
         // Present options to the user if there's more than one option
@@ -80,7 +73,7 @@ class Until {
 
   private async fetchItemAndSimulate() {
     // Fetch the item's info via Granblue ID
-    this.item = await this.fetchItemInfoFromID(this.identifier)
+    this.item = await Api.fetchItemInfoFromID(this.identifier)
     const result = await this.simulate()
 
     this.generateResponse(result)
@@ -88,7 +81,7 @@ class Until {
 
   private async presentOptions(
     interaction: Subcommand.ChatInputCommandInteraction,
-    options: UntilResult[]
+    options: DrawableItem[]
   ) {
     // Send the user a select to select the correct item from the options found
     const response = await interaction.editReply({
@@ -111,7 +104,7 @@ class Until {
 
   private async collectOption(input: StringSelectMenuInteraction, that: Until) {
     const selection = input.values[0]
-    that.item = await that.fetchItemInfoFromID(selection)
+    that.item = await Api.fetchItemInfoFromID(selection)
 
     // Make sure to update the identifier with the Granblue ID
     that.identifier = that.item.granblue_id
@@ -162,14 +155,14 @@ class Until {
 
   // Methods: Rendering methods
 
-  private generateConflictOptions(items: UntilResult[]) {
+  private generateConflictOptions(items: DrawableItem[]) {
     return items.map((item) => {
       let description = `${readableType(item.type)} · ${readableRarity(
         item.rarity
       )} · ${readableElement(item.element)}`
 
       if (item.recruits) {
-        description += ` · Recruits ${item.recruits.en}`
+        description += ` · Recruits ${item.recruits.name.en}`
       }
 
       return new StringSelectMenuOptionBuilder()
@@ -179,7 +172,7 @@ class Until {
     })
   }
 
-  private generateSelect(items: UntilResult[]) {
+  private generateSelect(items: DrawableItem[]) {
     const select = new StringSelectMenuBuilder()
       .setCustomId("conflict")
       .setPlaceholder("Pick an item")
@@ -195,10 +188,11 @@ class Until {
     let name = ""
     if (this.item) {
       const item = this.item
+      console.log(item)
 
       switch (item.type) {
         case DrawableItemType.WEAPON:
-          if (item.recruits) name = `${item.name.en} (${item.recruits.en})`
+          if (item.recruits) name = `${item.name.en} (${item.recruits.name.en})`
           else name = item.name.en
           break
         case DrawableItemType.SUMMON:
@@ -396,8 +390,8 @@ class Until {
     let promotionMatch = false
     let seasonMatch = this.season ? false : true
 
-    if (this.item && this.item.promotion[this.promotion]) promotionMatch = true
-    if (this.item && this.season && this.item.season[this.season])
+    if (this.item && this.item.promotions[this.promotion]) promotionMatch = true
+    if (this.item && this.season && this.item.seasons[this.season])
       seasonMatch = true
 
     return promotionMatch && seasonMatch
@@ -405,38 +399,28 @@ class Until {
 
   private validateSimulation() {
     if (this.item) {
-      const { promotion, season } = this.item
+      const { promotions, seasons } = this.item
 
       this.promotion =
-        promotion.flash && this.promotion !== Promotion.FLASH
+        promotions.flash && this.promotion !== Promotion.FLASH
           ? Promotion.FLASH
-          : promotion.legend && this.promotion !== Promotion.LEGEND
+          : promotions.legend && this.promotion !== Promotion.LEGEND
           ? Promotion.LEGEND
-          : promotion.classic && this.promotion !== Promotion.CLASSIC
+          : promotions.classic && this.promotion !== Promotion.CLASSIC
           ? Promotion.CLASSIC
           : this.promotion
 
       this.season =
-        season.valentines && this.season !== Season.VALENTINES
+        seasons.valentines && this.season !== Season.VALENTINES
           ? Season.VALENTINES
-          : season.summer && this.season !== Season.SUMMER
+          : seasons.summer && this.season !== Season.SUMMER
           ? Season.SUMMER
-          : season.halloween && this.season !== Season.HALLOWEEN
+          : seasons.halloween && this.season !== Season.HALLOWEEN
           ? Season.HALLOWEEN
-          : season.holiday && this.season !== Season.HOLIDAY
+          : seasons.holiday && this.season !== Season.HOLIDAY
           ? Season.HOLIDAY
           : this.season
     }
-  }
-
-  private isGranblueID(input: string | null) {
-    if (input === null) return false
-
-    // Define the regular expression pattern for a ten digit string
-    const regex = /^\d{10}$/
-
-    // Test the string against the pattern
-    return regex.test(input)
   }
 }
 
