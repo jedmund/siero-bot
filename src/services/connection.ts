@@ -3,6 +3,7 @@ import { Pool } from "pg"
 
 import type {
   GachaTable,
+  GachaRateupTable,
   SparkTable,
   CharacterTable,
   SummonTable,
@@ -15,6 +16,7 @@ export interface Database {
   summons: SummonTable
   weapons: WeaponTable
   gacha: GachaTable
+  gacha_rateups: GachaRateupTable
 }
 
 const postgresConfig = {

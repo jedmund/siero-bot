@@ -14,6 +14,13 @@ export interface GachaTable {
   holiday: boolean
 }
 
+export interface GachaRateupTable {
+  id: Generated<string>
+  gacha_id: string
+  user_id: string
+  rate: number
+}
+
 export interface CharacterTable {
   id: Generated<string>
   granblue_id: string
