@@ -296,24 +296,24 @@ export default class Gacha {
     }
 
     // Debug what is being pulled by uncommenting this line
-    let bucketName = ""
-    switch (bucket) {
-      case 1:
-        bucketName = "Weapon"
-        break
-      case 2:
-        bucketName = "Summon"
-        break
-      case 3:
-        bucketName = "Limited"
-        break
-      case 4:
-        bucketName = "Rate-up"
-        break
-      default:
-        break
-    }
-
+    // let bucketName = ""
+    // switch (bucket) {
+    //   case 1:
+    //     bucketName = "Weapon"
+    //     break
+    //   case 2:
+    //     bucketName = "Summon"
+    //     break
+    //   case 3:
+    //     bucketName = "Limited"
+    //     break
+    //   case 4:
+    //     bucketName = "Rate-up"
+    //     break
+    //   default:
+    //     break
+    // }
+    // console.log(bucketName)
     return item
   }
 
