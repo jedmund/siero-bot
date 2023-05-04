@@ -21,10 +21,7 @@ export interface Database {
 
 const postgresConfig = {
   pool: new Pool({
-    host: "localhost",
-    user: "justin",
-    database: "hensei_dev",
-    // connectionString: "postgresql://justin@0.0.0.0/hensei_dev",
+    connectionString: process.env.DATABASE_URL,
   }),
 }
 
