@@ -97,7 +97,7 @@ class Api {
     return results.map((result: RawResult) => this.transformItem(result))
   }
 
-  // Rateup methods
+  // Methods: Rateup methods
 
   public static async addRateups(user_id: string, rateups: ItemRateMap) {
     return await Client.insertInto("gacha_rateups")
@@ -173,9 +173,74 @@ class Api {
     return rateups
   }
 
-  public static removeRateups(user_id: string) {
+  public static removeRateups(userId: string) {
     return Client.deleteFrom("gacha_rateups")
-      .where("user_id", "=", user_id)
+      .where("user_id", "=", userId)
+      .execute()
+  }
+
+  // Methods: Spark methods
+  public static async fetchSpark(userId: string) {
+    const response = await Client.selectFrom("sparks")
+      .select(["guild_ids", "crystals", "tickets", "ten_tickets"])
+      .where("user_id", "=", userId)
+      .limit(1)
+      .executeTakeFirst()
+
+    if (response) {
+      const dict: {
+        guildIds: string[]
+        spark: Spark
+      } = {
+        guildIds: response.guild_ids,
+        spark: {
+          crystals: response.crystals,
+          tickets: response.tickets,
+          ten_tickets: response.ten_tickets,
+        },
+      }
+
+      return dict
+    } else return response
+  }
+
+  public static async updateSpark({
+    userId,
+    guildIds,
+    crystals,
+    tickets,
+    ten_tickets,
+  }: {
+    userId: string
+    guildIds?: string[]
+    crystals?: number
+    tickets?: number
+    ten_tickets?: number
+  }) {
+    const payload: { [key: string]: string | string[] | number } = {
+      user_id: userId,
+    }
+    if (guildIds) payload.guild_ids = guildIds
+    if (crystals) payload.crystals = crystals
+    if (tickets) payload.tickets = tickets
+    if (ten_tickets) payload.ten_tickets = ten_tickets
+
+    return await Client.insertInto("sparks")
+      .values(payload)
+      .onConflict((oc) => oc.column("user_id").doUpdateSet(payload))
+      .returning(["crystals", "tickets", "ten_tickets"])
+      .executeTakeFirst()
+  }
+
+  public static async resetSpark(userId: string) {
+    await Client.updateTable("sparks")
+      .set({
+        crystals: 0,
+        tickets: 0,
+        ten_tickets: 0,
+      })
+      .where("user_id", "=", userId)
+      .returning(["crystals", "tickets", "ten_tickets"])
       .execute()
   }
 

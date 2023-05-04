@@ -51,11 +51,13 @@ export interface SummonTable {
 
 export interface SparkTable {
   [key: string]: any
-  user_id: Generated<string>
+  id: Generated<string>
+  user_id: string
+  guild_ids: string[]
   crystals: number
   tickets: number
   ten_tickets: number
   target_id: Generated<string>
-  target_memo: string
-  last_updated: Date
+  target_type: string
+  updated_at: Date
 }
