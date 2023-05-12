@@ -91,7 +91,6 @@ export class RateupCommand extends Subcommand {
           })
       },
       {
-        guildIds: [process.env.DISCORD_GUILD_ID || ""],
         idHints: ["1099571255344103433"],
       }
     )

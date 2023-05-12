@@ -90,7 +90,6 @@ export class GachaCommand extends Subcommand {
           })
       },
       {
-        guildIds: [process.env.DISCORD_GUILD_ID || ""],
         idHints: ["1102647266973581312"],
       }
     )
