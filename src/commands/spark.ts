@@ -67,7 +67,6 @@ export class SparkCommand extends Subcommand {
           })
       },
       {
-        guildIds: [process.env.DISCORD_GUILD_ID || ""],
         idHints: [""],
       }
     )
@@ -126,40 +125,40 @@ export class SparkCommand extends Subcommand {
     const currentProgress = await Api.fetchSpark(interaction.user.id)
     const inputCurrencies = this.getCurrencies(interaction)
 
-    if (currentProgress) {
-      let progress: { [key: string]: number } = {}
-      for (const currency in inputCurrencies) {
-        const inputValue = inputCurrencies[currency]
-        const currentValue = currentProgress.spark[currency] || 0
-        progress[currency] =
-          operation === "+"
-            ? currentValue + inputValue
-            : Math.max(currentValue - inputValue, 0)
-      }
+    let progress: { [key: string]: number } = {}
+    for (const currency in inputCurrencies) {
+      const inputValue = inputCurrencies[currency]
+      const currentValue = currentProgress ? currentProgress.spark[currency] : 0
+      progress[currency] =
+        operation === "+"
+          ? currentValue + inputValue
+          : Math.max(currentValue - inputValue, 0)
+    }
 
-      const progressResponse = await Api.updateSpark({
-        userId: interaction.user.id,
-        guildIds: this.updateGuilds(
-          currentProgress.guildIds,
-          interaction.guild?.id
-        ),
-        ...progress,
-      })
+    const progressResponse = await Api.updateSpark({
+      userId: interaction.user.id,
+      guildIds: this.updateGuilds(
+        currentProgress ? currentProgress.guildIds : [],
+        interaction.guild?.id
+      ),
+      ...progress,
+    })
 
-      if (currentProgress && progressResponse) {
-        const difference: Spark = this.calculateDifference(
-          currentProgress.spark,
-          progressResponse
+    if (progressResponse) {
+      const difference: Spark = this.calculateDifference(
+        currentProgress
+          ? currentProgress.spark
+          : { crystals: 0, tickets: 0, ten_tickets: 0 },
+        progressResponse
+      )
+      const differenceString = this.formatDifference(difference)
+      interaction.reply(
+        this.generateResponseBlock(
+          interaction.user,
+          progressResponse,
+          differenceString
         )
-        const differenceString = this.formatDifference(difference)
-        interaction.reply(
-          this.generateResponseBlock(
-            interaction.user,
-            progressResponse,
-            differenceString
-          )
-        )
-      }
+      )
     }
   }
 
@@ -169,30 +168,30 @@ export class SparkCommand extends Subcommand {
     const currentProgress = await Api.fetchSpark(interaction.user.id)
     const updatedProgress = this.getCurrencies(interaction)
 
-    if (currentProgress) {
-      const progressResponse = await Api.updateSpark({
-        userId: interaction.user.id,
-        guildIds: this.updateGuilds(
-          currentProgress.guildIds,
-          interaction.guild?.id
-        ),
-        ...updatedProgress,
-      })
+    const progressResponse = await Api.updateSpark({
+      userId: interaction.user.id,
+      guildIds: this.updateGuilds(
+        currentProgress ? currentProgress.guildIds : [],
+        interaction.guild?.id
+      ),
+      ...updatedProgress,
+    })
 
-      if (progressResponse) {
-        const difference: Spark = this.calculateDifference(
-          currentProgress.spark,
-          progressResponse
+    if (progressResponse) {
+      const difference: Spark = this.calculateDifference(
+        currentProgress
+          ? currentProgress.spark
+          : { crystals: 0, tickets: 0, ten_tickets: 0 },
+        progressResponse
+      )
+      const differenceString = this.formatDifference(difference)
+      interaction.reply(
+        this.generateResponseBlock(
+          interaction.user,
+          progressResponse,
+          differenceString
         )
-        const differenceString = this.formatDifference(difference)
-        interaction.reply(
-          this.generateResponseBlock(
-            interaction.user,
-            progressResponse,
-            differenceString
-          )
-        )
-      }
+      )
     }
   }
 
@@ -295,7 +294,7 @@ export class SparkCommand extends Subcommand {
   private generateResponseBlock(
     user: User,
     spark: Spark,
-    differenceString: string
+    differenceString?: string
   ) {
     return {
       content: `Your spark has been updated! ${differenceString}`,
