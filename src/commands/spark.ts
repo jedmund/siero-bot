@@ -3,6 +3,7 @@ import { Subcommand } from "@sapphire/plugin-subcommands"
 import { ApplyOptions } from "@sapphire/decorators"
 import pluralize from "pluralize"
 import Api from "../services/api"
+import Leaderboard from "../services/leaderboard"
 
 @ApplyOptions<Subcommand.Options>({
   description: "Keep track of your spark progress",
@@ -214,6 +215,30 @@ export class SparkCommand extends Subcommand {
       embeds: progress ? [this.generateEmbed(user, progress.spark)] : [],
       fetchReply: true,
     })
+  }
+
+  public async chatInputLeaderboard(
+    interaction: Subcommand.ChatInputCommandInteraction
+  ) {
+    if (!interaction.channel) {
+      interaction.reply({
+        content:
+          "Sorry, I can't show leaderboards in direct messages. Please send the command from a server that we're both in!",
+      })
+    }
+
+    const guild = interaction.guild
+
+    if (guild) {
+      const order = "desc"
+      let leaderboard = new Leaderboard(guild?.id, order)
+      const embed = await leaderboard.execute()
+
+      interaction.reply({
+        content: `Here is the current leaderboard for ${guild.name}:`,
+        embeds: [embed],
+      })
+    }
   }
 
   public async chatInputReset(
