@@ -18,6 +18,15 @@ import type SparkResult from "../interfaces/SparkResult"
 import fetchRateups from "../utils/fetchRateups"
 import { ItemRateMap } from "../utils/types"
 
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config()
+}
+
+const COMMAND_ID =
+  process.env.NODE_ENV === "production"
+    ? "1110727170604679258"
+    : "1102647266973581312"
+
 @ApplyOptions<Subcommand.Options>({
   description: "Simulate the gacha",
   subcommands: [
@@ -90,7 +99,7 @@ export class GachaCommand extends Subcommand {
           })
       },
       {
-        idHints: ["1102647266973581312"],
+        idHints: [COMMAND_ID],
       }
     )
   }

@@ -13,6 +13,14 @@ import type { ItemRateMap, RateMap } from "../utils/types"
 import Rateup from "../services/rateup"
 import Api from "../services/api"
 
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config()
+}
+
+const COMMAND_ID =
+  process.env.NODE_ENV === "production"
+    ? "1099571255344103433"
+    : "1110727193081946162"
 const NUM_MAX_RATEUPS = 10
 
 @ApplyOptions<Subcommand.Options>({
@@ -91,7 +99,7 @@ export class RateupCommand extends Subcommand {
           })
       },
       {
-        idHints: ["1099571255344103433"],
+        idHints: [COMMAND_ID],
       }
     )
   }

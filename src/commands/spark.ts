@@ -5,6 +5,15 @@ import pluralize from "pluralize"
 import Api from "../services/api"
 import Leaderboard from "../services/leaderboard"
 
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config()
+}
+
+const COMMAND_ID =
+  process.env.NODE_ENV === "production"
+    ? "1110727196584202361"
+    : "1103831182728232960"
+
 @ApplyOptions<Subcommand.Options>({
   description: "Keep track of your spark progress",
   subcommands: [
@@ -19,6 +28,7 @@ import Leaderboard from "../services/leaderboard"
       chatInputRun: "chatInputProgress",
       default: true,
     },
+    { name: "leaderboard", chatInputRun: "chatInputLeaderboard" },
     {
       name: "reset",
       chatInputRun: "chatInputReset",
@@ -66,9 +76,13 @@ export class SparkCommand extends Subcommand {
             const description = "Reset your spark progress"
             return this.sparkCommand(command, "reset", description)
           })
+          .addSubcommand((command) => {
+            const description = "Show the spark leaderboard"
+            return this.sparkCommand(command, "leaderboard", description)
+          })
       },
       {
-        idHints: [""],
+        idHints: [COMMAND_ID],
       }
     )
   }
