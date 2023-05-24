@@ -5,9 +5,9 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config()
 }
 
-const client = new SapphireClient({
+const sapphire = new SapphireClient({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
   logger: { level: LogLevel.Debug },
 })
 
-client.login(process.env.DISCORD_TOKEN)
+sapphire.login(process.env.DISCORD_TOKEN)
