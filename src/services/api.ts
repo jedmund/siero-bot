@@ -219,6 +219,10 @@ class Api {
   }) {
     const payload: { [key: string]: string | string[] | number } = {
       user_id: userId,
+      updated_at: new Date(Date.now())
+        .toISOString()
+        .replace("T", " ")
+        .replace("Z", ""),
     }
     if (guildIds) payload.guild_ids = guildIds
     if (crystals) payload.crystals = crystals
