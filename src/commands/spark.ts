@@ -338,7 +338,7 @@ export class SparkCommand extends Subcommand {
     return {
       content: `Your spark has been updated! ${differenceString}`,
       embeds: [this.generateEmbed(user, spark)],
-      ephemeral: true,
+      ephemeral: false,
       fetchReply: true,
     }
   }

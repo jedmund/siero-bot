@@ -244,7 +244,7 @@ export class RateupCommand extends Subcommand {
     // Respond to the original request
     return {
       content: description,
-      ephemeral: true,
+      ephemeral: false,
       embeds: embeds,
       components: components,
     }
@@ -266,7 +266,7 @@ export class RateupCommand extends Subcommand {
     // Respond to the original request
     return {
       content: description,
-      ephemeral: true,
+      ephemeral: false,
       embeds: embeds,
     }
   }
