@@ -21,7 +21,7 @@ const COMMAND_ID =
   process.env.NODE_ENV === "production"
     ? "1099571255344103433"
     : "1110727193081946162"
-const NUM_MAX_RATEUPS = 10
+const NUM_MAX_RATEUPS = 12
 
 @ApplyOptions<Subcommand.Options>({
   description: "Manipulate gacha rates",
