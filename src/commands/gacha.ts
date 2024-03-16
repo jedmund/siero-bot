@@ -1,5 +1,7 @@
 import {
-  EmbedBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ComponentType,
   SlashCommandStringOption,
   SlashCommandSubcommandBuilder,
 } from "discord.js"
@@ -10,13 +12,10 @@ import { isMessageInstance } from "@sapphire/discord.js-utilities"
 import Gacha from "../services/gacha"
 import Until from "../services/until"
 
-import { readableRarity } from "../utils/readable"
-import { DrawableItemType, Promotion, Rarity, Season } from "../utils/enums"
-
-import type DrawableItem from "../interfaces/DrawableItem"
-import type SparkResult from "../interfaces/SparkResult"
+import { Promotion, Season } from "../utils/enums"
 import fetchRateups from "../utils/fetchRateups"
 import { ItemRateMap } from "../utils/types"
+import { RenderingUtils } from "../utils/rendering"
 
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config()
@@ -204,7 +203,7 @@ export class GachaCommand extends Subcommand {
     const item = gacha.singleRoll()
 
     if (isMessageInstance(msg)) {
-      return interaction.editReply(this.renderItem(item))
+      return interaction.editReply(RenderingUtils.renderItem(item))
     } else {
       return interaction.reply("There was an error")
     }
@@ -223,7 +222,7 @@ export class GachaCommand extends Subcommand {
 
     if (isMessageInstance(msg)) {
       return interaction.editReply(
-        `\`\`\`html\n${this.renderItems(result.items)}\`\`\``
+        `\`\`\`html\n${RenderingUtils.renderItems(result.items)}\`\`\``
       )
     } else {
       return interaction.reply("There was an error")
@@ -238,18 +237,36 @@ export class GachaCommand extends Subcommand {
       fetchReply: true,
     })
 
+    const promotion =
+      this.getPromotion(interaction.options.getString("promotion")) || "premium"
+    const season = this.getSeason(interaction.options.getString("season")) || ""
+
     const gacha = await this.createGacha(interaction)
     const result = gacha.spark()
 
+    const sparkButton = new ButtonBuilder()
+      .setCustomId(`copySpark:${interaction.user.id}:${promotion}:${season}`)
+      .setLabel("Spark with these rates")
+      .setStyle(ButtonStyle.Primary)
+
+    const components = [
+      { type: ComponentType.ActionRow, components: [sparkButton] },
+    ]
+
     if (isMessageInstance(msg)) {
-      let embed = this.renderSpark(result)
+      let embed = RenderingUtils.renderSpark(result, this.rateups)
       return interaction.editReply({
         content: `This is your spark`,
         embeds: [embed],
+        components: components,
       })
     } else {
       return interaction.reply("There was an error")
     }
+  }
+
+  public async chatInputCopySpark() {
+    console.log("Copy and spark")
   }
 
   public async chatInputUntil(
@@ -276,155 +293,6 @@ export class GachaCommand extends Subcommand {
       )
       await until.execute()
     }
-  }
-
-  // Methods: Rendering
-
-  private renderItems(results: DrawableItem[]) {
-    let characterWeapons = this.sortCharacterWeapons(results)
-    var gachaItems = results
-      .filter((x) => !characterWeapons.includes(x))
-      .concat(characterWeapons.filter((x) => !results.includes(x)))
-
-    let items = this.shuffle(gachaItems).concat(characterWeapons)
-
-    var string = ""
-    for (var item in items) {
-      string += this.renderItem(items[item], true)
-    }
-
-    return string
-  }
-
-  private renderSpark(results: SparkResult) {
-    let rate = Math.floor((results.count.SSR / 300) * 100)
-    let summary = `\`\`\`${this.renderSummary(results)}\`\`\``
-
-    var details = "```html\n"
-    results.items.forEach((item: DrawableItem) => {
-      details += this.renderItem(item, true)
-    })
-    details += "\n```"
-
-    return new EmbedBuilder()
-      .setDescription(details)
-      .addFields(
-        { name: "Summary", value: summary },
-        { name: "Rate", value: `Your SSR rate is **${rate}%**` }
-      )
-  }
-
-  private renderItem(result: DrawableItem, combined: boolean = false) {
-    let rarity: string = readableRarity(result.rarity)
-
-    if (result.name && result.recruits) {
-      var response = `<${rarity}> ${
-        result.name.en
-      } – You recruited ${result.recruits.name.en.trim()}!`
-    } else if (
-      result.name &&
-      !result.recruits &&
-      result.item_type == DrawableItemType.SUMMON
-    ) {
-      var response = `<${rarity} Summon> ${result.name.en}`
-    } else {
-      var response = `<${rarity}> ${result.name.en}`
-    }
-
-    return !combined ? `\`\`\`html\n${response}\n\`\`\`` : `${response}\n`
-  }
-
-  private renderSummary(results: SparkResult) {
-    let ssrWeapons = results.items.filter(this.filterSSRWeapons)
-    let ssrSummons = results.items.filter(this.filterSSRSummons)
-    let numRateupItems = this.filterRateUpItems(results)
-
-    // TODO: Extract into helper method
-    // let targetsAcquired = results.items.filter((item: Item) => {
-    //   if (this.sparkTarget != null) {
-    //     return (
-    //       item.name == this.sparkTarget.name ||
-    //       (item.recruits != null && item.recruits == this.sparkTarget.recruits)
-    //     )
-    //   } else {
-    //     return null
-    //   }
-    // })
-
-    // let targetAcquiredString = ""
-    // if (targetsAcquired != null) {
-    //   targetAcquiredString =
-    //     targetsAcquired.length > 0
-    //       ? `You got your spark target! (${targetsAcquired.length})`
-    //       : ""
-    // }
-
-    return [
-      // targetAcquiredString,
-      this.rateups.length > 0 ? `Rate-up Items: ${numRateupItems}` : "",
-      `SSR Weapons: ${ssrWeapons.length}`,
-      `SSR Summons: ${ssrSummons.length}`,
-      `SR: ${results.count.SR}`,
-      `R: ${results.count.R}`,
-    ].join("\n")
-  }
-
-  // Methods: Filtering and sorting
-
-  private filterSSRWeapons(item: DrawableItem) {
-    return item.rarity == Rarity.SSR && item.type === DrawableItemType.WEAPON
-  }
-
-  private filterSSRSummons(item: DrawableItem) {
-    return item.rarity == Rarity.SSR && item.type === DrawableItemType.SUMMON
-  }
-
-  private filterRateUpItems(spark: SparkResult) {
-    let totalCount = 0
-    for (let i in this.rateups) {
-      let rateupItem: DrawableItem = this.rateups[i].item
-      totalCount += spark.items.reduce((n: number, item: DrawableItem) => {
-        return n + (rateupItem.id == item.id ? 1 : 0)
-      }, 0)
-    }
-    return totalCount
-  }
-
-  private sortCharacterWeapons(results: DrawableItem[]) {
-    let weapons: DrawableItem[] = []
-
-    results.forEach((item: DrawableItem) => {
-      let hasPlacedSR = false
-      let lastSRPos = 0
-      let placedSSRCount = 0
-
-      if (item.recruits) {
-        // If an R is drawn, put it at the front of the list.
-        if (item.rarity == Rarity.R) {
-          weapons.unshift(item)
-          lastSRPos = !hasPlacedSR ? weapons.length : lastSRPos
-        }
-
-        // If an SR is drawn, put it at the last SR position,
-        // then record a new position.
-        if (item.rarity == Rarity.SR) {
-          weapons.splice(lastSRPos, 0, item)
-          hasPlacedSR = !hasPlacedSR ? true : false
-        }
-
-        // If an SSR is drawn, put it at the end of the list.
-        if (item.rarity == Rarity.SSR) {
-          weapons.push(item)
-
-          if (!hasPlacedSR) {
-            placedSSRCount += 1
-            lastSRPos = weapons.length - placedSSRCount
-          }
-        }
-      }
-    })
-
-    return weapons
   }
 
   // Methods: Transformers
@@ -455,28 +323,5 @@ export class GachaCommand extends Subcommand {
       default:
         return undefined
     }
-  }
-
-  // Methods: Convenience methods
-
-  // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-  private shuffle(array: DrawableItem[]) {
-    var currentIndex = array.length,
-      temporaryValue,
-      randomIndex
-
-    // While there remain elements to shuffle...
-    while (0 !== currentIndex) {
-      // Pick a remaining element...
-      randomIndex = Math.floor(Math.random() * currentIndex)
-      currentIndex -= 1
-
-      // And swap it with the current element.
-      temporaryValue = array[currentIndex]
-      array[currentIndex] = array[randomIndex]
-      array[randomIndex] = temporaryValue
-    }
-
-    return array
   }
 }
