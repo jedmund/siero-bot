@@ -229,7 +229,7 @@ class Until {
     const NUM_TEN_PULLS = rolls / 10
     const TEN_PULL_COST = 3000
     const MOBACOIN_COST = 3150
-    const ESTIMATED_EXCHANGE_RATE = 0.0075
+    const ESTIMATED_EXCHANGE_RATE = 0.00667
 
     return {
       crystals: NUM_TEN_PULLS * TEN_PULL_COST,
