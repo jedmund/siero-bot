@@ -45,7 +45,7 @@ class Rateup {
 
     const completed = {
       content: "Your simulation's rates have been updated.",
-      ephemeral: true,
+      ephemeral: false,
       components: [],
       embeds: [this.renderEmbed()],
     }
