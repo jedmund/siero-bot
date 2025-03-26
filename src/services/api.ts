@@ -225,9 +225,9 @@ class Api {
         .replace("Z", ""),
     }
     if (guildIds) payload.guild_ids = guildIds
-    if (crystals) payload.crystals = crystals
-    if (tickets) payload.tickets = tickets
-    if (ten_tickets) payload.ten_tickets = ten_tickets
+    if (crystals !== undefined) payload.crystals = crystals
+    if (tickets !== undefined) payload.tickets = tickets
+    if (ten_tickets !== undefined) payload.ten_tickets = ten_tickets
 
     return await Client.insertInto("sparks")
       .values(payload)
