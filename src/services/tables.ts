@@ -35,7 +35,7 @@ export interface WeaponTable {
   granblue_id: string
   name_en: string
   name_jp: string
-  recruits_id: Generated<string>
+  recruits: Generated<string>
   rarity: number
   element: number
 }

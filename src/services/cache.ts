@@ -23,7 +23,7 @@ interface GachaResult {
   name_jp: string | null
   character_name_en?: string | null
   character_name_jp?: string | null
-  recruits_id?: string | null
+  recruits?: string | null
   rarity: number | null
 }
 
@@ -218,7 +218,7 @@ class Cache {
   private async fetchCharacterWeapons(rarity: Rarity) {
     const items = await Client.selectFrom("gacha")
       .leftJoin("weapons", "weapons.id", "gacha.drawable_id")
-      .leftJoin("characters", "characters.id", "weapons.recruits_id")
+      .leftJoin("characters", "characters.granblue_id", "weapons.recruits")
       .select([
         "gacha.id",
         "weapons.id as item_id",
@@ -226,7 +226,7 @@ class Cache {
         "weapons.name_en",
         "weapons.name_jp",
         "weapons.rarity",
-        "weapons.recruits_id",
+        "weapons.recruits",
         "characters.id as character_id",
         "characters.granblue_id as character_granblue_id",
         "characters.name_en as character_name_en",
@@ -240,7 +240,7 @@ class Cache {
         "gacha.halloween",
         "gacha.holiday",
       ])
-      .where(sql`recruits_id IS NOT NULL`)
+      .where(sql`recruits IS NOT NULL`)
       .where("weapons.rarity", "=", rarity)
       .execute()
 
@@ -260,7 +260,7 @@ class Cache {
         "weapons.name_en",
         "weapons.name_jp",
         "weapons.rarity",
-        "weapons.recruits_id",
+        "weapons.recruits",
         "gacha.premium",
         "gacha.classic",
         "gacha.flash",
@@ -270,7 +270,7 @@ class Cache {
         "gacha.halloween",
         "gacha.holiday",
       ])
-      .where(sql`recruits_id IS NULL`)
+      .where(sql`recruits IS NULL`)
       .where("rarity", "=", rarity)
       .execute()
 

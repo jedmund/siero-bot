@@ -9,7 +9,7 @@ class Api {
   public static async fetchItemInfoFromID(id: string) {
     const item: any = await Client.selectFrom("gacha")
       .leftJoin("weapons", "weapons.id", "gacha.drawable_id")
-      .leftJoin("characters", "characters.id", "weapons.recruits_id")
+      .leftJoin("characters", "characters.granblue_id", "weapons.recruits")
       .leftJoin("summons", "summons.id", "gacha.drawable_id")
       .select([
         "gacha.id",
@@ -50,7 +50,7 @@ class Api {
   public static async findItem(name: string) {
     const results = await Client.selectFrom("gacha")
       .leftJoin("weapons", "weapons.id", "gacha.drawable_id")
-      .leftJoin("characters", "characters.id", "weapons.recruits_id")
+      .leftJoin("characters", "characters.granblue_id", "weapons.recruits")
       .leftJoin("summons", "summons.id", "gacha.drawable_id")
       .select([
         "gacha.id",
@@ -117,7 +117,7 @@ class Api {
     const results = await Client.selectFrom("gacha_rateups")
       .leftJoin("gacha", "gacha.id", "gacha_rateups.gacha_id")
       .leftJoin("weapons", "weapons.id", "gacha.drawable_id")
-      .leftJoin("characters", "characters.id", "weapons.recruits_id")
+      .leftJoin("characters", "characters.granblue_id", "weapons.recruits")
       .leftJoin("summons", "summons.id", "gacha.drawable_id")
       .select([
         "gacha.id",
