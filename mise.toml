@@ -1,0 +1,39 @@
+min_version = "2024.9.5"
+
+[env]
+PROJECT_NAME = "{{ config_root | basename }}"
+NODE_ENV = "development"
+DEBUG = "*"
+
+[tools]
+node = "lts"
+yarn = "latest"
+
+[tasks.install]
+description = "Install Node.js dependencies"
+run = "yarn install"
+
+[tasks.dev]
+description = "Run the bot in development mode"
+alias = "d"
+run = "npm run start"
+
+[tasks.serve]
+description = "Run the bot in production mode"
+alias = "s"
+run = "npm run serve"
+
+[tasks.build]
+description = "Build the TypeScript project"
+alias = "b"
+run = "npm run build-ts"
+
+[tasks.watch]
+description = "Watch TypeScript files for changes"
+alias = "w"
+run = "npm run watch-ts"
+
+[tasks.clean]
+description = "Clean build artifacts"
+alias = "c"
+run = "rm -rf build/dist node_modules" 
