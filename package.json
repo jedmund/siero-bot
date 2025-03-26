@@ -9,7 +9,7 @@
     "@sapphire/decorators": "^6.0.1",
     "@sapphire/framework": "latest",
     "@sapphire/plugin-subcommands": "^4.0.1",
-    "chance": "^1.1.11",
+    "chance": "^1.1.12",
     "discord.js": "14.x",
     "dotenv": "^16.0.3",
     "kysely": "^0.24.2",
@@ -23,7 +23,7 @@
     "@types/pg": "^8.6.6",
     "@types/pluralize": "^0.0.29",
     "concurrently": "^8.0.1",
-    "nodemon": "^2.0.22"
+    "nodemon": "^3.1.9"
   },
   "scripts": {
     "build-ts": "rm -rf build/dist && tsc",
@@ -33,5 +33,6 @@
     "watch-node": "nodemon build/dist/index.js",
     "watch-ts": "tsc -w",
     "test": "echo \"Error: no test specified\" && exit 1"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
