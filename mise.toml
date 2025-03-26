@@ -11,7 +11,7 @@ yarn = "latest"
 
 [tasks.install]
 description = "Install Node.js dependencies"
-run = "yarn install"
+run = "npm install"
 
 [tasks.dev]
 description = "Run the bot in development mode"
