@@ -6,7 +6,12 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 const sapphire = new SapphireClient({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
+  intents: [
+    GatewayIntentBits.Guilds, 
+    GatewayIntentBits.GuildMessages, 
+    GatewayIntentBits.GuildMessageReactions
+    // GatewayIntentBits.MessageContent
+  ],
   logger: { level: LogLevel.Debug },
 })
 
