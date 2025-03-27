@@ -3,7 +3,6 @@ import { Client } from "./connection.js"
 import { DrawableItemType, Promotion, Rarity, Season } from "../utils/enums"
 import type DrawableItem from "../interfaces/DrawableItem"
 import type { ItemMap } from "../utils/types.js"
-import { sql } from "kysely"
 
 interface GachaResult {
   id: string | null
@@ -240,7 +239,7 @@ class Cache {
         "gacha.halloween",
         "gacha.holiday",
       ])
-      .where(sql`recruits IS NOT NULL`)
+      .where('recruits', 'is not', null)
       .where("weapons.rarity", "=", rarity)
       .execute()
 
@@ -270,7 +269,7 @@ class Cache {
         "gacha.halloween",
         "gacha.holiday",
       ])
-      .where(sql`recruits IS NULL`)
+      .where('recruits', 'is not', null)
       .where("rarity", "=", rarity)
       .execute()
 

@@ -35,11 +35,11 @@ class Api {
         "gacha.halloween",
         "gacha.holiday",
       ])
-      .where(({ or, cmpr }) =>
+      .where(({ or, eb }) =>
         or([
-          cmpr("characters.granblue_id", "=", id),
-          cmpr("summons.granblue_id", "=", id),
-          cmpr("weapons.granblue_id", "=", id),
+          eb("characters.granblue_id", "=", id),
+          eb("summons.granblue_id", "=", id),
+          eb("weapons.granblue_id", "=", id),
         ])
       )
       .executeTakeFirst()
@@ -82,14 +82,14 @@ class Api {
         "gacha.halloween",
         "gacha.holiday",
       ])
-      .where(({ or, cmpr }) =>
+      .where(({ or, eb }) =>
         or([
-          cmpr("characters.name_en", "ilike", `%${name}%`),
-          cmpr("characters.name_jp", "ilike", `%${name}%`),
-          cmpr("summons.name_en", "ilike", `%${name}%`),
-          cmpr("summons.name_jp", "ilike", `%${name}%`),
-          cmpr("weapons.name_en", "ilike", `%${name}%`),
-          cmpr("weapons.name_jp", "ilike", `%${name}%`),
+          eb("characters.name_en", "ilike", `%${name}%`),
+          eb("characters.name_jp", "ilike", `%${name}%`),
+          eb("summons.name_en", "ilike", `%${name}%`),
+          eb("summons.name_jp", "ilike", `%${name}%`),
+          eb("weapons.name_en", "ilike", `%${name}%`),
+          eb("weapons.name_jp", "ilike", `%${name}%`),
         ])
       )
       .execute()

@@ -35,8 +35,11 @@ class Leaderboard {
   public async fetchData() {
     return await Client.selectFrom("sparks")
       .select(["crystals", "tickets", "ten_tickets", "user_id"])
-      .where(sql`${this.guildId} = ANY(sparks.guild_ids)`)
-      .where(sql`updated_at >NOW() - INTERVAL '14 days'`)
+      .where((eb) => {
+        const guildCheck = sql`${this.guildId} = ANY(sparks.guild_ids)`
+        const dateCheck = sql`updated_at > NOW() - INTERVAL '14 days'`
+        return eb.and([guildCheck, dateCheck])
+      })
       .execute()
   }
 
