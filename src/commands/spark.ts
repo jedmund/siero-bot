@@ -126,20 +126,26 @@ export class SparkCommand extends Subcommand {
     actionString: string
   ) {
     return command
-      .addStringOption((option) =>
+      .addIntegerOption((option) =>
         option
           .setName("crystals")
           .setDescription(`The amount of crystals ${actionString}`)
+          .setMinValue(0)
+          .setMaxValue(999999)
       )
-      .addStringOption((option) =>
+      .addIntegerOption((option) =>
         option
           .setName("tickets")
           .setDescription(`The amount of single draw tickets ${actionString}`)
+          .setMinValue(0)
+          .setMaxValue(9999)
       )
-      .addStringOption((option) =>
+      .addIntegerOption((option) =>
         option
           .setName("ten_tickets")
           .setDescription(`The amount of ten-part draw tickets ${actionString}`)
+          .setMinValue(0)
+          .setMaxValue(9999)
       )
   }
 
@@ -332,14 +338,14 @@ export class SparkCommand extends Subcommand {
   ): SparkCurrencies {
     const progress: SparkCurrencies = {}
 
-    const crystals = interaction.options.getString("crystals")
-    if (crystals) progress.crystals = parseInt(crystals)
+    const crystals = interaction.options.getInteger("crystals")
+    if (crystals !== null) progress.crystals = crystals
 
-    const tickets = interaction.options.getString("tickets")
-    if (tickets) progress.tickets = parseInt(tickets)
+    const tickets = interaction.options.getInteger("tickets")
+    if (tickets !== null) progress.tickets = tickets
 
-    const tenTickets = interaction.options.getString("ten_tickets")
-    if (tenTickets) progress.ten_tickets = parseInt(tenTickets)
+    const tenTickets = interaction.options.getInteger("ten_tickets")
+    if (tenTickets !== null) progress.ten_tickets = tenTickets
 
     return progress
   }
