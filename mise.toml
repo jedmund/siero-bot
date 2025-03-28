@@ -36,7 +36,7 @@ run = "npm run watch-ts"
 [tasks.clean]
 description = "Clean build artifacts"
 alias = "c"
-run = "rm -rf build/dist node_modules" 
+run = "rm -rf build/dist node_modules"
 
 [tasks.purge]
 description = "Purge commands"
