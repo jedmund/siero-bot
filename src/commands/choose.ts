@@ -6,8 +6,7 @@ if (process.env.NODE_ENV !== "production") {
   config()
 }
 
-const COMMAND_ID =
-  process.env.NODE_ENV === "production" ? "" : "1110730712241406013"
+const COMMAND_ID = process.env.CHOOSE_COMMAND_ID ?? ""
 
 const NUM_MAX_CHOICES = 8
 

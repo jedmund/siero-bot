@@ -22,11 +22,7 @@ if (process.env.NODE_ENV !== "production") {
   config()
 }
 
-const COMMAND_ID =
-  process.env.NODE_ENV === "production"
-    ? "1110727170604679258"
-    : "1102647266973581312"
-
+const COMMAND_ID = process.env.GACHA_COMMAND_ID ?? ""
 @ApplyOptions<Subcommand.Options>({
   description: "Simulate the gacha",
   subcommands: [

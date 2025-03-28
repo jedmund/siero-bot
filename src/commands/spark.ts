@@ -11,10 +11,7 @@ if (process.env.NODE_ENV !== "production") {
   config()
 }
 
-const COMMAND_ID =
-  process.env.NODE_ENV === "production"
-    ? "1110727196584202361"
-    : "1103831182728232960"
+const COMMAND_ID = process.env.SPARK_COMMAND_ID ?? ""
 
 const DRAWS_PER_SPARK = 300
 const CRYSTALS_PER_TICKET = 300

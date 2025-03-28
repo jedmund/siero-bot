@@ -1,5 +1,12 @@
 import { Command } from "@sapphire/framework"
 import { isMessageInstance } from "@sapphire/discord.js-utilities"
+import { config } from "dotenv"
+
+if (process.env.NODE_ENV !== "production") {
+  config()
+}
+
+const COMMAND_ID = process.env.PING_COMMAND_ID ?? ""
 
 export class PingCommand extends Command {
   public constructor(context: Command.Context, options: Command.Options) {
@@ -17,7 +24,7 @@ export class PingCommand extends Command {
           .setDescription(this.description)
       },
       {
-        idHints: ["1099579014160580678"],
+        idHints: [COMMAND_ID],
       }
     )
   }
