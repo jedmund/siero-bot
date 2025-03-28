@@ -61,7 +61,7 @@ export class RateupCommand extends Subcommand {
             const generated = this.rateupCommand(command, "set", description)
 
             for (let i = 0; i < NUM_MAX_RATEUPS; i++) {
-              let required = i === 0 ? true : false
+              const required = i === 0 ? true : false
               generated.addStringOption(this.rateupItemOption(i + 1, required))
               generated.addStringOption(this.rateupRateOption(i + 1, required))
             }
@@ -115,26 +115,26 @@ export class RateupCommand extends Subcommand {
     return command.setName(name).setDescription(description)
   }
 
-  private rateupItemOption(number: number, required: boolean = false) {
-    let optionBuilder: SlashCommandStringOption = new SlashCommandStringOption()
-
-    optionBuilder.setName(`item${number}`)
-    optionBuilder.setDescription(
-      "The name or Granblue ID of the item to rateup"
-    )
-    optionBuilder.setRequired(required)
+  private rateupItemOption(
+    number: number,
+    required: boolean = false
+  ): SlashCommandStringOption {
+    const optionBuilder = new SlashCommandStringOption()
+      .setName(`item${number}`)
+      .setDescription("The name or Granblue ID of the item to rateup")
+      .setRequired(required)
 
     return optionBuilder
   }
 
-  private rateupRateOption(number: number, required: boolean = false) {
-    let optionBuilder: SlashCommandStringOption = new SlashCommandStringOption()
-
-    optionBuilder.setName(`rate${number}`)
-    optionBuilder.setDescription(
-      "The appearance rate of the item (in decimals)"
-    )
-    optionBuilder.setRequired(required)
+  private rateupRateOption(
+    number: number,
+    required: boolean = false
+  ): SlashCommandStringOption {
+    const optionBuilder = new SlashCommandStringOption()
+      .setName(`rate${number}`)
+      .setDescription("The appearance rate of the item (in decimals)")
+      .setRequired(required)
 
     return optionBuilder
   }
@@ -155,7 +155,7 @@ export class RateupCommand extends Subcommand {
     // Extract the user from the interaction and store
     // whether we are fetching rateups for the sender or someone else
     const providedUser = interaction.options.getUser("user")
-    let userId = providedUser === null ? interaction.user.id : providedUser.id
+    const userId = providedUser === null ? interaction.user.id : providedUser.id
 
     // Fetch the appropriate rates and render them to the user
     const rates = await Api.fetchRateups(userId)
@@ -252,8 +252,8 @@ export class RateupCommand extends Subcommand {
   }
 
   private renderCopy(rates: ItemRateMap, userId: string) {
-    let possessive = `<@${userId}>'s`
-    let pronoun: string = `<@${userId}> doesn't`
+    const possessive = `<@${userId}>'s`
+    const pronoun: string = `<@${userId}> doesn't`
 
     // Create description strings based on the result of the query
     const description =
@@ -283,7 +283,7 @@ export class RateupCommand extends Subcommand {
     })
     details += "\n```"
 
-    let description = updated
+    const description = updated
       ? `These rates only apply to your simulations:`
       : `These rates only apply to ${person} simulations:`
     return new EmbedBuilder()
@@ -302,7 +302,7 @@ export class RateupCommand extends Subcommand {
   }
 
   private getRates(interaction: Subcommand.ChatInputCommandInteraction) {
-    let rates: RateMap = []
+    const rates: RateMap = []
 
     for (let i = 0; i < NUM_MAX_RATEUPS; i++) {
       const identifier = interaction.options.getString(`item${i + 1}`)
