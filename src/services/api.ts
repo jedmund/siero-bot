@@ -6,54 +6,14 @@ import { Client } from "./connection"
 class Api {
   // Methods: Fetching methods
 
-  public static async fetchItemInfoFromID(id: string) {
-    const item: any = await Client.selectFrom("gacha")
+  private static baseGachaQuery() {
+    return Client.selectFrom("gacha")
       .leftJoin("weapons", "weapons.id", "gacha.drawable_id")
       .leftJoin("characters", "characters.granblue_id", "weapons.recruits")
       .leftJoin("summons", "summons.id", "gacha.drawable_id")
       .select([
         "gacha.id",
-        "gacha.drawable_type",
-        "weapons.id as weapon_id",
-        "weapons.name_en as weapon_name_en",
-        "weapons.name_jp as weapon_name_jp",
-        "weapons.granblue_id as weapon_granblue_id",
-        "characters.id as character_id",
-        "characters.name_en as character_name_en",
-        "characters.name_jp as character_name_jp",
-        "characters.granblue_id as character_granblue_id",
-        "summons.id as summon_id",
-        "summons.name_en as summon_name_en",
-        "summons.name_jp as summon_name_jp",
-        "summons.granblue_id as summon_granblue_id",
-        "gacha.premium",
-        "gacha.classic",
-        "gacha.flash",
-        "gacha.legend",
-        "gacha.valentines",
-        "gacha.summer",
-        "gacha.halloween",
-        "gacha.holiday",
-      ])
-      .where(({ or, eb }) =>
-        or([
-          eb("characters.granblue_id", "=", id),
-          eb("summons.granblue_id", "=", id),
-          eb("weapons.granblue_id", "=", id),
-        ])
-      )
-      .executeTakeFirst()
-
-    return this.transformItem(item)
-  }
-
-  public static async findItem(name: string) {
-    const results = await Client.selectFrom("gacha")
-      .leftJoin("weapons", "weapons.id", "gacha.drawable_id")
-      .leftJoin("characters", "characters.granblue_id", "weapons.recruits")
-      .leftJoin("summons", "summons.id", "gacha.drawable_id")
-      .select([
-        "gacha.id",
+        "gacha.drawable_id",
         "gacha.drawable_type",
         "weapons.id as weapon_id",
         "weapons.name_en as weapon_name_en",
@@ -82,19 +42,59 @@ class Api {
         "gacha.halloween",
         "gacha.holiday",
       ])
-      .where(({ or, eb }) =>
-        or([
-          eb("characters.name_en", "ilike", `%${name}%`),
-          eb("characters.name_jp", "ilike", `%${name}%`),
-          eb("summons.name_en", "ilike", `%${name}%`),
-          eb("summons.name_jp", "ilike", `%${name}%`),
-          eb("weapons.name_en", "ilike", `%${name}%`),
-          eb("weapons.name_jp", "ilike", `%${name}%`),
-        ])
-      )
-      .execute()
+  }
 
-    return results.map((result: RawResult) => this.transformItem(result))
+  public static async fetchItemInfoFromID(
+    id: string
+  ): Promise<DrawableItem | null> {
+    try {
+      const query = this.baseGachaQuery()
+        .where(({ or, eb }) =>
+          or([
+            eb("weapons.granblue_id", "=", id),
+            eb("summons.granblue_id", "=", id),
+            eb("characters.granblue_id", "=", id),
+          ])
+        )
+        .limit(1)
+
+      const item = await query.executeTakeFirst()
+
+      return item ? this.transformItem(item) : null
+    } catch (error) {
+      console.error(`Error fetching item with ID ${id}:`, error)
+      return null
+    }
+  }
+
+  public static async findItem(
+    name: string,
+    limit = 10,
+    offset = 0
+  ): Promise<DrawableItem[]> {
+    try {
+      const results = await this.baseGachaQuery()
+        .where(({ or, eb }) =>
+          or([
+            eb("weapons.name_en", "ilike", `%${name}%`),
+            eb("weapons.name_jp", "ilike", `%${name}%`),
+            eb("summons.name_en", "ilike", `%${name}%`),
+            eb("summons.name_jp", "ilike", `%${name}%`),
+            eb("characters.name_en", "ilike", `%${name}%`),
+            eb("characters.name_jp", "ilike", `%${name}%`),
+          ])
+        )
+        .limit(limit)
+        .offset(offset)
+        .execute()
+
+      return results
+        .map((result) => this.transformItem(result))
+        .filter((item): item is DrawableItem => item !== null)
+    } catch (error) {
+      console.error(`Error finding items with name ${name}:`, error)
+      return []
+    }
   }
 
   // Methods: Rateup methods
@@ -113,53 +113,32 @@ class Api {
       .execute()
   }
 
-  public static async fetchRateups(userId: string) {
-    const results = await Client.selectFrom("gacha_rateups")
-      .leftJoin("gacha", "gacha.id", "gacha_rateups.gacha_id")
-      .leftJoin("weapons", "weapons.id", "gacha.drawable_id")
-      .leftJoin("characters", "characters.granblue_id", "weapons.recruits")
-      .leftJoin("summons", "summons.id", "gacha.drawable_id")
-      .select([
-        "gacha.id",
-        "gacha.drawable_id",
-        "gacha.drawable_type",
-        "gacha_rateups.rate",
-        "weapons.id as weapon_id",
-        "weapons.name_en as weapon_name_en",
-        "weapons.name_jp as weapon_name_jp",
-        "weapons.granblue_id as weapon_granblue_id",
-        "weapons.rarity as weapon_rarity",
-        "weapons.element as weapon_element",
-        "characters.id as character_id",
-        "characters.name_en as character_name_en",
-        "characters.name_jp as character_name_jp",
-        "characters.granblue_id as character_granblue_id",
-        "characters.element as character_element",
-        "characters.rarity as character_rarity",
-        "summons.id as summon_id",
-        "summons.name_en as summon_name_en",
-        "summons.name_jp as summon_name_jp",
-        "summons.granblue_id as summon_granblue_id",
-        "summons.rarity as summon_rarity",
-        "summons.element as summon_element",
-        "gacha.premium",
-        "gacha.classic",
-        "gacha.flash",
-        "gacha.legend",
-        "gacha.valentines",
-        "gacha.summer",
-        "gacha.halloween",
-        "gacha.holiday",
-      ])
-      .where("user_id", "=", userId)
-      .execute()
+  public static async fetchRateups(userId: string): Promise<ItemRateMap> {
+    try {
+      const results = await this.baseGachaQuery()
+        .leftJoin("gacha_rateups", "gacha_rateups.gacha_id", "gacha.id")
+        .select(["gacha_rateups.rate"])
+        .where("gacha_rateups.user_id", "=", userId)
+        .execute()
 
-    return results.map((result: any) => {
-      return {
-        item: this.transformItem(result),
-        rate: parseFloat(result.rate),
-      }
-    })
+      return results
+        .map((result: RawResult) => {
+          const item = this.transformItem(result)
+          if (!item) return null
+
+          return {
+            item, // now TypeScript knows item is not null
+            rate: parseFloat(String(result.rate) || "0"),
+          }
+        })
+        .filter(
+          (entry): entry is { item: DrawableItem; rate: number } =>
+            entry !== null
+        )
+    } catch (error) {
+      console.error(`Error fetching rateups for user ${userId}:`, error)
+      return []
+    }
   }
 
   public static async copyRateups(
@@ -250,64 +229,69 @@ class Api {
 
   // Methods: Data transformation methods
 
-  private static transformItem(item: RawResult) {
-    let nameObject: { en: string; jp: string }
-    let itemId: string
-    let granblueId: string
-    let type: DrawableItemType
-    let rarity: Rarity
-    let element: Element
+  private static transformItem(item: RawResult): DrawableItem | null {
+    if (!item) return null
 
-    if (item.drawable_type === "Summon") {
-      itemId = item.summon_id || ""
-      nameObject = {
-        en: item.summon_name_en || "",
-        jp: item.summon_name_jp || "",
-      }
-      granblueId = item.summon_granblue_id || ""
-      type = DrawableItemType.SUMMON
-      rarity = item.summon_rarity || 3
-      element = item.summon_element || 0
-    } else {
-      itemId = item.weapon_id || ""
-      nameObject = {
-        en: item.weapon_name_en || "",
-        jp: item.weapon_name_jp || "",
-      }
-      granblueId = item.weapon_granblue_id || ""
-      type = DrawableItemType.WEAPON
-      rarity = item.weapon_rarity || 3
-      element = item.weapon_element || 0
+    // determine type first
+    const isWeapon = item.drawable_type === "Weapon"
+    const isSummon = item.drawable_type === "Summon"
+
+    if (!isWeapon && !isSummon) return null // invalid type
+
+    const type = isWeapon ? DrawableItemType.WEAPON : DrawableItemType.SUMMON
+
+    // get appropriate fields based on type
+    const nameEn = isWeapon ? item.weapon_name_en : item.summon_name_en
+    const nameJp = isWeapon ? item.weapon_name_jp : item.summon_name_jp
+    const itemId = isWeapon ? item.weapon_id : item.summon_id
+    const granblueId = isWeapon
+      ? item.weapon_granblue_id
+      : item.summon_granblue_id
+    const rarity = isWeapon ? item.weapon_rarity : item.summon_rarity
+    const element = isWeapon ? item.weapon_element : item.summon_element
+
+    // validate required fields
+    if (
+      !nameEn ||
+      !nameJp ||
+      !itemId ||
+      !granblueId ||
+      !rarity ||
+      element === undefined
+    ) {
+      console.error("Missing required fields for item:", item)
+      return null
     }
 
     const transformed: DrawableItem = {
       id: item.id || "",
       item_id: itemId,
-      name: nameObject,
+      name: { en: nameEn, jp: nameJp },
       granblue_id: granblueId,
-      type: type,
-      rarity: rarity,
-      element: element,
+      type,
+      rarity: rarity as Rarity,
+      element: element as Element,
       promotions: {
-        premium: item.premium || false,
-        classic: item.classic || false,
-        flash: item.flash || false,
-        legend: item.legend || false,
+        premium: !!item.premium,
+        classic: !!item.classic,
+        flash: !!item.flash,
+        legend: !!item.legend,
       },
       seasons: {
-        valentines: item.valentines || false,
-        summer: item.summer || false,
-        halloween: item.halloween || false,
-        holiday: item.holiday || false,
+        valentines: !!item.valentines,
+        summer: !!item.summer,
+        halloween: !!item.halloween,
+        holiday: !!item.holiday,
       },
     }
 
+    // only add recruits for weapons with character data
     if (
-      type === DrawableItemType.WEAPON &&
-      item.character_name_en !== null &&
-      item.character_name_jp !== null &&
-      item.character_id !== null &&
-      item.character_granblue_id !== null
+      isWeapon &&
+      item.character_id &&
+      item.character_name_en &&
+      item.character_name_jp &&
+      item.character_granblue_id
     ) {
       transformed.recruits = {
         id: item.character_id,

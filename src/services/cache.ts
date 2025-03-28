@@ -4,28 +4,6 @@ import { DrawableItemType, Promotion, Rarity, Season } from "../utils/enums"
 import type DrawableItem from "../interfaces/DrawableItem"
 import type { ItemMap } from "../utils/types.js"
 
-interface GachaResult {
-  id: string | null
-  item_id: string | null
-  character_id?: string | null
-  premium: boolean
-  classic: boolean
-  flash: boolean
-  legend: boolean
-  valentines: boolean
-  summer: boolean
-  halloween: boolean
-  holiday: boolean
-  granblue_id: string | null
-  character_granblue_id?: string | null
-  name_en: string | null
-  name_jp: string | null
-  character_name_en?: string | null
-  character_name_jp?: string | null
-  recruits?: string | null
-  rarity: number | null
-}
-
 class Cache {
   _characterWeapons: ItemMap = {}
   _nonCharacterWeapons: ItemMap = {}
@@ -166,16 +144,19 @@ class Cache {
 
   // Transformation methods
   private transformIntoDrawableItems(
-    items: GachaResult[],
+    items: GachaItemRecord[],
     type: DrawableItemType
   ) {
-    return items.map((item: GachaResult) =>
+    return items.map((item: GachaItemRecord) =>
       this.transformIntoDrawableItem(item, type)
     )
   }
 
-  private transformIntoDrawableItem(item: GachaResult, type: DrawableItemType) {
-    let drawableItem: DrawableItem = {
+  private transformIntoDrawableItem(
+    item: GachaItemRecord,
+    type: DrawableItemType
+  ) {
+    const drawableItem: DrawableItem = {
       id: item.id || "",
       item_id: item.item_id || "",
       granblue_id: item.granblue_id || "",
@@ -185,6 +166,7 @@ class Cache {
       },
       type: type,
       rarity: item.rarity || 0,
+      element: item.element || null,
       promotions: {
         premium: item.premium || false,
         classic: item.classic || false,
@@ -210,6 +192,14 @@ class Cache {
       }
     }
 
+    if (
+      type === DrawableItemType.WEAPON &&
+      item.character_element !== undefined &&
+      item.character_element !== null
+    ) {
+      drawableItem.element = item.character_element
+    }
+
     return drawableItem
   }
 
@@ -225,11 +215,13 @@ class Cache {
         "weapons.name_en",
         "weapons.name_jp",
         "weapons.rarity",
+        "weapons.element",
         "weapons.recruits",
         "characters.id as character_id",
         "characters.granblue_id as character_granblue_id",
         "characters.name_en as character_name_en",
         "characters.name_jp as character_name_jp",
+        "characters.element as character_element",
         "gacha.premium",
         "gacha.classic",
         "gacha.flash",
@@ -239,7 +231,7 @@ class Cache {
         "gacha.halloween",
         "gacha.holiday",
       ])
-      .where('recruits', 'is not', null)
+      .where("recruits", "is not", null)
       .where("weapons.rarity", "=", rarity)
       .execute()
 
@@ -259,6 +251,7 @@ class Cache {
         "weapons.name_en",
         "weapons.name_jp",
         "weapons.rarity",
+        "weapons.element",
         "weapons.recruits",
         "gacha.premium",
         "gacha.classic",
@@ -269,7 +262,7 @@ class Cache {
         "gacha.halloween",
         "gacha.holiday",
       ])
-      .where('recruits', 'is not', null)
+      .where("recruits", "is not", null)
       .where("rarity", "=", rarity)
       .execute()
 
@@ -289,6 +282,7 @@ class Cache {
         "summons.name_en",
         "summons.name_jp",
         "summons.rarity",
+        "summons.element",
         "gacha.premium",
         "gacha.classic",
         "gacha.flash",

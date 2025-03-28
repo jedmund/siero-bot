@@ -1,11 +1,12 @@
 import { Events, Listener } from "@sapphire/framework"
 import { ButtonInteraction } from "discord.js"
-import { Promotion, Season } from "../utils/enums" // Adjust import paths as necessary
-import Gacha from "../services/gacha" // Adjust import paths as necessary
-import Api from "../services/api" // Adjust import paths as necessary
-import fetchRateups from "../utils/fetchRateups" // Adjust import paths as necessary
-import { RenderingUtils } from "../utils/rendering"
 
+import Gacha from "../services/gacha"
+import Api from "../services/api"
+
+import { Promotion, Season } from "../utils/enums"
+import fetchRateups from "../utils/fetchRateups"
+import { RenderingUtils } from "../utils/rendering"
 export class HandleSparkButtonInteractionListener extends Listener<
   typeof Events.InteractionCreate
 > {
@@ -20,8 +21,9 @@ export class HandleSparkButtonInteractionListener extends Listener<
     )
       return
 
+    // Ensure we have all parts: action, userId, gala, and season
     const parts = interaction.customId.split(":")
-    if (parts.length < 4) return // Ensure we have all parts: action, userId, gala, and season
+    if (parts.length < 4) return 
 
     const [, sourceUserId, galaString, seasonString] = parts
     const destinationUserId = interaction.user.id

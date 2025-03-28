@@ -7,15 +7,15 @@ import { ItemRateMap } from "./types"
 
 export class RenderingUtils {
   public static renderItems(results: DrawableItem[]) {
-    let characterWeapons = this.sortCharacterWeapons(results)
-    var gachaItems = results
+    const characterWeapons = this.sortCharacterWeapons(results)
+    const gachaItems = results
       .filter((x) => !characterWeapons.includes(x))
       .concat(characterWeapons.filter((x) => !results.includes(x)))
 
-    let items = this.shuffle(gachaItems).concat(characterWeapons)
+    const items = this.shuffle(gachaItems).concat(characterWeapons)
 
-    var string = ""
-    for (var item in items) {
+    let string = ""
+    for (const item in items) {
       string += this.renderItem(items[item], true)
     }
 
@@ -23,10 +23,10 @@ export class RenderingUtils {
   }
 
   public static renderSpark(results: SparkResult, rateups: ItemRateMap) {
-    let rate = Math.floor((results.count.SSR / 300) * 100)
-    let summary = `\`\`\`${this.renderSummary(results, rateups)}\`\`\``
+    const rate = Math.floor((results.count.SSR / 300) * 100)
+    const summary = `\`\`\`${this.renderSummary(results, rateups)}\`\`\``
 
-    var details = "```html\n"
+    let details = "```html\n"
     results.items.forEach((item: DrawableItem) => {
       details += this.renderItem(item, true)
     })
@@ -41,29 +41,30 @@ export class RenderingUtils {
   }
 
   public static renderItem(result: DrawableItem, combined: boolean = false) {
-    let rarity: string = readableRarity(result.rarity)
+    const rarity: string = readableRarity(result.rarity)
+    let response: string
 
     if (result.name && result.recruits) {
-      var response = `<${rarity}> ${
+      response = `<${rarity}> ${
         result.name.en
       } – You recruited ${result.recruits.name.en.trim()}!`
     } else if (
       result.name &&
       !result.recruits &&
-      result.item_type == DrawableItemType.SUMMON
+      result.type === DrawableItemType.SUMMON
     ) {
-      var response = `<${rarity} Summon> ${result.name.en}`
+      response = `<${rarity} Summon> ${result.name.en}`
     } else {
-      var response = `<${rarity}> ${result.name.en}`
+      response = `<${rarity}> ${result.name.en}`
     }
 
     return !combined ? `\`\`\`html\n${response}\n\`\`\`` : `${response}\n`
   }
 
   public static renderSummary(results: SparkResult, rateups: ItemRateMap) {
-    let ssrWeapons = results.items.filter(this.filterSSRWeapons)
-    let ssrSummons = results.items.filter(this.filterSSRSummons)
-    let numRateupItems = this.filterRateUpItems(results, rateups)
+    const ssrWeapons = results.items.filter(this.filterSSRWeapons)
+    const ssrSummons = results.items.filter(this.filterSSRSummons)
+    const numRateupItems = this.filterRateUpItems(results, rateups)
 
     // TODO: Extract into helper method
     // let targetsAcquired = results.items.filter((item: Item) => {
@@ -96,17 +97,17 @@ export class RenderingUtils {
   }
 
   private static filterSSRWeapons(item: DrawableItem) {
-    return item.rarity == Rarity.SSR && item.type === DrawableItemType.WEAPON
+    return item.rarity === Rarity.SSR && item.type === DrawableItemType.WEAPON
   }
 
   private static filterSSRSummons(item: DrawableItem) {
-    return item.rarity == Rarity.SSR && item.type === DrawableItemType.SUMMON
+    return item.rarity === Rarity.SSR && item.type === DrawableItemType.SUMMON
   }
 
   private static filterRateUpItems(spark: SparkResult, rateups: ItemRateMap) {
     let totalCount = 0
-    for (let i in rateups) {
-      let rateupItem: DrawableItem = rateups[i].item
+    for (const i in rateups) {
+      const rateupItem: DrawableItem = rateups[i].item
       totalCount += spark.items.reduce((n: number, item: DrawableItem) => {
         return n + (rateupItem.id == item.id ? 1 : 0)
       }, 0)
@@ -115,7 +116,7 @@ export class RenderingUtils {
   }
 
   private static sortCharacterWeapons(results: DrawableItem[]) {
-    let weapons: DrawableItem[] = []
+    const weapons: DrawableItem[] = []
 
     results.forEach((item: DrawableItem) => {
       let hasPlacedSR = false
@@ -153,9 +154,8 @@ export class RenderingUtils {
 
   // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
   private static shuffle(array: DrawableItem[]) {
-    var currentIndex = array.length,
-      temporaryValue,
-      randomIndex
+    let currentIndex = array.length
+    let temporaryValue, randomIndex
 
     // While there remain elements to shuffle...
     while (0 !== currentIndex) {

@@ -70,11 +70,26 @@ class Until {
   }
 
   private async fetchItemAndSimulate() {
-    // Fetch the item's info via Granblue ID
-    this.item = await Api.fetchItemInfoFromID(this.identifier)
-    const result = await this.simulate()
+    try {
+      // Fetch the item's info via Granblue ID
+      const fetchedItem = await Api.fetchItemInfoFromID(this.identifier)
 
-    this.generateResponse(result)
+      // Convert null to undefined for type compatibility
+      this.item = fetchedItem || undefined
+
+      if (!this.item) {
+        await this.interaction.editReply(
+          `No item found with ID \`${this.identifier}\``
+        )
+        return
+      }
+
+      const result = await this.simulate()
+      this.generateResponse(result)
+    } catch (error) {
+      console.error(`Error fetching item:`, error)
+      await this.interaction.editReply("Error fetching item information")
+    }
   }
 
   private async presentOptions(
@@ -101,14 +116,33 @@ class Until {
   }
 
   private async collectOption(input: StringSelectMenuInteraction, that: Until) {
-    const selection = input.values[0]
-    that.item = await Api.fetchItemInfoFromID(selection)
+    try {
+      const selection = input.values[0]
+      const fetchedItem = await Api.fetchItemInfoFromID(selection)
 
-    // Make sure to update the identifier with the Granblue ID
-    that.identifier = that.item.granblue_id
+      // Convert null to undefined for type compatibility
+      that.item = fetchedItem || undefined
 
-    const result = await that.simulate()
-    that.generateResponse(result)
+      if (!that.item) {
+        await input.update({
+          content: `No item found with ID \`${selection}\``,
+          components: [],
+        })
+        return
+      }
+
+      // Safe access now that we checked
+      that.identifier = that.item.granblue_id
+
+      const result = await that.simulate()
+      that.generateResponse(result)
+    } catch (error) {
+      console.error(`Error processing selection:`, error)
+      await input.update({
+        content: "Error processing your selection",
+        components: [],
+      })
+    }
   }
 
   public async simulate() {
@@ -257,21 +291,21 @@ class Until {
         promotions.flash && this.promotion !== Promotion.FLASH
           ? Promotion.FLASH
           : promotions.legend && this.promotion !== Promotion.LEGEND
-          ? Promotion.LEGEND
-          : promotions.classic && this.promotion !== Promotion.CLASSIC
-          ? Promotion.CLASSIC
-          : this.promotion
+            ? Promotion.LEGEND
+            : promotions.classic && this.promotion !== Promotion.CLASSIC
+              ? Promotion.CLASSIC
+              : this.promotion
 
       this.season =
         seasons.valentines && this.season !== Season.VALENTINES
           ? Season.VALENTINES
           : seasons.summer && this.season !== Season.SUMMER
-          ? Season.SUMMER
-          : seasons.halloween && this.season !== Season.HALLOWEEN
-          ? Season.HALLOWEEN
-          : seasons.holiday && this.season !== Season.HOLIDAY
-          ? Season.HOLIDAY
-          : this.season
+            ? Season.SUMMER
+            : seasons.halloween && this.season !== Season.HALLOWEEN
+              ? Season.HALLOWEEN
+              : seasons.holiday && this.season !== Season.HOLIDAY
+                ? Season.HOLIDAY
+                : this.season
     }
   }
 }
