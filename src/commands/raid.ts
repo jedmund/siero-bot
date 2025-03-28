@@ -6,6 +6,7 @@ import {
   APIEmbedField,
   MessageReaction,
   User,
+  TextChannel,
 } from "discord.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
 import { ApplyOptions } from "@sapphire/decorators"
@@ -226,7 +227,7 @@ export class RaidCommand extends Subcommand {
     }
 
     const channel = message.channel as TextBasedChannel
-    if (channel) {
+    if (channel && channel instanceof TextChannel) {
       await channel.send({
         content: `<@&${raid.role}> ${raid.name} is starting! Here's the final signup sheet:`,
         embeds: [startEmbed],
