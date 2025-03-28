@@ -1,11 +1,12 @@
 import {
+  ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
   ComponentType,
   EmbedBuilder,
   MessageComponentInteraction,
   SlashCommandStringOption,
-  SlashCommandSubcommandBuilder,
+  SlashCommandSubcommandBuilder
 } from "discord.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
 import { ApplyOptions } from "@sapphire/decorators"
@@ -233,10 +234,11 @@ export class RateupCommand extends Subcommand {
       .setLabel("Copy rates")
       .setStyle(ButtonStyle.Primary)
 
-    const components =
-      rates.length > 0 && !isSender
-        ? [{ type: ComponentType.ActionRow, components: [confirmButton] }]
-        : []
+      const row = new ActionRowBuilder<ButtonBuilder>().addComponents(confirmButton)
+      const components =
+        rates.length > 0 && !isSender
+          ? [row]
+          : []
 
     // Create embeds based on the result of the query
     const embeds = rates.length > 0 ? [this.renderEmbed(possessive, rates)] : []

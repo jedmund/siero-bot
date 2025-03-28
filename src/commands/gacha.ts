@@ -1,13 +1,14 @@
 import {
+  ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  ComponentType,
   SlashCommandStringOption,
   SlashCommandSubcommandBuilder,
 } from "discord.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
 import { ApplyOptions } from "@sapphire/decorators"
 import { isMessageInstance } from "@sapphire/discord.js-utilities"
+import { config } from "dotenv"
 
 import Gacha from "../services/gacha"
 import Until from "../services/until"
@@ -18,7 +19,7 @@ import { ItemRateMap } from "../utils/types"
 import { RenderingUtils } from "../utils/rendering"
 
 if (process.env.NODE_ENV !== "production") {
-  require("dotenv").config()
+  config()
 }
 
 const COMMAND_ID =
@@ -53,10 +54,12 @@ export class GachaCommand extends Subcommand {
 
   // Methods: Register application commands
 
-  public override registerApplicationCommands(registry: Subcommand.Registry) {
+  public override registerApplicationCommands(
+    registry: Subcommand.Registry
+  ): void {
     registry.registerChatInputCommand(
       (builder) => {
-        builder //
+        builder
           .setName(this.name)
           .setDescription(this.description)
           .addSubcommand((command) => {
@@ -108,7 +111,7 @@ export class GachaCommand extends Subcommand {
     command: SlashCommandSubcommandBuilder,
     name: string,
     description: string
-  ) {
+  ): SlashCommandSubcommandBuilder {
     return command
       .setName(name)
       .setDescription(description)
@@ -116,62 +119,63 @@ export class GachaCommand extends Subcommand {
       .addStringOption(this.seasonOption())
   }
 
-  private promotionOption() {
-    let optionBuilder: SlashCommandStringOption = new SlashCommandStringOption()
-    optionBuilder.setName("promotion")
-    optionBuilder.setDescription(
-      "The promotion to simulate (Premium, Classic, Flash, Legend)"
-    )
-    optionBuilder.addChoices(
-      {
-        name: "Premium (Default)",
-        value: "premium",
-      },
-      {
-        name: "Classic",
-        value: "classic",
-      },
-      {
-        name: "Flash Gala",
-        value: "flash",
-      },
-      {
-        name: "Legend Festival",
-        value: "legend",
-      }
-    )
+  private promotionOption(): SlashCommandStringOption {
+    const optionBuilder: SlashCommandStringOption =
+      new SlashCommandStringOption()
+        .setName("promotion")
+        .setDescription(
+          "The promotion to simulate (Premium, Classic, Flash, Legend)"
+        )
+        .addChoices(
+          {
+            name: "Premium (Default)",
+            value: "premium",
+          },
+          {
+            name: "Classic",
+            value: "classic",
+          },
+          {
+            name: "Flash Gala",
+            value: "flash",
+          },
+          {
+            name: "Legend Festival",
+            value: "legend",
+          }
+        )
 
     return optionBuilder
   }
 
-  private seasonOption() {
-    let optionBuilder: SlashCommandStringOption = new SlashCommandStringOption()
-    optionBuilder.setName("season")
-    optionBuilder.setDescription(
-      "The season to simulate (Normal, Valentines, Summer, Halloween, Holiday"
-    )
-    optionBuilder.addChoices(
-      {
-        name: "None (Default)",
-        value: "none",
-      },
-      {
-        name: "Valentines",
-        value: "valentines",
-      },
-      {
-        name: "Summer",
-        value: "summer",
-      },
-      {
-        name: "Halloween",
-        value: "halloween",
-      },
-      {
-        name: "Holiday",
-        value: "holiday",
-      }
-    )
+  private seasonOption(): SlashCommandStringOption {
+    const optionBuilder = new SlashCommandStringOption()
+      .setName("season")
+      .setDescription(
+        "The season to simulate (Normal, Valentines, Summer, Halloween, Holiday)"
+      )
+      .addChoices(
+        {
+          name: "None (Default)",
+          value: "none",
+        },
+        {
+          name: "Valentines",
+          value: "valentines",
+        },
+        {
+          name: "Summer",
+          value: "summer",
+        },
+        {
+          name: "Halloween",
+          value: "halloween",
+        },
+        {
+          name: "Holiday",
+          value: "holiday",
+        }
+      )
 
     return optionBuilder
   }
@@ -180,9 +184,10 @@ export class GachaCommand extends Subcommand {
 
   private async createGacha(
     interaction: Subcommand.ChatInputCommandInteraction
-  ) {
-    // prettier-ignore
-    const promotion = this.getPromotion(interaction.options.getString("promotion"))
+  ): Promise<Gacha> {
+    const promotion = this.getPromotion(
+      interaction.options.getString("promotion")
+    )
     const season = this.getSeason(interaction.options.getString("season"))
 
     this.rateups = await fetchRateups(interaction.user.id)
@@ -193,111 +198,104 @@ export class GachaCommand extends Subcommand {
 
   public async chatInputSingle(
     interaction: Subcommand.ChatInputCommandInteraction
-  ) {
-    const msg = await interaction.reply({
-      content: `Simulating a single draw...`,
-      fetchReply: true,
-    })
-
-    const gacha = await this.createGacha(interaction)
-    const item = gacha.singleRoll()
-
-    if (isMessageInstance(msg)) {
-      return interaction.editReply(RenderingUtils.renderItem(item))
-    } else {
-      return interaction.reply("There was an error")
-    }
+  ): Promise<void> {
+    await this.safeReply(
+      interaction,
+      "Simulating a single draw...",
+      async () => {
+        const gacha = await this.createGacha(interaction)
+        const item = gacha.singleRoll()
+        await interaction.editReply(RenderingUtils.renderItem(item))
+      }
+    )
   }
 
   public async chatInputTen(
     interaction: Subcommand.ChatInputCommandInteraction
-  ) {
-    const msg = await interaction.reply({
-      content: `Simulating a ten-part draw...`,
-      fetchReply: true,
-    })
-
-    const gacha = await this.createGacha(interaction)
-    const result = gacha.tenPartRoll()
-
-    if (isMessageInstance(msg)) {
-      return interaction.editReply(
-        `\`\`\`html\n${RenderingUtils.renderItems(result.items)}\`\`\``
-      )
-    } else {
-      return interaction.reply("There was an error")
-    }
+  ): Promise<void> {
+    await this.safeReply(
+      interaction,
+      "Simulating a ten-part draw...",
+      async () => {
+        const gacha = await this.createGacha(interaction)
+        const result = gacha.tenPartRoll()
+        await interaction.editReply(
+          this.renderHtmlBlock(RenderingUtils.renderItems(result.items))
+        )
+      }
+    )
   }
 
   public async chatInputSpark(
     interaction: Subcommand.ChatInputCommandInteraction
-  ) {
-    const msg = await interaction.reply({
-      content: `Simulating a spark...`,
-      fetchReply: true,
-    })
+  ): Promise<void> {
+    await this.safeReply(interaction, "Simulating a spark...", async () => {
+      const promotion = this.getPromotion(
+        interaction.options.getString("promotion")
+      )
+      const season = this.getSeason(interaction.options.getString("season"))
 
-    const promotion =
-      this.getPromotion(interaction.options.getString("promotion")) || "premium"
-    const season = this.getSeason(interaction.options.getString("season")) || ""
+      const gacha = await this.createGacha(interaction)
+      const result = gacha.spark()
 
-    const gacha = await this.createGacha(interaction)
-    const result = gacha.spark()
+      const sparkButton = new ButtonBuilder()
+        .setCustomId(`copySpark:${interaction.user.id}:${promotion}:${season}`)
+        .setLabel("Spark with these rates")
+        .setStyle(ButtonStyle.Primary)
 
-    const sparkButton = new ButtonBuilder()
-      .setCustomId(`copySpark:${interaction.user.id}:${promotion}:${season}`)
-      .setLabel("Spark with these rates")
-      .setStyle(ButtonStyle.Primary)
+      const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+        sparkButton
+      )
+      const embed = RenderingUtils.renderSpark(result, this.rateups)
 
-    const components = [
-      { type: ComponentType.ActionRow, components: [sparkButton] },
-    ]
-
-    if (isMessageInstance(msg)) {
-      let embed = RenderingUtils.renderSpark(result, this.rateups)
-      return interaction.editReply({
-        content: `This is your spark`,
+      await interaction.editReply({
+        content: "This is your spark",
         embeds: [embed],
-        components: components,
+        components: [row],
       })
-    } else {
-      return interaction.reply("There was an error")
-    }
-  }
-
-  public async chatInputCopySpark() {
-    console.log("Copy and spark")
+    })
   }
 
   public async chatInputUntil(
     interaction: Subcommand.ChatInputCommandInteraction
-  ) {
-    // prettier-ignore
-    const promotion = this.getPromotion(interaction.options.getString("promotion"))
+  ): Promise<void> {
+    const promotion = this.getPromotion(
+      interaction.options.getString("promotion")
+    )
     const season = this.getSeason(interaction.options.getString("season"))
     const identifier = interaction.options.getString("name")
-    const currency = interaction.options.getString("currency") || "usd"
+    const currency = interaction.options.getString("currency") ?? "usd"
+
+    if (!identifier) {
+      await interaction.reply({
+        content: "Please provide an item name or ID",
+        ephemeral: true,
+      })
+      return
+    }
 
     await interaction.reply({
       content: `Simulating the gacha until \`${identifier}\` is drawn...`,
       fetchReply: true,
     })
 
-    if (identifier) {
-      const until = new Until(
-        interaction,
-        identifier,
-        currency,
-        promotion,
-        season
-      )
-      await until.execute()
-    }
+    const until = new Until(
+      interaction,
+      identifier,
+      currency,
+      promotion,
+      season
+    )
+    await until.execute()
+  }
+
+  public async chatInputCopySpark(): Promise<void> {
+    console.log("Copy and spark")
   }
 
   // Methods: Transformers
 
-  private getPromotion(input: string | null) {
+  private getPromotion(input: string | null): Promotion {
     switch (input) {
       case "classic":
         return Promotion.CLASSIC
@@ -310,7 +308,7 @@ export class GachaCommand extends Subcommand {
     }
   }
 
-  private getSeason(input: string | null) {
+  private getSeason(input: string | null): Season | undefined {
     switch (input) {
       case "valentines":
         return Season.VALENTINES
@@ -323,5 +321,35 @@ export class GachaCommand extends Subcommand {
       default:
         return undefined
     }
+  }
+
+  // Methods: Helpers
+
+  private async safeReply(
+    interaction: Subcommand.ChatInputCommandInteraction,
+    initialMessage: string,
+    callback: () => Promise<unknown>
+  ): Promise<void> {
+    const msg = await interaction.reply({
+      content: initialMessage,
+      fetchReply: true,
+    })
+
+    try {
+      if (isMessageInstance(msg)) {
+        await callback()
+      } else {
+        await interaction.reply("There was an error")
+      }
+    } catch (error) {
+      console.error("Error in command execution:", error)
+      await interaction.editReply(
+        "An error occurred while processing your request"
+      )
+    }
+  }
+
+  private renderHtmlBlock(content: string): string {
+    return `\`\`\`html\n${content}\`\`\``
   }
 }

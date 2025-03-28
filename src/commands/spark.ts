@@ -1,18 +1,36 @@
 import { EmbedBuilder, SlashCommandSubcommandBuilder, User } from "discord.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
 import { ApplyOptions } from "@sapphire/decorators"
+import { config } from "dotenv"
 import pluralize from "pluralize"
+
 import Api from "../services/api"
 import Leaderboard from "../services/leaderboard"
 
 if (process.env.NODE_ENV !== "production") {
-  require("dotenv").config()
+  config()
 }
 
 const COMMAND_ID =
   process.env.NODE_ENV === "production"
     ? "1110727196584202361"
     : "1103831182728232960"
+
+const DRAWS_PER_SPARK = 300
+const CRYSTALS_PER_TICKET = 300
+const CRYSTALS_PER_TEN_TICKET = 3000
+
+type SparkCurrencies = {
+  crystals?: number
+  tickets?: number
+  ten_tickets?: number
+}
+
+type SparkType = {
+  crystals: number
+  tickets: number
+  ten_tickets: number
+}
 
 @ApplyOptions<Subcommand.Options>({
   description: "Keep track of your spark progress",
@@ -46,18 +64,24 @@ export class SparkCommand extends Subcommand {
           .setDescription(this.description)
           .addSubcommand((command) => {
             const description = "Add currency to your spark progress"
-            let builtCommand = this.sparkCommand(command, "add", description)
-            return this.addSparkOptions(builtCommand, "to add")
+            return this.addSparkOptions(
+              this.sparkCommand(command, "add", description),
+              "to add"
+            )
           })
           .addSubcommand((command) => {
             const description = "Remove currency from your spark progress"
-            let builtCommand = this.sparkCommand(command, "remove", description)
-            return this.addSparkOptions(builtCommand, "to remove")
+            return this.addSparkOptions(
+              this.sparkCommand(command, "remove", description),
+              "to remove"
+            )
           })
           .addSubcommand((command) => {
             const description = "Update your spark progress"
-            let builtCommand = this.sparkCommand(command, "update", description)
-            return this.addSparkOptions(builtCommand, "you have")
+            return this.addSparkOptions(
+              this.sparkCommand(command, "update", description),
+              "you have"
+            )
           })
           .addSubcommand((command) => {
             const description =
@@ -119,113 +143,85 @@ export class SparkCommand extends Subcommand {
       )
   }
 
-  // Methods: Slash Commands
+  // Methods: Command Handlers
 
   public async chatInputAdd(
     interaction: Subcommand.ChatInputCommandInteraction
-  ) {
-    return await this.chatInputArithmetic(interaction, "+")
+  ): Promise<void> {
+    await this.chatInputArithmetic(interaction, "+")
   }
 
   public async chatInputRemove(
     interaction: Subcommand.ChatInputCommandInteraction
-  ) {
+  ): Promise<void> {
     await this.chatInputArithmetic(interaction, "-")
   }
 
   private async chatInputArithmetic(
     interaction: Subcommand.ChatInputCommandInteraction,
     operation: "+" | "-"
-  ) {
+  ): Promise<void> {
     const currentProgress = await Api.fetchSpark(interaction.user.id)
     const inputCurrencies = this.getCurrencies(interaction)
 
-    let progress: { [key: string]: number } = {}
-    for (const currency in inputCurrencies) {
-      const inputValue = inputCurrencies[currency]
-      const currentValue = currentProgress ? currentProgress.spark[currency] : 0
-      progress[currency] =
-        operation === "+"
-          ? currentValue + inputValue
-          : Math.max(currentValue - inputValue, 0)
-    }
+    // Calculate new values
+    const progress = this.calculateNewValues(
+      currentProgress?.spark,
+      inputCurrencies,
+      operation
+    )
 
-    const progressResponse = await Api.updateSpark({
-      userId: interaction.user.id,
-      guildIds: this.updateGuilds(
-        currentProgress ? currentProgress.guildIds : [],
-        interaction.guild?.id
-      ),
-      ...progress,
-    })
+    // Update spark data
+    const progressResponse = await this.updateSparkData(
+      interaction.user.id,
+      progress,
+      currentProgress?.guildIds,
+      interaction.guild?.id
+    )
 
     if (progressResponse) {
-      const difference: Spark = this.calculateDifference(
-        currentProgress
-          ? currentProgress.spark
-          : { crystals: 0, tickets: 0, ten_tickets: 0 },
+      await this.replyWithSparkUpdate(
+        interaction,
+        currentProgress?.spark,
         progressResponse
-      )
-      const differenceString = this.formatDifference(difference)
-      interaction.reply(
-        this.generateResponseBlock(
-          interaction.user,
-          progressResponse,
-          differenceString
-        )
       )
     }
   }
 
   public async chatInputUpdate(
     interaction: Subcommand.ChatInputCommandInteraction
-  ) {
+  ): Promise<void> {
     const currentProgress = await Api.fetchSpark(interaction.user.id)
     const updatedProgress = this.getCurrencies(interaction)
 
-    const progressResponse = await Api.updateSpark({
-      userId: interaction.user.id,
-      guildIds: this.updateGuilds(
-        currentProgress ? currentProgress.guildIds : [],
-        interaction.guild?.id
-      ),
-      ...updatedProgress,
-    })
+    // Update spark data (direct replacement, not arithmetic)
+    const progressResponse = await this.updateSparkData(
+      interaction.user.id,
+      updatedProgress,
+      currentProgress?.guildIds,
+      interaction.guild?.id
+    )
 
     if (progressResponse) {
-      const difference: Spark = this.calculateDifference(
-        currentProgress
-          ? currentProgress.spark
-          : { crystals: 0, tickets: 0, ten_tickets: 0 },
+      await this.replyWithSparkUpdate(
+        interaction,
+        currentProgress?.spark,
         progressResponse
-      )
-      const differenceString = this.formatDifference(difference)
-      interaction.reply(
-        this.generateResponseBlock(
-          interaction.user,
-          progressResponse,
-          differenceString
-        )
       )
     }
   }
 
   public async chatInputProgress(
     interaction: Subcommand.ChatInputCommandInteraction
-  ) {
-    // Extract the user from the interaction and store
-    // whether we are fetching rateups for the sender or someone else
+  ): Promise<void> {
     const providedUser = interaction.options.getUser("user")
-    let user = providedUser === null ? interaction.user : providedUser
+    const user = providedUser ?? interaction.user
+    const isSelf = providedUser === null
 
-    // Fetch the appropriate rates and render them to the user
     const progress = await Api.fetchSpark(user.id)
+
     await interaction.reply({
-      content: this.formatDescription(
-        user,
-        providedUser === null,
-        progress !== undefined
-      ),
+      content: this.formatDescription(user, isSelf, progress !== undefined),
       embeds: progress ? [this.generateEmbed(user, progress.spark)] : [],
       fetchReply: true,
     })
@@ -233,101 +229,152 @@ export class SparkCommand extends Subcommand {
 
   public async chatInputLeaderboard(
     interaction: Subcommand.ChatInputCommandInteraction
-  ) {
+  ): Promise<void> {
     if (!interaction.channel) {
-      interaction.reply({
+      await interaction.reply({
         content:
           "Sorry, I can't show leaderboards in direct messages. Please send the command from a server that we're both in!",
+        ephemeral: true,
       })
+      return
     }
 
     const guild = interaction.guild
+    if (!guild) return
 
-    if (guild) {
-      const order = "desc"
-      let leaderboard = new Leaderboard(guild?.id, order)
-      const embed = await leaderboard.execute()
+    const leaderboard = new Leaderboard(guild.id, "desc")
+    const embed = await leaderboard.execute()
 
-      interaction.reply({
-        content: `Here is the current leaderboard for ${guild.name}:`,
-        embeds: [embed],
-      })
-    }
+    await interaction.reply({
+      content: `Here is the current leaderboard for ${guild.name}:`,
+      embeds: [embed],
+    })
   }
 
   public async chatInputReset(
     interaction: Subcommand.ChatInputCommandInteraction
-  ) {
-    Api.resetSpark(interaction.user.id)
+  ): Promise<void> {
+    await Api.resetSpark(interaction.user.id)
 
     await interaction.reply({
-      content: `Your spark was successfully reset`,
+      content: "Your spark was successfully reset",
       ephemeral: true,
-      fetchReply: true,
     })
   }
 
-  // Methods: Rendering methods
+  // Methods: Data Processing
 
-  private formatDescription(
-    user: User,
-    isSender: boolean,
-    hasSpark: boolean = true
-  ) {
-    let possessive: string
-    let pronoun: string
-    if (isSender) {
-      possessive = "Your"
-      pronoun = "you haven't"
-    } else {
-      possessive = `<@${user.id}>'s`
-      pronoun = `<@${user.id}> hasn't`
+  private calculateNewValues(
+    current: Spark | undefined,
+    input: SparkCurrencies,
+    operation: "+" | "-"
+  ): SparkCurrencies {
+    const progress: SparkCurrencies = {}
+    const defaultSpark: SparkType = { crystals: 0, tickets: 0, ten_tickets: 0 }
+    const currentValues = current ?? defaultSpark
+
+    // Process each currency with type-safe approach
+    if ("crystals" in input && input.crystals !== undefined) {
+      progress.crystals =
+        operation === "+"
+          ? currentValues.crystals + input.crystals
+          : Math.max(currentValues.crystals - input.crystals, 0)
     }
 
-    // Create description strings based on the result of the query
-    const description = hasSpark
-      ? `${possessive} spark progress`
-      : `It looks like ${pronoun} saved a spark yet.`
+    if ("tickets" in input && input.tickets !== undefined) {
+      progress.tickets =
+        operation === "+"
+          ? currentValues.tickets + input.tickets
+          : Math.max(currentValues.tickets - input.tickets, 0)
+    }
 
-    return description
+    if ("ten_tickets" in input && input.ten_tickets !== undefined) {
+      progress.ten_tickets =
+        operation === "+"
+          ? currentValues.ten_tickets + input.ten_tickets
+          : Math.max(currentValues.ten_tickets - input.ten_tickets, 0)
+    }
+
+    return progress
   }
 
-  private formatDifference(difference: Spark) {
-    let increasedCurrencies: string[] = []
-    let decreasedCurrencies: string[] = []
-
-    Object.keys(difference).forEach((key) => {
-      const currency = difference[key]
-      const value = Math.abs(currency)
-      const string = `${value} ${pluralize(this.keyToString(key), value)}`
-      if (currency > 0) increasedCurrencies.push(string)
-      if (currency < 0) decreasedCurrencies.push(string)
+  private async updateSparkData(
+    userId: string,
+    progress: SparkCurrencies,
+    currentGuildIds: string[] = [],
+    guildId?: string
+  ): Promise<Spark | undefined> {
+    return await Api.updateSpark({
+      userId,
+      guildIds: this.updateGuildIds(currentGuildIds, guildId),
+      ...progress,
     })
-
-    const increasedString = this.formatCurrency(
-      increasedCurrencies,
-      "You saved"
-    )
-    const decreasedString = this.formatCurrency(
-      decreasedCurrencies,
-      "You spent"
-    )
-
-    return [increasedString, decreasedString].filter(Boolean).join(" ")
   }
 
-  private formatCurrency(currencies: string[], prefix: string) {
-    if (currencies.length === 0) {
-      return ""
+  private calculateDifference(previous: Spark, current: Spark): Spark {
+    return {
+      crystals: current.crystals - previous.crystals,
+      tickets: current.tickets - previous.tickets,
+      ten_tickets: current.ten_tickets - previous.ten_tickets,
     }
-    const formattedCurrencies = currencies.map((currency) => `**${currency}**`)
-    const joinedCurrencies =
-      formattedCurrencies.length > 1
-        ? formattedCurrencies.slice(0, -1).join(", ") +
-          ", and " +
-          formattedCurrencies.slice(-1)
-        : formattedCurrencies[0]
-    return `${prefix} ${joinedCurrencies}.`
+  }
+
+  private calculateDraws(spark: Spark): number {
+    const ticketValue = spark.tickets * CRYSTALS_PER_TICKET
+    const tenTicketValue = spark.ten_tickets * CRYSTALS_PER_TEN_TICKET
+    const totalCrystalValue = spark.crystals + ticketValue + tenTicketValue
+
+    return Math.floor(totalCrystalValue / CRYSTALS_PER_TICKET)
+  }
+
+  private getCurrencies(
+    interaction: Subcommand.ChatInputCommandInteraction
+  ): SparkCurrencies {
+    const progress: SparkCurrencies = {}
+
+    const crystals = interaction.options.getString("crystals")
+    if (crystals) progress.crystals = parseInt(crystals)
+
+    const tickets = interaction.options.getString("tickets")
+    if (tickets) progress.tickets = parseInt(tickets)
+
+    const tenTickets = interaction.options.getString("ten_tickets")
+    if (tenTickets) progress.ten_tickets = parseInt(tenTickets)
+
+    return progress
+  }
+
+  private updateGuildIds(
+    currentGuildIds: string[],
+    guildId?: string
+  ): string[] {
+    if (!guildId || currentGuildIds.includes(guildId)) {
+      return currentGuildIds
+    }
+
+    return [guildId, ...currentGuildIds]
+  }
+
+  // Methods: Response Generation
+
+  private async replyWithSparkUpdate(
+    interaction: Subcommand.ChatInputCommandInteraction,
+    previousSpark: Spark | undefined,
+    currentSpark: Spark
+  ): Promise<void> {
+    const defaultSpark = { crystals: 0, tickets: 0, ten_tickets: 0 }
+    const previousValues = previousSpark ?? defaultSpark
+
+    const difference = this.calculateDifference(previousValues, currentSpark)
+    const differenceString = this.formatDifference(difference)
+
+    await interaction.reply(
+      this.generateResponseBlock(
+        interaction.user,
+        currentSpark,
+        differenceString
+      )
+    )
   }
 
   private generateResponseBlock(
@@ -336,44 +383,32 @@ export class SparkCommand extends Subcommand {
     differenceString?: string
   ) {
     return {
-      content: `Your spark has been updated! ${differenceString}`,
+      content: `Your spark has been updated! ${differenceString ?? ""}`,
       embeds: [this.generateEmbed(user, spark)],
       ephemeral: false,
       fetchReply: true,
     }
   }
 
-  private generateEmbed(user: User, spark: Spark) {
-    const draws = this.calculateDraws(
-      spark.crystals,
-      spark.tickets,
-      spark.ten_tickets
-    )
-    const numSparks = Math.floor(draws / 300)
+  private generateEmbed(user: User, spark: Spark): EmbedBuilder {
+    const draws = this.calculateDraws(spark)
+    const numSparks = Math.floor(draws / DRAWS_PER_SPARK)
+    const remainder = draws - numSparks * DRAWS_PER_SPARK
 
-    const remainder = draws - numSparks * 300
+    // Calculate percentage of next spark
     const drawPercentage =
       numSparks > 0
-        ? Math.floor((remainder / 300) * 100)
-        : Math.floor((draws / 300) * 100)
+        ? Math.floor((remainder / DRAWS_PER_SPARK) * 100)
+        : Math.floor((draws / DRAWS_PER_SPARK) * 100)
 
-    let embed = new EmbedBuilder({
-      title: user.username,
-      color: 0xdc322f,
-      thumbnail: {
-        url: user.displayAvatarURL(),
-      },
-      fields: [
-        {
-          name: "Crystals",
-          value: `${spark.crystals}`,
-          inline: true,
-        },
-        {
-          name: "Tickets",
-          value: `${spark.tickets}`,
-          inline: true,
-        },
+    // Create base embed
+    const embed = new EmbedBuilder()
+      .setTitle(user.username)
+      .setColor(0xdc322f)
+      .setThumbnail(user.displayAvatarURL())
+      .addFields([
+        { name: "Crystals", value: `${spark.crystals}`, inline: true },
+        { name: "Tickets", value: `${spark.tickets}`, inline: true },
         {
           name: "10-Part Tickets",
           value: `${spark.ten_tickets}`,
@@ -383,70 +418,75 @@ export class SparkCommand extends Subcommand {
           name: "Progress",
           value: this.drawProgressBar(drawPercentage, numSparks),
         },
-      ],
-    })
-
-    if (numSparks > 0) {
-      embed.addFields([
-        {
-          name: "Sparks",
-          value: `${numSparks}`,
-        },
       ])
+
+    // Conditionally add fields
+    if (numSparks > 0) {
+      embed.addFields({ name: "Sparks", value: `${numSparks}` })
     }
 
     if (draws > 0) {
-      embed.addFields([
-        {
-          name: "Draws",
-          value: `${draws}`,
-        },
-      ])
+      embed.addFields({ name: "Draws", value: `${draws}` })
     }
 
     return embed
   }
 
-  // Methods: Convenience methods
+  // Methods: Formatting and Display
 
-  private calculateDifference(previous: Spark, current: Spark) {
-    return {
-      crystals: current.crystals - previous.crystals,
-      tickets: current.tickets - previous.tickets,
-      ten_tickets: current.ten_tickets - previous.ten_tickets,
-    }
+  private formatDescription(
+    user: User,
+    isSelf: boolean,
+    hasSpark: boolean = true
+  ): string {
+    const possessive = isSelf ? "Your" : `<@${user.id}>'s`
+    const pronoun = isSelf ? "you haven't" : `<@${user.id}> hasn't`
+
+    return hasSpark
+      ? `${possessive} spark progress`
+      : `It looks like ${pronoun} saved a spark yet.`
   }
 
-  private calculateDraws(
-    crystals: number,
-    tickets: number,
-    tenTickets: number
-  ) {
-    let ticketValue = tickets * 300
-    let tenTicketValue = tenTickets * 3000
-    let totalCrystalValue = crystals + ticketValue + tenTicketValue
+  private formatDifference(difference: Spark): string {
+    const increasedCurrencies: string[] = []
+    const decreasedCurrencies: string[] = []
 
-    return Math.floor(totalCrystalValue / 300)
+    // Sort differences into increased and decreased categories
+    Object.entries(difference).forEach(([key, value]) => {
+      if (value === 0) return
+
+      const absValue = Math.abs(value)
+      const formatted = `${absValue} ${pluralize(this.keyToString(key), absValue)}`
+
+      if (value > 0) {
+        increasedCurrencies.push(formatted)
+      } else {
+        decreasedCurrencies.push(formatted)
+      }
+    })
+
+    // Format the currency strings
+    const increased = this.formatCurrencyList(increasedCurrencies, "You saved")
+    const decreased = this.formatCurrencyList(decreasedCurrencies, "You spent")
+
+    return [increased, decreased].filter(Boolean).join(" ")
   }
 
-  private drawProgressBar(percentage: number, numSparks: number) {
-    const character = "="
-    const length = 15
-    const ticks = Math.floor(length / (100 / percentage))
-    const spaces = length - ticks
+  private formatCurrencyList(currencies: string[], prefix: string): string {
+    if (currencies.length === 0) return ""
 
-    return [
-      `\`\`\`Spark \#${numSparks + 1} `,
-      "[",
-      Array(ticks).fill(character).join(""),
-      ">",
-      Array(spaces).fill(" ").join(""),
-      "]",
-      ` ${percentage}%\`\`\``,
-    ].join("")
+    const formatted = currencies.map((currency) => `**${currency}**`)
+
+    // Join with commas and "and" for the last item
+    const joined =
+      formatted.length > 1
+        ? `${formatted.slice(0, -1).join(", ")}, and ${formatted.slice(-1)}`
+        : formatted[0]
+
+    return `${prefix} ${joined}.`
   }
 
-  private keyToString(key: string) {
+  private keyToString(key: string): string {
     switch (key) {
       case "crystals":
         return "crystal"
@@ -459,28 +499,20 @@ export class SparkCommand extends Subcommand {
     }
   }
 
-  private getCurrencies(interaction: Subcommand.ChatInputCommandInteraction) {
-    let progress: { [key: string]: number } = {}
+  private drawProgressBar(percentage: number, numSparks: number): string {
+    const character = "="
+    const length = 15
+    const ticks = Math.floor(length / (100 / percentage))
+    const spaces = length - ticks
 
-    let crystals = interaction.options.getString("crystals")
-    if (crystals) progress.crystals = parseInt(crystals)
-
-    let tickets = interaction.options.getString("tickets")
-    if (tickets) progress.tickets = parseInt(tickets)
-
-    let tenTickets = interaction.options.getString("ten_tickets")
-    if (tenTickets) progress.ten_tickets = parseInt(tenTickets)
-
-    return progress
-  }
-
-  private updateGuilds(currentGuildIds: string[], guildId?: string) {
-    if (!guildId || currentGuildIds.includes(guildId)) {
-      return currentGuildIds
-    }
-
-    // If guildId is provided and does not exist in currentGuildIds,
-    // add it to the beginning of the array.
-    return [guildId, ...currentGuildIds]
+    return [
+      `\`\`\`Spark #${numSparks + 1} `,
+      "[",
+      Array(ticks).fill(character).join(""),
+      ">",
+      Array(spaces).fill(" ").join(""),
+      "]",
+      ` ${percentage}%\`\`\``,
+    ].join("")
   }
 }

@@ -1,8 +1,9 @@
 import { SlashCommandStringOption } from "discord.js"
 import { Command } from "@sapphire/framework"
+import { config } from "dotenv"
 
 if (process.env.NODE_ENV !== "production") {
-  require("dotenv").config()
+  config()
 }
 
 const COMMAND_ID =
@@ -32,13 +33,13 @@ export class ChooseCommand extends Command {
           )
         }
 
-        generated.addBooleanOption((option) => {
-          return option
+        generated.addBooleanOption((option) =>
+          option
             .setName("final")
             .setDescription(
               "Siero won't change her mind for the rest of the day"
             )
-        })
+        )
 
         return generated
       },
@@ -48,21 +49,23 @@ export class ChooseCommand extends Command {
     )
   }
 
-  private choiceOption(number: number, required: boolean = false) {
-    let optionBuilder: SlashCommandStringOption = new SlashCommandStringOption()
-
-    optionBuilder.setName(`option${number}`)
-    optionBuilder.setDescription("An option to choose from")
-    optionBuilder.setRequired(required)
+  private choiceOption(
+    number: number,
+    required = false
+  ): SlashCommandStringOption {
+    const optionBuilder = new SlashCommandStringOption()
+      .setName(`option${number}`)
+      .setDescription("An option to choose from")
+      .setRequired(required)
 
     return optionBuilder
   }
 
-  public override chatInputRun(
+  public override async chatInputRun(
     interaction: Command.ChatInputCommandInteraction
-  ) {
+  ): Promise<void> {
     const choices = this.getChoices(interaction)
-    const final = interaction.options.getBoolean("final") || false
+    const final = interaction.options.getBoolean("final") ?? false
     const hash: number = this.hash(
       interaction.user.id + choices.join(","),
       choices.length
@@ -88,11 +91,13 @@ export class ChooseCommand extends Command {
       finalString,
     ].join(" ")
 
-    interaction.reply(reply)
+    await interaction.reply(reply)
   }
 
-  private getChoices(interaction: Command.ChatInputCommandInteraction) {
-    let choices = []
+  private getChoices(
+    interaction: Command.ChatInputCommandInteraction
+  ): string[] {
+    const choices = []
 
     for (let i = 0; i < NUM_MAX_CHOICES; i++) {
       const choice = interaction.options.getString(`option${i + 1}`)
@@ -101,10 +106,10 @@ export class ChooseCommand extends Command {
     return choices
   }
 
-  private hash(string: string, size: number): number {
+  private hash(input: string, size: number): number {
     let hash = 0
-    for (let x = 0; x < string.length; x++) {
-      hash += string.charCodeAt(x)
+    for (let x = 0; x < input.length; x++) {
+      hash += input.charCodeAt(x)
     }
     return hash % size
   }

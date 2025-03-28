@@ -1,4 +1,12 @@
-import { EmbedBuilder, ChatInputCommandInteraction } from "discord.js"
+import {
+  EmbedBuilder,
+  ChatInputCommandInteraction,
+  Message,
+  TextBasedChannel,
+  APIEmbedField,
+  MessageReaction,
+  User,
+} from "discord.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
 import { ApplyOptions } from "@sapphire/decorators"
 
@@ -7,7 +15,13 @@ const COMMAND_ID =
     ? "1354487670557904978"
     : "1354505875779489833"
 
-const ELEMENTS = {
+type Element = {
+  name: string
+  emoji: string
+  color: number
+}
+
+const ELEMENTS: Record<string, Element> = {
   FIRE: { name: "Fire", emoji: "🔴", color: 0xff0000 },
   WATER: { name: "Water", emoji: "🔵", color: 0x0000ff },
   EARTH: { name: "Earth", emoji: "🟠", color: 0xffa500 },
@@ -16,7 +30,12 @@ const ELEMENTS = {
   DARK: { name: "Dark", emoji: "🟣", color: 0x800080 },
 }
 
-const RAIDS = {
+type Raid = {
+  name: string
+  role: string
+}
+
+const RAIDS: Record<string, Raid> = {
   HEXACHROMATIC: {
     name: "Hexachromatic Hierarch",
     role: "1216359309869580368",
@@ -89,69 +108,26 @@ export class RaidCommand extends Subcommand {
   }
 
   public async chatInputCreate(interaction: ChatInputCommandInteraction) {
-    console.log("Starting raid command execution")
-
+    // Get raid parameters
     const raidType = interaction.options.getString("raid", true)
-
-    // Get hours and minutes with defaults
-    const hours = interaction.options.getInteger("hours") || 0
-    const minutes = interaction.options.getInteger("minutes") || 0
-
-    // Calculate total time offset in minutes (0 if both are 0)
-    const timeOffset = hours * 60 + minutes
-
-    // If both hours and minutes are 0, assume it's starting now
-    const isStartingNow = hours === 0 && minutes === 0
-
+    const hours = interaction.options.getInteger("hours") ?? 0
+    const minutes = interaction.options.getInteger("minutes") ?? 0
     const raid =
       raidType === "hexachromatic" ? RAIDS.HEXACHROMATIC : RAIDS.DARK_RAPTURE
 
-    // Calculate the current time
-    const currentTime = new Date()
+    // Get timing info
+    const { isStartingNow, discordTimestamp, discordRelativeTime } =
+      this.calculateTiming(hours, minutes)
 
-    // Create a clean time with seconds and milliseconds set to 0
-    const cleanTime = new Date(currentTime)
-    cleanTime.setSeconds(0)
-    cleanTime.setMilliseconds(0)
+    // Create embed
+    const embed = this.createInitialEmbed(raid.name, discordTimestamp)
 
-    // Add the time offset to the rounded time (if not starting now)
-    let startTime: number
-
-    if (isStartingNow) {
-      // If starting now, don't clean the time, just use current time
-      startTime = new Date().getTime()
-    } else {
-      // Otherwise use the clean time plus offset
-      startTime = cleanTime.getTime() + timeOffset * 60 * 1000
-    }
-
-    // Create Discord timestamp format for embed
-    const discordTimestamp = `<t:${Math.floor(startTime / 1000)}:t>`
-
-    console.log(`Creating raid: ${raid.name}, time offset: ${timeOffset}`)
-
-    // Generate element fields programmatically
-    const elementFields = Object.values(ELEMENTS).map((element) => ({
-      name: `${element.emoji} ${element.name}`,
-      value: "No one",
-      inline: true,
-    }))
-
-    const embed = new EmbedBuilder()
-      .setTitle(`${raid.name} Signup Sheet`)
-      .setDescription(`Raid starting at ${discordTimestamp}`)
-      .setColor(0x0099ff)
-      .addFields(elementFields)
-
-    // Create Discord timestamp format for ping message
-    const discordRelativeTime = `<t:${Math.floor(startTime / 1000)}:R>`
-
-    // Create appropriate message based on start time
-    const pingMessage = isStartingNow
-      ? `<@&${raid.role}> Organizing a run for ${raid.name} starting now!`
-      : `<@&${raid.role}> Organizing a run for ${raid.name} ${discordRelativeTime}`
-
-    console.log("Sending initial embed")
+    // Create message
+    const pingMessage = this.createPingMessage(
+      raid,
+      isStartingNow,
+      discordRelativeTime
+    )
 
     const message = await interaction.reply({
       content: pingMessage,
@@ -160,95 +136,219 @@ export class RaidCommand extends Subcommand {
     })
 
     // Add reactions for each element
-    console.log("Adding reactions to message")
-    for (const element of Object.values(ELEMENTS)) {
-      await message.react(element.emoji)
+    await this.addElementReactions(message)
+
+    // Setup collector
+    this.setupReactionCollector(
+      message as Message,
+      raid,
+      isStartingNow,
+      discordRelativeTime,
+      minutes + hours * 60
+    )
+  }
+
+  private async handleReaction(
+    message: Message,
+    reaction: MessageReaction,
+    user: User,
+    isAdd: boolean
+  ): Promise<void> {
+    if (user.bot) return
+
+    try {
+      // Get element from emoji
+      const emoji = reaction.emoji.name
+      const element = this.getElementFromEmoji(emoji)
+      if (!element) return
+
+      // Get current embed and find field
+      const embed = await this.getCurrentEmbed(message)
+      if (!embed) return
+
+      const fieldIndex = this.findElementFieldIndex(embed, element.emoji)
+      if (fieldIndex === -1) return
+
+      // Update user in field
+      const currentValue = embed.data.fields?.[fieldIndex].value ?? "No one"
+      const newValue = this.updateUserInFieldValue(currentValue, user.id, isAdd)
+
+      // Update embed with new field
+      const updatedEmbed = this.updateEmbedField(embed, fieldIndex, newValue)
+      await message.edit({ embeds: [updatedEmbed] })
+    } catch (error) {
+      console.error(`Error handling reaction:`, error)
     }
+  }
 
-    // Fix: Create collector with proper filter
-    console.log("Setting up reaction collector")
-    const collector = message.createReactionCollector({
-      filter: (reaction, user) => {
-        // Don't filter out any reactions, but ignore bot reactions
-        console.log(
-          `Reaction received: ${reaction.emoji.name} from user ${user.tag}`
-        )
-        return (
-          !user.bot &&
-          Object.values(ELEMENTS).some((e) => e.emoji === reaction.emoji.name)
-        )
-      },
-      time: isStartingNow ? 10000 : timeOffset * 60 * 1000, // give at least 10 seconds for "now" raids
-      dispose: true,
-    })
+  // Methods: Collection event handlers
 
-    // Handle adding reactions
-    collector.on("collect", async (reaction, user) => {
-      console.log(
-        `Reaction collected: ${reaction.emoji.name} from user ${user.tag}`
-      )
-      await this.handleReaction(message, reaction, user, true)
-    })
+  private async handleRaidEnd(
+    message: Message,
+    raid: Raid,
+    discordRelativeTime: string
+  ): Promise<void> {
+    try {
+      const embed = await this.getCurrentEmbed(message)
+      if (!embed) return
 
-    // Handle removing reactions
-    collector.on("remove", async (reaction, user) => {
-      console.log(
-        `Reaction removed: ${reaction.emoji.name} from user ${user.tag}`
-      )
-      await this.handleReaction(message, reaction, user, false)
-    })
-
-    // Handle collector ending
-    collector.on("end", async (collected) => {
-      console.log(
-        `Reaction collector ended with ${collected.size} reactions collected`
-      )
-
-      const freshMessage = await message.fetch()
-      const currentEmbed = freshMessage.embeds[0]
-
-      const finalEmbed = new EmbedBuilder()
-        .setTitle(currentEmbed.title)
-        .setDescription(
-          `${currentEmbed.description}\n\n**Raid time has passed!**`
-        )
-        .setColor(currentEmbed.color)
-
-      // properly copy each field individually
-      if (currentEmbed.fields) {
-        for (const field of currentEmbed.fields) {
-          finalEmbed.addFields(field)
-        }
-      }
-
+      // Update original message
+      const finalEmbed = this.createFinalEmbed(embed, "Raid time has passed!")
       await message.edit({
         content: `Organized a run for ${raid.name} that started ${discordRelativeTime}`,
         embeds: [finalEmbed],
       })
 
-      // do same for follow-up message
-      const finalMessageEmbed = new EmbedBuilder()
-        .setTitle(currentEmbed.title)
-        .setDescription(
-          `**${raid.name} is starting now!**\n\nFinal signup sheet:`
-        )
-        .setColor(0x00ff00) // Green color to indicate it's starting
+      // Send follow-up message
+      await this.sendStartingMessage(message, raid, embed)
+    } catch (error) {
+      console.error("Error in handling raid end:", error)
+    }
+  }
 
-      // properly copy fields again
-      if (currentEmbed.fields) {
-        for (const field of currentEmbed.fields) {
-          finalMessageEmbed.addFields(field)
-        }
-      }
+  // Methods: Message handlers
 
-      // check if channel supports sending messages
-      if (message.channel && "send" in message.channel) {
-        await message.channel.send({
-          content: `<@&${raid.role}> is starting! Here's the final signup sheet:`,
-          embeds: [finalMessageEmbed],
-        })
-      }
+  private async sendStartingMessage(
+    message: Message,
+    raid: Raid,
+    sourceEmbed: EmbedBuilder
+  ): Promise<void> {
+    const startEmbed = new EmbedBuilder()
+      .setTitle(sourceEmbed.data.title ?? "")
+      .setDescription(
+        `**${raid.name} is starting now!**\n\nFinal signup sheet:`
+      )
+      .setColor(0x00ff00)
+
+    // Copy fields
+    if (sourceEmbed.data.fields) {
+      startEmbed.setFields(sourceEmbed.data.fields)
+    }
+
+    const channel = message.channel as TextBasedChannel
+    if (channel) {
+      await channel.send({
+        content: `<@&${raid.role}> ${raid.name} is starting! Here's the final signup sheet:`,
+        embeds: [startEmbed],
+      })
+    }
+  }
+
+  // Methods: Reaction collector
+
+  private async addElementReactions(message: Message): Promise<void> {
+    if (!message || typeof message !== "object" || !("react" in message)) return
+
+    for (const element of Object.values(ELEMENTS)) {
+      await message.react(element.emoji)
+    }
+  }
+
+  private setupReactionCollector(
+    message: Message,
+    raid: Raid,
+    isStartingNow: boolean,
+    discordRelativeTime: string,
+    timeOffset: number
+  ): void {
+    const collector = message.createReactionCollector({
+      filter: (reaction, user) =>
+        !user.bot &&
+        Object.values(ELEMENTS).some((e) => e.emoji === reaction.emoji.name),
+      time: isStartingNow ? 10000 : timeOffset * 60 * 1000,
+      dispose: true,
     })
+
+    collector.on("collect", async (reaction, user) => {
+      await this.handleReaction(message, reaction, user, true)
+    })
+
+    collector.on("remove", async (reaction, user) => {
+      await this.handleReaction(message, reaction, user, false)
+    })
+
+    collector.on("end", async () => {
+      await this.handleRaidEnd(message, raid, discordRelativeTime)
+    })
+  }
+
+  // Methods: Embed builders
+
+  private createInitialEmbed(
+    raidName: string,
+    timestamp: string
+  ): EmbedBuilder {
+    const elementFields = Object.values(ELEMENTS).map((element) => ({
+      name: `${element.emoji} ${element.name}`,
+      value: "No one",
+      inline: true,
+    }))
+
+    return new EmbedBuilder()
+      .setTitle(`${raidName} Signup Sheet`)
+      .setDescription(`Raid starting at ${timestamp}`)
+      .setColor(0x0099ff)
+      .addFields(elementFields)
+  }
+
+  private createFinalEmbed(
+    sourceEmbed: EmbedBuilder,
+    additionalText: string
+  ): EmbedBuilder {
+    const embed = EmbedBuilder.from(sourceEmbed)
+    const currentDesc = sourceEmbed.data.description ?? ""
+
+    return embed.setDescription(`${currentDesc}\n\n**${additionalText}**`)
+  }
+
+  private async getCurrentEmbed(
+    message: Message
+  ): Promise<EmbedBuilder | null> {
+    const freshMessage = await message.fetch()
+    if (!freshMessage.embeds?.[0]) return null
+    return EmbedBuilder.from(freshMessage.embeds[0])
+  }
+
+  // Methods: Helpers
+
+  private calculateTiming(hours: number, minutes: number) {
+    const timeOffset = hours * 60 + minutes
+    const isStartingNow = hours === 0 && minutes === 0
+
+    const now = new Date()
+    const cleanTime = new Date(now)
+    cleanTime.setSeconds(0)
+    cleanTime.setMilliseconds(0)
+
+    const startTime = isStartingNow
+      ? now.getTime()
+      : cleanTime.getTime() + timeOffset * 60 * 1000
+
+    const unixTime = Math.floor(startTime / 1000)
+
+    return {
+      isStartingNow,
+      startTime,
+      discordTimestamp: `<t:${unixTime}:t>`,
+      discordRelativeTime: `<t:${unixTime}:R>`,
+    }
+  }
+
+  private createPingMessage(
+    raid: Raid,
+    isStartingNow: boolean,
+    relativeTime: string
+  ): string {
+    return isStartingNow
+      ? `<@&${raid.role}> Organizing a run for ${raid.name} starting now!`
+      : `<@&${raid.role}> Organizing a run for ${raid.name} ${relativeTime}`
+  }
+
+  private findElementFieldIndex(
+    embed: EmbedBuilder,
+    emojiName: string
+  ): number {
+    return embed.data.fields?.findIndex((f) => f.name.includes(emojiName)) ?? -1
   }
 
   private getElementFromEmoji(emoji: string | null) {
@@ -260,119 +360,15 @@ export class RaidCommand extends Subcommand {
     return element
   }
 
-  private async handleReaction(
-    message: any,
-    reaction: any,
-    user: any,
-    isAdd: boolean
-  ) {
-    console.log(`handleReaction called - isAdd: ${isAdd}`)
-    if (user.bot) {
-      console.log("Ignoring bot user")
-      return
-    }
-
-    try {
-      // Get the emoji name - no need to fetch again as it's already provided
-      const emoji = reaction.emoji.name
-
-      console.log(`Processing emoji: ${emoji}`)
-      const element = this.getElementFromEmoji(emoji)
-      if (!element) {
-        console.log("No matching element found")
-        return
-      }
-
-      // Get the current embed
-      const currentEmbed = await message
-        .fetch()
-        .then((msg: any) => msg.embeds[0])
-      console.log(
-        "Current embed fields:",
-        currentEmbed.fields.map((f: any) => `${f.name}: ${f.value}`)
-      )
-      const fields = currentEmbed.fields || []
-
-      // Find the field for this element
-      const fieldIndex = fields.findIndex((f: any) =>
-        f.name.includes(element.emoji)
-      )
-      console.log(`Found field at index: ${fieldIndex}`)
-      if (fieldIndex === -1) {
-        console.log("Field not found in embed")
-        return
-      }
-
-      const currentValue = fields[fieldIndex].value
-      console.log(`Current field value: "${currentValue}"`)
-
-      const userMention = `<@${user.id}>`
-
-      // Update the value based on whether we're adding or removing the user
-      let newValue
-      if (isAdd) {
-        // Check if user is already in this element's list
-        if (currentValue.includes(userMention)) {
-          console.log(
-            `User ${user.tag} already in ${element.name} list, skipping`
-          )
-          return
-        }
-
-        // Add user to the list
-        newValue =
-          currentValue === "No one"
-            ? userMention
-            : `${currentValue}\n${userMention}`
-
-        console.log(`Adding user ${user.tag} to ${element.name}`)
-      } else {
-        // Remove the user mention from the value
-        newValue = currentValue
-          .replace(`<@${user.id}>`, "")
-          .replace(/\n\n/g, "\n") // Remove double line breaks
-          .replace(/^\n|\n$/g, "") // Remove leading/trailing line breaks
-          .trim()
-
-        // If empty, reset to "No one"
-        if (!newValue) {
-          newValue = "No one"
-        }
-      }
-
-      console.log(`New field value: "${newValue}"`)
-
-      const currentFields = message.embeds[0].fields || []
-      const updatedFields = [...currentFields]
-      updatedFields[fieldIndex] = {
-        name: currentFields[fieldIndex].name,
-        value: newValue,
-        inline: currentFields[fieldIndex].inline,
-      }
-
-      // Update the embed with the new field value
-      const updatedEmbed = this.updateEmbedField(
-        currentEmbed,
-        fieldIndex,
-        newValue
-      )
-
-      console.log("Editing message with updated embed")
-      await message.edit({ embeds: [updatedEmbed] })
-      console.log("Message successfully edited")
-    } catch (error) {
-      console.error(
-        `Error in reaction ${isAdd ? "collection" : "removal"}:`,
-        error
-      )
-    }
-  }
-
-  private updateEmbedField(embed: any, fieldIndex: number, newValue: string) {
-    const fields = embed.fields || []
+  private updateEmbedField(
+    embed: EmbedBuilder,
+    fieldIndex: number,
+    newValue: string
+  ): EmbedBuilder {
+    const fields = embed.data.fields ?? []
 
     // Create a new array of fields with the updated value
-    const updatedFields = fields.map((field: any, idx: number) =>
+    const updatedFields = fields.map((field: APIEmbedField, idx: number) =>
       idx === fieldIndex
         ? { name: field.name, value: newValue, inline: field.inline }
         : field
@@ -380,5 +376,30 @@ export class RaidCommand extends Subcommand {
 
     // Create a new embed with the updated fields
     return EmbedBuilder.from(embed).setFields(updatedFields)
+  }
+
+  private updateUserInFieldValue(
+    currentValue: string,
+    userId: string,
+    isAdd: boolean
+  ): string {
+    const userMention = `<@${userId}>`
+
+    // Adding user
+    if (isAdd) {
+      if (currentValue.includes(userMention)) return currentValue
+      return currentValue === "No one"
+        ? userMention
+        : `${currentValue}\n${userMention}`
+    }
+
+    // Removing user
+    const newValue = currentValue
+      .replace(userMention, "")
+      .replace(/\n\n/g, "\n")
+      .replace(/^\n|\n$/g, "")
+      .trim()
+
+    return newValue || "No one"
   }
 }
