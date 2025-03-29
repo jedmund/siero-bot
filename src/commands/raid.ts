@@ -94,13 +94,6 @@ export class RaidCommand extends Subcommand {
                   .setRequired(false)
                   .setMinValue(0)
                   .setMaxValue(59)
-                  .setChoices(
-                    { name: "0", value: 0 },
-                    { name: "3", value: 3 },
-                    { name: "15", value: 15 },
-                    { name: "30", value: 30 },
-                    { name: "45", value: 45 }
-                  )
               )
           )
       },
@@ -132,11 +125,13 @@ export class RaidCommand extends Subcommand {
       discordRelativeTime
     )
 
-    const message = await interaction.reply({
+    await interaction.deferReply()
+    const channel = interaction.channel as TextChannel
+    const message = await channel.send({
       content: pingMessage,
       embeds: [embed],
-      fetchReply: true,
     })
+    await interaction.deleteReply()
 
     // Add reactions for each element
     await this.addElementReactions(message)
@@ -192,10 +187,17 @@ export class RaidCommand extends Subcommand {
     discordRelativeTime: string
   ): Promise<void> {
     try {
+      // Get current embed
       const embed = await this.getCurrentEmbed(message)
       if (!embed) return
 
-      // Update original message
+      // Fetch the latest message to ensure we have all reactions
+      const freshMessage = await message.fetch()
+
+      // Process all current reactions one final time
+      await this.processAllCurrentReactions(freshMessage, embed)
+
+      // Update original message with finalized embed
       const finalEmbed = this.createFinalEmbed(embed, "Raid time has passed!")
       await message.edit({
         content: `Organized a run for ${raid.name} that started ${discordRelativeTime}`,
@@ -228,10 +230,23 @@ export class RaidCommand extends Subcommand {
       startEmbed.setFields(sourceEmbed.data.fields)
     }
 
+    // Extract all user IDs who signed up
+    const userIds = this.extractAllUsers(sourceEmbed)
+
+    // Create ping message with individual user mentions
+    let pingContent = ""
+    if (userIds.length > 0) {
+      // Ping all participants
+      pingContent = `${userIds.map((id) => `<@${id}>`).join(" ")} ${raid.name} is starting! Here's the final signup sheet:`
+    } else {
+      // Fallback if no one signed up
+      pingContent = `${raid.name} is starting! Here's the final signup sheet:`
+    }
+
     const channel = message.channel as TextBasedChannel
     if (channel && channel instanceof TextChannel) {
       await channel.send({
-        content: `<@&${raid.role}> ${raid.name} is starting! Here's the final signup sheet:`,
+        content: pingContent,
         embeds: [startEmbed],
       })
     }
@@ -254,23 +269,73 @@ export class RaidCommand extends Subcommand {
     discordRelativeTime: string,
     timeOffset: number
   ): void {
+    // Use higher idle timeout to prevent collector from ending prematurely during high activity
     const collector = message.createReactionCollector({
       filter: (reaction, user) =>
         !user.bot &&
         Object.values(ELEMENTS).some((e) => e.emoji === reaction.emoji.name),
       time: isStartingNow ? 10000 : timeOffset * 60 * 1000,
       dispose: true,
+      // Add idle timeout to keep collector alive during periods of inactivity
+      idle: 30000,
     })
 
-    collector.on("collect", async (reaction, user) => {
-      await this.handleReaction(message, reaction, user, true)
+    // Add a batching mechanism to handle bursts of reactions
+    let pendingReactions: {
+      reaction: MessageReaction
+      user: User
+      isAdd: boolean
+    }[] = []
+    let processingBatch = false
+
+    const processBatch = async () => {
+      if (processingBatch || pendingReactions.length === 0) return
+
+      processingBatch = true
+
+      // Create a copy of current batch and clear pending queue
+      const currentBatch = [...pendingReactions]
+      pendingReactions = []
+
+      // Process each reaction in the batch
+      for (const { reaction, user, isAdd } of currentBatch) {
+        try {
+          await this.handleReaction(message, reaction, user, isAdd)
+        } catch (error) {
+          console.error("Error processing reaction in batch:", error)
+        }
+      }
+
+      processingBatch = false
+
+      // If more reactions came in while processing, process them too
+      if (pendingReactions.length > 0) {
+        setTimeout(processBatch, 0)
+      }
+    }
+
+    // Schedule processing every 250ms to batch reactions
+    const batchInterval = setInterval(processBatch, 250)
+
+    collector.on("collect", (reaction, user) => {
+      // Add to batch instead of processing immediately
+      pendingReactions.push({ reaction, user, isAdd: true })
     })
 
-    collector.on("remove", async (reaction, user) => {
-      await this.handleReaction(message, reaction, user, false)
+    collector.on("remove", (reaction, user) => {
+      // Add to batch instead of processing immediately
+      pendingReactions.push({ reaction, user, isAdd: false })
     })
 
     collector.on("end", async () => {
+      clearInterval(batchInterval)
+
+      // Process any remaining reactions in the batch
+      if (pendingReactions.length > 0) {
+        processingBatch = false
+        await processBatch()
+      }
+
       await this.handleRaidEnd(message, raid, discordRelativeTime)
     })
   }
@@ -345,6 +410,67 @@ export class RaidCommand extends Subcommand {
     return isStartingNow
       ? `<@&${raid.role}> Organizing a run for ${raid.name} starting now!`
       : `<@&${raid.role}> Organizing a run for ${raid.name} ${relativeTime}`
+  }
+
+  private extractAllUsers(embed: EmbedBuilder): string[] {
+    // Get all unique user IDs from all fields
+    const userSet = new Set<string>()
+
+    embed.data.fields?.forEach((field) => {
+      if (field.value && field.value !== "No one") {
+        // Extract user IDs from the field value
+        const matches = field.value.match(/<@(\d+)>/g)
+        if (matches) {
+          matches.forEach((match) => {
+            // Extract just the ID from <@ID> format
+            const userId = match.replace(/<@|>/g, "")
+            userSet.add(userId)
+          })
+        }
+      }
+    })
+
+    return Array.from(userSet)
+  }
+
+  private async processAllCurrentReactions(
+    message: Message,
+    embed: EmbedBuilder
+  ): Promise<void> {
+    try {
+      // Get all reactions on the message
+      const reactions = message.reactions.cache
+
+      // Process each reaction matching our element emojis
+      for (const [emojiName, reaction] of reactions.entries()) {
+        // Check if this emoji is one of our element emojis
+        const element = this.getElementFromEmoji(emojiName)
+        if (!element) continue
+
+        // Find the field index for this element
+        const fieldIndex = this.findElementFieldIndex(embed, element.emoji)
+        if (fieldIndex === -1) continue
+
+        // Start with empty value (will be set to "No one" if there are no users)
+        let newValue = ""
+
+        // Fetch all users who reacted with this emoji
+        const users = await reaction.users.fetch()
+        const reactedUsers = users.filter((user) => !user.bot)
+
+        if (reactedUsers.size === 0) {
+          newValue = "No one"
+        } else {
+          // Build a list of all users who reacted with this emoji
+          newValue = reactedUsers.map((user) => `<@${user.id}>`).join("\n")
+        }
+
+        // Update the embed field with the complete user list
+        this.updateEmbedField(embed, fieldIndex, newValue)
+      }
+    } catch (error) {
+      console.error("Error processing final reactions:", error)
+    }
   }
 
   private findElementFieldIndex(
