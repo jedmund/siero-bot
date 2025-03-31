@@ -276,8 +276,6 @@ export class RaidCommand extends Subcommand {
         Object.values(ELEMENTS).some((e) => e.emoji === reaction.emoji.name),
       time: isStartingNow ? 10000 : timeOffset * 60 * 1000,
       dispose: true,
-      // Add idle timeout to keep collector alive during periods of inactivity
-      idle: 30000,
     })
 
     // Add a batching mechanism to handle bursts of reactions
