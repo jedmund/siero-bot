@@ -112,11 +112,20 @@ export class RaidCommand extends Subcommand {
     const raidType = interaction.options.getString("raid", true)
     const hours = interaction.options.getInteger("hours") ?? 0
     const minutes = interaction.options.getInteger("minutes") ?? 0
-    const raid =
-      raidType === "hexachromatic" ? RAIDS.HEXACHROMATIC :
-      raidType === "dark_rapture" ? RAIDS.DARK_RAPTURE :
-      raidType === "versusia" ? RAIDS.VERSUSIA :
-      null
+    let raid: Raid
+    switch (raidType) {
+      case "hexachromatic":
+        raid = RAIDS.HEXACHROMATIC
+        break
+      case "dark_rapture":
+        raid = RAIDS.DARK_RAPTURE
+        break
+      case "versusia":
+        raid = RAIDS.VERSUSIA
+        break
+      default:
+        throw new Error(`Invalid raid type: ${raidType}`)
+    }
 
     // Get timing info
     const { isStartingNow, discordTimestamp, discordRelativeTime } =
