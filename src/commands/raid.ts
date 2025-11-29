@@ -47,6 +47,10 @@ const RAIDS: Record<string, Raid> = {
     name: "Dark Rapture Zero",
     role: "1216359321340739614",
   },
+  VERSUSIA: {
+    name: "Versusia",
+    role: "1443461126271664244",
+  }
 }
 
 @ApplyOptions<Subcommand.Options>({
@@ -109,7 +113,10 @@ export class RaidCommand extends Subcommand {
     const hours = interaction.options.getInteger("hours") ?? 0
     const minutes = interaction.options.getInteger("minutes") ?? 0
     const raid =
-      raidType === "hexachromatic" ? RAIDS.HEXACHROMATIC : RAIDS.DARK_RAPTURE
+      raidType === "hexachromatic" ? RAIDS.HEXACHROMATIC :
+      raidType === "dark_rapture" ? RAIDS.DARK_RAPTURE :
+      raidType === "versusia" ? RAIDS.VERSUSIA :
+      null
 
     // Get timing info
     const { isStartingNow, discordTimestamp, discordRelativeTime } =
