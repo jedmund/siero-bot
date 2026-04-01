@@ -47,8 +47,8 @@ const RAIDS: Record<string, Raid> = {
     name: "Dark Rapture Zero",
     role: "1216359321340739614",
   },
-  VERSUSIA: {
-    name: "Versusia",
+  DESTRUCTION_INCARNATE: {
+    name: "Destruction Incarnate",
     role: "1443461126271664244",
   }
 }
@@ -80,7 +80,8 @@ export class RaidCommand extends Subcommand {
                   .setRequired(true)
                   .addChoices(
                     { name: RAIDS.HEXACHROMATIC.name, value: "hexachromatic" },
-                    { name: RAIDS.DARK_RAPTURE.name, value: "dark_rapture" }
+                    { name: RAIDS.DARK_RAPTURE.name, value: "dark_rapture" },
+                    { name: RAIDS.DESTRUCTION_INCARNATE.name, value: "destruction_incarnate" }
                   )
               )
               .addIntegerOption((option) =>
@@ -120,8 +121,8 @@ export class RaidCommand extends Subcommand {
       case "dark_rapture":
         raid = RAIDS.DARK_RAPTURE
         break
-      case "versusia":
-        raid = RAIDS.VERSUSIA
+      case "destruction_incarnate":
+        raid = RAIDS.DESTRUCTION_INCARNATE
         break
       default:
         throw new Error(`Invalid raid type: ${raidType}`)
