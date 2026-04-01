@@ -1,7 +1,6 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
     "alwaysStrict": true,
     "declaration": true,
     "declarationMap": true,
@@ -9,13 +8,11 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
-    "importHelpers": true,
     "incremental": true,
-    "lib": ["esnext"],
-    "module": "CommonJS",
-    "moduleResolution": "Node",
+    "lib": ["ESNext"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "newLine": "lf",
-    "noEmitHelpers": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
@@ -29,7 +26,7 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "target": "ES2020",
+    "target": "ES2022",
     "useDefineForClassFields": true
   },
   "include": ["src/**/*.ts", "src/**/*.js"],
