@@ -8,19 +8,14 @@ import {
 import { Subcommand } from "@sapphire/plugin-subcommands"
 import { ApplyOptions } from "@sapphire/decorators"
 import { isMessageInstance } from "@sapphire/discord.js-utilities"
-import { config } from "dotenv"
 
-import Gacha from "../services/gacha"
-import Until from "../services/until"
+import Gacha from "../services/gacha.js"
+import Until from "../services/until.js"
 
-import { Promotion, Season } from "../utils/enums"
-import fetchRateups from "../utils/fetchRateups"
-import { ItemRateMap } from "../utils/types"
-import { RenderingUtils } from "../utils/rendering"
-
-if (process.env.NODE_ENV !== "production") {
-  config()
-}
+import { Promotion, Season } from "../utils/enums.js"
+import fetchRateups from "../utils/fetchRateups.js"
+import { ItemRateMap } from "../utils/types.js"
+import { RenderingUtils } from "../utils/rendering.js"
 
 const COMMAND_ID = process.env.GACHA_COMMAND_ID ?? ""
 @ApplyOptions<Subcommand.Options>({

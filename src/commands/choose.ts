@@ -1,10 +1,5 @@
 import { SlashCommandStringOption } from "discord.js"
 import { Command } from "@sapphire/framework"
-import { config } from "dotenv"
-
-if (process.env.NODE_ENV !== "production") {
-  config()
-}
 
 const COMMAND_ID = process.env.CHOOSE_COMMAND_ID ?? ""
 

@@ -1,17 +1,18 @@
 import { Chance } from "chance"
-import Cache from "./cache"
+import Cache from "./cache.js"
 
-import type DrawableItem from "../interfaces/DrawableItem"
+import type DrawableItem from "../interfaces/DrawableItem.js"
+import type { RarityCount } from "../interfaces/RarityCount.js"
 
-import { CategoryMap, ItemRateMap, RarityRateMap } from "../utils/types"
+import { CategoryMap, ItemRateMap, RarityRateMap } from "../utils/types.js"
 import {
   Rarity,
   Promotion,
   Season,
   DrawableItemType,
   GachaBucket,
-} from "../utils/enums"
-import { ROLLS_IN_SPARK, ROLLS_IN_TENPART, SSR_RATE } from "../utils/constants"
+} from "../utils/enums.js"
+import { ROLLS_IN_SPARK, ROLLS_IN_TENPART, SSR_RATE } from "../utils/constants.js"
 
 const cache = new Cache()
 const chance = new Chance()

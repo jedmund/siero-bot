@@ -2,8 +2,8 @@ import { EmbedBuilder } from "discord.js"
 import { sql } from "kysely"
 import { container } from "@sapphire/framework"
 
-import { Client } from "./connection"
-import { spacedString } from "../utils/formatting"
+import { Client } from "./connection.js"
+import { spacedString } from "../utils/formatting.js"
 
 interface Result {
   user_id: string

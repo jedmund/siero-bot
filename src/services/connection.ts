@@ -8,7 +8,7 @@ import type {
   CharacterTable,
   SummonTable,
   WeaponTable,
-} from "./tables"
+} from "./tables.js"
 
 export interface Database {
   sparks: SparkTable

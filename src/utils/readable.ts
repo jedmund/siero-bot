@@ -1,4 +1,4 @@
-import { DrawableItemType, Element, Rarity } from "./enums"
+import { DrawableItemType, Element, Rarity } from "./enums.js"
 
 export function readableElement(element: Element) {
   switch (element) {

@@ -10,15 +10,9 @@ import {
 } from "discord.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
 import { ApplyOptions } from "@sapphire/decorators"
-import { config } from "dotenv"
-
-import type { ItemRateMap, RateMap } from "../utils/types"
-import Rateup from "../services/rateup"
-import Api from "../services/api"
-
-if (process.env.NODE_ENV !== "production") {
-  config()
-}
+import type { ItemRateMap, RateMap } from "../utils/types.js"
+import Rateup from "../services/rateup.js"
+import Api from "../services/api.js"
 
 const COMMAND_ID = process.env.RATEUP_COMMAND_ID ?? ""
 

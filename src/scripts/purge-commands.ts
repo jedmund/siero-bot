@@ -1,9 +1,8 @@
-import * as dotenv from "dotenv";
-dotenv.config();
+import "dotenv/config";
 
 import { LogLevel, SapphireClient } from "@sapphire/framework";
 import { GatewayIntentBits } from "discord.js";
-import { purgeGuildCommands } from "../utils/purgeCommands";
+import { purgeGuildCommands } from "../utils/purgeCommands.js";
 
 // Debug output to verify env loaded
 console.log("Env loaded, token exists:", !!process.env.DISCORD_TOKEN);

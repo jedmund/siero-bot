@@ -1,7 +1,9 @@
-import DrawableItem from "../interfaces/DrawableItem"
-import { DrawableItemType, Rarity, Element } from "../utils/enums"
-import { ItemRateMap } from "../utils/types"
-import { Client } from "./connection"
+import DrawableItem from "../interfaces/DrawableItem.js"
+import type { RawResult } from "../interfaces/RawResult.js"
+import type { Spark } from "../interfaces/Spark.js"
+import { DrawableItemType, Rarity, Element } from "../utils/enums.js"
+import { ItemRateMap } from "../utils/types.js"
+import { Client } from "./connection.js"
 
 class Api {
   // Methods: Fetching methods

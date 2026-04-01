@@ -10,11 +10,6 @@ import {
 } from "discord.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
 import { ApplyOptions } from "@sapphire/decorators"
-import { config } from "dotenv"
-
-if (process.env.NODE_ENV !== "production") {
-  config()
-}
 
 const COMMAND_ID = process.env.RAID_COMMAND_ID ?? ""
 

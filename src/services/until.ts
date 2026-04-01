@@ -3,22 +3,22 @@ import {
   ActionRowBuilder,
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
-} from "@discordjs/builders"
+} from "discord.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
 
-import Api from "./api"
-import Gacha from "./gacha"
+import Api from "./api.js"
+import Gacha from "./gacha.js"
 
-import { DrawableItemType, Promotion, Season } from "../utils/enums"
+import { DrawableItemType, Promotion, Season } from "../utils/enums.js"
 import {
   readableElement,
   readableRarity,
   readableType,
-} from "../utils/readable"
+} from "../utils/readable.js"
 
-import type DrawableItem from "../interfaces/DrawableItem"
-import isGranblueID from "../utils/isGranblueID"
-import fetchRateups from "../utils/fetchRateups"
+import type DrawableItem from "../interfaces/DrawableItem.js"
+import isGranblueID from "../utils/isGranblueID.js"
+import fetchRateups from "../utils/fetchRateups.js"
 
 class Until {
   identifier: string

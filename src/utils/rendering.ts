@@ -1,9 +1,9 @@
 import { EmbedBuilder } from "discord.js"
-import { readableRarity } from "./readable"
-import { DrawableItemType, Rarity } from "./enums"
-import type DrawableItem from "../interfaces/DrawableItem"
-import type SparkResult from "../interfaces/SparkResult"
-import { ItemRateMap } from "./types"
+import { readableRarity } from "./readable.js"
+import { DrawableItemType, Rarity } from "./enums.js"
+import type DrawableItem from "../interfaces/DrawableItem.js"
+import type SparkResult from "../interfaces/SparkResult.js"
+import { ItemRateMap } from "./types.js"
 
 export class RenderingUtils {
   public static renderItems(results: DrawableItem[]) {
