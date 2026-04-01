@@ -1,4 +1,4 @@
-interface RawResult {
+export interface RawResult {
   id: string | null
   drawable_type: string | null
   drawable_id?: string | null

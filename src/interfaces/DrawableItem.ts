@@ -1,4 +1,5 @@
-import { DrawableItemType, Rarity } from "../utils/enums"
+import { DrawableItemType, Element, Rarity } from "../utils/enums.js"
+import type { Character } from "./Character.js"
 
 export default interface DrawableItem {
   id: string

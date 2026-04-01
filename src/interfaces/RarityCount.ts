@@ -1,4 +1,4 @@
-interface RarityCount {
+export interface RarityCount {
   [index: string]: number
   R: number
   SR: number

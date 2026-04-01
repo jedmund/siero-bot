@@ -1,4 +1,4 @@
-interface Spark {
+export interface Spark {
   [key: string]: number
   crystals: number
   tickets: number

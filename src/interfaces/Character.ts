@@ -1,4 +1,4 @@
-interface Character {
+export interface Character {
   [index: string]: any | string | number | boolean | null
   id: string
   granblue_id: string
