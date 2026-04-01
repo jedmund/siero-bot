@@ -7,7 +7,6 @@ DEBUG = "*"
 
 [tools]
 node = "lts"
-npm = "latest"
 
 [tasks.install]
 description = "Install Node.js dependencies"
