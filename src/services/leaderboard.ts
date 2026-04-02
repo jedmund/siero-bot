@@ -4,6 +4,7 @@ import { container } from "@sapphire/framework"
 
 import { Client } from "./connection.js"
 import { spacedString } from "../utils/formatting.js"
+import { calculateDraws } from "../utils/draws.js"
 
 interface Result {
   user_id: string
@@ -81,7 +82,7 @@ class Leaderboard {
           .fetch(`${rows[i].user_id}`)
           .catch((e) => console.error(e))
 
-        const numDraws = this.calculateDraws(
+        const numDraws = calculateDraws(
           rows[i].crystals,
           rows[i].tickets,
           rows[i].ten_tickets
@@ -107,21 +108,9 @@ class Leaderboard {
   }
 
   // Helper methods
-  private calculateDraws(
-    crystals: number,
-    tickets: number,
-    tenTickets: number
-  ) {
-    const ticketValue = tickets * 300
-    const tenTicketValue = tenTickets * 3000
-    const totalCrystalValue = crystals + ticketValue + tenTicketValue
-
-    return Math.floor(totalCrystalValue / 300)
-  }
-
   private compareProgress(a: Result, b: Result, order: Sort = Sort.Descending) {
-    const aDraws = this.calculateDraws(a.crystals, a.tickets, a.ten_tickets)
-    const bDraws = this.calculateDraws(b.crystals, b.tickets, b.ten_tickets)
+    const aDraws = calculateDraws(a.crystals, a.tickets, a.ten_tickets)
+    const bDraws = calculateDraws(b.crystals, b.tickets, b.ten_tickets)
 
     let comparison = 0
     if (aDraws > bDraws) {
