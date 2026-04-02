@@ -3,20 +3,13 @@ import type { ItemRateMap, RateMap } from "../utils/types.js"
 import isGranblueID from "../utils/isGranblueID.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
 import {
-  ActionRowBuilder,
   ComponentType,
   EmbedBuilder,
   MessageComponentInteraction,
-  StringSelectMenuBuilder,
-  StringSelectMenuOptionBuilder,
 } from "discord.js"
-import {
-  readableElement,
-  readableRarity,
-  readableType,
-} from "../utils/readable.js"
 import DrawableItem from "../interfaces/DrawableItem.js"
 import { renderHtmlBlock } from "../utils/formatting.js"
+import { generateConflictSelect } from "../utils/selectMenu.js"
 
 const INTERACTION_TIMEOUT = 60000 // 1 minute timeout for interactions
 
@@ -127,7 +120,7 @@ class Rateup {
       })
 
       for (const [i, conflict] of this.conflicts.entries()) {
-        const select = this.generateSelect(conflict.results)
+        const select = generateConflictSelect(conflict.results)
 
         // Edit the reply and wait for the result
         const message = await this.interaction.editReply({
@@ -174,34 +167,6 @@ class Rateup {
     return i.user.id === this.interaction.user.id
   }
 
-  private generateSelect(items: DrawableItem[]) {
-    const select = new StringSelectMenuBuilder()
-      .setCustomId("conflict")
-      .setPlaceholder("Pick an item")
-      .addOptions(this.generateConflictOptions(items))
-    const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
-      select
-    )
-
-    return row
-  }
-
-  private generateConflictOptions(items: DrawableItem[]) {
-    return items.map((item) => {
-      let description = `${readableType(item.type)} · ${readableRarity(
-        item.rarity
-      )} · ${readableElement(item.element)}`
-
-      if (item.recruits) {
-        description += ` · Recruits ${item.recruits.name.en}`
-      }
-
-      return new StringSelectMenuOptionBuilder()
-        .setLabel(item.name.en)
-        .setDescription(description)
-        .setValue(item.granblue_id)
-    })
-  }
 
   private renderEmbed() {
     let details = ""
