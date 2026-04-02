@@ -15,6 +15,7 @@ import { ApplyOptions } from "@sapphire/decorators"
 import type { ItemRateMap, RateMap } from "../utils/types.js"
 import Rateup from "../services/rateup.js"
 import Api from "../services/api.js"
+import { renderHtmlBlock } from "../utils/formatting.js"
 
 const COMMAND_ID = process.env.RATEUP_COMMAND_ID ?? ""
 
@@ -296,7 +297,7 @@ export class RateupCommand extends Subcommand {
 
     return new EmbedBuilder()
       .setDescription(description)
-      .addFields({ name: "Rates", value: this.renderHtmlBlock(details) })
+      .addFields({ name: "Rates", value: renderHtmlBlock(details) })
   }
 
   // Methods: UI Helpers
@@ -348,10 +349,6 @@ export class RateupCommand extends Subcommand {
         })
     }
     return rates
-  }
-
-  private renderHtmlBlock(content: string): string {
-    return `\`\`\`html\n${content}\`\`\``
   }
 
   // Methods: Helper methods

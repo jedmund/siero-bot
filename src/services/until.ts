@@ -1,20 +1,11 @@
 import { ComponentType, StringSelectMenuInteraction } from "discord.js"
-import {
-  ActionRowBuilder,
-  StringSelectMenuBuilder,
-  StringSelectMenuOptionBuilder,
-} from "discord.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
 
 import Api from "./api.js"
 import Gacha from "./gacha.js"
 
 import { DrawableItemType, Promotion, Season } from "../utils/enums.js"
-import {
-  readableElement,
-  readableRarity,
-  readableType,
-} from "../utils/readable.js"
+import { generateConflictSelect } from "../utils/selectMenu.js"
 
 import type DrawableItem from "../interfaces/DrawableItem.js"
 import isGranblueID from "../utils/isGranblueID.js"
@@ -99,7 +90,7 @@ class Until {
     // Send the user a select to select the correct item from the options found
     const response = await interaction.editReply({
       content: `Multiple items named \`${this.identifier}\` were found. Which item would you like to simulate draws for?`,
-      components: [this.generateSelect(options)],
+      components: [generateConflictSelect(options)],
     })
 
     // Create a collector and listen for responses
@@ -175,7 +166,7 @@ class Until {
         const item = roll.items[i]
         if (
           item.name.en == this.item.name.en ||
-          item.name.en == this.item.recruits?.en
+          item.name.en == this.item.recruits?.name.en
         ) {
           found = true
         }
@@ -187,41 +178,11 @@ class Until {
 
   // Methods: Rendering methods
 
-  private generateConflictOptions(items: DrawableItem[]) {
-    return items.map((item) => {
-      let description = `${readableType(item.type)} · ${readableRarity(
-        item.rarity
-      )} · ${readableElement(item.element)}`
-
-      if (item.recruits) {
-        description += ` · Recruits ${item.recruits.name.en}`
-      }
-
-      return new StringSelectMenuOptionBuilder()
-        .setLabel(item.name.en)
-        .setDescription(description)
-        .setValue(item.granblue_id)
-    })
-  }
-
-  private generateSelect(items: DrawableItem[]) {
-    const select = new StringSelectMenuBuilder()
-      .setCustomId("conflict")
-      .setPlaceholder("Pick an item")
-      .addOptions(this.generateConflictOptions(items))
-    const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
-      select
-    )
-
-    return row
-  }
 
   private generateResponse(result: { count: number; cost: { crystals: number; jpy: number; usd: number } }) {
     let name = ""
     if (this.item) {
       const item = this.item
-      console.log(item)
-
       switch (item.type) {
         case DrawableItemType.WEAPON:
           if (item.recruits) name = `${item.name.en} (${item.recruits.name.en})`

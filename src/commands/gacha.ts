@@ -16,6 +16,7 @@ import { Promotion, Season } from "../utils/enums.js"
 import fetchRateups from "../utils/fetchRateups.js"
 import { ItemRateMap } from "../utils/types.js"
 import { RenderingUtils } from "../utils/rendering.js"
+import { renderHtmlBlock } from "../utils/formatting.js"
 
 const COMMAND_ID = process.env.GACHA_COMMAND_ID ?? ""
 @ApplyOptions<Subcommand.Options>({
@@ -211,7 +212,7 @@ export class GachaCommand extends Subcommand {
         const gacha = await this.createGacha(interaction)
         const result = gacha.tenPartRoll()
         await interaction.editReply(
-          this.renderHtmlBlock(RenderingUtils.renderItems(result.items))
+          renderHtmlBlock(RenderingUtils.renderItems(result.items))
         )
       }
     )
@@ -280,10 +281,6 @@ export class GachaCommand extends Subcommand {
     await until.execute()
   }
 
-  public async chatInputCopySpark(): Promise<void> {
-    console.log("Copy and spark")
-  }
-
   // Methods: Transformers
 
   private getPromotion(input: string | null): Promotion {
@@ -340,7 +337,4 @@ export class GachaCommand extends Subcommand {
     }
   }
 
-  private renderHtmlBlock(content: string): string {
-    return `\`\`\`html\n${content}\`\`\``
-  }
 }

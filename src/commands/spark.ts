@@ -6,12 +6,10 @@ import pluralize from "pluralize"
 import Api from "../services/api.js"
 import Leaderboard from "../services/leaderboard.js"
 import type { Spark } from "../interfaces/Spark.js"
+import { calculateDraws } from "../utils/draws.js"
+import { DRAWS_PER_SPARK } from "../utils/constants.js"
 
 const COMMAND_ID = process.env.SPARK_COMMAND_ID ?? ""
-
-const DRAWS_PER_SPARK = 300
-const CRYSTALS_PER_TICKET = 300
-const CRYSTALS_PER_TEN_TICKET = 3000
 
 type SparkCurrencies = {
   crystals?: number
@@ -319,11 +317,7 @@ export class SparkCommand extends Subcommand {
   }
 
   private calculateDraws(spark: Spark): number {
-    const ticketValue = spark.tickets * CRYSTALS_PER_TICKET
-    const tenTicketValue = spark.ten_tickets * CRYSTALS_PER_TEN_TICKET
-    const totalCrystalValue = spark.crystals + ticketValue + tenTicketValue
-
-    return Math.floor(totalCrystalValue / CRYSTALS_PER_TICKET)
+    return calculateDraws(spark.crystals, spark.tickets, spark.ten_tickets)
   }
 
   private getCurrencies(
