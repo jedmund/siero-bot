@@ -10,25 +10,10 @@ class Cache {
   _nonCharacterWeapons: ItemMap = {}
   _summons: ItemMap = {}
 
-  // isExpired = this.isExpired.bind(this)
-  lastUpdated = new Date(0)
-  ttl = 1000 * 60 * 24 * 4 // 4 days in milliseconds
-
   public constructor() {
     this.fetchAllCharacterWeapons()
     this.fetchAllNonCharacterWeapons()
     this.fetchAllSummons()
-  }
-
-  // Cache methods
-  // @ts-expect-error unused but kept for future use
-  private isExpired() {
-    return this.lastUpdated.getTime() + this.ttl < new Date().getTime()
-  }
-
-  // @ts-expect-error unused but kept for future use
-  private resetCache() {
-    this.lastUpdated = new Date(0)
   }
 
   // Subset retrieval methods
