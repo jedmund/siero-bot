@@ -9,3 +9,7 @@ export function splitString(string: string, maxNumChars: number) {
     string2: string.slice(maxNumChars),
   }
 }
+
+export function renderHtmlBlock(content: string): string {
+  return `\`\`\`html\n${content}\`\`\``
+}

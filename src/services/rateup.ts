@@ -16,6 +16,7 @@ import {
   readableType,
 } from "../utils/readable.js"
 import DrawableItem from "../interfaces/DrawableItem.js"
+import { renderHtmlBlock } from "../utils/formatting.js"
 
 const INTERACTION_TIMEOUT = 60000 // 1 minute timeout for interactions
 
@@ -210,14 +211,10 @@ class Rateup {
 
     return new EmbedBuilder()
       .setDescription("These rates only apply to your simulations:")
-      .addFields({ name: "Rates", value: this.renderHtmlBlock(details) })
+      .addFields({ name: "Rates", value: renderHtmlBlock(details) })
   }
 
   // Methods: Helpers
-
-  private renderHtmlBlock(content: string): string {
-    return `\`\`\`html\n${content}\`\`\``
-  }
 
   private async handleExecuteError() {
     const errorMessage =
