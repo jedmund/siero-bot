@@ -175,7 +175,7 @@ class Until {
         const item = roll.items[i]
         if (
           item.name.en == this.item.name.en ||
-          item.name.en == this.item.recruits?.en
+          item.name.en == this.item.recruits?.name.en
         ) {
           found = true
         }
