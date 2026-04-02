@@ -1,7 +1,8 @@
 import { Client } from "./connection.js"
 
-import { DrawableItemType, Promotion, Rarity, Season } from "../utils/enums"
-import type DrawableItem from "../interfaces/DrawableItem"
+import { DrawableItemType, Element, Promotion, Rarity, Season } from "../utils/enums.js"
+import type DrawableItem from "../interfaces/DrawableItem.js"
+import type { GachaItemRecord } from "../interfaces/GachaItemRecord.js"
 import type { ItemMap } from "../utils/types.js"
 
 class Cache {
@@ -20,12 +21,12 @@ class Cache {
   }
 
   // Cache methods
-  // @ts-ignore
+  // @ts-expect-error unused but kept for future use
   private isExpired() {
     return this.lastUpdated.getTime() + this.ttl < new Date().getTime()
   }
 
-  // @ts-ignore
+  // @ts-expect-error unused but kept for future use
   private resetCache() {
     this.lastUpdated = new Date(0)
   }
@@ -166,7 +167,7 @@ class Cache {
       },
       type: type,
       rarity: item.rarity || 0,
-      element: item.element || null,
+      element: item.element ?? Element.NULL,
       promotions: {
         premium: item.premium || false,
         classic: item.classic || false,

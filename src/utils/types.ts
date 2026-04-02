@@ -1,4 +1,5 @@
-import DrawableItem from "../interfaces/DrawableItem"
+import DrawableItem from "../interfaces/DrawableItem.js"
+import type { Category } from "../interfaces/Category.js"
 
 export type CategoryMap = { [key: string]: Category }
 export type ItemMap = { [key: number]: DrawableItem[] }

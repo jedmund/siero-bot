@@ -1,12 +1,12 @@
 import { Events, Listener } from "@sapphire/framework"
 import { ButtonInteraction } from "discord.js"
 
-import Gacha from "../services/gacha"
-import Api from "../services/api"
+import Gacha from "../services/gacha.js"
+import Api from "../services/api.js"
 
-import { Promotion, Season } from "../utils/enums"
-import fetchRateups from "../utils/fetchRateups"
-import { RenderingUtils } from "../utils/rendering"
+import { Promotion, Season } from "../utils/enums.js"
+import fetchRateups from "../utils/fetchRateups.js"
+import { RenderingUtils } from "../utils/rendering.js"
 export class HandleSparkButtonInteractionListener extends Listener<
   typeof Events.InteractionCreate
 > {

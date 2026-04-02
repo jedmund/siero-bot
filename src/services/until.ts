@@ -3,22 +3,22 @@ import {
   ActionRowBuilder,
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
-} from "@discordjs/builders"
+} from "discord.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
 
-import Api from "./api"
-import Gacha from "./gacha"
+import Api from "./api.js"
+import Gacha from "./gacha.js"
 
-import { DrawableItemType, Promotion, Season } from "../utils/enums"
+import { DrawableItemType, Promotion, Season } from "../utils/enums.js"
 import {
   readableElement,
   readableRarity,
   readableType,
-} from "../utils/readable"
+} from "../utils/readable.js"
 
-import type DrawableItem from "../interfaces/DrawableItem"
-import isGranblueID from "../utils/isGranblueID"
-import fetchRateups from "../utils/fetchRateups"
+import type DrawableItem from "../interfaces/DrawableItem.js"
+import isGranblueID from "../utils/isGranblueID.js"
+import fetchRateups from "../utils/fetchRateups.js"
 
 class Until {
   identifier: string
@@ -108,10 +108,8 @@ class Until {
       time: 3_600_000,
     })
 
-    // Pass the global context to the listener
-    const $this = this
     await collector.on("collect", async (i) => {
-      this.collectOption(i, $this)
+      this.collectOption(i, this)
     })
   }
 
@@ -170,11 +168,11 @@ class Until {
     let found = false
 
     while (!found && this.item) {
-      let roll = gacha.tenPartRoll()
+      const roll = gacha.tenPartRoll()
       count = count + 10
 
-      for (var i in roll.items) {
-        let item = roll.items[i]
+      for (const i in roll.items) {
+        const item = roll.items[i]
         if (
           item.name.en == this.item.name.en ||
           item.name.en == this.item.recruits?.en
@@ -218,7 +216,7 @@ class Until {
     return row
   }
 
-  private generateResponse(result: any) {
+  private generateResponse(result: { count: number; cost: { crystals: number; jpy: number; usd: number } }) {
     let name = ""
     if (this.item) {
       const item = this.item

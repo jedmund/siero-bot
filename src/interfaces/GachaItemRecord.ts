@@ -1,4 +1,4 @@
-interface GachaItemRecord {
+export interface GachaItemRecord {
   id: string | null
   item_id: string | null
   character_id?: string | null

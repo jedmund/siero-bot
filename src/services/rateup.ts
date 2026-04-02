@@ -1,6 +1,6 @@
-import Api from "./api"
-import type { ItemRateMap, RateMap } from "../utils/types"
-import isGranblueID from "../utils/isGranblueID"
+import Api from "./api.js"
+import type { ItemRateMap, RateMap } from "../utils/types.js"
+import isGranblueID from "../utils/isGranblueID.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
 import {
   ActionRowBuilder,
@@ -14,8 +14,8 @@ import {
   readableElement,
   readableRarity,
   readableType,
-} from "../utils/readable"
-import DrawableItem from "../interfaces/DrawableItem"
+} from "../utils/readable.js"
+import DrawableItem from "../interfaces/DrawableItem.js"
 
 const INTERACTION_TIMEOUT = 60000 // 1 minute timeout for interactions
 

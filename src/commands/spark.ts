@@ -1,15 +1,11 @@
 import { EmbedBuilder, SlashCommandSubcommandBuilder, User } from "discord.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
 import { ApplyOptions } from "@sapphire/decorators"
-import { config } from "dotenv"
 import pluralize from "pluralize"
 
-import Api from "../services/api"
-import Leaderboard from "../services/leaderboard"
-
-if (process.env.NODE_ENV !== "production") {
-  config()
-}
+import Api from "../services/api.js"
+import Leaderboard from "../services/leaderboard.js"
+import type { Spark } from "../interfaces/Spark.js"
 
 const COMMAND_ID = process.env.SPARK_COMMAND_ID ?? ""
 

@@ -1,10 +1,5 @@
 import { Command } from "@sapphire/framework"
 import { isMessageInstance } from "@sapphire/discord.js-utilities"
-import { config } from "dotenv"
-
-if (process.env.NODE_ENV !== "production") {
-  config()
-}
 
 const COMMAND_ID = process.env.PING_COMMAND_ID ?? ""
 

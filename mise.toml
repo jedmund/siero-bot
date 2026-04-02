@@ -7,30 +7,26 @@ DEBUG = "*"
 
 [tools]
 node = "lts"
+pnpm = "latest"
 
 [tasks.install]
 description = "Install Node.js dependencies"
-run = "npm install"
+run = "pnpm install"
 
 [tasks.dev]
 description = "Run the bot in development mode"
 alias = "d"
-run = "npm run start"
+run = "pnpm start"
 
 [tasks.serve]
 description = "Run the bot in production mode"
 alias = "s"
-run = "npm run serve"
+run = "pnpm serve"
 
 [tasks.build]
 description = "Build the TypeScript project"
 alias = "b"
-run = "npm run build-ts"
-
-[tasks.watch]
-description = "Watch TypeScript files for changes"
-alias = "w"
-run = "npm run watch-ts"
+run = "pnpm build-ts"
 
 [tasks.clean]
 description = "Clean build artifacts"
@@ -40,4 +36,4 @@ run = "rm -rf build/dist node_modules"
 [tasks.purge]
 description = "Purge commands"
 alias = "p"
-run = "npm run purge-commands"
+run = "pnpm purge-commands"

@@ -1,5 +1,5 @@
-import Api from "../services/api"
-import { ItemRateMap } from "./types"
+import Api from "../services/api.js"
+import { ItemRateMap } from "./types.js"
 
 export default async function fetchRateups(user_id: string) {
   let rateups: ItemRateMap = await Api.fetchRateups(user_id)

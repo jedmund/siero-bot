@@ -50,6 +50,7 @@ export interface SummonTable {
 }
 
 export interface SparkTable {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any
   id: Generated<string>
   user_id: string
