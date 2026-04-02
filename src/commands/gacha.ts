@@ -280,10 +280,6 @@ export class GachaCommand extends Subcommand {
     await until.execute()
   }
 
-  public async chatInputCopySpark(): Promise<void> {
-    console.log("Copy and spark")
-  }
-
   // Methods: Transformers
 
   private getPromotion(input: string | null): Promotion {

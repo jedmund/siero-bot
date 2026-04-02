@@ -66,28 +66,7 @@ export class RenderingUtils {
     const ssrSummons = results.items.filter(this.filterSSRSummons)
     const numRateupItems = this.filterRateUpItems(results, rateups)
 
-    // TODO: Extract into helper method
-    // let targetsAcquired = results.items.filter((item: Item) => {
-    //   if (this.sparkTarget != null) {
-    //     return (
-    //       item.name == this.sparkTarget.name ||
-    //       (item.recruits != null && item.recruits == this.sparkTarget.recruits)
-    //     )
-    //   } else {
-    //     return null
-    //   }
-    // })
-
-    // let targetAcquiredString = ""
-    // if (targetsAcquired != null) {
-    //   targetAcquiredString =
-    //     targetsAcquired.length > 0
-    //       ? `You got your spark target! (${targetsAcquired.length})`
-    //       : ""
-    // }
-
     return [
-      // targetAcquiredString,
       rateups.length > 0 ? `Rate-up Items: ${numRateupItems}` : "",
       `SSR Weapons: ${ssrWeapons.length}`,
       `SSR Summons: ${ssrSummons.length}`,
