@@ -493,9 +493,6 @@ export class RaidCommand extends Subcommand {
   private getElementFromEmoji(emoji: string | null) {
     if (!emoji) return null
     const element = Object.values(ELEMENTS).find((e) => e.emoji === emoji)
-    console.log(
-      `Looking up emoji: ${emoji}, found element: ${element?.name || "none"}`
-    )
     return element
   }
 

@@ -220,8 +220,6 @@ class Until {
     let name = ""
     if (this.item) {
       const item = this.item
-      console.log(item)
-
       switch (item.type) {
         case DrawableItemType.WEAPON:
           if (item.recruits) name = `${item.name.en} (${item.recruits.name.en})`

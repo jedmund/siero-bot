@@ -81,8 +81,6 @@ class Leaderboard {
           .fetch(`${rows[i].user_id}`)
           .catch((e) => console.error(e))
 
-        console.log(user)
-
         const numDraws = this.calculateDraws(
           rows[i].crystals,
           rows[i].tickets,
