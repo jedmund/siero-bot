@@ -21,12 +21,12 @@ class Cache {
   }
 
   // Cache methods
-  // @ts-ignore
+  // @ts-expect-error unused but kept for future use
   private isExpired() {
     return this.lastUpdated.getTime() + this.ttl < new Date().getTime()
   }
 
-  // @ts-ignore
+  // @ts-expect-error unused but kept for future use
   private resetCache() {
     this.lastUpdated = new Date(0)
   }

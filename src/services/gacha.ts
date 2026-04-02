@@ -42,13 +42,13 @@ export default class Gacha {
 
   public tenPartRoll(times = 1, fetchAllItems = true) {
     // Create an object to store counts
-    let count: RarityCount = {
+    const count: RarityCount = {
       R: 0,
       SR: 0,
       SSR: 0,
     }
 
-    let items: DrawableItem[] = []
+    const items: DrawableItem[] = []
 
     for (let i = 0; i < times; i++) {
       for (let j = 0; j < ROLLS_IN_TENPART; j++) {
@@ -78,7 +78,7 @@ export default class Gacha {
   }
 
   public spark() {
-    let maxRolls = ROLLS_IN_SPARK / 10
+    const maxRolls = ROLLS_IN_SPARK / 10
     return this.tenPartRoll(maxRolls, false)
   }
 
@@ -134,7 +134,7 @@ export default class Gacha {
     ).length
 
     // First, subtract the sum of the rates of any rate-up items (characters or summons) from the total rate.
-    for (let i in this.rateups) {
+    for (const i in this.rateups) {
       const rateup = this.rateups[i]
       rate = rate - rateup.rate
     }
@@ -147,7 +147,7 @@ export default class Gacha {
 
     // Divide the difference evenly among all other items in the pool.
     // The quotient is the summon rate.
-    let summonRate = rate / (remainingWeapons + remainingSummons)
+    const summonRate = rate / (remainingWeapons + remainingSummons)
 
     // Remove the combined rate of all summons in the pool from the total rate.
     rate = rate - remainingSummons * summonRate
@@ -178,7 +178,7 @@ export default class Gacha {
       rate = rate / remainingWeapons
     }
 
-    let rates = {
+    const rates = {
       weapon: {
         rate: rate,
         count: remainingWeapons - remainingLimiteds,
@@ -215,7 +215,7 @@ export default class Gacha {
   }
 
   private determineRarity(final = false) {
-    let rates = this.currentRates(final)
+    const rates = this.currentRates(final)
 
     let r: number
     if (final) {
@@ -247,7 +247,7 @@ export default class Gacha {
     const rarity = Rarity.SSR
 
     // Fetch the rates and determine a bucket
-    let bucket = this.determineSSRBucket(this.rates)
+    const bucket = this.determineSSRBucket(this.rates)
 
     let item: DrawableItem
     if (
@@ -286,13 +286,13 @@ export default class Gacha {
           break
       }
     } else {
-      let rateupItems = this.rateups.map((rateup) => rateup.item.name.en)
-      let rateupRates = this.rateups.map((rateup) => rateup.rate)
+      const rateupItems = this.rateups.map((rateup) => rateup.item.name.en)
+      const rateupRates = this.rateups.map((rateup) => rateup.rate)
 
-      let result = chance.weighted(rateupItems, rateupRates)
+      const result = chance.weighted(rateupItems, rateupRates)
 
       // NOTE: Why is this forced?
-      let found = this.rateups.find((rateup) => rateup.item.name.en === result)
+      const found = this.rateups.find((rateup) => rateup.item.name.en === result)
       item = found!.item
     }
 
@@ -323,15 +323,15 @@ export default class Gacha {
     let bucketKeys: number[]
     let bucketRates: number[]
 
-    let limitedRate = rates.limited.rate * rates.limited.count
-    let summonRate = rates.summon.rate * rates.summon.count
-    let weaponRate = rates.weapon.rate * rates.weapon.count
+    const limitedRate = rates.limited.rate * rates.limited.count
+    const summonRate = rates.summon.rate * rates.summon.count
+    const weaponRate = rates.weapon.rate * rates.weapon.count
 
     if (this.rateups.length > 0) {
       allRateups = 0
 
-      for (let i in this.rateups) {
-        let item = this.rateups[i]
+      for (const i in this.rateups) {
+        const item = this.rateups[i]
         allRateups = allRateups + item.rate
       }
 

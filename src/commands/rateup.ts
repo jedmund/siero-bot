@@ -4,9 +4,11 @@ import {
   ButtonStyle,
   ComponentType,
   EmbedBuilder,
+  InteractionResponse,
   MessageComponentInteraction,
   SlashCommandStringOption,
   SlashCommandSubcommandBuilder,
+  User,
 } from "discord.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
 import { ApplyOptions } from "@sapphire/decorators"
@@ -356,12 +358,14 @@ export class RateupCommand extends Subcommand {
 
   private async handleRateCopyResponse(
     interaction: Subcommand.ChatInputCommandInteraction,
-    message: any,
-    providedUser: any,
+    interactionResponse: InteractionResponse,
+    providedUser: User,
     rates: ItemRateMap
   ) {
+    const message = await interactionResponse.fetch()
+
     try {
-      const response = await message.awaitMessageComponent({
+      const response = await interactionResponse.awaitMessageComponent({
         filter: (i: MessageComponentInteraction) =>
           this.collectorFilter(i, interaction),
         componentType: ComponentType.Button,
@@ -372,7 +376,7 @@ export class RateupCommand extends Subcommand {
         await Api.removeRateups(interaction.user.id)
         await Api.addRateups(interaction.user.id, rates)
 
-        await message.edit({
+        await interaction.editReply({
           content: `Your simulation rates have been updated to match <@${providedUser.id}>'s.`,
           embeds: [this.renderEmbed("", rates, true)],
           components: [],
@@ -382,8 +386,8 @@ export class RateupCommand extends Subcommand {
       // Handle timeout or other errors with interaction
       if (error instanceof Error && error.message.includes("time")) {
         // Button timeout - remove components to indicate expiration
-        await message
-          .edit({
+        await interaction
+          .editReply({
             components: [],
             content: message.content + "\n*Button has expired*",
           })
@@ -422,7 +426,7 @@ export class RateupCommand extends Subcommand {
 
   private resolveUserId(
     interaction: Subcommand.ChatInputCommandInteraction,
-    providedUser: any
+    providedUser: User | null
   ): string {
     return providedUser === null ? interaction.user.id : providedUser.id
   }

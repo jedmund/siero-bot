@@ -46,8 +46,8 @@ class Leaderboard {
   // Render methods
   private async render(data: Result[]) {
     const { client: sapphire } = container
-    let leaderboardTitle = "Leaderboard (Last 14 days)"
-    let loserboardTitle = "~~Leader~~ Loserboard (Last 14 days)"
+    const leaderboardTitle = "Leaderboard (Last 14 days)"
+    const loserboardTitle = "~~Leader~~ Loserboard (Last 14 days)"
 
     if (data.length == 0) {
       return new EmbedBuilder()
@@ -56,26 +56,26 @@ class Leaderboard {
           "No one has updated their sparks in the last two weeks!"
         )
     } else {
-      let rows =
+      const rows =
         this.order == Sort.Descending
           ? data.sort(this.compareProgress.bind(this))
           : data.sort(this.compareProgress.bind(this)).reverse()
 
-      let maxRows = rows.length > 10 ? 10 : rows.length
+      const maxRows = rows.length > 10 ? 10 : rows.length
 
-      let usernameMaxChars = 20
-      let numDrawsMaxChars = 10
+      const usernameMaxChars = 20
+      const numDrawsMaxChars = 10
 
-      let divider =
+      const divider =
         "+-----+" +
         "-".repeat(usernameMaxChars + 2) +
         "+" +
         "-".repeat(numDrawsMaxChars + 2) +
         "+\n"
-      var result = divider
+      let result = divider
 
-      for (var i = 0; i < maxRows; i++) {
-        let place = i + 1 < 10 ? `${i + 1} ` : `${i + 1}`
+      for (let i = 0; i < maxRows; i++) {
+        const place = i + 1 < 10 ? `${i + 1} ` : `${i + 1}`
 
         const user = await sapphire.users
           .fetch(`${rows[i].user_id}`)
@@ -83,17 +83,17 @@ class Leaderboard {
 
         console.log(user)
 
-        let numDraws = this.calculateDraws(
+        const numDraws = this.calculateDraws(
           rows[i].crystals,
           rows[i].tickets,
           rows[i].ten_tickets
         )
 
-        let spacedUsername = spacedString(
+        const spacedUsername = spacedString(
           user ? user.username : rows[i].user_id,
           usernameMaxChars
         )
-        let spacedDraws = spacedString(`${numDraws} draws`, numDrawsMaxChars)
+        const spacedDraws = spacedString(`${numDraws} draws`, numDrawsMaxChars)
 
         result += `| #${place} | ${spacedUsername} | ${spacedDraws} |\n`
         result += divider
@@ -114,16 +114,16 @@ class Leaderboard {
     tickets: number,
     tenTickets: number
   ) {
-    let ticketValue = tickets * 300
-    let tenTicketValue = tenTickets * 3000
-    let totalCrystalValue = crystals + ticketValue + tenTicketValue
+    const ticketValue = tickets * 300
+    const tenTicketValue = tenTickets * 3000
+    const totalCrystalValue = crystals + ticketValue + tenTicketValue
 
     return Math.floor(totalCrystalValue / 300)
   }
 
   private compareProgress(a: Result, b: Result, order: Sort = Sort.Descending) {
-    let aDraws = this.calculateDraws(a.crystals, a.tickets, a.ten_tickets)
-    let bDraws = this.calculateDraws(b.crystals, b.tickets, b.ten_tickets)
+    const aDraws = this.calculateDraws(a.crystals, a.tickets, a.ten_tickets)
+    const bDraws = this.calculateDraws(b.crystals, b.tickets, b.ten_tickets)
 
     let comparison = 0
     if (aDraws > bDraws) {

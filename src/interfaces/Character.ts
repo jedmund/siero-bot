@@ -1,5 +1,5 @@
 export interface Character {
-  [index: string]: any | string | number | boolean | null
+  [index: string]: string | number | boolean | null | { [index: string]: string }
   id: string
   granblue_id: string
   name: {

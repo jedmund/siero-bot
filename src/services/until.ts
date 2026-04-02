@@ -108,10 +108,8 @@ class Until {
       time: 3_600_000,
     })
 
-    // Pass the global context to the listener
-    const $this = this
     await collector.on("collect", async (i) => {
-      this.collectOption(i, $this)
+      this.collectOption(i, this)
     })
   }
 
@@ -170,11 +168,11 @@ class Until {
     let found = false
 
     while (!found && this.item) {
-      let roll = gacha.tenPartRoll()
+      const roll = gacha.tenPartRoll()
       count = count + 10
 
-      for (var i in roll.items) {
-        let item = roll.items[i]
+      for (const i in roll.items) {
+        const item = roll.items[i]
         if (
           item.name.en == this.item.name.en ||
           item.name.en == this.item.recruits?.en
@@ -218,7 +216,7 @@ class Until {
     return row
   }
 
-  private generateResponse(result: any) {
+  private generateResponse(result: { count: number; cost: { crystals: number; jpy: number; usd: number } }) {
     let name = ""
     if (this.item) {
       const item = this.item
