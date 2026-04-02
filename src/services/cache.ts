@@ -248,7 +248,7 @@ class Cache {
         "gacha.halloween",
         "gacha.holiday",
       ])
-      .where("recruits", "is not", null)
+      .where("recruits", "is", null)
       .where("rarity", "=", rarity)
       .execute()
 
