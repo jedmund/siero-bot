@@ -44,7 +44,8 @@
     "dev": "tsx watch src/index.ts",
     "serve": "pnpm start",
     "purge-commands": "tsx src/scripts/purge-commands.ts",
-    "check": "pnpm typecheck && pnpm build && pnpm lint && pnpm format-check && pnpm test"
+    "check": "pnpm typecheck && pnpm build && pnpm lint && pnpm format-check && pnpm test",
+    "simulate": "tsx src/scripts/simulate.ts"
   },
   "packageManager": "pnpm@10.34.6",
   "engines": {

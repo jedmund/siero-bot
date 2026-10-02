@@ -56,6 +56,34 @@ SR-or-higher slots preserve SSR probabilities and allocate the remainder to SR.
 Featured percentages are absolute per-draw chances. Roll-until counts complete
 ten-draw purchases, yields every 1,000 draws, and stops after 100,000 draws.
 
+## Local simulation CLI
+
+Run simulations without Discord using the same engine as the bot:
+
+```sh
+pnpm simulate --mode flash --draws 300 --seed example
+pnpm simulate --mode classic_iii --draws 1000
+pnpm simulate --mode legend --rateup 1040221700=0.3 --rateup 1040320500=0.3
+pnpm simulate --mode premium --singles --draws 25 --json
+pnpm simulate --help
+```
+
+The CLI reads `DATABASE_URL` from the shell, defaulting to
+`postgres://localhost/hensei_dev`; it does not load the bot's `.env` or log in to
+Discord. Its PostgreSQL connection is read-only. Run the catalogue migrations
+before using it. Ten-draw runs require a multiple of ten and use the SR-or-higher
+distribution for every tenth slot; `--singles` uses ordinary odds throughout.
+Draw counts are limited to one million. All modes and seasonal filters supported
+by the engine are available. Custom rate-ups use game IDs and absolute percentage
+values; they do not change saved settings. No saved user rate-ups are loaded.
+
+The default seed is `1`. Matching options and catalogue data reproduce the same
+results, regardless of database row order. Text output summarizes rarities and
+SSR drops; `--json` includes every observed item count, typed identity, effective
+rate-ups, and model assumptions. With pnpm, use `pnpm --silent simulate --json`
+for JSON stdout without the package-script banner. Catalogue diagnostics go to
+stderr. These are hypothetical catalogue pools, not verified live banners.
+
 For deployment, install all dependencies with the frozen lockfile, run
 `pnpm build`, then `pnpm prune --prod`. Retain `package.json`, `build/dist`, and
 production `node_modules` together at the application root. Start with
