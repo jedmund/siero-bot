@@ -50,6 +50,7 @@ class Rateup {
 
       // Once the conflicts have been resolved,
       // remove the user's current rateups and add the new ones
+      Api.validateRateups(this.rates)
       await Api.removeRateups(this.interaction.user.id)
       await Api.addRateups(this.interaction.user.id, this.rates)
 
@@ -67,7 +68,7 @@ class Rateup {
       }
     } catch (error) {
       console.error("Error in Rateup.execute:", error)
-      await this.handleExecuteError()
+      await this.handleExecuteError(error)
     }
   }
 
@@ -181,9 +182,9 @@ class Rateup {
 
   // Methods: Helpers
 
-  private async handleExecuteError() {
+  private async handleExecuteError(error: unknown) {
     const errorMessage =
-      "There was an error processing your rate-up request. Please try again."
+      error instanceof Error ? error.message : "There was an error processing your rate-up request. Please try again."
 
     try {
       if (this.interaction.replied || this.interaction.deferred) {

@@ -23,7 +23,14 @@ export default class Gacha {
   rateups: ItemRateMap = []
   rates: CategoryMap = {}
 
-  constructor(rateups: ItemRateMap, gala: Promotion, season?: Season) {
+  public static async create(rateups: ItemRateMap, gala: Promotion, season?: Season) {
+    await cache.load()
+    return new Gacha(rateups, gala, season)
+  }
+
+  constructor(rateups: ItemRateMap, gala: Promotion, season?: Season, private catalogue: Cache = cache) {
+    if (!Object.values(Promotion).includes(gala)) throw new Error(`Unsupported promotion: ${gala}`)
+    if ([Promotion.CLASSIC, Promotion.CLASSIC_II, Promotion.CLASSIC_III].includes(gala) && season) throw new Error("Classic pools do not support seasonal filters")
     this.gala = gala
     this.season = season
 
@@ -32,6 +39,20 @@ export default class Gacha {
     this.rateups = rateups.filter((rateup) =>
       this.filterItems(rateup.item, this.gala, this.season)
     )
+    const identities = new Set<string>()
+    let budget = 0
+    for (const rateup of this.rateups) {
+      const identity = `${rateup.item.type}:${rateup.item.item_id}`
+      if (identities.has(identity)) throw new Error("Duplicate rate-up drawable identity")
+      identities.add(identity)
+      if (!Number.isFinite(rateup.rate) || rateup.rate < 0) throw new Error("Rate-up rates must be finite and nonnegative")
+      budget += rateup.rate
+    }
+    const ssrBudget = [Promotion.FLASH, Promotion.LEGEND].includes(gala) ? SSR_RATE * 2 : SSR_RATE
+    if (budget > ssrBudget) throw new Error(`Rate-up rates exceed the ${ssrBudget}% SSR budget`)
+    for (const rarity of [Rarity.R, Rarity.SR, Rarity.SSR]) {
+      if (this.catalogue.characterWeapons(rarity, gala, season).length + this.catalogue.summons(rarity, gala, season).length === 0) throw new Error(`Catalogue pool ${gala} has no rarity ${rarity} items; deploy complete promotion metadata before simulation`)
+    }
     this.rates = this.ssrRates()
   }
 
@@ -84,7 +105,7 @@ export default class Gacha {
 
   private currentRates(final = false) {
     let rates: RarityRateMap = {}
-    const rateUp = ![Promotion.PREMIUM, Promotion.CLASSIC].includes(this.gala)
+    const rateUp = [Promotion.FLASH, Promotion.LEGEND].includes(this.gala)
 
     if (rateUp && !final) {
       rates = {
@@ -120,14 +141,14 @@ export default class Gacha {
   }
 
   private ssrRates() {
-    let rate = this.gala ? SSR_RATE * 2 : SSR_RATE
+    let rate = [Promotion.FLASH, Promotion.LEGEND].includes(this.gala) ? SSR_RATE * 2 : SSR_RATE
 
-    let remainingWeapons = cache.characterWeapons(
+    let remainingWeapons = this.catalogue.characterWeapons(
       Rarity.SSR,
       this.gala,
       this.season
     ).length
-    let remainingSummons = cache.summons(
+    let remainingSummons = this.catalogue.summons(
       Rarity.SSR,
       this.gala,
       this.season
@@ -147,7 +168,9 @@ export default class Gacha {
 
     // Divide the difference evenly among all other items in the pool.
     // The quotient is the summon rate.
-    const summonRate = rate / (remainingWeapons + remainingSummons)
+    const remainingCount = remainingWeapons + remainingSummons
+    if (remainingCount === 0 && rate > 0) throw new Error("No eligible items remain for the residual SSR budget")
+    const summonRate = remainingCount === 0 ? 0 : rate / remainingCount
 
     // Remove the combined rate of all summons in the pool from the total rate.
     rate = rate - remainingSummons * summonRate
@@ -159,7 +182,7 @@ export default class Gacha {
 
     if (this.gala) {
       remainingLimiteds =
-        cache.limitedWeapons(this.gala).length -
+        this.catalogue.limitedWeapons(this.gala).length -
         this.rateups.filter((rateup) => {
           let isLimited
 
@@ -173,7 +196,7 @@ export default class Gacha {
         }).length
 
       rate =
-        rate / (remainingWeapons - remainingLimiteds + remainingLimiteds * 2)
+        (remainingWeapons + remainingLimiteds === 0 ? 0 : rate / (remainingWeapons + remainingLimiteds))
     } else {
       rate = rate / remainingWeapons
     }
@@ -236,7 +259,7 @@ export default class Gacha {
     if (rarity === Rarity.SSR) {
       item = this.determineSSRItem()
     } else {
-      item = cache.fetchItem(rarity, this.gala, this.season)
+      item = this.catalogue.fetchItem(rarity, this.gala, this.season)
     }
 
     return item
@@ -258,30 +281,33 @@ export default class Gacha {
       // Pick a random item from the appropriate bucket
       switch (bucket) {
         case GachaBucket.WEAPON:
-          item = cache.fetchWeapon(
+          item = this.catalogue.fetchWeapon(
             rarity,
             this.rateups.map((rateup) => rateup.item),
-            this.season
+            this.season,
+            this.gala
           )
           break
         case GachaBucket.SUMMON:
-          item = cache.fetchSummon(
+          item = this.catalogue.fetchSummon(
             rarity,
             this.rateups.map((rateup) => rateup.item),
-            this.season
+            this.season,
+            this.gala
           )
           break
         case GachaBucket.LIMITED:
-          item = cache.fetchLimited(
+          item = this.catalogue.fetchLimited(
             this.gala,
             this.rateups.map((rateup) => rateup.item)
           )
           break
         default:
-          item = cache.fetchWeapon(
+          item = this.catalogue.fetchWeapon(
             rarity,
             this.rateups.map((rateup) => rateup.item),
-            this.season
+            this.season,
+            this.gala
           )
           break
       }
@@ -346,6 +372,7 @@ export default class Gacha {
   }
 
   private filterItems(item: DrawableItem, gala?: Promotion, season?: Season) {
+    if (gala && [Promotion.CLASSIC, Promotion.CLASSIC_II, Promotion.CLASSIC_III].includes(gala)) return !!item.promotions[gala]
     // If both a gala and a season are specified,
     // and the item appears in both
     if (

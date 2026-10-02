@@ -1,8 +1,8 @@
+import { loadCatalogue } from "./catalogue.js"
 import { Client } from "./connection.js"
 
-import { DrawableItemType, Element, Promotion, Rarity, Season } from "../utils/enums.js"
+import { DrawableItemType, Promotion, Rarity, Season } from "../utils/enums.js"
 import type DrawableItem from "../interfaces/DrawableItem.js"
-import type { GachaItemRecord } from "../interfaces/GachaItemRecord.js"
 import type { ItemMap } from "../utils/types.js"
 
 class Cache {
@@ -10,10 +10,15 @@ class Cache {
   _nonCharacterWeapons: ItemMap = {}
   _summons: ItemMap = {}
 
-  public constructor() {
-    this.fetchAllCharacterWeapons()
-    this.fetchAllNonCharacterWeapons()
-    this.fetchAllSummons()
+  public ready?: Promise<void>
+  public load() {
+    return this.ready ??= loadCatalogue(Client).then(items => {
+      for (const rarity of [Rarity.R, Rarity.SR, Rarity.SSR]) {
+        this._characterWeapons[rarity] = items.filter(item => item.rarity === rarity && item.type === DrawableItemType.WEAPON)
+        this._nonCharacterWeapons[rarity] = []
+        this._summons[rarity] = items.filter(item => item.rarity === rarity && item.type === DrawableItemType.SUMMON)
+      }
+    })
   }
 
   // Subset retrieval methods
@@ -48,34 +53,15 @@ class Cache {
   }
 
   public filterItem(item: DrawableItem, gala?: Promotion, season?: Season) {
-    const hasPromotion =
-      gala !== undefined && gala !== Promotion.PREMIUM ? true : false
-    const hasSeason = season !== undefined ? true : false
-
-    if (hasPromotion && hasSeason && gala && season)
-      return item.seasons[season] && item.promotions[gala]
-    else if (hasPromotion && !hasSeason && gala) return item.promotions[gala]
-    else if (!hasPromotion && hasSeason && season) return item.seasons[season]
-    else return item.promotions.premium
-  }
-
-  // Batch fetching methods
-  private async fetchAllCharacterWeapons() {
-    await this.fetchCharacterWeapons(Rarity.R)
-    await this.fetchCharacterWeapons(Rarity.SR)
-    await this.fetchCharacterWeapons(Rarity.SSR)
-  }
-
-  private async fetchAllNonCharacterWeapons() {
-    await this.fetchNonCharacterWeapons(Rarity.R)
-    await this.fetchNonCharacterWeapons(Rarity.SR)
-    await this.fetchNonCharacterWeapons(Rarity.SSR)
-  }
-
-  private async fetchAllSummons() {
-    await this.fetchSummons(Rarity.R)
-    await this.fetchSummons(Rarity.SR)
-    await this.fetchSummons(Rarity.SSR)
+    if (gala && !Object.values(Promotion).includes(gala)) throw new Error(`Unsupported promotion: ${gala}`)
+    const classic = gala === Promotion.CLASSIC || gala === Promotion.CLASSIC_II || gala === Promotion.CLASSIC_III
+    if (classic && season) throw new Error("Classic pools do not support seasonal filters")
+    if (classic) return !!item.promotions[gala!]
+    const hasPromotion = gala !== undefined && gala !== Promotion.PREMIUM
+    if (hasPromotion && season) return item.seasons[season] && !!item.promotions[gala!]
+    if (hasPromotion) return !!item.promotions[gala!]
+    if (season) return item.seasons[season]
+    return item.promotions.premium
   }
 
   // Single fetching methods
@@ -99,10 +85,11 @@ class Cache {
   public fetchWeapon(
     rarity: Rarity,
     exclusions: DrawableItem[],
-    season?: Season
+    season?: Season,
+    gala?: Promotion
   ) {
-    const list = this.characterWeapons(rarity, undefined, season).filter(
-      (item: DrawableItem) => !exclusions.includes(item)
+    const list = this.characterWeapons(rarity, gala, season).filter(
+      (item: DrawableItem) => !exclusions.some(excluded => excluded.type === item.type && excluded.item_id === item.item_id)
     )
     const r = Math.floor(Math.random() * list.length)
     return list[r]
@@ -111,10 +98,11 @@ class Cache {
   public fetchSummon(
     rarity: Rarity,
     exclusions: DrawableItem[],
-    season?: Season
+    season?: Season,
+    gala?: Promotion
   ) {
-    const list = this.summons(rarity, undefined, season).filter(
-      (item: DrawableItem) => !exclusions.includes(item)
+    const list = this.summons(rarity, gala, season).filter(
+      (item: DrawableItem) => !exclusions.some(excluded => excluded.type === item.type && excluded.item_id === item.item_id)
     )
     const r = Math.floor(Math.random() * list.length)
     return list[r]
@@ -122,170 +110,12 @@ class Cache {
 
   public fetchLimited(gala: Promotion, exclusions: DrawableItem[]) {
     const list = this.limitedWeapons(gala).filter(
-      (item: DrawableItem) => !exclusions.includes(item)
+      (item: DrawableItem) => !exclusions.some(excluded => excluded.type === item.type && excluded.item_id === item.item_id)
     )
     const r = Math.floor(Math.random() * list.length)
     return list[r]
   }
 
-  // Transformation methods
-  private transformIntoDrawableItems(
-    items: GachaItemRecord[],
-    type: DrawableItemType
-  ) {
-    return items.map((item: GachaItemRecord) =>
-      this.transformIntoDrawableItem(item, type)
-    )
-  }
-
-  private transformIntoDrawableItem(
-    item: GachaItemRecord,
-    type: DrawableItemType
-  ) {
-    const drawableItem: DrawableItem = {
-      id: item.id || "",
-      item_id: item.item_id || "",
-      granblue_id: item.granblue_id || "",
-      name: {
-        en: item.name_en || "",
-        jp: item.name_jp || "",
-      },
-      type: type,
-      rarity: item.rarity || 0,
-      element: item.element ?? Element.NULL,
-      promotions: {
-        premium: item.premium || false,
-        classic: item.classic || false,
-        flash: item.flash || false,
-        legend: item.legend || false,
-      },
-      seasons: {
-        halloween: item.halloween || false,
-        holiday: item.holiday || false,
-        summer: item.summer || false,
-        valentines: item.valentines || false,
-      },
-    }
-
-    if (item.character_id) {
-      drawableItem.recruits = {
-        id: item.character_id || "",
-        granblue_id: item.character_granblue_id || "",
-        name: {
-          en: item.character_name_en || "",
-          jp: item.character_name_jp || "",
-        },
-      }
-    }
-
-    if (
-      type === DrawableItemType.WEAPON &&
-      item.character_element !== undefined &&
-      item.character_element !== null
-    ) {
-      drawableItem.element = item.character_element
-    }
-
-    return drawableItem
-  }
-
-  // Fetching methods
-  private async fetchCharacterWeapons(rarity: Rarity) {
-    const items = await Client.selectFrom("gacha")
-      .leftJoin("weapons", "weapons.id", "gacha.drawable_id")
-      .leftJoin("characters", "characters.granblue_id", "weapons.recruits")
-      .select([
-        "gacha.id",
-        "weapons.id as item_id",
-        "weapons.granblue_id",
-        "weapons.name_en",
-        "weapons.name_jp",
-        "weapons.rarity",
-        "weapons.element",
-        "weapons.recruits",
-        "characters.id as character_id",
-        "characters.granblue_id as character_granblue_id",
-        "characters.name_en as character_name_en",
-        "characters.name_jp as character_name_jp",
-        "characters.element as character_element",
-        "gacha.premium",
-        "gacha.classic",
-        "gacha.flash",
-        "gacha.legend",
-        "gacha.valentines",
-        "gacha.summer",
-        "gacha.halloween",
-        "gacha.holiday",
-      ])
-      .where("recruits", "is not", null)
-      .where("weapons.rarity", "=", rarity)
-      .execute()
-
-    this._characterWeapons[rarity] = this.transformIntoDrawableItems(
-      items,
-      DrawableItemType.WEAPON
-    )
-  }
-
-  private async fetchNonCharacterWeapons(rarity: Rarity) {
-    const items = await Client.selectFrom("gacha")
-      .leftJoin("weapons", "weapons.id", "gacha.drawable_id")
-      .select([
-        "gacha.id",
-        "weapons.id as item_id",
-        "weapons.granblue_id",
-        "weapons.name_en",
-        "weapons.name_jp",
-        "weapons.rarity",
-        "weapons.element",
-        "weapons.recruits",
-        "gacha.premium",
-        "gacha.classic",
-        "gacha.flash",
-        "gacha.legend",
-        "gacha.valentines",
-        "gacha.summer",
-        "gacha.halloween",
-        "gacha.holiday",
-      ])
-      .where("recruits", "is", null)
-      .where("rarity", "=", rarity)
-      .execute()
-
-    this._nonCharacterWeapons[rarity] = this.transformIntoDrawableItems(
-      items,
-      DrawableItemType.WEAPON
-    )
-  }
-
-  private async fetchSummons(rarity: Rarity) {
-    const items = await Client.selectFrom("gacha")
-      .leftJoin("summons", "summons.id", "gacha.drawable_id")
-      .select([
-        "gacha.id",
-        "summons.id as item_id",
-        "summons.granblue_id",
-        "summons.name_en",
-        "summons.name_jp",
-        "summons.rarity",
-        "summons.element",
-        "gacha.premium",
-        "gacha.classic",
-        "gacha.flash",
-        "gacha.legend",
-        "gacha.valentines",
-        "gacha.summer",
-        "gacha.halloween",
-        "gacha.holiday",
-      ])
-      .where("rarity", "=", rarity)
-      .execute()
-
-    this._summons[rarity] = this.transformIntoDrawableItems(
-      items,
-      DrawableItemType.SUMMON
-    )
-  }
 }
 
 export default Cache

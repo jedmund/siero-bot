@@ -370,6 +370,7 @@ export class RateupCommand extends Subcommand {
       })
 
       if (response.isButton()) {
+        Api.validateRateups(rates)
         await Api.removeRateups(interaction.user.id)
         await Api.addRateups(interaction.user.id, rates)
 

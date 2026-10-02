@@ -2,6 +2,10 @@ import { DrawableItemType, Element, Rarity } from "../utils/enums.js"
 import type { Character } from "./Character.js"
 
 export default interface DrawableItem {
+  legacyGachaId?: string
+  drawableId?: string
+  drawableType?: "Weapon" | "Summon"
+  promotionIds?: number[]
   id: string
   item_id: string
   granblue_id: string
@@ -16,6 +20,8 @@ export default interface DrawableItem {
   promotions: {
     premium: boolean
     classic: boolean
+    classic_ii?: boolean
+    classic_iii?: boolean
     flash: boolean
     legend: boolean
   }

@@ -1,113 +1,40 @@
+import { loadCatalogue } from "./catalogue.js"
 import { SparkService } from "./sparks.js"
 import DrawableItem from "../interfaces/DrawableItem.js"
-import type { RawResult } from "../interfaces/RawResult.js"
 import type { Spark } from "../interfaces/Spark.js"
-import { DrawableItemType, Rarity, Element } from "../utils/enums.js"
 import { ItemRateMap } from "../utils/types.js"
 import { Client } from "./connection.js"
 
 class Api {
   // Methods: Fetching methods
 
-  private static baseGachaQuery() {
-    return Client.selectFrom("gacha")
-      .leftJoin("weapons", "weapons.id", "gacha.drawable_id")
-      .leftJoin("characters", "characters.granblue_id", "weapons.recruits")
-      .leftJoin("summons", "summons.id", "gacha.drawable_id")
-      .select([
-        "gacha.id",
-        "gacha.drawable_id",
-        "gacha.drawable_type",
-        "weapons.id as weapon_id",
-        "weapons.name_en as weapon_name_en",
-        "weapons.name_jp as weapon_name_jp",
-        "weapons.granblue_id as weapon_granblue_id",
-        "weapons.rarity as weapon_rarity",
-        "weapons.element as weapon_element",
-        "characters.id as character_id",
-        "characters.name_en as character_name_en",
-        "characters.name_jp as character_name_jp",
-        "characters.granblue_id as character_granblue_id",
-        "characters.element as character_element",
-        "characters.rarity as character_rarity",
-        "summons.id as summon_id",
-        "summons.name_en as summon_name_en",
-        "summons.name_jp as summon_name_jp",
-        "summons.granblue_id as summon_granblue_id",
-        "summons.rarity as summon_rarity",
-        "summons.element as summon_element",
-        "gacha.premium",
-        "gacha.classic",
-        "gacha.flash",
-        "gacha.legend",
-        "gacha.valentines",
-        "gacha.summer",
-        "gacha.halloween",
-        "gacha.holiday",
-      ])
-  }
-
   public static async fetchItemInfoFromID(
     id: string,
   ): Promise<DrawableItem | null> {
-    try {
-      const query = this.baseGachaQuery()
-        .where(({ or, eb }) =>
-          or([
-            eb("weapons.granblue_id", "=", id),
-            eb("summons.granblue_id", "=", id),
-            eb("characters.granblue_id", "=", id),
-          ]),
-        )
-        .limit(1)
-
-      const item = await query.executeTakeFirst()
-
-      return item ? this.transformItem(item) : null
-    } catch (error) {
-      console.error(`Error fetching item with ID ${id}:`, error)
-      return null
-    }
+    const matches = (await loadCatalogue(Client)).filter(item => item.granblue_id === id || item.recruits?.granblue_id === id)
+    if (matches.length > 1) throw new Error(`Ambiguous Granblue ID ${id}; choose a catalogue item explicitly`)
+    return matches[0] ?? null
   }
 
-  public static async findItem(
-    name: string,
-    limit = 10,
-    offset = 0,
-  ): Promise<DrawableItem[]> {
-    try {
-      const results = await this.baseGachaQuery()
-        .where(({ or, eb }) =>
-          or([
-            eb("weapons.name_en", "ilike", `%${name}%`),
-            eb("weapons.name_jp", "ilike", `%${name}%`),
-            eb("summons.name_en", "ilike", `%${name}%`),
-            eb("summons.name_jp", "ilike", `%${name}%`),
-            eb("characters.name_en", "ilike", `%${name}%`),
-            eb("characters.name_jp", "ilike", `%${name}%`),
-          ]),
-        )
-        .limit(limit)
-        .offset(offset)
-        .execute()
-
-      return results
-        .map((result) => this.transformItem(result))
-        .filter((item): item is DrawableItem => item !== null)
-    } catch (error) {
-      console.error(`Error finding items with name ${name}:`, error)
-      return []
-    }
+  public static async findItem(name: string, limit = 10, offset = 0): Promise<DrawableItem[]> {
+    const search = name.toLocaleLowerCase()
+    return (await loadCatalogue(Client)).filter(item => [item.name.en, item.name.jp, item.recruits?.name.en, item.recruits?.name.jp].some(value => value?.toLocaleLowerCase().includes(search))).sort((a, b) => `${a.type}:${a.item_id}`.localeCompare(`${b.type}:${b.item_id}`)).slice(offset, offset + limit)
   }
 
   // Methods: Rateup methods
 
+  public static validateRateups(rateups: ItemRateMap) {
+    if (rateups.some(({ item }) => !item.legacyGachaId)) throw new Error("This catalogue item requires the drawable rate-up identity migration before rates can be saved")
+    if (rateups.some(({ item }) => !Object.values(item.promotions).some(Boolean))) throw new Error("This catalogue item is unavailable in supported draw pools")
+  }
+
   public static async addRateups(user_id: string, rateups: ItemRateMap) {
+    this.validateRateups(rateups)
     return await Client.insertInto("gacha_rateups")
       .values(
         rateups.map((rateup) => {
           return {
-            gacha_id: rateup.item.id,
+            gacha_id: rateup.item.legacyGachaId!,
             user_id: user_id,
             rate: rateup.rate,
           }
@@ -118,26 +45,17 @@ class Api {
 
   public static async fetchRateups(userId: string): Promise<ItemRateMap> {
     try {
-      const results = await this.baseGachaQuery()
-        .leftJoin("gacha_rateups", "gacha_rateups.gacha_id", "gacha.id")
-        .select(["gacha_rateups.rate"])
+      const results = await Client.selectFrom("gacha_rateups")
+        .innerJoin("gacha", "gacha.id", "gacha_rateups.gacha_id")
+        .select(["gacha.drawable_id", "gacha.drawable_type", "gacha_rateups.rate"])
         .where("gacha_rateups.user_id", "=", userId)
         .execute()
 
-      return results
-        .map((result: RawResult) => {
-          const item = this.transformItem(result)
-          if (!item) return null
-
-          return {
-            item, // now TypeScript knows item is not null
-            rate: parseFloat(String(result.rate) || "0"),
-          }
-        })
-        .filter(
-          (entry): entry is { item: DrawableItem; rate: number } =>
-            entry !== null,
-        )
+      const catalogue = await loadCatalogue(Client)
+      return results.flatMap(result => {
+        const item = catalogue.find(value => value.drawableType === result.drawable_type && value.item_id === result.drawable_id)
+        return item ? [{ item, rate: Number(result.rate) }] : []
+      })
     } catch (error) {
       console.error(`Error fetching rateups for user ${userId}:`, error)
       return []
@@ -148,8 +66,9 @@ class Api {
     sourceUserId: string,
     destinationUserId: string,
   ) {
-    await this.removeRateups(destinationUserId)
     const rateups = await this.fetchRateups(sourceUserId)
+    this.validateRateups(rateups)
+    await this.removeRateups(destinationUserId)
     if (rateups.length > 0) await this.addRateups(destinationUserId, rateups)
 
     return rateups
@@ -211,84 +130,6 @@ class Api {
     return new SparkService(Client).mutate(userId, "reset")
   }
 
-  // Methods: Data transformation methods
-
-  private static transformItem(item: RawResult): DrawableItem | null {
-    if (!item) return null
-
-    // determine type first
-    const isWeapon = item.drawable_type === "Weapon"
-    const isSummon = item.drawable_type === "Summon"
-
-    if (!isWeapon && !isSummon) return null // invalid type
-
-    const type = isWeapon ? DrawableItemType.WEAPON : DrawableItemType.SUMMON
-
-    // get appropriate fields based on type
-    const nameEn = isWeapon ? item.weapon_name_en : item.summon_name_en
-    const nameJp = isWeapon ? item.weapon_name_jp : item.summon_name_jp
-    const itemId = isWeapon ? item.weapon_id : item.summon_id
-    const granblueId = isWeapon
-      ? item.weapon_granblue_id
-      : item.summon_granblue_id
-    const rarity = isWeapon ? item.weapon_rarity : item.summon_rarity
-    const element = isWeapon ? item.weapon_element : item.summon_element
-
-    // validate required fields
-    if (
-      !nameEn ||
-      !nameJp ||
-      !itemId ||
-      !granblueId ||
-      !rarity ||
-      element === undefined
-    ) {
-      console.error("Missing required fields for item:", item)
-      return null
-    }
-
-    const transformed: DrawableItem = {
-      id: item.id || "",
-      item_id: itemId,
-      name: { en: nameEn, jp: nameJp },
-      granblue_id: granblueId,
-      type,
-      rarity: rarity as Rarity,
-      element: element as Element,
-      promotions: {
-        premium: !!item.premium,
-        classic: !!item.classic,
-        flash: !!item.flash,
-        legend: !!item.legend,
-      },
-      seasons: {
-        valentines: !!item.valentines,
-        summer: !!item.summer,
-        halloween: !!item.halloween,
-        holiday: !!item.holiday,
-      },
-    }
-
-    // only add recruits for weapons with character data
-    if (
-      isWeapon &&
-      item.character_id &&
-      item.character_name_en &&
-      item.character_name_jp &&
-      item.character_granblue_id
-    ) {
-      transformed.recruits = {
-        id: item.character_id,
-        granblue_id: item.character_granblue_id,
-        name: {
-          en: item.character_name_en,
-          jp: item.character_name_jp,
-        },
-      }
-    }
-
-    return transformed
-  }
 }
 
 export default Api

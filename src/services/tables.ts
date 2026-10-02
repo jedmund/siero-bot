@@ -35,12 +35,14 @@ export interface WeaponTable {
   granblue_id: string
   name_en: string
   name_jp: string
-  recruits: Generated<string>
+  promotions: number[]
+  recruits: string | null
   rarity: number
   element: number
 }
 
 export interface SummonTable {
+  promotions: number[]
   id: Generated<string>
   granblue_id: string
   name_en: string

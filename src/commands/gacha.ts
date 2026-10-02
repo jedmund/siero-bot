@@ -116,7 +116,7 @@ export class GachaCommand extends Subcommand {
       new SlashCommandStringOption()
         .setName("promotion")
         .setDescription(
-          "The promotion to simulate (Premium, Classic, Flash, Legend)"
+          "The promotion to simulate (Premium, Classic I/II/III, Flash, Legend)"
         )
         .addChoices(
           {
@@ -124,9 +124,11 @@ export class GachaCommand extends Subcommand {
             value: "premium",
           },
           {
-            name: "Classic",
+            name: "Classic I",
             value: "classic",
           },
+          { name: "Classic II", value: "classic_ii" },
+          { name: "Classic III", value: "classic_iii" },
           {
             name: "Flash Gala",
             value: "flash",
@@ -183,7 +185,7 @@ export class GachaCommand extends Subcommand {
     const season = this.getSeason(interaction.options.getString("season"))
 
     this.rateups = await fetchRateups(interaction.user.id)
-    return new Gacha(this.rateups, promotion, season)
+    return await Gacha.create(this.rateups, promotion, season)
   }
 
   // Methods: Slash Commands
@@ -287,12 +289,19 @@ export class GachaCommand extends Subcommand {
     switch (input) {
       case "classic":
         return Promotion.CLASSIC
+      case "classic_ii":
+        return Promotion.CLASSIC_II
+      case "classic_iii":
+        return Promotion.CLASSIC_III
       case "flash":
         return Promotion.FLASH
       case "legend":
         return Promotion.LEGEND
-      default:
+      case null:
+      case "premium":
         return Promotion.PREMIUM
+      default:
+        throw new Error(`Unsupported promotion: ${input}`)
     }
   }
 
@@ -332,7 +341,7 @@ export class GachaCommand extends Subcommand {
     } catch (error) {
       console.error("Error in command execution:", error)
       await interaction.editReply(
-        "An error occurred while processing your request"
+        error instanceof Error ? error.message : "An error occurred while processing your request"
       )
     }
   }

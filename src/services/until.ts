@@ -145,7 +145,7 @@ class Until {
     // Proceed with simulation if it is valid
     // At this point, we should only be searching by Granblue ID, which is unique
     // so we no longer need to COUNT(*) the database for possibilities
-    const gacha = new Gacha(rateups, this.promotion, this.season)
+    const gacha = await Gacha.create(rateups, this.promotion, this.season)
     const count = this.roll(gacha)
 
     return {
@@ -165,8 +165,7 @@ class Until {
       for (const i in roll.items) {
         const item = roll.items[i]
         if (
-          item.name.en == this.item.name.en ||
-          item.name.en == this.item.recruits?.name.en
+          item.type === this.item.type && item.item_id === this.item.item_id
         ) {
           found = true
         }
