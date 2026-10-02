@@ -39,8 +39,7 @@ must finish the build before pruning. The startup smoke test imports real runtim
 and disables dotenv configuration, proving the compiled entry path without contacting Discord
 or loading local credentials; it does not prove successful real bot login.
 
-`pnpm format-check` covers maintained tooling, tests, this README, and the dependency
-report. Existing application source and planning documents are excluded from this
+`pnpm format-check` covers maintained tooling, tests, and this README. Existing application source and planning documents are excluded from this
 initial formatting baseline to avoid unrelated mechanical changes. `pnpm format`
-formats the same set. See [the dependency report](docs/dependencies.md) for audit
-results and the remaining promise-lint baseline.
+formats the same set. Existing promise-handling exceptions are listed in
+`eslint.config.mjs` and remain follow-up work.
