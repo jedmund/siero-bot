@@ -1,6 +1,6 @@
 # Atomic spark balance updates
 
-Status: Planned  
+Status: In progress  
 Repository: siero-bot; hensei-api in a separate worktree if constraints are added  
 Dependencies: None  
 Parent: [Overall plan](../plan.md)

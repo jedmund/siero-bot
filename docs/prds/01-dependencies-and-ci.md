@@ -1,6 +1,6 @@
 # Dependencies and reproducible checks
 
-Status: Planned  
+Status: In progress  
 Repository: siero-bot  
 Dependencies: None  
 Parent: [Overall plan](../plan.md)

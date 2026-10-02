@@ -43,9 +43,11 @@ Use item UUID plus item type for persisted rate-up identity. Granblue IDs remain
 
 Each PRD is independently reviewable and contains its own scope and completion criteria. Independence does not imply that schema-dependent work can deploy out of order. Tests belong to the task changing behavior rather than a deferred testing phase.
 
+The [catalogue and simulation contract](catalogue-and-simulation-contract.md) defines the proposed shared boundaries for PRDs 03 through 06, so their implementations can overlap without conflating catalogue membership, banner rates, and saved settings.
+
 ## Task index
 
-All tasks are planned and unstarted. Priority reflects impact and dependency, not a promised schedule.
+PRDs 01, 02, and 07 are in progress in separate worktrees using GPT-6.1 Sol subagents. Other tasks remain planned. Priority reflects impact and dependency, not a promised schedule.
 
 | PRD | Task | Repository | Priority | Prerequisites |
 | --- | --- | --- | --- | --- |

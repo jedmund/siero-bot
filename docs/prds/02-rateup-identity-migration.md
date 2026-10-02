@@ -1,6 +1,6 @@
 # Rate up identity migration
 
-Status: Planned  
+Status: In progress  
 Repository: hensei-api in a new worktree and branch  
 Dependencies: None; bot adoption is [PRD 03](03-hensei-catalogue-integration.md)  
 Parent: [Overall plan](../plan.md)
