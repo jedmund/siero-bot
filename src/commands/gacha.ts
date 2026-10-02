@@ -198,7 +198,7 @@ export class GachaCommand extends Subcommand {
       async () => {
         const gacha = await this.createGacha(interaction)
         const item = gacha.singleRoll()
-        await interaction.editReply(RenderingUtils.renderItem(item))
+        await interaction.editReply(`${RenderingUtils.renderItem(item)}\n${RenderingUtils.simulationNotice}`)
       }
     )
   }
@@ -213,7 +213,7 @@ export class GachaCommand extends Subcommand {
         const gacha = await this.createGacha(interaction)
         const result = gacha.tenPartRoll()
         await interaction.editReply(
-          renderHtmlBlock(RenderingUtils.renderItems(result.items))
+          `${renderHtmlBlock(RenderingUtils.renderItems(result.items))}\n${RenderingUtils.simulationNotice}`
         )
       }
     )

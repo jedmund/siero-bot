@@ -51,6 +51,10 @@ void test("direct catalogue adapter selects each Classic pool and duplicate recr
   } as unknown as Kysely<Database>
   const items = await loadCatalogue(db)
   assert.equal(items.length, 4)
+  assert.deepEqual(
+    items.map((item) => item.drawCategory),
+    ["characterWeapon", "characterWeapon", "characterWeapon", "summon"],
+  )
   assert.ok(
     items.every(
       (item) => !item.recruits && !item.legacyGachaId && item.id === "",
@@ -127,13 +131,29 @@ void test("same Gacha engine draws all Classic modes with UUID exclusions and 3%
       })
     }
   }
+  for (const rarity of [Rarity.R, Rarity.SR, Rarity.SSR]) {
+    for (const existing of [...cache._characterWeapons[rarity]]) {
+      if (rarity !== Rarity.SSR)
+        cache._characterWeapons[rarity].push({
+          ...existing,
+          item_id: `${existing.item_id}-character`,
+          drawCategory: "characterWeapon",
+        })
+      cache._summons[rarity].push({
+        ...existing,
+        item_id: `${existing.item_id}-summon`,
+        type: 1,
+        drawCategory: "summon",
+      })
+    }
+  }
   for (const mode of [
     Promotion.CLASSIC,
     Promotion.CLASSIC_II,
     Promotion.CLASSIC_III,
   ]) {
     const engine = new Gacha([], mode, undefined, cache)
-    assert.equal(engine.rates.weapon.rate, 3)
+    assert.ok(Math.abs(engine.rates.weapon.rate - 2.2) < 1e-12)
     const result = engine.tenPartRoll(100)
     assert.ok(result.items.every((item) => item.promotions[mode]))
     const item = cache.characterWeapons(Rarity.SSR, mode)[0]

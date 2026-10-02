@@ -83,6 +83,11 @@ export async function loadCatalogue(
         drawableType: type === DrawableItemType.WEAPON ? "Weapon" : "Summon",
         granblue_id: row.granblue_id ?? "",
         type,
+        // Pool category comes from the weapon relation, even when character
+        // display metadata is missing or ambiguous.
+        drawCategory: type === DrawableItemType.SUMMON
+          ? "summon"
+          : "recruits" in row && row.recruits ? "characterWeapon" : "weapon",
         name: { en: row.name_en ?? "", jp: row.name_jp ?? "" },
         rarity: row.rarity,
         element: row.element ?? Element.NULL,

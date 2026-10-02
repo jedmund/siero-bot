@@ -1,7 +1,7 @@
 import assert from "node:assert/strict"
 import test from "node:test"
 import {
-  compileSimulation,
+  compileSimulation as compileCategorySimulation,
   drawDistribution,
   validateRateups,
   drawableIdentity,
@@ -43,6 +43,18 @@ function item(
     },
   }
 }
+const compileSimulation: typeof compileCategorySimulation = (
+  snapshot,
+  config,
+) =>
+  compileCategorySimulation(snapshot, {
+    ...config,
+    ssrCategoryShares: config.ssrCategoryShares ?? { weapon: 1, summon: 0 },
+    categoryShares: config.categoryShares ?? {
+      R: { characterWeapon: 0, weapon: 1, summon: 0 },
+      SR: { characterWeapon: 0, weapon: 1, summon: 0 },
+    },
+  })
 const snapshot = (items: DrawableItem[]) => ({
   id: "fixture",
   loadedAt: "2026-10-02",
@@ -241,4 +253,225 @@ void test("captured distributions survive caller mutation and all seasonal selec
     assert.equal(compiled.ordinary[2].item.seasons[season], true)
     assert.equal(Object.isFrozen(compiled.ordinary[2].item), true)
   }
+})
+
+void test("inferred category budgets reproduce supplied R/SR published rates and guaranteed shares", () => {
+  const items: DrawableItem[] = []
+  for (const [rarity, counts] of [
+    [Rarity.R, [58, 65, 24]],
+    [Rarity.SR, [111, 36, 21]],
+  ] as const) {
+    for (const [index, category] of (
+      ["characterWeapon", "weapon", "summon"] as const
+    ).entries()) {
+      for (let n = 0; n < counts[index]; n++)
+        items.push({
+          ...item(`${rarity}-${category}-${n}`, rarity),
+          drawCategory: category,
+          type:
+            category === "summon"
+              ? DrawableItemType.SUMMON
+              : DrawableItemType.WEAPON,
+        })
+    }
+  }
+  items.push(item("ssr", Rarity.SSR))
+  const result = compileCategorySimulation(snapshot(items), {
+    gala: Promotion.LEGEND,
+    rateups: [],
+    ssrCategoryShares: { weapon: 1, summon: 0 },
+  })
+  for (const [rarity, expected] of [
+    [Rarity.R, [0.206, 0.646, 1.041]],
+    [Rarity.SR, [0.045, 0.166, 0.19]],
+  ] as const) {
+    for (const [index, category] of (
+      ["characterWeapon", "weapon", "summon"] as const
+    ).entries()) {
+      const entry = result.ordinary.find(
+        (entry) =>
+          entry.item.rarity === rarity && entry.item.drawCategory === category,
+      )!
+      // In-game rates are truncated to three decimal percentage places.
+      assert.ok(
+        entry.probability * 100 >= expected[index] &&
+          entry.probability * 100 < expected[index] + 0.001,
+      )
+    }
+  }
+  for (const [index, category] of (
+    ["characterWeapon", "weapon", "summon"] as const
+  ).entries()) {
+    const entry = result.guaranteed.find(
+      (entry) =>
+        entry.item.rarity === Rarity.SR && entry.item.drawCategory === category,
+    )!
+    const expected = [0.282, 1.044, 1.193][index]
+    assert.ok(
+      entry.probability * 100 >= expected &&
+        entry.probability * 100 < expected + 0.001,
+    )
+  }
+  assert.equal(
+    result.ordinary.find((entry) => entry.item.rarity === Rarity.SSR)
+      ?.probability,
+    0.06,
+  )
+  assert.equal(
+    result.guaranteed.find((entry) => entry.item.rarity === Rarity.SSR)
+      ?.probability,
+    0.06,
+  )
+})
+void test("missing positive category budget errors; explicit shares allow restricted custom pools", () => {
+  const items = [
+    item("r", Rarity.R),
+    item("sr", Rarity.SR),
+    item("ssr", Rarity.SSR),
+  ]
+  assert.throws(
+    () =>
+      compileCategorySimulation(snapshot(items), {
+        gala: Promotion.PREMIUM,
+        rateups: [],
+      }),
+    /characterWeapon/,
+  )
+  assert.doesNotThrow(() =>
+    compileSimulation(snapshot(items), {
+      gala: Promotion.PREMIUM,
+      rateups: [],
+    }),
+  )
+})
+
+void test("supplied banner projection: every displayed rate, exact budgets and unchanged SSR probabilities", async () => {
+  const { default: evidence } = await import(
+    "./fixtures/user-banner-rates.json",
+    { with: { type: "json" } }
+  )
+  const items = evidence.groups.flatMap((group) =>
+    group.rewardIds.map((id) => ({
+      ...item(id, (group.rarity - 1) as Rarity),
+      granblue_id: id,
+      drawCategory: (["characterWeapon", "weapon", "summon"] as const)[
+        group.category
+      ],
+      type:
+        group.category === 2
+          ? DrawableItemType.SUMMON
+          : DrawableItemType.WEAPON,
+    })),
+  )
+  const higherWeightIdentities = items
+    .filter((target) =>
+      evidence.groups
+        .find((group) => group.ordinaryPercent === "0.032")!
+        .rewardIds.includes(target.granblue_id),
+    )
+    .map(drawableIdentity)
+  const rateups = items
+    .filter((target) =>
+      ["1040221700", "1040320500"].includes(target.granblue_id),
+    )
+    .map((target) => ({ item: target, rate: 0.3 }))
+  const result = compileCategorySimulation(snapshot(items), {
+    gala: Promotion.LEGEND,
+    rateups,
+    higherWeightIdentities,
+    profileSource: evidence.source,
+  })
+  assert.equal(items.length, 571)
+  for (const [slot, distribution] of [
+    ["ordinary", result.ordinary],
+    ["guaranteed", result.guaranteed],
+  ] as const) {
+    assert.ok(
+      Math.abs(
+        distribution.reduce((sum, entry) => sum + entry.probability, 0) - 1,
+      ) < 1e-12,
+    )
+    for (const entry of distribution) {
+      const group = evidence.groups.find((group) =>
+        group.rewardIds.includes(entry.item.granblue_id),
+      )!
+      const displayed =
+        slot === "ordinary" ? group.ordinaryPercent : group.guaranteedPercent
+      if (displayed === null) assert.equal(entry.probability, 0)
+      else
+        assert.equal(
+          (Math.floor(entry.probability * 100000 + 1e-9) / 1000).toFixed(3),
+          displayed,
+          `${slot} ${entry.item.granblue_id}`,
+        )
+      if (entry.item.rarity === Rarity.SSR)
+        assert.equal(
+          probability(result.ordinary, entry.item),
+          probability(result.guaranteed, entry.item),
+        )
+    }
+  }
+  for (const target of rateups)
+    assert.equal(probability(result.ordinary, target.item), 0.003)
+  assert.ok(Object.isFrozen(result.config.higherWeightIdentities))
+})
+
+void test("custom featured allocation borrows category budget without changing configured probabilities", () => {
+  const weapon = item("featured", Rarity.SSR)
+  const summon = {
+    ...item("summon", Rarity.SSR),
+    type: DrawableItemType.SUMMON,
+  }
+  const items = [item("r", Rarity.R), item("sr", Rarity.SR), weapon, summon]
+  const result = compileSimulation(snapshot(items), {
+    gala: Promotion.LEGEND,
+    rateups: [{ item: weapon, rate: 5 }],
+    ssrCategoryShares: { weapon: 11, summon: 4 },
+  })
+  assert.equal(probability(result.ordinary, weapon), 0.05)
+  assert.ok(Math.abs(probability(result.ordinary, summon)! - 0.01) < 1e-12)
+  const full = compileSimulation(snapshot(items), {
+    gala: Promotion.LEGEND,
+    rateups: [
+      { item: weapon, rate: 4 },
+      { item: summon, rate: 2 },
+    ],
+    ssrCategoryShares: { weapon: 11, summon: 4 },
+  })
+  assert.equal(probability(full.ordinary, weapon), 0.04)
+  assert.equal(probability(full.ordinary, summon), 0.02)
+})
+
+void test("effective profile copies caller weights and shares and configuration identity distinguishes them", () => {
+  const items = [
+    item("r", Rarity.R),
+    item("sr", Rarity.SR),
+    item("ssr", Rarity.SSR),
+  ]
+  const categoryShares = {
+    R: { characterWeapon: 0, weapon: 1, summon: 0 },
+    SR: { characterWeapon: 0, weapon: 1, summon: 0 },
+  }
+  const ssrCategoryShares = { weapon: 1, summon: 0 }
+  const higherWeightIdentities = [drawableIdentity(items[2])]
+  const compiled = compileCategorySimulation(snapshot(items), {
+    gala: Promotion.LEGEND,
+    rateups: [],
+    categoryShares,
+    ssrCategoryShares,
+    higherWeightIdentities,
+  })
+  categoryShares.R.weapon = 0
+  ssrCategoryShares.summon = 1
+  higherWeightIdentities.push("Weapon:changed")
+  assert.equal(compiled.config.categoryShares.R.weapon, 1)
+  assert.equal(compiled.config.ssrCategoryShares.summon, 0)
+  assert.equal(compiled.config.higherWeightIdentities?.length, 1)
+  assert.ok(Object.isFrozen(compiled.config.categoryShares.R))
+  const different = compileSimulation(snapshot(items), {
+    gala: Promotion.LEGEND,
+    rateups: [],
+    higherWeightIdentities: [],
+  })
+  assert.notEqual(compiled.configId, different.configId)
 })

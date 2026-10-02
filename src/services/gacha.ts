@@ -1,4 +1,4 @@
-import Cache from "./cache.js"
+import Cache, { catalogueCache } from "./cache.js"
 import type DrawableItem from "../interfaces/DrawableItem.js"
 import type { RarityCount } from "../interfaces/RarityCount.js"
 import type { ItemRateMap } from "../utils/types.js"
@@ -7,10 +7,11 @@ import {
   compileSimulation,
   drawDistribution,
   drawableIdentity,
+  type CatalogueSnapshot,
 } from "./simulation.js"
 export { SimulationValidationError } from "./simulation.js"
 
-const cache = new Cache()
+const cache = catalogueCache
 export default class Gacha {
   readonly effective: ReturnType<typeof compileSimulation>
   readonly rateups: ItemRateMap
@@ -19,18 +20,22 @@ export default class Gacha {
     rateups: ItemRateMap,
     public gala: Promotion,
     public season?: Season,
-    catalogue: Cache = cache,
+    catalogue: Cache | CatalogueSnapshot = cache.snapshot,
     private random: () => number = Math.random,
   ) {
-    const items = [Rarity.R, Rarity.SR, Rarity.SSR].flatMap((rarity) => [
-      ...(catalogue._characterWeapons[rarity] ?? []),
-      ...(catalogue._nonCharacterWeapons[rarity] ?? []),
-      ...(catalogue._summons[rarity] ?? []),
-    ])
-    this.effective = compileSimulation(
-      { id: "captured-catalogue", loadedAt: new Date().toISOString(), items },
-      { gala, season, rateups },
-    )
+    const captured =
+      catalogue instanceof Cache
+        ? {
+            id: "legacy-test-catalogue",
+            loadedAt: new Date().toISOString(),
+            items: [Rarity.R, Rarity.SR, Rarity.SSR].flatMap((rarity) => [
+              ...(catalogue._characterWeapons[rarity] ?? []),
+              ...(catalogue._nonCharacterWeapons[rarity] ?? []),
+              ...(catalogue._summons[rarity] ?? []),
+            ]),
+          }
+        : catalogue
+    this.effective = compileSimulation(captured, { gala, season, rateups })
     this.rateups = this.effective.config.rateups
     const residual = this.effective.ordinary.filter(
       (entry) =>
@@ -53,7 +58,7 @@ export default class Gacha {
     season?: Season,
   ) {
     await cache.load()
-    return new Gacha(rateups, gala, season)
+    return new Gacha(rateups, gala, season, cache.snapshot)
   }
   public canDraw(item: DrawableItem) {
     return this.effective.ordinary.some(

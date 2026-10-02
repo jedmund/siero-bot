@@ -24,17 +24,44 @@ export const PROBABILITY_TOLERANCE = 1e-12
 // It states selected limited weapons have higher rates, but no universal multiplier.
 export const RULE_PROVENANCE = Object.freeze({
   verifiedAt: "2026-10-02",
+  recordedTables: "tests/fixtures/user-banner-rates.json",
   ssrBudget: "https://granbluefantasy.jp/pages/?p=28206",
   guaranteeEvidence: "https://gbf.wiki/News%3AGame_Announcement_JP_6776",
   limitations:
-    "No complete recorded banner table obtained; SR and guarantee allocations are explicit custom-model assumptions, not verified live rates",
+    "Supplied in-game rate-table projection has no banner ID or unrounded probabilities; category budgets are inferred from counts and truncation intervals, not uniquely recoverable universal rules",
 })
 export const CUSTOM_MODEL_ASSUMPTIONS = Object.freeze([
   "Hypothetical catalogue pool; not a current in-game banner",
-  "Equal residual probability within each rarity; no universal limited multiplier",
-  "SR ordinary budget 15%; guaranteed slot transfers R budget to SR, preserving SSR rates",
+  "R category shares 12:42:25 and SR 5:6:4 inferred from supplied banner; extrapolation to other banners",
+  "Guaranteed slot scales SR category shares to the non-SSR budget; SSR probabilities unchanged",
+  "SSR weapon:summon shares 11:4 inferred from supplied banner table; other banners are hypothetical extrapolations",
+  "Higher-weight residual weapons use weight 2; explicit profile identities or hypothetical selected-gala limited membership",
+  "Featured rates deduct from their category; an exhausted category borrows from the other category while featured probabilities remain exact",
   "Catalogue membership does not model Zodiac rotations or spark exchange eligibility",
 ])
+export type DrawCategory = "characterWeapon" | "weapon" | "summon"
+export type CategoryShares = Readonly<Record<DrawCategory, number>>
+export const DEFAULT_CATEGORY_SHARES = Object.freeze({
+  R: Object.freeze({ characterWeapon: 12, weapon: 42, summon: 25 }),
+  SR: Object.freeze({ characterWeapon: 5, weapon: 6, summon: 4 }),
+})
+export function drawCategory(item: DrawableItem): DrawCategory {
+  if (item.type === DrawableItemType.SUMMON) return "summon"
+  return item.drawCategory ?? (item.recruits ? "characterWeapon" : "weapon")
+}
+function residualWeight(item: DrawableItem, config: SimulationConfig): number {
+  if (item.type !== DrawableItemType.WEAPON) return 1
+  if (config.higherWeightIdentities)
+    return config.higherWeightIdentities.includes(drawableIdentity(item))
+      ? 2
+      : 1
+  return (config.gala === Promotion.FLASH ||
+    config.gala === Promotion.LEGEND) &&
+    item.promotions[config.gala] &&
+    !item.promotions.premium
+    ? 2
+    : 1
+}
 export const drawableIdentity = (item: DrawableItem) =>
   `${item.drawableType ?? (item.type === DrawableItemType.WEAPON ? "Weapon" : "Summon")}:${item.drawableId ?? item.item_id}`
 
@@ -121,12 +148,30 @@ export interface SimulationConfig {
   gala: Promotion
   season?: Season
   rateups: ItemRateMap
+  categoryShares?: { R: CategoryShares; SR: CategoryShares }
+  ssrCategoryShares?: Readonly<{ weapon: number; summon: number }>
+  higherWeightIdentities?: readonly string[]
+  profileSource?: string
 }
 
 export function compileSimulation(
   snapshot: CatalogueSnapshot,
   config: SimulationConfig,
 ) {
+  const categoryShares = config.categoryShares ?? DEFAULT_CATEGORY_SHARES
+  config = {
+    ...config,
+    categoryShares: Object.freeze({
+      R: Object.freeze({ ...categoryShares.R }),
+      SR: Object.freeze({ ...categoryShares.SR }),
+    }),
+    ssrCategoryShares: Object.freeze({
+      ...(config.ssrCategoryShares ?? { weapon: 11, summon: 4 }),
+    }),
+    higherWeightIdentities: config.higherWeightIdentities
+      ? Object.freeze([...config.higherWeightIdentities].sort())
+      : undefined,
+  }
   // Copy at the boundary: a refresh or caller mutation cannot change a running simulation.
   const items = [
     ...new Map(
@@ -174,16 +219,114 @@ export function compileSimulation(
         throw new SimulationValidationError(
           `No eligible rarity ${rarity} items remain for residual budget`,
         )
-      for (const item of pool)
-        result.push({
-          item,
-          probability:
-            featured.get(drawableIdentity(item)) ??
-            (residual.length ? Math.max(0, remaining) / residual.length : 0),
-        })
+      if (rarity !== Rarity.SSR) {
+        const shares = (config.categoryShares ?? DEFAULT_CATEGORY_SHARES)[
+          rarity === Rarity.R ? "R" : "SR"
+        ]
+        const totalShares = Object.values(shares).reduce(
+          (sum, value) => sum + value,
+          0,
+        )
+        if (
+          !Number.isFinite(totalShares) ||
+          totalShares <= 0 ||
+          [shares.characterWeapon, shares.weapon, shares.summon].some(
+            (value) => !Number.isFinite(value) || value < 0,
+          )
+        )
+          throw new SimulationValidationError(
+            "Category shares must be finite, nonnegative, and have a positive total",
+          )
+        for (const category of [
+          "characterWeapon",
+          "weapon",
+          "summon",
+        ] as const) {
+          const categoryPool = pool.filter(
+            (item) => drawCategory(item) === category,
+          )
+          const categoryBudget = (budget * shares[category]) / totalShares
+          if (categoryBudget > PROBABILITY_TOLERANCE && !categoryPool.length)
+            throw new SimulationValidationError(
+              `Catalogue incomplete: No eligible rarity ${rarity} ${category} items for the category budget; load complete draw-pool membership before simulation`,
+            )
+          for (const item of categoryPool)
+            result.push({
+              item,
+              probability: categoryPool.length
+                ? categoryBudget / categoryPool.length
+                : 0,
+            })
+        }
+      } else {
+        const summons = residual.filter(
+          (item) => drawCategory(item) === "summon",
+        )
+        const weapons = residual.filter(
+          (item) => drawCategory(item) !== "summon",
+        )
+        const shares = config.ssrCategoryShares ?? { weapon: 11, summon: 4 }
+        const shareTotal = shares.weapon + shares.summon
+        if (
+          !Number.isFinite(shareTotal) ||
+          shareTotal <= 0 ||
+          !Number.isFinite(shares.weapon) ||
+          !Number.isFinite(shares.summon) ||
+          shares.weapon < 0 ||
+          shares.summon < 0
+        )
+          throw new SimulationValidationError(
+            "SSR category shares must be finite, nonnegative, and have a positive total",
+          )
+        const allocations = { weapon: 0, summon: 0 }
+        for (const { item, rate } of rateups)
+          allocations[drawCategory(item) === "summon" ? "summon" : "weapon"] +=
+            rate / 100
+        const residualBudgets = {
+          weapon: Math.max(
+            0,
+            (budget * shares.weapon) / shareTotal - allocations.weapon,
+          ),
+          summon: Math.max(
+            0,
+            (budget * shares.summon) / shareTotal - allocations.summon,
+          ),
+        }
+        const residualTotal = residualBudgets.weapon + residualBudgets.summon
+        const weaponBudget = residualTotal
+          ? (Math.max(0, remaining) * residualBudgets.weapon) / residualTotal
+          : 0
+        const summonBudget = residualTotal
+          ? (Math.max(0, remaining) * residualBudgets.summon) / residualTotal
+          : 0
+        if (weaponBudget > PROBABILITY_TOLERANCE && !weapons.length)
+          throw new SimulationValidationError(
+            "Catalogue incomplete: No eligible SSR weapons for residual category budget",
+          )
+        if (summonBudget > PROBABILITY_TOLERANCE && !summons.length)
+          throw new SimulationValidationError(
+            "Catalogue incomplete: No eligible SSR summons for residual category budget",
+          )
+        const totalWeaponWeight = weapons.reduce(
+          (sum, item) => sum + residualWeight(item, config),
+          0,
+        )
+        for (const item of pool)
+          result.push({
+            item,
+            probability:
+              featured.get(drawableIdentity(item)) ??
+              (drawCategory(item) === "summon"
+                ? summonBudget / summons.length
+                : totalWeaponWeight
+                  ? (weaponBudget * residualWeight(item, config)) /
+                    totalWeaponWeight
+                  : 0),
+          })
+      }
     }
     const total = result.reduce((sum, entry) => sum + entry.probability, 0)
-    if (Math.abs(total - 1) > PROBABILITY_TOLERANCE)
+    if (!Number.isFinite(total) || Math.abs(total - 1) > PROBABILITY_TOLERANCE)
       throw new SimulationValidationError(
         `Distribution totals ${total}, expected 1`,
       )
@@ -200,11 +343,20 @@ export function compileSimulation(
       snapshot.id,
       config.gala,
       config.season ?? null,
+      config.categoryShares ?? DEFAULT_CATEGORY_SHARES,
+      config.ssrCategoryShares ?? { weapon: 11, summon: 4 },
+      config.higherWeightIdentities ?? "hypothetical-selected-gala",
+      config.profileSource ?? "catalogue-extrapolation",
       rateups
         .map(({ item, rate }) => [drawableIdentity(item), rate])
         .sort((a, b) => String(a[0]).localeCompare(String(b[0]))),
     ]),
-    config: Object.freeze({ ...config, rateups }),
+    config: Object.freeze({
+      ...config,
+      rateups,
+      categoryShares: config.categoryShares ?? DEFAULT_CATEGORY_SHARES,
+      ssrCategoryShares: config.ssrCategoryShares ?? { weapon: 11, summon: 4 },
+    }),
     assumptions: CUSTOM_MODEL_ASSUMPTIONS,
     ordinary,
     guaranteed,

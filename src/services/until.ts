@@ -12,6 +12,7 @@ import { generateConflictSelect } from "../utils/selectMenu.js"
 import type DrawableItem from "../interfaces/DrawableItem.js"
 import isGranblueID from "../utils/isGranblueID.js"
 import fetchRateups from "../utils/fetchRateups.js"
+import { RenderingUtils } from "../utils/rendering.js"
 
 export async function rollUntilTarget(gacha: Pick<Gacha, "canDraw" | "tenPartRoll">, target: DrawableItem, maximumDraws = 100000) {
   if (!Number.isInteger(maximumDraws) || maximumDraws < 10 || maximumDraws > 100000 || maximumDraws % 10 !== 0) throw new SimulationValidationError("Draw limit must be a multiple of ten between 10 and 100000")
@@ -205,7 +206,7 @@ class Until {
       : ""
 
     await this.interaction.editReply({
-      content: `${pullString} ${rateString} \n${costString}`,
+      content: `${pullString} ${rateString} \n${costString}\n${RenderingUtils.simulationNotice}`,
       components: [],
     })
   }

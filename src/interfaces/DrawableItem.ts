@@ -2,6 +2,7 @@ import { DrawableItemType, Element, Rarity } from "../utils/enums.js"
 import type { Character } from "./Character.js"
 
 export default interface DrawableItem {
+  drawCategory?: "characterWeapon" | "weapon" | "summon"
   legacyGachaId?: string
   drawableId?: string
   drawableType?: "Weapon" | "Summon"

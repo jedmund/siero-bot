@@ -4,8 +4,10 @@ import { DrawableItemType, Rarity } from "./enums.js"
 import type DrawableItem from "../interfaces/DrawableItem.js"
 import type SparkResult from "../interfaces/SparkResult.js"
 import { ItemRateMap } from "./types.js"
+import { drawableIdentity } from "../services/simulation.js"
 
 export class RenderingUtils {
+  public static readonly simulationNotice = "Hypothetical banner • Inferred category weights"
   public static renderItems(results: DrawableItem[]) {
     const characterWeapons = this.sortCharacterWeapons(results)
     const gachaItems = results
@@ -34,6 +36,7 @@ export class RenderingUtils {
 
     return new EmbedBuilder()
       .setDescription(details)
+      .setFooter({ text: this.simulationNotice })
       .addFields(
         { name: "Summary", value: summary },
         { name: "Rate", value: `Your SSR rate is **${rate}%**` }
@@ -84,14 +87,8 @@ export class RenderingUtils {
   }
 
   private static filterRateUpItems(spark: SparkResult, rateups: ItemRateMap) {
-    let totalCount = 0
-    for (const i in rateups) {
-      const rateupItem: DrawableItem = rateups[i].item
-      totalCount += spark.items.reduce((n: number, item: DrawableItem) => {
-        return n + (rateupItem.id == item.id ? 1 : 0)
-      }, 0)
-    }
-    return totalCount
+    const featured = new Set(rateups.map(({ item }) => drawableIdentity(item)))
+    return spark.items.filter((item) => featured.has(drawableIdentity(item))).length
   }
 
   private static sortCharacterWeapons(results: DrawableItem[]) {

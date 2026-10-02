@@ -44,6 +44,7 @@ void test(
         )
       const items = await loadCatalogue(db)
       assert.equal(items.length, 3)
+      assert.ok(items.every((item) => item.drawCategory === "characterWeapon"))
       assert.ok(items.every((item) => !item.recruits && !item.legacyGachaId))
       const cache = new Cache()
       cache._characterWeapons[Rarity.SSR] = items
