@@ -16,6 +16,16 @@ registerHooks({
         shortCircuit: true,
       }
     }
+    if (specifier === "./services/readiness.js") {
+      const source =
+        process.env.SMOKE_OLD_RATEUP_SCHEMA === "1"
+          ? 'export async function checkRateupSchema() { throw Error("Missing typed rate-up migration: gacha_rateups.drawable_type and drawable_id are required") }'
+          : "export async function checkRateupSchema() {}"
+      return {
+        url: `data:text/javascript,${encodeURIComponent(source)}`,
+        shortCircuit: true,
+      }
+    }
     return nextResolve(specifier, context)
   },
 })

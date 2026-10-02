@@ -20,6 +20,7 @@ export async function rollUntilTarget(gacha: Pick<Gacha, "canDraw" | "tenPartRol
   for (let count = 10; count <= maximumDraws; count += 10) {
     runtime.assertAccepting()
     if (count % 1000 === 0) await yieldTurn()
+    runtime.assertAccepting()
     if (gacha.tenPartRoll().items.some(item => item.type === target.type && item.item_id === target.item_id)) return count
   }
   throw new SimulationValidationError(`Stopped after ${maximumDraws} draws without finding the target`)
@@ -63,8 +64,9 @@ class Until {
       } else if (options.length === 1) {
         // Proceed to simulate if there is only one option
         const found = options[0]
+        this.item = found
         this.identifier = found.granblue_id
-        await this.fetchItemAndSimulate()
+        await this.generateResponse(await this.simulate())
       } else {
         // Inform the user no options could be found
         await this.interaction.editReply(

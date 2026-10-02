@@ -55,3 +55,20 @@ void test("production entry point loads from compiled deployment layout", () => 
   assert.equal(result.status, 0, result.stderr)
   assert.match(result.stdout, /Compiled startup reached mocked login/)
 })
+
+void test("production startup refuses login when the typed rate-up migration is missing", () => {
+  const environment: NodeJS.ProcessEnv = {
+    ...process.env,
+    SMOKE_OLD_RATEUP_SCHEMA: "1",
+  }
+  delete environment.DISCORD_TOKEN
+  delete environment.DATABASE_URL
+  const result = spawnSync(
+    process.execPath,
+    ["--import", "./scripts/startup-smoke.mjs", "./build/dist/index.js"],
+    { encoding: "utf8", env: environment },
+  )
+  assert.equal(result.status, 1, result.stderr)
+  assert.match(result.stderr, /Missing typed rate-up migration/)
+  assert.doesNotMatch(result.stdout, /reached mocked login/)
+})
