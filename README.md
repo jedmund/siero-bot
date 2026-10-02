@@ -15,7 +15,7 @@ pnpm test
 ```
 
 Tests use Node's built-in runner through tsx. Integration tests create and drop a
-unique `siero_sparks_test_*` database. Set `SPARK_TEST_ADMIN_URL` to a PostgreSQL
+unique test database for catalogue, rate-up, or spark cases. Set `SPARK_TEST_ADMIN_URL` to a PostgreSQL
 admin connection whose database is `postgres`; never point it at a user database.
 CI supplies a disposable PostgreSQL service and this URL. Without the URL,
 integration tests skip in the normal suite; pure tests still run. The explicit
@@ -29,6 +29,32 @@ Copy `env.sample` to `.env` and configure the bot credentials and database URL f
 actual development. `pnpm dev` watches TypeScript. `pnpm start` runs the compiled
 `build/dist/index.js`; it requires a prior `pnpm build`. `pnpm serve` is an alias
 for production start. Installation does not implicitly compile or start the bot.
+
+`DATABASE_URL` targets the Hensei database. Hensei owns schema and catalogue data
+migrations; the bot only reads weapon/summon catalogue data and writes its saved
+settings and balances. `DEFAULT_RATEUP_USER_ID` optionally names the Discord user
+whose saved rates are used when a caller has none. It is not inferred from the
+bot application's client ID. Omit it to use no default featured rates.
+
+Before deploying this version, apply the Hensei typed rate-up identity migration
+([API #494](https://github.com/jedmund/hensei-api/pull/494)), Classic III catalogue
+migration ([API #493](https://github.com/jedmund/hensei-api/pull/493)), and reviewed
+catalogue reconciliation. Stop old bot writers, run the final rate-up backfill
+and read-only preflight, and require a clean report before starting this build.
+An old bot cannot read selections that have only the new typed reference;
+retain a compatible build for rollback rather than deleting those selections.
+
+The catalogue refreshes every 15 minutes. Failed refreshes retain the last
+complete snapshot, but simulations refuse snapshots older than one hour.
+Missing positive-probability categories produce an explicit incomplete-catalogue
+error. Fix the upstream data instead of renormalizing onto an incomplete pool.
+
+Catalogue simulations are hypothetical banners. Category allocations inferred
+from supplied in-game tables reproduce their displayed rates, but the tables do
+not uniquely reveal unrounded probabilities or establish rules for every banner.
+SR-or-higher slots preserve SSR probabilities and allocate the remainder to SR.
+Featured percentages are absolute per-draw chances. Roll-until counts complete
+ten-draw purchases, yields every 1,000 draws, and stops after 100,000 draws.
 
 For deployment, install all dependencies with the frozen lockfile, run
 `pnpm build`, then `pnpm prune --prod`. Retain `package.json`, `build/dist`, and
