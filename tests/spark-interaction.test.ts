@@ -48,3 +48,25 @@ test("Discord response failure after commit never claims the save failed", async
     replyFailure,
   )
 })
+
+test("unknown database outcome asks for progress and preserves the error", async () => {
+  const databaseFailure = new Error("Connection lost during COMMIT")
+  const errors: string[] = []
+  await assert.rejects(
+    replyAfterSparkMutation(
+      async () => {
+        throw databaseFailure
+      },
+      async () => {
+        assert.fail("Unknown commit outcome cannot claim success")
+      },
+      async (message) => {
+        errors.push(message)
+      },
+    ),
+    (error) => error === databaseFailure,
+  )
+  assert.deepEqual(errors, [
+    "I couldn’t confirm your spark update. Check /spark progress before trying again.",
+  ])
+})

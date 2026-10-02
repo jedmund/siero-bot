@@ -17,7 +17,9 @@ export async function replyAfterSparkMutation<T>(
       await replyError(error.message)
       return
     }
-    await replyError("Your spark could not be saved. Please try again.")
+    await replyError(
+      "I couldn’t confirm your spark update. Check /spark progress before trying again.",
+    )
     throw error
   }
   await replySuccess(committed)
