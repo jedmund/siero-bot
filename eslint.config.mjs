@@ -32,13 +32,9 @@ export default tseslint.config(
   // Remove each exception as that file's promise handling is repaired.
   {
     files: [
-      "src/commands/raid.ts",
       "src/commands/rateup.ts",
-      "src/index.ts",
       "src/scripts/purge-commands.ts",
-      "src/services/cache.ts",
       "src/services/rateup.ts",
-      "src/services/until.ts",
     ],
     rules: {
       "@typescript-eslint/no-floating-promises": "off",

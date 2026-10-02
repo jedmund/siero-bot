@@ -22,10 +22,13 @@ export interface Database {
 const postgresConfig = {
   pool: new Pool({
     connectionString: process.env.DATABASE_URL,
+    connectionTimeoutMillis: 10_000,
+    query_timeout: 30_000,
+    statement_timeout: 30_000,
   }),
 }
 
 export const Client = new Kysely<Database>({
   dialect: new PostgresDialect(postgresConfig),
-  log: ["query", "error"],
+  log: ["error"],
 })

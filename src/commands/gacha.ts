@@ -7,7 +7,7 @@ import {
 } from "discord.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
 import { ApplyOptions } from "@sapphire/decorators"
-import { isMessageInstance } from "@sapphire/discord.js-utilities"
+import { acknowledge } from "../services/interaction.js"
 
 import Gacha, { SimulationValidationError } from "../services/gacha.js"
 import Until from "../services/until.js"
@@ -42,7 +42,6 @@ const COMMAND_ID = process.env.GACHA_COMMAND_ID ?? ""
   ],
 })
 export class GachaCommand extends Subcommand {
-  rateups: ItemRateMap = []
 
   // Methods: Register application commands
 
@@ -184,8 +183,8 @@ export class GachaCommand extends Subcommand {
     )
     const season = this.getSeason(interaction.options.getString("season"))
 
-    this.rateups = await fetchRateups(interaction.user.id)
-    return await Gacha.create(this.rateups, promotion, season)
+    const rateups: ItemRateMap = await fetchRateups(interaction.user.id)
+    return await Gacha.create(rateups, promotion, season)
   }
 
   // Methods: Slash Commands
@@ -234,13 +233,13 @@ export class GachaCommand extends Subcommand {
 
       const sparkButton = new ButtonBuilder()
         .setCustomId(`copySpark:${interaction.user.id}:${promotion}:${season}`)
-        .setLabel("Spark with these rates")
+        .setLabel("Spark using current source rates")
         .setStyle(ButtonStyle.Primary)
 
       const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
         sparkButton
       )
-      const embed = RenderingUtils.renderSpark(result, this.rateups)
+      const embed = RenderingUtils.renderSpark(result, gacha.rateups)
 
       await interaction.editReply({
         content: "This is your spark",
@@ -280,7 +279,12 @@ export class GachaCommand extends Subcommand {
       promotion,
       season
     )
-    await until.execute()
+    try {
+      await until.execute()
+    } catch (error) {
+      console.error("Until command failed", error)
+      await interaction.editReply("An error occurred while processing your request")
+    }
   }
 
   // Methods: Transformers
@@ -327,17 +331,11 @@ export class GachaCommand extends Subcommand {
     initialMessage: string,
     callback: () => Promise<unknown>
   ): Promise<void> {
-    const msg = await interaction.reply({
-      content: initialMessage,
-      fetchReply: true,
-    })
+    await acknowledge(interaction)
+    await interaction.editReply(initialMessage)
 
     try {
-      if (isMessageInstance(msg)) {
-        await callback()
-      } else {
-        await interaction.reply("There was an error")
-      }
+      await callback()
     } catch (error) {
       console.error("Error in command execution:", error)
       await interaction.editReply(

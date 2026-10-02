@@ -1,3 +1,4 @@
+import { acknowledge } from "../services/interaction.js"
 import { replyAfterSparkMutation } from "../services/spark-interaction.js"
 import { EmbedBuilder, SlashCommandSubcommandBuilder, User } from "discord.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
@@ -203,19 +204,24 @@ export class SparkCommand extends Subcommand {
     const user = providedUser ?? interaction.user
     const isSelf = providedUser === null
 
+    await acknowledge(interaction)
+    try {
     const progress = await Api.fetchSpark(user.id)
 
-    await interaction.reply({
+    await interaction.editReply({
       content: this.formatDescription(user, isSelf, progress !== undefined),
       embeds: progress ? [this.generateEmbed(user, progress.spark)] : [],
-      fetchReply: true,
     })
+    } catch (error) {
+      console.error("Spark progress failed", error)
+      await interaction.editReply("An error occurred while processing your request")
+    }
   }
 
   public async chatInputLeaderboard(
     interaction: Subcommand.ChatInputCommandInteraction,
   ): Promise<void> {
-    if (!interaction.channel) {
+    if (!interaction.guild) {
       await interaction.reply({
         content:
           "Sorry, I can't show leaderboards in direct messages. Please send the command from a server that we're both in!",
@@ -227,13 +233,19 @@ export class SparkCommand extends Subcommand {
     const guild = interaction.guild
     if (!guild) return
 
+    await acknowledge(interaction)
+    try {
     const leaderboard = new Leaderboard(guild.id, "desc")
     const embed = await leaderboard.execute()
 
-    await interaction.reply({
+    await interaction.editReply({
       content: `Here is the current leaderboard for ${guild.name}:`,
       embeds: [embed],
     })
+    } catch (error) {
+      console.error("Spark leaderboard failed", error)
+      await interaction.editReply("An error occurred while processing your request")
+    }
   }
 
   public async chatInputReset(

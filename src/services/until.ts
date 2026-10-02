@@ -1,3 +1,5 @@
+import { setImmediate as yieldTurn } from "node:timers/promises"
+import { runtime } from "./lifecycle.js"
 import { ComponentType, StringSelectMenuInteraction } from "discord.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
 
@@ -11,9 +13,11 @@ import type DrawableItem from "../interfaces/DrawableItem.js"
 import isGranblueID from "../utils/isGranblueID.js"
 import fetchRateups from "../utils/fetchRateups.js"
 
-export function rollUntilTarget(gacha: Pick<Gacha, "canDraw" | "tenPartRoll">, target: DrawableItem, maximumDraws = 100000) {
+export async function rollUntilTarget(gacha: Pick<Gacha, "canDraw" | "tenPartRoll">, target: DrawableItem, maximumDraws = 100000) {
   if (!gacha.canDraw(target)) throw new SimulationValidationError("The target is unavailable in the selected pool or has zero effective probability")
   for (let count = 10; count <= maximumDraws; count += 10) {
+    runtime.assertAccepting()
+    if (count % 1000 === 0) await yieldTurn()
     if (gacha.tenPartRoll().items.some(item => item.type === target.type && item.item_id === target.item_id)) return count
   }
   throw new SimulationValidationError(`Stopped after ${maximumDraws} draws without finding the target`)
@@ -61,7 +65,7 @@ class Until {
         await this.fetchItemAndSimulate()
       } else {
         // Inform the user no options could be found
-        this.interaction.editReply(
+        await this.interaction.editReply(
           `No items were found for \`${this.identifier}\``
         )
       }
@@ -84,7 +88,7 @@ class Until {
       }
 
       const result = await this.simulate()
-      this.generateResponse(result)
+      await this.generateResponse(result)
     } catch (error) {
       console.error(`Error fetching item:`, error)
       await this.interaction.editReply(error instanceof SimulationValidationError ? error.message : "Error fetching item information")
@@ -101,19 +105,23 @@ class Until {
       components: [generateConflictSelect(options)],
     })
 
-    // Create a collector and listen for responses
     const collector = response.createMessageComponentCollector({
       componentType: ComponentType.StringSelect,
-      time: 3_600_000,
+      filter: input => input.user.id === interaction.user.id && input.customId === "conflict",
+      time: 120_000,
+      max: 1,
     })
-
-    await collector.on("collect", async (i) => {
-      this.collectOption(i, this)
+    const unregister = runtime.registerCleanup(() => { collector.stop("shutdown") })
+    collector.on("collect", input => { runtime.background(this.collectOption(input, this), "Until selection failed") })
+    collector.on("end", (_collected, reason) => {
+      unregister()
+      if (reason !== "limit") runtime.background(interaction.editReply({ components: [], content: "Item selection expired. Run the command again." }), "Until selector cleanup failed")
     })
   }
 
   private async collectOption(input: StringSelectMenuInteraction, that: Until) {
     try {
+      await input.deferUpdate()
       const selection = input.values[0]
       const fetchedItem = await Api.fetchItemInfoFromReference(selection)
 
@@ -121,7 +129,7 @@ class Until {
       that.item = fetchedItem || undefined
 
       if (!that.item) {
-        await input.update({
+        await input.editReply({
           content: `No item found with ID \`${selection}\``,
           components: [],
         })
@@ -132,10 +140,10 @@ class Until {
       that.identifier = that.item.granblue_id
 
       const result = await that.simulate()
-      that.generateResponse(result)
+      await that.generateResponse(result)
     } catch (error) {
       console.error(`Error processing selection:`, error)
-      await input.update({
+      await input.editReply({
         content: error instanceof SimulationValidationError ? error.message : "Error processing your selection",
         components: [],
       })
@@ -148,7 +156,7 @@ class Until {
     // Check the selected typed item identity against the actual draw pool.
     const gacha = await Gacha.create(rateups, this.promotion, this.season)
     if (!this.item || !gacha.canDraw(this.item)) throw new SimulationValidationError("The target is unavailable in the selected pool or has zero effective probability")
-    const count = this.roll(gacha)
+    const count = await this.roll(gacha)
 
     return {
       count: count,
@@ -164,7 +172,7 @@ class Until {
   // Methods: Rendering methods
 
 
-  private generateResponse(result: { count: number; cost: { crystals: number; jpy: number; usd: number } }) {
+  private async generateResponse(result: { count: number; cost: { crystals: number; jpy: number; usd: number } }) {
     let name = ""
     if (this.item) {
       const item = this.item
@@ -195,7 +203,7 @@ class Until {
       ? `That's <:ssr:479609697930969089> **${result.cost.crystals.toLocaleString()} crystals** or **${currencyString}**.`
       : ""
 
-    this.interaction.editReply({
+    await this.interaction.editReply({
       content: `${pullString} ${rateString} \n${costString}`,
       components: [],
     })

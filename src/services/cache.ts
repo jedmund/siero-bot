@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto"
 import { loadCatalogue } from "./catalogue.js"
 import { Client } from "./connection.js"
 
@@ -9,23 +10,51 @@ class Cache {
   _characterWeapons: ItemMap = {}
   _nonCharacterWeapons: ItemMap = {}
   _summons: ItemMap = {}
+  private current?: CatalogueSnapshot
+  private pending?: Promise<void>
+  private timer?: ReturnType<typeof setInterval>
+  public lastError?: unknown
+  constructor(private loader: () => Promise<DrawableItem[]> = () => loadCatalogue(Client), private now = Date.now, public maximumAgeMs = 60 * 60 * 1000) {}
 
-  public ready?: Promise<void>
-  public load() {
-    return (this.ready ??= loadCatalogue(Client).then((items) => {
-      for (const rarity of [Rarity.R, Rarity.SR, Rarity.SSR]) {
-        this._characterWeapons[rarity] = items.filter(
-          (item) =>
-            item.rarity === rarity && item.type === DrawableItemType.WEAPON,
-        )
-        this._nonCharacterWeapons[rarity] = []
-        this._summons[rarity] = items.filter(
-          (item) =>
-            item.rarity === rarity && item.type === DrawableItemType.SUMMON,
-        )
-      }
-    }))
+  public get snapshot(): CatalogueSnapshot {
+    if (!this.current || this.ageMs > this.maximumAgeMs) throw new Error("Catalogue is unavailable or stale; please try again later")
+    return this.current
   }
+  public get ageMs() { return this.current ? this.now() - Date.parse(this.current.loadedAt) : Infinity }
+  public load(): Promise<void> { return this.current ? Promise.resolve() : this.refresh() }
+  public refresh(): Promise<void> {
+    if (this.pending) return this.pending
+    this.pending = this.loader().then(items => {
+      if (!items.length) throw new Error("Catalogue contains no drawable items")
+      const identities = new Set<string>()
+      for (const item of items) {
+        const identity = `${item.type}:${item.item_id}`
+        if (!item.item_id || ![DrawableItemType.WEAPON, DrawableItemType.SUMMON].includes(item.type) || ![Rarity.R, Rarity.SR, Rarity.SSR].includes(item.rarity) || identities.has(identity)) throw new Error("Catalogue contains invalid or duplicate drawable identities")
+        identities.add(identity)
+      }
+      const immutable = deepFreeze(structuredClone(items))
+      const snapshot = Object.freeze({ id: randomUUID(), loadedAt: new Date(this.now()).toISOString(), items: immutable })
+      const weapons: ItemMap = {}, summons: ItemMap = {}, other: ItemMap = {}
+      for (const rarity of [Rarity.R, Rarity.SR, Rarity.SSR]) {
+        weapons[rarity] = immutable.filter(item => item.rarity === rarity && item.type === DrawableItemType.WEAPON)
+        summons[rarity] = immutable.filter(item => item.rarity === rarity && item.type === DrawableItemType.SUMMON)
+        other[rarity] = []
+      }
+      this._characterWeapons = weapons
+      this._summons = summons
+      this._nonCharacterWeapons = other
+      this.current = snapshot
+      this.lastError = undefined
+    }).catch((error: unknown) => { this.lastError = error; throw error }).finally(() => { this.pending = undefined })
+    return this.pending
+  }
+  public startRefresh(intervalMs = 15 * 60 * 1000) {
+    this.stopRefresh()
+    this.timer = setInterval(() => { void this.refresh().catch(error => console.error("Catalogue refresh failed", error)) }, intervalMs)
+    this.timer.unref()
+  }
+  public stopRefresh() { if (this.timer) clearInterval(this.timer); this.timer = undefined }
+  public async close() { this.stopRefresh(); await this.pending?.catch(() => undefined) }
 
   // Subset retrieval methods
   public characterWeapons(rarity: Rarity, gala?: Promotion, season?: Season) {
@@ -141,4 +170,13 @@ class Cache {
   }
 }
 
+export interface CatalogueSnapshot { readonly id: string; readonly loadedAt: string; readonly items: readonly DrawableItem[] }
+function deepFreeze<T>(value: T): T {
+  if (value && typeof value === "object") {
+    Object.freeze(value)
+    for (const child of Object.values(value)) deepFreeze(child)
+  }
+  return value
+}
+export const catalogueCache = new Cache()
 export default Cache

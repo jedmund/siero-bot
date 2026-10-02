@@ -91,7 +91,7 @@ void test("direct catalogue adapter selects each Classic pool and duplicate recr
   )
 })
 
-void test("same Gacha engine draws all Classic modes with UUID exclusions and 3% SSR budgets", () => {
+void test("same Gacha engine draws all Classic modes with UUID exclusions and 3% SSR budgets", async () => {
   const cache = new Cache()
   for (const rarity of [Rarity.R, Rarity.SR, Rarity.SSR]) {
     cache._characterWeapons[rarity] = []
@@ -186,7 +186,7 @@ void test("same Gacha engine draws all Classic modes with UUID exclusions and 3%
         .every((draw) => draw.item_id !== item.item_id),
     )
     cache._characterWeapons[Rarity.SSR].pop()
-    assert.throws(
+    await assert.rejects(
       () =>
         rollUntilTarget(
           {
@@ -199,7 +199,7 @@ void test("same Gacha engine draws all Classic modes with UUID exclusions and 3%
         ),
       /unavailable/,
     )
-    assert.throws(
+    await assert.rejects(
       () =>
         rollUntilTarget(
           {
