@@ -77,9 +77,20 @@ void test("unique name selection retains its typed identity even with a shared G
     until.simulate = async () => {
       assert.equal(until.item, selected)
       return {
-        count: 10,
-        cost: { crystals: 3000, jpy: 3150, usd: 21 },
-        assumptions: [],
+        draws: "10",
+        seed: "test",
+        configuration: { mode: "premium" },
+        catalogue_fingerprint: "test",
+        engine_version: "1.0.0",
+        label: "Hypothetical",
+        copies: "1",
+        cost: {
+          crystals: "3000",
+          jpy: "3150",
+          usd: "21",
+          label: "Estimate",
+          exchange_rate: null,
+        },
       }
     }
     await until.execute()

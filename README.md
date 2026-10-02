@@ -68,21 +68,41 @@ pnpm simulate --mode premium --singles --draws 25 --json
 pnpm simulate --help
 ```
 
-The CLI reads `DATABASE_URL` from the shell, defaulting to
-`postgres://localhost/hensei_dev`; it does not load the bot's `.env` or log in to
-Discord. Its PostgreSQL connection is read-only. Run the catalogue migrations
-before using it. Ten-draw runs require a multiple of ten and use the SR-or-higher
-distribution for every tenth slot; `--singles` uses ordinary odds throughout.
-Draw counts are limited to one million. All modes and seasonal filters supported
-by the engine are available. Custom rate-ups use game IDs and absolute percentage
-values; they do not change saved settings. No saved user rate-ups are loaded.
+The CLI calls `HENSEI_API_URL`, defaulting to `http://localhost:3000/api/v1`.
+Start the shared Hensei gacha API first; run Sidekiq and Redis for requests over
+10,000 draws. The CLI polls queued jobs. It does not connect to the simulation
+database, log in to Discord, or load/change saved rate-ups.
 
-The default seed is `1`. Matching options and catalogue data reproduce the same
-results, regardless of database row order. Text output summarizes rarities and
-SSR drops; `--json` includes every observed item count, typed identity, effective
-rate-ups, and model assumptions. With pnpm, use `pnpm --silent simulate --json`
-for JSON stdout without the package-script banner. Catalogue diagnostics go to
-stderr. These are hypothetical catalogue pools, not verified live banners.
+```sh
+pnpm simulate --operation until --target Weapon:1040221700 --mode legend --copies 4
+pnpm simulate --operation odds --target Weapon:1040221700 --mode legend --rateup 1040221700=0.3 --draws 300 --copies 4 --comparison exactly
+pnpm simulate --mode premium --season formal --seed replay-example
+```
+
+Ten-draw purchases require a multiple of ten; `--singles` uses ordinary slots.
+Fixed simulations support up to one million draws, analytical odds up to one
+trillion, and target operations up to 1,000 copies. Until samples waiting times
+without a draw ceiling. Custom percentages remain absolute: `0.3` means `0.3%`.
+Omit `--seed` for fresh randomness. Replay requires the same Ruby engine version,
+catalogue fingerprint, configuration and seed; old TypeScript seeds differ.
+
+`pnpm --silent simulate --json` prints results with large counts and money as
+strings. The API returns ordered draws through 300 and aggregate counts above
+that. Costs are purchase estimates: crystals and JPY always remain available;
+USD uses a dated Frankfurter/ECB reference quote and excludes payment-provider
+conversion charges. Quotes older than seven days omit USD. These are hypothetical
+catalogue simulations, not verified current banners; spark exchanges are excluded.
+
+Discord uses the same API for `/gacha yolo`, `ten`, `spark`, `until` and `odds`.
+Until and Odds accept optional copy counts. Existing typed saved rate-ups are
+submitted explicitly; no identity or ownership migration is introduced. Deploy
+the API before switching bot clients. The TypeScript compiler is retained only
+under `tests/reference` for parity testing. Run all tests, including cross-language
+parity and disposable database integration, with:
+
+```sh
+HENSEI_API_WORKTREE=/path/to/hensei-api SPARK_TEST_ADMIN_URL=postgres://localhost/postgres pnpm check
+```
 
 For deployment, install all dependencies with the frozen lockfile, run
 `pnpm build`, then `pnpm prune --prod`. Retain `package.json`, `build/dist`, and

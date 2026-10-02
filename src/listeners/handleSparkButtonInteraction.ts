@@ -35,7 +35,7 @@ export class HandleSparkButtonInteractionListener extends Listener<
 
       // Use the provided Gala for the Gacha instance
       const gacha = await Gacha.create(rateups, gala, season) // Ensure proper type for gala
-      const result = gacha.spark()
+      const result = await gacha.spark()
 
       const embed = RenderingUtils.renderSpark(result, rateups)
       await interaction.editReply({

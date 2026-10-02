@@ -36,6 +36,7 @@ export enum Element {
 }
 
 export enum Season {
+  FORMAL = "formal",
   VALENTINES = "valentines",
   SUMMER = "summer",
   HALLOWEEN = "halloween",

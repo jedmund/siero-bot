@@ -101,6 +101,7 @@ export async function loadCatalogue(
           legend: ids.includes(5),
         },
         seasons: {
+          formal: ids.includes(11),
           valentines: ids.includes(6),
           summer: ids.includes(7),
           halloween: ids.includes(8),

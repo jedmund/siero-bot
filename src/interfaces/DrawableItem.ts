@@ -27,6 +27,7 @@ export default interface DrawableItem {
     legend: boolean
   }
   seasons: {
+    formal?: boolean
     halloween: boolean
     holiday: boolean
     summer: boolean

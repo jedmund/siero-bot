@@ -5,7 +5,7 @@ import {
   drawDistribution,
   validateRateups,
   drawableIdentity,
-} from "../src/services/simulation.js"
+} from "./reference/simulation.js"
 import type DrawableItem from "../src/interfaces/DrawableItem.js"
 import {
   DrawableItemType,
