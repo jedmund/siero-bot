@@ -4,8 +4,7 @@ import {
   ButtonStyle,
   ComponentType,
   EmbedBuilder,
-  InteractionResponse,
-  MessageComponentInteraction,
+  Message,
   SlashCommandStringOption,
   SlashCommandSubcommandBuilder,
   User,
@@ -15,6 +14,8 @@ import { ApplyOptions } from "@sapphire/decorators"
 import type { ItemRateMap, RateMap } from "../utils/types.js"
 import Rateup from "../services/rateup.js"
 import Api from "../services/api.js"
+import { waitForOwnedComponent } from "../services/ownedComponent.js"
+import { parseRateupPair, RateupInputError } from "../services/rateupInput.js"
 import { renderHtmlBlock } from "../utils/formatting.js"
 
 const COMMAND_ID = process.env.RATEUP_COMMAND_ID ?? ""
@@ -22,7 +23,7 @@ const COMMAND_ID = process.env.RATEUP_COMMAND_ID ?? ""
 const NUM_MAX_RATEUPS = 12
 const COMPONENT_TIMEOUT = 300000 // 5 minutes in milliseconds
 const MIN_RATE = 0.0001 // Minimum rate value (0.01%)
-const MAX_RATE = 100.0 // Maximum rate value (100.0%)
+const MAX_RATE = 6.0 // Maximum rate value (100.0%)
 
 @ApplyOptions<Subcommand.Options>({
   description: "Manipulate gacha rates",
@@ -73,11 +74,11 @@ export class RateupCommand extends Subcommand {
             return this.rateupCommand(
               command,
               "show",
-              description
+              description,
             ).addUserOption((option) =>
               option
                 .setName("user")
-                .setDescription("The user whose rateup you want to see")
+                .setDescription("The user whose rateup you want to see"),
             )
           })
           .addSubcommand((command) => {
@@ -85,23 +86,23 @@ export class RateupCommand extends Subcommand {
             return this.rateupCommand(
               command,
               "copy",
-              description
+              description,
             ).addUserOption((option) =>
               option
                 .setName("user")
                 .setDescription("The user whose rateup you want to see")
-                .setRequired(true)
+                .setRequired(true),
             )
           })
           .addSubcommand((command) => {
             const description =
-              "Reset your gacha rates to mirror the current banner"
+              "Reset your custom rates to the configured default source"
             return this.rateupCommand(command, "reset", description)
           })
       },
       {
         idHints: [COMMAND_ID],
-      }
+      },
     )
   }
 
@@ -110,14 +111,14 @@ export class RateupCommand extends Subcommand {
   private rateupCommand(
     command: SlashCommandSubcommandBuilder,
     name: string,
-    description: string
+    description: string,
   ) {
     return command.setName(name).setDescription(description)
   }
 
   private rateupItemOption(
     number: number,
-    required: boolean = false
+    required: boolean = false,
   ): SlashCommandStringOption {
     const optionBuilder = new SlashCommandStringOption()
       .setName(`item${number}`)
@@ -129,7 +130,7 @@ export class RateupCommand extends Subcommand {
 
   private rateupRateOption(
     number: number,
-    required: boolean = false
+    required: boolean = false,
   ): SlashCommandStringOption {
     const optionBuilder = new SlashCommandStringOption()
       .setName(`rate${number}`)
@@ -142,7 +143,7 @@ export class RateupCommand extends Subcommand {
   // Methods: Slash Commands
 
   public async chatInputSet(
-    interaction: Subcommand.ChatInputCommandInteraction
+    interaction: Subcommand.ChatInputCommandInteraction,
   ) {
     try {
       const rates = this.getRates(interaction)
@@ -161,14 +162,17 @@ export class RateupCommand extends Subcommand {
       await rateup.execute()
     } catch (error) {
       console.error("Error in chatInputSet:", error)
-      await this.handleCommandError(interaction, "setting rate-up values")
+      if (error instanceof RateupInputError)
+        await interaction.reply({ content: error.message, ephemeral: true })
+      else await this.handleCommandError(interaction, "setting rate-up values")
     }
   }
 
   public async chatInputShow(
-    interaction: Subcommand.ChatInputCommandInteraction
+    interaction: Subcommand.ChatInputCommandInteraction,
   ) {
     try {
+      await interaction.deferReply()
       // Extract the user from the interaction and store
       // whether we are fetching rateups for the sender or someone else
       const providedUser = interaction.options.getUser("user")
@@ -176,8 +180,8 @@ export class RateupCommand extends Subcommand {
 
       // Fetch the appropriate rates and render them to the user
       const rates = await Api.fetchRateups(userId)
-      const message = await interaction.reply(
-        this.renderShow(rates, userId, providedUser === null)
+      const message = await interaction.editReply(
+        this.renderShow(rates, userId, providedUser === null),
       )
 
       // If we rendered a button, wait for the message component
@@ -187,7 +191,7 @@ export class RateupCommand extends Subcommand {
           interaction,
           message,
           providedUser,
-          rates
+          rates,
         )
       }
     } catch (error) {
@@ -197,7 +201,7 @@ export class RateupCommand extends Subcommand {
   }
 
   public async chatInputCopy(
-    interaction: Subcommand.ChatInputCommandInteraction
+    interaction: Subcommand.ChatInputCommandInteraction,
   ) {
     try {
       const user = interaction.options.getUser("user")
@@ -210,8 +214,9 @@ export class RateupCommand extends Subcommand {
         return
       }
 
+      await interaction.deferReply()
       const rateups = await Api.copyRateups(user.id, interaction.user.id)
-      interaction.reply(this.renderCopy(rateups, user.id))
+      await interaction.editReply(this.renderCopy(rateups, user.id))
     } catch (error) {
       console.error("Error in chatInputCopy:", error)
       await this.handleCommandError(interaction, "copying rate-up values")
@@ -219,15 +224,14 @@ export class RateupCommand extends Subcommand {
   }
 
   public async chatInputReset(
-    interaction: Subcommand.ChatInputCommandInteraction
+    interaction: Subcommand.ChatInputCommandInteraction,
   ) {
     try {
-      Api.removeRateups(interaction.user.id)
+      await interaction.deferReply({ ephemeral: true })
+      await Api.removeRateups(interaction.user.id)
 
-      await interaction.reply({
-        content: `Your rateups were successfully reset`,
-        ephemeral: true,
-        fetchReply: true,
+      await interaction.editReply({
+        content: `Your custom rateups were reset. Simulations use the configured default source, or ordinary pool rates if no defaults exist.`,
       })
     } catch (error) {
       console.error("Error in chatInputReset:", error)
@@ -240,13 +244,13 @@ export class RateupCommand extends Subcommand {
   private renderShow(rates: ItemRateMap, userId: string, isSender: boolean) {
     const { possessive, pronoun } = this.getPossessiveAndPronoun(
       userId,
-      isSender
+      isSender,
     )
 
     // Create description strings based on the result of the query
     const description =
       rates.length === 0
-        ? `It looks like ${pronoun} have any rateups right now.`
+        ? `It looks like ${pronoun} have any custom rateups right now. Simulations use the configured default source, or ordinary pool rates if none exist.`
         : `These are ${possessive} current rates:`
 
     // Create components based on the result of the query
@@ -266,12 +270,11 @@ export class RateupCommand extends Subcommand {
 
   private renderCopy(rates: ItemRateMap, userId: string) {
     const possessive = `<@${userId}>'s`
-    const pronoun: string = `<@${userId}> doesn't`
 
     // Create description strings based on the result of the query
     const description =
       rates.length === 0
-        ? `It looks like ${pronoun} have any rateups right now.`
+        ? `The source has no custom rates. Your custom rates were cleared; simulations use configured defaults.`
         : `Your simulation rates have been updated to match ${possessive}.`
 
     // Create embeds based on the result of the query
@@ -318,7 +321,7 @@ export class RateupCommand extends Subcommand {
         .setStyle(ButtonStyle.Primary)
 
       const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-        confirmButton
+        confirmButton,
       )
       return [row]
     }
@@ -327,14 +330,6 @@ export class RateupCommand extends Subcommand {
 
   // Methods: Convenience methods
 
-  private collectorFilter = (
-    i: MessageComponentInteraction,
-    interaction: Subcommand.ChatInputCommandInteraction
-  ) => {
-    i.deferUpdate()
-    return i.user.id === interaction.user.id
-  }
-
   private getRates(interaction: Subcommand.ChatInputCommandInteraction) {
     const rates: RateMap = []
 
@@ -342,11 +337,8 @@ export class RateupCommand extends Subcommand {
       const identifier = interaction.options.getString(`item${i + 1}`)
       const rate = interaction.options.getString(`rate${i + 1}`)
 
-      if (identifier && rate)
-        rates.push({
-          identifier: identifier,
-          rate: parseFloat(rate),
-        })
+      const pair = parseRateupPair(identifier, rate, i + 1)
+      if (pair) rates.push(pair)
     }
     return rates
   }
@@ -355,23 +347,24 @@ export class RateupCommand extends Subcommand {
 
   private async handleRateCopyResponse(
     interaction: Subcommand.ChatInputCommandInteraction,
-    interactionResponse: InteractionResponse,
+    interactionResponse: Message,
     providedUser: User,
-    rates: ItemRateMap
+    rates: ItemRateMap,
   ) {
-    const message = await interactionResponse.fetch()
+    const message = interactionResponse
 
     try {
-      const response = await interactionResponse.awaitMessageComponent({
-        filter: (i: MessageComponentInteraction) =>
-          this.collectorFilter(i, interaction),
-        componentType: ComponentType.Button,
-        time: COMPONENT_TIMEOUT,
-      })
+      const response = await waitForOwnedComponent(
+        interactionResponse,
+        interaction.user.id,
+        "copy",
+        ComponentType.Button,
+        COMPONENT_TIMEOUT,
+      )
 
       if (response.isButton()) {
-        Api.validateRateups(rates)
-        await Api.removeRateups(interaction.user.id)
+        await response.deferUpdate()
+        await Api.validateRateups(rates)
         await Api.addRateups(interaction.user.id, rates)
 
         await interaction.editReply({
@@ -394,13 +387,18 @@ export class RateupCommand extends Subcommand {
           })
       } else {
         console.error("Error in handleRateCopyResponse:", error)
+        await interaction.editReply({
+          content:
+            "Could not confirm the copy. Check /rateup show before retrying.",
+          components: [],
+        })
       }
     }
   }
 
   private async handleCommandError(
     interaction: Subcommand.ChatInputCommandInteraction,
-    action: string
+    action: string,
   ) {
     if (interaction.replied || interaction.deferred) {
       await interaction
@@ -424,7 +422,7 @@ export class RateupCommand extends Subcommand {
 
   private resolveUserId(
     interaction: Subcommand.ChatInputCommandInteraction,
-    providedUser: User | null
+    providedUser: User | null,
   ): string {
     return providedUser === null ? interaction.user.id : providedUser.id
   }
@@ -438,7 +436,7 @@ export class RateupCommand extends Subcommand {
     // Validate each rate
     let totalRate = 0
     for (const rate of rates) {
-      if (isNaN(rate.rate)) {
+      if (!Number.isFinite(rate.rate)) {
         return `Invalid rate format for "${rate.identifier}". Must be a decimal number.`
       }
 

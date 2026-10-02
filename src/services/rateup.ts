@@ -2,13 +2,11 @@ import Api, { CatalogueValidationError } from "./api.js"
 import type { ItemRateMap, RateMap } from "../utils/types.js"
 import isGranblueID from "../utils/isGranblueID.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
-import {
-  ComponentType,
-  EmbedBuilder,
-  MessageComponentInteraction,
-} from "discord.js"
+import { ComponentType, EmbedBuilder } from "discord.js"
 import DrawableItem from "../interfaces/DrawableItem.js"
 import { renderHtmlBlock } from "../utils/formatting.js"
+import { waitForOwnedComponent } from "./ownedComponent.js"
+import { SimulationValidationError } from "./simulation.js"
 import { generateConflictSelect } from "../utils/selectMenu.js"
 
 const INTERACTION_TIMEOUT = 60000 // 1 minute timeout for interactions
@@ -22,26 +20,18 @@ class Rateup {
 
   constructor(
     interaction: Subcommand.ChatInputCommandInteraction,
-    rates: RateMap
+    rates: RateMap,
   ) {
     this.interaction = interaction
     this.rawRates = rates
   }
 
   public async execute() {
+    let committed = false
     try {
+      await this.interaction.deferReply()
       // Detect if there are any duplicates, then present any conflicts
       await this.detectDuplicates()
-
-      // If no rates were found, inform the user
-      if (this.rates.length === 0 && this.conflicts.length === 0) {
-        await this.interaction.reply({
-          content:
-            "No valid items were found. Please check your input and try again.",
-          ephemeral: true,
-        })
-        return
-      }
 
       // If there are conflicts, present them to the user
       if (this.conflicts.length > 0) {
@@ -50,73 +40,45 @@ class Rateup {
 
       // Once the conflicts have been resolved,
       // remove the user's current rateups and add the new ones
-      Api.validateRateups(this.rates)
-      await Api.removeRateups(this.interaction.user.id)
+      await Api.validateRateups(this.rates)
       await Api.addRateups(this.interaction.user.id, this.rates)
+      committed = true
 
       const completed = {
-        content: "Your simulation's rates have been updated.",
+        content:
+          "Your simulation rates have been updated. Settings are revalidated for each banner; totals above 3% require a Gala.",
         ephemeral: false,
         components: [],
         embeds: [this.renderEmbed()],
       }
 
-      if (this.conflicts.length > 0) {
-        this.interaction.editReply(completed)
-      } else {
-        this.interaction.reply(completed)
-      }
+      await this.interaction.editReply(completed)
     } catch (error) {
       console.error("Error in Rateup.execute:", error)
-      await this.handleExecuteError(error)
+      if (!committed) await this.handleExecuteError(error)
     }
   }
 
   private async detectDuplicates() {
-    try {
-      for (const rate of this.rawRates) {
-        try {
-          if (isGranblueID(rate.identifier)) {
-            const item = await Api.fetchItemInfoFromID(rate.identifier)
-
-            if (item) {
-              // Add to actual rates list
-              this.rates.push({ item: item, rate: rate.rate })
-            } else {
-              console.warn(`Item with ID ${rate.identifier} not found.`)
-            }
-          } else {
-            const options = await Api.findItem(rate.identifier)
-
-            if (options.length > 1) {
-              this.conflicts.push({ results: options, rate: rate.rate })
-            } else if (options.length === 1) {
-              this.rates.push({
-                item: options[0],
-                rate: rate.rate,
-              })
-            } else {
-              console.warn(`No items found for query: ${rate.identifier}`)
-              // Could add to a "not found" list to inform user
-            }
-          }
-        } catch (itemError) {
-          console.error(
-            `Error processing rate item ${rate.identifier}:`,
-            itemError
+    for (const rate of this.rawRates) {
+      const options = isGranblueID(rate.identifier)
+        ? [await Api.fetchItemInfoFromID(rate.identifier)].filter(
+            (item): item is DrawableItem => item !== null,
           )
-          // Continue with other items instead of failing completely
-        }
-      }
-    } catch (error) {
-      console.error("Error in detectDuplicates:", error)
-      throw error // Re-throw to be caught by execute()
+        : await Api.findItem(rate.identifier)
+      if (!options.length)
+        throw new CatalogueValidationError(
+          `No item found for "${rate.identifier}". Your settings were preserved.`,
+        )
+      if (options.length > 1)
+        this.conflicts.push({ results: options, rate: rate.rate })
+      else this.rates.push({ item: options[0], rate: rate.rate })
     }
   }
 
   private async presentConflicts() {
     try {
-      await this.interaction.reply({
+      await this.interaction.editReply({
         content: `${this.conflicts.length} conflicts were found when setting your rateups`,
       })
 
@@ -133,26 +95,31 @@ class Rateup {
 
         try {
           // Wait for the message component and handle the result
-          const collected = await message.awaitMessageComponent({
-            filter: this.collectorFilter,
-            componentType: ComponentType.StringSelect,
-            time: INTERACTION_TIMEOUT,
-          })
+          const collected = await waitForOwnedComponent(
+            message,
+            this.interaction.user.id,
+            "conflict",
+            ComponentType.StringSelect,
+            INTERACTION_TIMEOUT,
+          )
+          if (!collected.isStringSelectMenu())
+            throw new CatalogueValidationError("Invalid selection.")
 
-          const result = await Api.fetchItemInfoFromReference(collected.values[0])
-          if (result) {
-            this.rates.push({ item: result, rate: conflict.rate })
-          }
-        } catch (timeoutError) {
-          // Handle timeout - skip this conflict
-          console.warn("Select menu interaction timed out", timeoutError)
-          await this.interaction.editReply({
-            content: `Selection timed out for conflict ${i + 1}. Skipping this item.`,
-            components: [],
-          })
-
-          // Wait briefly before continuing to next item
-          await new Promise((resolve) => setTimeout(resolve, 2000))
+          await collected.deferUpdate()
+          const result = conflict.results.find(
+            (item) =>
+              `${item.drawableType}:${item.item_id}` === collected.values[0],
+          )
+          if (!result)
+            throw new CatalogueValidationError(
+              "Invalid selection. Your settings were preserved.",
+            )
+          this.rates.push({ item: result, rate: conflict.rate })
+        } catch (error) {
+          if (error instanceof CatalogueValidationError) throw error
+          throw new CatalogueValidationError(
+            "Selection expired or failed. Your settings were preserved; try again.",
+          )
         }
       }
     } catch (error) {
@@ -160,14 +127,6 @@ class Rateup {
       throw error // Re-throw to be caught by execute()
     }
   }
-
-  private collectorFilter = (i: MessageComponentInteraction) => {
-    i.deferUpdate().catch(() => {
-      // Ignore deferUpdate errors (interaction might have expired)
-    })
-    return i.user.id === this.interaction.user.id
-  }
-
 
   private renderEmbed() {
     let details = ""
@@ -184,7 +143,10 @@ class Rateup {
 
   private async handleExecuteError(error: unknown) {
     const errorMessage =
-      error instanceof CatalogueValidationError ? error.message : "There was an error processing your rate-up request. Please try again."
+      error instanceof CatalogueValidationError ||
+      error instanceof SimulationValidationError
+        ? error.message
+        : "There was an error processing your rate-up request. Please try again."
 
     try {
       if (this.interaction.replied || this.interaction.deferred) {

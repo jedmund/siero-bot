@@ -4,88 +4,81 @@ import DrawableItem from "../interfaces/DrawableItem.js"
 import type { Spark } from "../interfaces/Spark.js"
 import { ItemRateMap } from "../utils/types.js"
 import { Client } from "./connection.js"
-import { Rarity } from "../utils/enums.js"
+import { RateupStore } from "./rateupStore.js"
+import { validateRateups } from "./simulation.js"
 
 export class CatalogueValidationError extends Error {}
 
 class Api {
   // Methods: Fetching methods
 
-  public static async fetchItemInfoFromReference(reference: string): Promise<DrawableItem | null> {
-    return (await loadCatalogue(Client)).find(item => `${item.drawableType}:${item.item_id}` === reference) ?? null
+  public static async fetchItemInfoFromReference(
+    reference: string,
+  ): Promise<DrawableItem | null> {
+    return (
+      (await loadCatalogue(Client)).find(
+        (item) => `${item.drawableType}:${item.item_id}` === reference,
+      ) ?? null
+    )
   }
 
   public static async fetchItemInfoFromID(
     id: string,
   ): Promise<DrawableItem | null> {
-    const matches = (await loadCatalogue(Client)).filter(item => item.granblue_id === id || item.recruits?.granblue_id === id)
-    if (matches.length > 1) throw new Error(`Ambiguous Granblue ID ${id}; choose a catalogue item explicitly`)
+    const matches = (await loadCatalogue(Client)).filter(
+      (item) => item.granblue_id === id || item.recruits?.granblue_id === id,
+    )
+    if (matches.length > 1)
+      throw new Error(
+        `Ambiguous Granblue ID ${id}; choose a catalogue item explicitly`,
+      )
     return matches[0] ?? null
   }
 
-  public static async findItem(name: string, limit = 10, offset = 0): Promise<DrawableItem[]> {
+  public static async findItem(
+    name: string,
+    limit = 10,
+    offset = 0,
+  ): Promise<DrawableItem[]> {
     const search = name.toLocaleLowerCase()
-    return (await loadCatalogue(Client)).filter(item => [item.name.en, item.name.jp, item.recruits?.name.en, item.recruits?.name.jp].some(value => value?.toLocaleLowerCase().includes(search))).sort((a, b) => `${a.type}:${a.item_id}`.localeCompare(`${b.type}:${b.item_id}`)).slice(offset, offset + limit)
+    return (await loadCatalogue(Client))
+      .filter((item) =>
+        [
+          item.name.en,
+          item.name.jp,
+          item.recruits?.name.en,
+          item.recruits?.name.jp,
+        ].some((value) => value?.toLocaleLowerCase().includes(search)),
+      )
+      .sort((a, b) =>
+        `${a.type}:${a.item_id}`.localeCompare(`${b.type}:${b.item_id}`),
+      )
+      .slice(offset, offset + limit)
   }
 
   // Methods: Rateup methods
 
-  public static validateRateups(rateups: ItemRateMap) {
-    if (rateups.some(({ item }) => item.rarity !== Rarity.SSR)) throw new CatalogueValidationError("Only SSR items support custom rate-ups")
-    if (rateups.some(({ item }) => !item.legacyGachaId)) throw new CatalogueValidationError("This catalogue item requires the drawable rate-up identity migration before rates can be saved")
-    if (rateups.some(({ item }) => ![...Object.values(item.promotions), ...Object.values(item.seasons)].some(Boolean))) throw new CatalogueValidationError("This catalogue item is unavailable in supported draw pools")
+  public static async validateRateups(rateups: ItemRateMap) {
+    validateRateups(await loadCatalogue(Client), rateups)
   }
 
-  public static async addRateups(user_id: string, rateups: ItemRateMap) {
-    this.validateRateups(rateups)
-    return await Client.insertInto("gacha_rateups")
-      .values(
-        rateups.map((rateup) => {
-          return {
-            gacha_id: rateup.item.legacyGachaId!,
-            user_id: user_id,
-            rate: rateup.rate,
-          }
-        }),
-      )
-      .execute()
+  public static async addRateups(userId: string, rateups: ItemRateMap) {
+    return new RateupStore(Client).replace(userId, rateups)
   }
 
   public static async fetchRateups(userId: string): Promise<ItemRateMap> {
-    try {
-      const results = await Client.selectFrom("gacha_rateups")
-        .innerJoin("gacha", "gacha.id", "gacha_rateups.gacha_id")
-        .select(["gacha.drawable_id", "gacha.drawable_type", "gacha_rateups.rate"])
-        .where("gacha_rateups.user_id", "=", userId)
-        .execute()
-
-      const catalogue = await loadCatalogue(Client)
-      return results.flatMap(result => {
-        const item = catalogue.find(value => value.drawableType === result.drawable_type && value.item_id === result.drawable_id)
-        return item ? [{ item, rate: Number(result.rate) }] : []
-      })
-    } catch (error) {
-      console.error(`Error fetching rateups for user ${userId}:`, error)
-      return []
-    }
+    return new RateupStore(Client).read(userId)
   }
 
   public static async copyRateups(
     sourceUserId: string,
     destinationUserId: string,
   ) {
-    const rateups = await this.fetchRateups(sourceUserId)
-    this.validateRateups(rateups)
-    await this.removeRateups(destinationUserId)
-    if (rateups.length > 0) await this.addRateups(destinationUserId, rateups)
-
-    return rateups
+    return new RateupStore(Client).copy(sourceUserId, destinationUserId)
   }
 
   public static removeRateups(userId: string) {
-    return Client.deleteFrom("gacha_rateups")
-      .where("user_id", "=", userId)
-      .execute()
+    return new RateupStore(Client).reset(userId)
   }
 
   // Methods: Spark methods
@@ -137,7 +130,6 @@ class Api {
   public static async resetSpark(userId: string) {
     return new SparkService(Client).mutate(userId, "reset")
   }
-
 }
 
 export default Api

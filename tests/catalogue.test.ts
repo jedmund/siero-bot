@@ -6,7 +6,7 @@ import { loadCatalogue } from "../src/services/catalogue.js"
 import { generateConflictOptions } from "../src/utils/selectMenu.js"
 import { rollUntilTarget } from "../src/services/until.js"
 import Gacha from "../src/services/gacha.js"
-import Api from "../src/services/api.js"
+import { validateRateups } from "../src/services/simulation.js"
 import Cache from "../src/services/cache.js"
 import { Promotion, Rarity } from "../src/utils/enums.js"
 
@@ -219,18 +219,18 @@ void test("same Gacha engine draws all Classic modes with UUID exclusions and 3%
     const full = new Gacha([{ item, rate: 3 }], mode, undefined, cache)
     assert.ok(Number.isFinite(full.rates.weapon.rate))
     assert.equal(full.rates.weapon.rate, 0)
-    assert.throws(
-      () => Api.validateRateups([{ item, rate: 1 }]),
-      /identity migration/,
-    )
+    assert.equal(validateRateups([item], [{ item, rate: 1 }]).length, 1)
     assert.throws(
       () =>
-        Api.validateRateups([
-          {
-            item: { ...item, rarity: Rarity.SR, legacyGachaId: "legacy" },
-            rate: 1,
-          },
-        ]),
+        validateRateups(
+          [item],
+          [
+            {
+              item: { ...item, rarity: Rarity.SR, legacyGachaId: "legacy" },
+              rate: 1,
+            },
+          ],
+        ),
       /Only SSR/,
     )
   }

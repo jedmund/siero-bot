@@ -16,9 +16,11 @@ export interface GachaTable {
 
 export interface GachaRateupTable {
   id: Generated<string>
-  gacha_id: string
+  gacha_id: string | null
+  drawable_type: "Weapon" | "Summon" | null
+  drawable_id: string | null
   user_id: string
-  rate: number
+  rate: ColumnType<number | string, number, number>
 }
 
 export interface CharacterTable {
