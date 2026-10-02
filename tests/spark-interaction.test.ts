@@ -3,7 +3,7 @@ import { test } from "node:test"
 import { replyAfterSparkMutation } from "../src/services/spark-interaction.js"
 import { SparkInputError } from "../src/services/sparks.js"
 
-test("no-input validation replies without claiming success", async () => {
+void test("no-input validation replies without claiming success", async () => {
   const errors: string[] = []
   await replyAfterSparkMutation(
     async () => {
@@ -19,7 +19,7 @@ test("no-input validation replies without claiming success", async () => {
   assert.deepEqual(errors, ["Provide at least one currency amount."])
 })
 
-test("success reply uses only committed previous/current values", async () => {
+void test("success reply uses only committed previous/current values", async () => {
   const committed = { previous: { crystals: 100 }, current: { crystals: 105 } }
   await replyAfterSparkMutation(
     async () => committed,
@@ -33,7 +33,7 @@ test("success reply uses only committed previous/current values", async () => {
   )
 })
 
-test("Discord response failure after commit never claims the save failed", async () => {
+void test("Discord response failure after commit never claims the save failed", async () => {
   const replyFailure = new Error("Discord unavailable")
   await assert.rejects(
     replyAfterSparkMutation(
@@ -49,7 +49,7 @@ test("Discord response failure after commit never claims the save failed", async
   )
 })
 
-test("unknown database outcome asks for progress and preserves the error", async () => {
+void test("unknown database outcome asks for progress and preserves the error", async () => {
   const databaseFailure = new Error("Connection lost during COMMIT")
   const errors: string[] = []
   await assert.rejects(

@@ -1,9 +1,10 @@
 # Siero bot modernization plan
 
-Status: Draft for implementation planning  
+Status: First implementation wave completed locally
+
 Updated: 2026-10-02
 
-Bring Siero onto the current Hensei catalogue, preserve saved user data, correct simulation results, and make the bot reliable to operate. This plan defines the work and its deployment order. Creating these documents does not deploy changes or run database migrations.
+Bring Siero onto the current Hensei catalogue, preserve saved user data, correct simulation results, and make the bot reliable to operate. This plan defines the work and its deployment order. Implementation status and validation results are recorded in [first-wave results](implementation-progress.md). Production deployment remains pending.
 
 ## Outcomes
 
@@ -47,7 +48,7 @@ The [catalogue and simulation contract](catalogue-and-simulation-contract.md) de
 
 ## Task index
 
-PRDs 01, 02, and 07 are in progress in separate worktrees using GPT-6.1 Sol subagents. Other tasks remain planned. Priority reflects impact and dependency, not a promised schedule.
+PRDs 01 and 07 are implemented in the bot branch. PRD 02 is implemented in its separate Hensei worktree, with the full-suite qualification recorded in [first-wave results](implementation-progress.md). Nothing has been deployed. Other tasks remain planned. Priority reflects impact and dependency, not a promised schedule.
 
 | PRD | Task | Repository | Priority | Prerequisites |
 | --- | --- | --- | --- | --- |
@@ -120,4 +121,4 @@ Keep destructive cleanup separate. A migration down method cannot reconstruct ev
 
 - Bot: [database types](../src/services/tables.ts), [catalogue queries](../src/services/api.ts), [cache](../src/services/cache.ts), [simulation](../src/services/gacha.ts).
 - Hensei: [schema](https://github.com/jedmund/hensei-api/blob/17f1766204dc76bc0154067220265316543e400c/db/schema.rb), [enum mappings](https://github.com/jedmund/hensei-api/blob/17f1766204dc76bc0154067220265316543e400c/app/models/concerns/granblue_enums.rb), [original migration plan](https://github.com/jedmund/hensei-api/blob/17f1766204dc76bc0154067220265316543e400c/docs/plans/character-season-series.md).
-- The dependency audit and database counts above were obtained on 2026-10-02 and must be refreshed when implementation starts.
+- The baseline audit and database counts above were obtained on 2026-10-02. The updated production dependency audit reports zero advisories; production data still requires its own preflight.

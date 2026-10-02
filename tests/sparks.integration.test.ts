@@ -13,7 +13,7 @@ import {
 
 const adminUrl = process.env.SPARK_TEST_ADMIN_URL
 
-test(
+void test(
   "spark mutations serialize on disposable PostgreSQL",
   { skip: !adminUrl },
   async () => {
