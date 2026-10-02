@@ -145,9 +145,7 @@ class Until {
   public async simulate() {
     const rateups = await fetchRateups(this.interaction.user.id)
 
-    // Proceed with simulation if it is valid
-    // At this point, we should only be searching by Granblue ID, which is unique
-    // so we no longer need to COUNT(*) the database for possibilities
+    // Check the selected typed item identity against the actual draw pool.
     const gacha = await Gacha.create(rateups, this.promotion, this.season)
     if (!this.item || !gacha.canDraw(this.item)) throw new SimulationValidationError("The target is unavailable in the selected pool or has zero effective probability")
     const count = this.roll(gacha)

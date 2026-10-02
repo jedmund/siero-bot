@@ -1,6 +1,7 @@
 # Bounded roll until simulation
 
-Status: Planned  
+Status: Initial availability check and hard cap implemented; responsive execution remains planned
+
 Repository: siero-bot  
 Dependencies: [PRD 04](04-simulation-correctness.md) for final eligibility and draw behavior; an immediate execution guard can land earlier  
 Parent: [Overall plan](../plan.md)

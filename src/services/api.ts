@@ -4,6 +4,7 @@ import DrawableItem from "../interfaces/DrawableItem.js"
 import type { Spark } from "../interfaces/Spark.js"
 import { ItemRateMap } from "../utils/types.js"
 import { Client } from "./connection.js"
+import { Rarity } from "../utils/enums.js"
 
 export class CatalogueValidationError extends Error {}
 
@@ -30,6 +31,7 @@ class Api {
   // Methods: Rateup methods
 
   public static validateRateups(rateups: ItemRateMap) {
+    if (rateups.some(({ item }) => item.rarity !== Rarity.SSR)) throw new CatalogueValidationError("Only SSR items support custom rate-ups")
     if (rateups.some(({ item }) => !item.legacyGachaId)) throw new CatalogueValidationError("This catalogue item requires the drawable rate-up identity migration before rates can be saved")
     if (rateups.some(({ item }) => ![...Object.values(item.promotions), ...Object.values(item.seasons)].some(Boolean))) throw new CatalogueValidationError("This catalogue item is unavailable in supported draw pools")
   }

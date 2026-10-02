@@ -223,5 +223,15 @@ void test("same Gacha engine draws all Classic modes with UUID exclusions and 3%
       () => Api.validateRateups([{ item, rate: 1 }]),
       /identity migration/,
     )
+    assert.throws(
+      () =>
+        Api.validateRateups([
+          {
+            item: { ...item, rarity: Rarity.SR, legacyGachaId: "legacy" },
+            rate: 1,
+          },
+        ]),
+      /Only SSR/,
+    )
   }
 })

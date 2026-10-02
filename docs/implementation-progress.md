@@ -38,8 +38,12 @@ Mutation commands defer their replies and report committed state. A Discord repl
 
 Independent database connections and lock synchronization verify concurrent creation and updates. Tests also cover replacement ordering, reset, removals, guild merging, null values, invalid input, and overflow rollback. No Hensei spark schema migration was needed. See [spark persistence and rollout](spark-persistence.md); old bot processes must stop before rollout because their legacy writes do not follow the new transaction protocol.
 
-## Next implementation wave
+## Subsequent implementation
 
-Start PRD 03 (Hensei catalogue and Classic III data), PRD 04 (simulation correctness), and PRD 08 (startup and interaction lifecycle). They can overlap using the [catalogue and simulation contract](catalogue-and-simulation-contract.md); simulation integration waits for the catalogue adapter. Classic III requires reviewed Hensei promotion metadata and item membership in a separate worktree.
+The Classic III catalogue work and an initial roll-until guard are now implemented locally. See [Classic III results](classic-iii.md) for exact scope, manifests, tests, and remaining work.
+
+## Remaining implementation wave
+
+Continue the remaining PRD 03 identity adoption, PRD 04 (simulation correctness), and PRD 08 (startup and interaction lifecycle). They can overlap using the [catalogue and simulation contract](catalogue-and-simulation-contract.md) and the new direct catalogue adapter. Classic III's separate Hensei worktree is implemented; production reconciliation and rollout remain pending.
 
 PRD 06 can then adopt the new rate-up identity and validated probability model. PRD 05 must use the corrected simulation model for its final bounded execution implementation. Production rollout remains governed by the [overall plan](plan.md).

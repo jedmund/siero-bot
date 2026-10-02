@@ -1,6 +1,6 @@
 # Siero bot modernization plan
 
-Status: First implementation wave completed locally
+Status: First wave and Classic III catalogue implementation completed locally
 
 Updated: 2026-10-02
 
@@ -48,7 +48,7 @@ The [catalogue and simulation contract](catalogue-and-simulation-contract.md) de
 
 ## Task index
 
-PRDs 01 and 07 are implemented in the bot branch. PRD 02 is implemented in its separate Hensei worktree, with the full-suite qualification recorded in [first-wave results](implementation-progress.md). Nothing has been deployed. Other tasks remain planned. Priority reflects impact and dependency, not a promised schedule.
+PRDs 01 and 07 are implemented in the bot branch. PRD 02 is implemented in its separate Hensei worktree, with the full-suite qualification recorded in [first-wave results](implementation-progress.md). The Classic III portion of PRD 03 and an initial roll-until guard are also implemented; see [Classic III results](classic-iii.md). Nothing has been deployed. Remaining portions and other tasks stay planned. Priority reflects impact and dependency, not a promised schedule.
 
 | PRD | Task | Repository | Priority | Prerequisites |
 | --- | --- | --- | --- | --- |
@@ -79,7 +79,7 @@ Implement PRD 02 in its own Hensei worktree. Inspect production schema and aggre
 
 Deliver PRDs 03, 04, 05, 06, and 08 against the additive schema. Catalogue reads use item promotions; rate-up reads and writes use typed UUID references. Test with Hensei-shaped fixtures and a disposable PostgreSQL database, including legacy-only, dual-reference, and new-item cases.
 
-Classic III has not yet been populated in Hensei. Treat it as catalogue maintenance within PRD 03: add an explicit promotion ID without renumbering existing IDs, then update the relevant weapon and summon promotion arrays through a reviewed Hensei data migration in a separate worktree. Preserve any intended membership in other pools. The simulator consumes Classic III through the shared Classic configuration; it does not need a separate simulation engine.
+Classic III is implemented locally with promotion ID 12 and a reviewed 251-item Hensei data migration in a separate worktree; production application remains pending. The migration preserves valid shared membership and removes obsolete ordinary membership for exclusive SSR entries. The bot consumes Classic III through the shared Classic configuration. See [membership evidence and validation](classic-iii.md).
 
 Deploy the additive schema before the new bot. Quiesce old bot writers for the final backfill and reconciliation, then start the new bot only after its schema and cache checks pass. Legacy bots can create rows without the new columns until stopped, so a one-time earlier backfill alone is not enough.
 

@@ -1,11 +1,14 @@
 # Hensei catalogue integration
 
-Status: Planned  
+Status: Classic III and direct catalogue reads implemented; full identity cutover remains planned
+
 Repositories: siero-bot and hensei-api in a separate worktree for Classic III metadata  
 Dependencies: [PRD 02](02-rateup-identity-migration.md) for rate-up cutover; [PRD 08](08-startup-and-interaction-lifecycle.md) for cache readiness  
 Parent: [Overall plan](../plan.md)
 
 ## Problem and outcome
+
+Implementation evidence, validation, and rollout: [Classic III](../classic-iii.md).
 
 The bot already connects to local Hensei, but searches and cached draw pools originate from an incomplete legacy `gacha` table. Query weapons and summons directly, normalize current metadata once, and read settings through typed item references.
 
@@ -20,11 +23,11 @@ Use `weapons.promotions` and `summons.promotions`, both non-null integer arrays,
 | 3 | Classic II | 9 | Holiday |
 | 4 | Flash | 10 | Collab |
 | 5 | Legend | 11 | Formal |
-| 6 | Valentine | | |
+| 6 | Valentine | 12 | Classic III |
 
 Character season numbers are a separate enum and must not be substituted for promotion IDs. `weapons.recruits` still points to `characters.granblue_id`; rarity and element mappings remain compatible. Do not use `weapons.gacha` as the sole eligibility gate: it was unpopulated locally.
 
-The table above records the existing Hensei mapping. Classic III has not been implemented in that catalogue yet. Add an explicit new promotion ID after checking for other pending assignments; do not renumber IDs 1–11. Update the relevant main-database item rows using a reviewed, rerunnable Hensei data migration. Verify the membership list and exceptions before changing rows, including items that should remain available from more than one pool. This is a data and enum extension, not a separate simulation system.
+IDs 1–11 record the original Hensei mapping. Classic III uses newly assigned ID 12 in the implementation branch, with a reviewed, rerunnable 251-item data migration; deployment remains pending. The manifest and shared-membership exceptions are recorded in the implementation evidence. This is a data and enum extension using the shared Classic simulation system.
 
 ## Requirements
 

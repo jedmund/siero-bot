@@ -1,0 +1,252 @@
+type,granblue_id,name,before_promotions,after_promotions,exclusive
+Weapon,1040016000,Gottfried,1 4 5 6 7 8 9,12,true
+Weapon,1040212000,Sacred Lance,1 4 5 6 7 8 9,12,true
+Weapon,1040212800,Spymur's Clause,1 4 5 6 7 8 9,12,true
+Weapon,1040310200,Claidheamh Soluis,1 4 5 6 7 8 9,12,true
+Weapon,1040911300,Metal Destroyer,1 4 5 6 7 8 9,12,true
+Weapon,1040509400,White Hawk,1 4 5 6 7 8 9,12,true
+Weapon,1040610900,Neko Punch Pro,1 4 5 6 7 8 9,12,true
+Weapon,1040510300,Ishtar,1 4 5 6 7 8 9,12,true
+Weapon,1040509600,Arachne,1 4 5 6 7 8 9,12,true
+Weapon,1040212300,Deirdre's Symbol,1 4 5 6 7 8 9,12,true
+Weapon,1040512100,Takeminakata,1 4 5 6 7 8 9,12,true
+Weapon,1040912000,Soshu Masamune,1 4 5 6 7 8 9,12,true
+Weapon,1040212900,Vagabond,1 4 5 6 7 8 9,12,true
+Weapon,1040911600,Juzumaru,1 4 5 6 7 8 9,12,true
+Weapon,1040611500,Rainbow Hand,1 4 5 6 7 8 9,12,true
+Weapon,1040211700,Feendrache Pennant,1 4 5 6 7 8 9,12,true
+Weapon,1040512200,Commander's Sidearm,1 4 5 6 7 8 9,12,true
+Weapon,1040708800,Levin Shooter,1 4 5 6 7 8 9,12,true
+Weapon,1040911900,Alabaster Zenith,1 4 5 6 7 8 9,12,true
+Weapon,1040610700,Ruling Pen,1 4 5 6 7 8 9,12,true
+Weapon,1040415200,Froststar Staff,1 4 5 6 7 8 9,12,true
+Weapon,1040415400,Euripides,1 4 5 6 7 8 9,12,true
+Weapon,1040415500,Trí Bandia,1 4 5 6 7 8 9,12,true
+Weapon,1040909200,Gigante Slicer,1 4 5 6 7 8 9,12,true
+Weapon,1040509200,Railgun,1 4 5 6 7 8 9,12,true
+Weapon,1040709300,Eon,1 4 5 6 7 8 9,12,true
+Weapon,1040808500,Cythara Anglica,1 4 5 6 7 8 9,12,true
+Weapon,1040212100,Galactic Impact,1 4 5 6 7 8 9,12,true
+Weapon,1040709400,Iridescent Bow,1 4 5 6 7 8 9,12,true
+Weapon,1040911400,Black Dragon's Maw,1 4 5 6 7 8 9,12,true
+Weapon,1040310100,Full Metal Recoil,1 4 5 6 7 8 9,12,true
+Weapon,1040213100,Cardinal Spear,1 4 5 6 7 8 9,12,true
+Weapon,1040610600,Wyrmtiger Claw,1 4 5 6 7 8 9,12,true
+Weapon,1040612100,Golden Dragon,1 4 5 6 7 8 9,12,true
+Weapon,1040311200,Hand Axe,1 4 5 6 7 8 9,12,true
+Weapon,1040111100,Gandring,1 4 5 6 7 8 9,12,true
+Weapon,1040310000,Two-by-Four,1 4 5 6 7 8 9,12,true
+Weapon,1040811700,Plushie Pal,1 4 5 6 7 8 9,12,true
+Weapon,1040809300,Another Sky,1 4 5 6 7 8 9,12,true
+Weapon,1040309800,Master Key,1 4 5 6 7 8 9,12,true
+Weapon,1040311700,True Tiger's Bane,1 4 5 6 7 8 9,12,true
+Weapon,1040112600,Gangsta Knife,1 4 5 6 7 8 9,12,true
+Weapon,1040414400,Returner Staff,1 4 5 6 7 8 9,12,true
+Weapon,1040112700,Spectral Cleaver,1 4 5 6 7 8 9,12,true
+Summon,2040297000,"Anat, for Love and War",1 4 5 6 7 8 9,12,true
+Summon,2040347000,Belial,1 4 5 6 7 8 9,1 4 5 6 7 8 9 12,false
+Summon,2040305000,Cerberus,1 4 5 6 7 8 9,12,true
+Summon,2040326000,Demonbream,1 4 5 6 7 8 9,1 4 5 6 7 8 9 12,false
+Summon,2040342000,Dogū,1 4 5 6 7 8 9,1 4 5 6 7 8 9 12,false
+Summon,2040344000,Elil,1 4 5 6 7 8 9,1 4 5 6 7 8 9 12,false
+Summon,2040281000,Freyr,1 4 5 6 7 8 9,12,true
+Summon,2040311000,Gabriel,1 4 5 6 7 8 9,1 4 5 6 7 8 9 12,false
+Summon,2040285000,Gorilla,1 4 5 6 7 8 9,1 4 5 6 7 8 9 12,false
+Summon,2040296000,Hamsa,1 4 5 6 7 8 9,12,true
+Summon,2040350000,Heimdallr,1 4 5 6 7 8 9,1 4 5 6 7 8 9 12,false
+Summon,2040340000,Long Ji,1 4 5 6 7 8 9,1 4 5 6 7 8 9 12,false
+Summon,2040310000,Magus,1 4 5 6 7 8 9,12,true
+Summon,2040323000,Marduk,1 4 5 6 7 8 9,12,true
+Summon,2040330000,Metatron,1 4 5 6 7 8 9,1 4 5 6 7 8 9 12,false
+Summon,2040306000,Michael,1 4 5 6 7 8 9,1 4 5 6 7 8 9 12,false
+Summon,2040352000,Nyarlathotep,1 4 5 6 7 8 9,1 4 5 6 7 8 9 12,false
+Summon,2040302000,Poseidon,1 4 5 6 7 8 9,12,true
+Summon,2040202000,Raphael,1 4 5 6 7 8 9,1 4 5 6 7 8 9 12,false
+Summon,2040327000,Sariel,1 4 5 6 7 8 9,1 4 5 6 7 8 9 12,false
+Summon,2040338000,Surtr,1 4 5 6 7 8 9,1 4 5 6 7 8 9 12,false
+Summon,2040304000,Sylph,1 4 5 6 7 8 9,12,true
+Summon,2040203000,Uriel,1 4 5 6 7 8 9,1 4 5 6 7 8 9 12,false
+Weapon,1020000800,Fire Sword,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020100600,Mandau,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020400000,Taiaha,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020400600,Feather Wand,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020500100,Petronel,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020600300,Mythril Knuckles,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030000100,Ilhoon,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030000200,Fragarach,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030000300,Tilvung,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030001200,Almace,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030001400,Ram-Dao,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030001500,Twisted Dagger,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030100100,Mirage Knife,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030100200,Stiletto,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030101100,Fusetto,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030200200,Partisan,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030200300,Shura Vhara,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030200700,Trident,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030300200,Bullova,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030300300,Horseman's Hammer,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030400200,Pastoral Staff,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030401300,Arson,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030401400,Holy Cane,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030500000,Crosswind,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030500100,Dragon Tail,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030500200,Swallowtail,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030500300,Snaphance,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030500800,Wheellock Axe,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030600000,Neko Punch,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030800200,Athanasius,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030800300,Stravaria,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020500800,Self Defender,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030300100,Shoka,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030400700,Spritewood Staff,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030600100,Jamadhar,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020301200,Sky Tomahawk,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030001800,Royal Rapier,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030400800,Zhonpeli,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030600800,Mauler,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020001500,Lightbringer,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030201700,Narval,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030700000,Sarnga,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030700100,Aves,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020301400,Draph Hammer,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030101800,Puppet Knife,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030200000,Vajranda,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030700500,Shadow Bow,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030101400,Sword Breaker,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030700600,Imperial Bow,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020301500,Soldier Axe,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030700700,Sutera's Bow,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030401200,Yagrush,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030601000,Impact Knuckles,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020401600,Moss Tree Staff,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020601100,Blast Knuckles,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030001900,Lyst,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030800000,Songsmith's Harp,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030601100,Chain Knuckles,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030102300,Soul Edge,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020102200,Bloody Piercer,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030002700,Purity Blade,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030102400,Soulbond Dirk,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020301800,Morning Star,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030401700,Aerial Cane,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020201600,Night Horn,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030102600,Sword of Lisblanc,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020201700,Ghillie Fork,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030601500,Tiger Fang,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020002000,Dark Sword,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020501300,Sawed-Off Shotgun,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020402300,Snowman Rod,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030402900,Soothing Torch,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020002100,Shrimp Lure,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030000000,Arondight,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020102300,Switchblade,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030603400,Metal Glove,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030203500,Golden Mop,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030603500,Cup and Saucer,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030302800,Voulge,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030900100,Fluorithium Blade,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030900200,Sauria,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020402500,Stone Pole,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030802100,Aquarium Harp,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020501400,Derringer,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030004500,Tanzanite Sword Mikoh,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020002200,Old Sword,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030702600,Ice Bow,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020501500,Flame Bolt,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030603800,Merciless Chastening,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030603900,Misanga Bracelet,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020601400,Chopsticks,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030502900,Quarrel,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020402600,Light Staff,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030503000,Fire Piece,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020201800,Silver Pole,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030604000,Heavy Blast Knuckles,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020002300,Paper Fan,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030403600,Cursed Cane,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020402700,Forest Hermit Staff,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030303000,Great Hammer,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020601500,Light Buckler,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030403700,Witch's Broom,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020301900,Iron Pliers,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030403900,Flower Crown,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020402800,Rubia Rod,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030204400,Titanium Harpoon,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030204500,Raging Halberd,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030005400,Frying Pan,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020700700,Flame Bow,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030703200,Glass Bow,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020800100,Night Bell,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030303200,Golden Woofer,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020601600,Oven Mitts,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030901800,Zanbato,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020102500,Broken Bottle,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030303300,Massive Axe,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030204800,Giant Fork,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020402900,Student Notebook,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030104700,Scalpel,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020002500,Prism Tear,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030604700,Crimson Talons,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020601700,Iron Guard,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030303600,Cloud Tomahawk,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020002600,Practice Sword,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030205000,Dreadflayer,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030104900,Shrike's Beak,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020002800,Heavy Metal Comb,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030303700,Fremel Hammer,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020601800,Enchanted Nail,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030404400,Sacred Codex,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020602000,Boogie Plates,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030503900,Colorful Crackerjack,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020102600,Little Scarlet,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020002900,Blue Crest,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020800300,Bronze Bell,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020602100,Tattoo Fist,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1020102700,Spin Blade,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030406100,Cube Staff,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Weapon,1030608700,Lifeguard Glove,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020004000,Hornbird,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020009000,Skeleton,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020010000,Dragonflair,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020011000,Crusher,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020012000,Minotaur,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020013000,Mandrake,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020014000,Sleepyhead,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020015000,Angelie,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020016000,Jawfish,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020017000,Swordshark,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2030003000,Griffin,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2030005000,Golem,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2030006000,Hydra,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2030007000,Wyvern,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2030008000,Myconid,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2030009000,Hellhound,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2030010000,Doomworm,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020022000,Cave Bat,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020023000,Rivacuda,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020024000,Lumacie Griffin,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2030019000,Wilinus Icewyrm,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2030020000,Elmenhilde Windsprite,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020025000,Venom Lancer,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2030021000,Aquamarine Carbuncle,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020027000,Walking Torch,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020028000,Slime,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2030022000,Vrazarek Firewyrm,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2030023000,Stone Golem,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020029000,Imp,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020030000,Bonethorn,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020031000,Twilight Devil,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020032000,Purgatorian,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2030025000,Ruination Gargoyle,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2030028000,Pixie,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020026000,Rodfly,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2030031000,Garnet Carbuncle,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020033000,Belle,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020034000,Ghost Light,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2020035000,Crawler,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2030033000,Elusious Windwyrm,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2030034000,Angelie Cascade,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2030039000,Onyx Carbuncle,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2030042000,Opal Carbuncle,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2030024000,Zircon Carbuncle,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
+Summon,2030080000,Clay Golem,1 2 4 5 6 7 8 9,1 2 4 5 6 7 8 9 12,false
