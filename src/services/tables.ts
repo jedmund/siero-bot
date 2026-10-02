@@ -1,4 +1,4 @@
-import type { Generated } from "kysely"
+import type { ColumnType, Generated } from "kysely"
 
 export interface GachaTable {
   id: Generated<string>
@@ -50,15 +50,26 @@ export interface SummonTable {
 }
 
 export interface SparkTable {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any
   id: Generated<string>
   user_id: string
   guild_ids: string[]
-  crystals: number
-  tickets: number
-  ten_tickets: number
-  target_id: Generated<string>
-  target_type: string
-  updated_at: Date
+  crystals: Generated<number | null>
+  tickets: Generated<number | null>
+  ten_tickets: Generated<number | null>
+  target_id: ColumnType<
+    string | null,
+    string | bigint | null | undefined,
+    string | bigint | null
+  >
+  target_type: ColumnType<
+    string | null,
+    string | null | undefined,
+    string | null
+  >
+  target_memo: ColumnType<
+    string | null,
+    string | null | undefined,
+    string | null
+  >
+  updated_at: Generated<Date>
 }

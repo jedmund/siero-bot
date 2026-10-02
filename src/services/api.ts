@@ -1,3 +1,4 @@
+import { SparkService } from "./sparks.js"
 import DrawableItem from "../interfaces/DrawableItem.js"
 import type { RawResult } from "../interfaces/RawResult.js"
 import type { Spark } from "../interfaces/Spark.js"
@@ -47,7 +48,7 @@ class Api {
   }
 
   public static async fetchItemInfoFromID(
-    id: string
+    id: string,
   ): Promise<DrawableItem | null> {
     try {
       const query = this.baseGachaQuery()
@@ -56,7 +57,7 @@ class Api {
             eb("weapons.granblue_id", "=", id),
             eb("summons.granblue_id", "=", id),
             eb("characters.granblue_id", "=", id),
-          ])
+          ]),
         )
         .limit(1)
 
@@ -72,7 +73,7 @@ class Api {
   public static async findItem(
     name: string,
     limit = 10,
-    offset = 0
+    offset = 0,
   ): Promise<DrawableItem[]> {
     try {
       const results = await this.baseGachaQuery()
@@ -84,7 +85,7 @@ class Api {
             eb("summons.name_jp", "ilike", `%${name}%`),
             eb("characters.name_en", "ilike", `%${name}%`),
             eb("characters.name_jp", "ilike", `%${name}%`),
-          ])
+          ]),
         )
         .limit(limit)
         .offset(offset)
@@ -110,7 +111,7 @@ class Api {
             user_id: user_id,
             rate: rateup.rate,
           }
-        })
+        }),
       )
       .execute()
   }
@@ -135,7 +136,7 @@ class Api {
         })
         .filter(
           (entry): entry is { item: DrawableItem; rate: number } =>
-            entry !== null
+            entry !== null,
         )
     } catch (error) {
       console.error(`Error fetching rateups for user ${userId}:`, error)
@@ -145,7 +146,7 @@ class Api {
 
   public static async copyRateups(
     sourceUserId: string,
-    destinationUserId: string
+    destinationUserId: string,
   ) {
     await this.removeRateups(destinationUserId)
     const rateups = await this.fetchRateups(sourceUserId)
@@ -175,9 +176,9 @@ class Api {
       } = {
         guildIds: response.guild_ids,
         spark: {
-          crystals: response.crystals,
-          tickets: response.tickets,
-          ten_tickets: response.ten_tickets,
+          crystals: response.crystals ?? 0,
+          tickets: response.tickets ?? 0,
+          ten_tickets: response.ten_tickets ?? 0,
         },
       }
 
@@ -187,10 +188,8 @@ class Api {
 
   public static async updateSpark({
     userId,
-    guildIds,
-    crystals,
-    tickets,
-    ten_tickets,
+    guildIds = [],
+    ...currencies
   }: {
     userId: string
     guildIds?: string[]
@@ -198,35 +197,18 @@ class Api {
     tickets?: number
     ten_tickets?: number
   }) {
-    const payload: { [key: string]: string | string[] | number } = {
-      user_id: userId,
-      updated_at: new Date(Date.now())
-        .toISOString()
-        .replace("T", " ")
-        .replace("Z", ""),
-    }
-    if (guildIds) payload.guild_ids = guildIds
-    if (crystals !== undefined) payload.crystals = crystals
-    if (tickets !== undefined) payload.tickets = tickets
-    if (ten_tickets !== undefined) payload.ten_tickets = ten_tickets
-
-    return await Client.insertInto("sparks")
-      .values(payload)
-      .onConflict((oc) => oc.column("user_id").doUpdateSet(payload))
-      .returning(["crystals", "tickets", "ten_tickets"])
-      .executeTakeFirst()
+    return (
+      await new SparkService(Client).mutate(
+        userId,
+        "update",
+        currencies,
+        guildIds,
+      )
+    ).current
   }
 
   public static async resetSpark(userId: string) {
-    await Client.updateTable("sparks")
-      .set({
-        crystals: 0,
-        tickets: 0,
-        ten_tickets: 0,
-      })
-      .where("user_id", "=", userId)
-      .returning(["crystals", "tickets", "ten_tickets"])
-      .execute()
+    return new SparkService(Client).mutate(userId, "reset")
   }
 
   // Methods: Data transformation methods
