@@ -6,17 +6,17 @@ NODE_ENV = "development"
 DEBUG = "*"
 
 [tools]
-node = "lts"
-pnpm = "latest"
+node = "24.21.0"
+pnpm = "10.34.6"
 
 [tasks.install]
 description = "Install Node.js dependencies"
-run = "pnpm install"
+run = "pnpm install --frozen-lockfile"
 
 [tasks.dev]
 description = "Run the bot in development mode"
 alias = "d"
-run = "pnpm start"
+run = "pnpm dev"
 
 [tasks.serve]
 description = "Run the bot in production mode"
@@ -26,7 +26,7 @@ run = "pnpm serve"
 [tasks.build]
 description = "Build the TypeScript project"
 alias = "b"
-run = "pnpm build-ts"
+run = "pnpm build"
 
 [tasks.clean]
 description = "Clean build artifacts"
