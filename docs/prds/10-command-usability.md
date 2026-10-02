@@ -1,8 +1,11 @@
 # Command usability and presentation
 
-Status: Planned  
-Repository: siero-bot  
-Dependencies: PRDs 03, 04, 06, and 08  
+Status: Planned
+
+Repository: siero-bot
+
+Dependencies: PRDs 03, 04, 06, and 08
+
 Parent: [Overall plan](../plan.md)
 
 ## Problem and outcome

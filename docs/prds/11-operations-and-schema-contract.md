@@ -1,8 +1,11 @@
 # Operations and schema contract
 
-Status: Planned  
-Repository: siero-bot with coordinated Hensei documentation  
-Dependencies: Contracts from PRDs 02, 03, 08, and 09  
+Status: Planned
+
+Repository: siero-bot with coordinated Hensei documentation
+
+Dependencies: Contracts from PRDs 02, 03, 08, and 09
+
 Parent: [Overall plan](../plan.md)
 
 ## Problem and outcome

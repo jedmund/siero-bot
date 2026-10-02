@@ -1,8 +1,11 @@
 # Durable raid scheduling
 
-Status: Planned  
-Repositories: siero-bot and hensei-api in a separate worktree  
-Dependencies: [PRD 08](08-startup-and-interaction-lifecycle.md); additive raid schema before bot deployment  
+Status: Planned
+
+Repositories: siero-bot and hensei-api in a separate worktree
+
+Dependencies: [PRD 08](08-startup-and-interaction-lifecycle.md); additive raid schema before bot deployment
+
 Parent: [Overall plan](../plan.md)
 
 ## Problem and outcome

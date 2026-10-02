@@ -1,6 +1,7 @@
 # Catalogue and simulation contract
 
-Status: Proposed implementation contract for PRDs 03 through 06  
+Status: Proposed implementation contract for PRDs 03 through 06
+
 Updated: 2026-10-02
 
 This contract lets catalogue integration, simulation, and command workflows be implemented separately. It defines the boundary between Hensei's general item metadata and a specific simulation configuration. It is not a claim that the current bot implements these interfaces or that Hensei already stores complete banner rates.

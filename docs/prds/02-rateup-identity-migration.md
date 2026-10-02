@@ -2,8 +2,10 @@
 
 Status: Implemented in separate worktree; production preflight and deployment pending
 
-Repository: hensei-api in a new worktree and branch  
-Dependencies: None; bot adoption is [PRD 03](03-hensei-catalogue-integration.md)  
+Repository: hensei-api in a new worktree and branch
+
+Dependencies: None; bot adoption is [PRD 03](03-hensei-catalogue-integration.md)
+
 Parent: [Overall plan](../plan.md)
 
 Implementation and validation: [First-wave results](../implementation-progress.md).

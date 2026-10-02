@@ -1,8 +1,11 @@
 # Retire legacy gacha storage
 
-Status: Deferred until production cutover is verified  
-Repositories: hensei-api in a new worktree and siero-bot  
-Dependencies: PRDs 02, 03, 06, and 11; verified production migration  
+Status: Deferred until production cutover is verified
+
+Repositories: hensei-api in a new worktree and siero-bot
+
+Dependencies: PRDs 02, 03, 06, and 11; verified production migration
+
 Parent: [Overall plan](../plan.md)
 
 ## Problem and outcome

@@ -1,8 +1,11 @@
 # Safe rate up workflows
 
-Status: Planned  
-Repository: siero-bot  
-Dependencies: [PRD 02](02-rateup-identity-migration.md), [PRD 03](03-hensei-catalogue-integration.md), and validation from [PRD 04](04-simulation-correctness.md)  
+Status: Planned
+
+Repository: siero-bot
+
+Dependencies: [PRD 02](02-rateup-identity-migration.md), [PRD 03](03-hensei-catalogue-integration.md), and validation from [PRD 04](04-simulation-correctness.md)
+
 Parent: [Overall plan](../plan.md)
 
 ## Problem and outcome

@@ -1,8 +1,11 @@
 # Simulation correctness
 
-Status: Planned  
-Repository: siero-bot  
-Dependencies: Catalogue contract from [PRD 03](03-hensei-catalogue-integration.md)  
+Status: Planned
+
+Repository: siero-bot
+
+Dependencies: Catalogue contract from [PRD 03](03-hensei-catalogue-integration.md)
+
 Parent: [Overall plan](../plan.md)
 
 ## Problem and outcome

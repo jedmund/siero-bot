@@ -2,8 +2,10 @@
 
 Status: Implemented and locally validated; CI execution pending
 
-Repository: siero-bot  
-Dependencies: None  
+Repository: siero-bot
+
+Dependencies: None
+
 Parent: [Overall plan](../plan.md)
 
 Implementation and validation: [First-wave results](../implementation-progress.md).

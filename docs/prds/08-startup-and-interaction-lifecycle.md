@@ -1,8 +1,11 @@
 # Startup and interaction lifecycle
 
-Status: Planned  
-Repository: siero-bot  
-Dependencies: None; coordinate cache contract with PRD 03  
+Status: Planned
+
+Repository: siero-bot
+
+Dependencies: None; coordinate cache contract with PRD 03
+
 Parent: [Overall plan](../plan.md)
 
 ## Problem and outcome

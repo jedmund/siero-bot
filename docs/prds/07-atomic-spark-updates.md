@@ -2,8 +2,10 @@
 
 Status: Implemented and locally validated; deployment pending
 
-Repository: siero-bot; hensei-api in a separate worktree if constraints are added  
-Dependencies: None  
+Repository: siero-bot; hensei-api in a separate worktree if constraints are added
+
+Dependencies: None
+
 Parent: [Overall plan](../plan.md)
 
 Implementation and validation: [First-wave results](../implementation-progress.md).

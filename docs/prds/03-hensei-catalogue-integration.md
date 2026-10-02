@@ -2,8 +2,10 @@
 
 Status: Classic III and direct catalogue reads implemented; full identity cutover remains planned
 
-Repositories: siero-bot and hensei-api in a separate worktree for Classic III metadata  
-Dependencies: [PRD 02](02-rateup-identity-migration.md) for rate-up cutover; [PRD 08](08-startup-and-interaction-lifecycle.md) for cache readiness  
+Repositories: siero-bot and hensei-api in a separate worktree for Classic III metadata
+
+Dependencies: [PRD 02](02-rateup-identity-migration.md) for rate-up cutover; [PRD 08](08-startup-and-interaction-lifecycle.md) for cache readiness
+
 Parent: [Overall plan](../plan.md)
 
 ## Problem and outcome
