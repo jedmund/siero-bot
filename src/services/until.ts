@@ -14,6 +14,7 @@ import isGranblueID from "../utils/isGranblueID.js"
 import fetchRateups from "../utils/fetchRateups.js"
 
 export async function rollUntilTarget(gacha: Pick<Gacha, "canDraw" | "tenPartRoll">, target: DrawableItem, maximumDraws = 100000) {
+  if (!Number.isInteger(maximumDraws) || maximumDraws < 10 || maximumDraws > 100000 || maximumDraws % 10 !== 0) throw new SimulationValidationError("Draw limit must be a multiple of ten between 10 and 100000")
   if (!gacha.canDraw(target)) throw new SimulationValidationError("The target is unavailable in the selected pool or has zero effective probability")
   for (let count = 10; count <= maximumDraws; count += 10) {
     runtime.assertAccepting()

@@ -1,3 +1,4 @@
+import { rollUntilTarget } from "../src/services/until.js"
 import assert from "node:assert/strict"
 import test from "node:test"
 import Cache from "../src/services/cache.js"
@@ -97,4 +98,33 @@ void test("acknowledgement happens once before slow work and response edits it",
   await acknowledge(input)
   await respond(input, "done")
   assert.deepEqual(calls, ["defer", "edit"])
+})
+
+void test("bounded until yields to other work and returns actual draw count", async () => {
+  let batches = 0
+  let otherWorkRan = false
+  const otherWork = new Promise<void>((resolve) => {
+    setImmediate(() => {
+      otherWorkRan = true
+      resolve()
+    })
+  })
+  const count = await rollUntilTarget(
+    {
+      canDraw: () => true,
+      tenPartRoll: () => {
+        batches++
+        return {
+          items: batches === 100 ? [item] : [],
+          count: { R: 0, SR: 0, SSR: 0 },
+        }
+      },
+    },
+    item,
+    1000,
+  )
+  assert.equal(count, 1000)
+  assert.equal(batches, 100)
+  assert.equal(otherWorkRan, true)
+  await otherWork
 })
