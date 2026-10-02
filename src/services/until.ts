@@ -2,7 +2,7 @@ import { ComponentType, StringSelectMenuInteraction } from "discord.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
 
 import Api from "./api.js"
-import Gacha from "./gacha.js"
+import Gacha, { SimulationValidationError } from "./gacha.js"
 
 import { DrawableItemType, Promotion, Season } from "../utils/enums.js"
 import { generateConflictSelect } from "../utils/selectMenu.js"
@@ -10,6 +10,14 @@ import { generateConflictSelect } from "../utils/selectMenu.js"
 import type DrawableItem from "../interfaces/DrawableItem.js"
 import isGranblueID from "../utils/isGranblueID.js"
 import fetchRateups from "../utils/fetchRateups.js"
+
+export function rollUntilTarget(gacha: Pick<Gacha, "canDraw" | "tenPartRoll">, target: DrawableItem, maximumDraws = 100000) {
+  if (!gacha.canDraw(target)) throw new SimulationValidationError("The target is unavailable in the selected pool or has zero effective probability")
+  for (let count = 10; count <= maximumDraws; count += 10) {
+    if (gacha.tenPartRoll().items.some(item => item.type === target.type && item.item_id === target.item_id)) return count
+  }
+  throw new SimulationValidationError(`Stopped after ${maximumDraws} draws without finding the target`)
+}
 
 class Until {
   identifier: string
@@ -38,19 +46,19 @@ class Until {
   public async execute() {
     if (isGranblueID(this.identifier)) {
       // Fetch the item's info via Granblue ID
-      this.fetchItemAndSimulate()
+      await this.fetchItemAndSimulate()
     } else {
       // Find possible items via provided string
       const options = await Api.findItem(this.identifier)
 
       if (options.length > 1) {
         // Present options to the user if there's more than one option
-        this.presentOptions(this.interaction, options)
+        await this.presentOptions(this.interaction, options)
       } else if (options.length === 1) {
         // Proceed to simulate if there is only one option
         const found = options[0]
         this.identifier = found.granblue_id
-        this.fetchItemAndSimulate()
+        await this.fetchItemAndSimulate()
       } else {
         // Inform the user no options could be found
         this.interaction.editReply(
@@ -79,7 +87,7 @@ class Until {
       this.generateResponse(result)
     } catch (error) {
       console.error(`Error fetching item:`, error)
-      await this.interaction.editReply("Error fetching item information")
+      await this.interaction.editReply(error instanceof SimulationValidationError ? error.message : "Error fetching item information")
     }
   }
 
@@ -107,7 +115,7 @@ class Until {
   private async collectOption(input: StringSelectMenuInteraction, that: Until) {
     try {
       const selection = input.values[0]
-      const fetchedItem = await Api.fetchItemInfoFromID(selection)
+      const fetchedItem = await Api.fetchItemInfoFromReference(selection)
 
       // Convert null to undefined for type compatibility
       that.item = fetchedItem || undefined
@@ -128,24 +136,20 @@ class Until {
     } catch (error) {
       console.error(`Error processing selection:`, error)
       await input.update({
-        content: "Error processing your selection",
+        content: error instanceof SimulationValidationError ? error.message : "Error processing your selection",
         components: [],
       })
     }
   }
 
   public async simulate() {
-    if (!this.simulationValid()) {
-      // Update the object to use the correct promotion and season
-      this.validateSimulation()
-    }
-
     const rateups = await fetchRateups(this.interaction.user.id)
 
     // Proceed with simulation if it is valid
     // At this point, we should only be searching by Granblue ID, which is unique
     // so we no longer need to COUNT(*) the database for possibilities
     const gacha = await Gacha.create(rateups, this.promotion, this.season)
+    if (!this.item || !gacha.canDraw(this.item)) throw new SimulationValidationError("The target is unavailable in the selected pool or has zero effective probability")
     const count = this.roll(gacha)
 
     return {
@@ -155,24 +159,8 @@ class Until {
   }
 
   private roll(gacha: Gacha) {
-    let count = 0
-    let found = false
-
-    while (!found && this.item) {
-      const roll = gacha.tenPartRoll()
-      count = count + 10
-
-      for (const i in roll.items) {
-        const item = roll.items[i]
-        if (
-          item.type === this.item.type && item.item_id === this.item.item_id
-        ) {
-          found = true
-        }
-      }
-    }
-
-    return count
+    if (!this.item) throw new SimulationValidationError("No target selected")
+    return rollUntilTarget(gacha, this.item)
   }
 
   // Methods: Rendering methods
@@ -230,42 +218,6 @@ class Until {
     }
   }
 
-  private simulationValid() {
-    let promotionMatch = false
-    let seasonMatch = this.season ? false : true
-
-    if (this.item && this.item.promotions[this.promotion]) promotionMatch = true
-    if (this.item && this.season && this.item.seasons[this.season])
-      seasonMatch = true
-
-    return promotionMatch && seasonMatch
-  }
-
-  private validateSimulation() {
-    if (this.item) {
-      const { promotions, seasons } = this.item
-
-      this.promotion =
-        promotions.flash && this.promotion !== Promotion.FLASH
-          ? Promotion.FLASH
-          : promotions.legend && this.promotion !== Promotion.LEGEND
-            ? Promotion.LEGEND
-            : promotions.classic && this.promotion !== Promotion.CLASSIC
-              ? Promotion.CLASSIC
-              : this.promotion
-
-      this.season =
-        seasons.valentines && this.season !== Season.VALENTINES
-          ? Season.VALENTINES
-          : seasons.summer && this.season !== Season.SUMMER
-            ? Season.SUMMER
-            : seasons.halloween && this.season !== Season.HALLOWEEN
-              ? Season.HALLOWEEN
-              : seasons.holiday && this.season !== Season.HOLIDAY
-                ? Season.HOLIDAY
-                : this.season
-    }
-  }
 }
 
 export default Until

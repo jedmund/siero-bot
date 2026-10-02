@@ -5,8 +5,14 @@ import type { Spark } from "../interfaces/Spark.js"
 import { ItemRateMap } from "../utils/types.js"
 import { Client } from "./connection.js"
 
+export class CatalogueValidationError extends Error {}
+
 class Api {
   // Methods: Fetching methods
+
+  public static async fetchItemInfoFromReference(reference: string): Promise<DrawableItem | null> {
+    return (await loadCatalogue(Client)).find(item => `${item.drawableType}:${item.item_id}` === reference) ?? null
+  }
 
   public static async fetchItemInfoFromID(
     id: string,
@@ -24,8 +30,8 @@ class Api {
   // Methods: Rateup methods
 
   public static validateRateups(rateups: ItemRateMap) {
-    if (rateups.some(({ item }) => !item.legacyGachaId)) throw new Error("This catalogue item requires the drawable rate-up identity migration before rates can be saved")
-    if (rateups.some(({ item }) => !Object.values(item.promotions).some(Boolean))) throw new Error("This catalogue item is unavailable in supported draw pools")
+    if (rateups.some(({ item }) => !item.legacyGachaId)) throw new CatalogueValidationError("This catalogue item requires the drawable rate-up identity migration before rates can be saved")
+    if (rateups.some(({ item }) => ![...Object.values(item.promotions), ...Object.values(item.seasons)].some(Boolean))) throw new CatalogueValidationError("This catalogue item is unavailable in supported draw pools")
   }
 
   public static async addRateups(user_id: string, rateups: ItemRateMap) {

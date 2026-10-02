@@ -17,11 +17,14 @@ import { ROLLS_IN_SPARK, ROLLS_IN_TENPART, SSR_RATE } from "../utils/constants.j
 const cache = new Cache()
 const chance = new Chance()
 
+export class SimulationValidationError extends Error {}
+
 export default class Gacha {
   gala: Promotion = Promotion.PREMIUM
   season: Season | undefined = undefined
   rateups: ItemRateMap = []
   rates: CategoryMap = {}
+  private zeroRateIdentities = new Set<string>()
 
   public static async create(rateups: ItemRateMap, gala: Promotion, season?: Season) {
     await cache.load()
@@ -29,8 +32,8 @@ export default class Gacha {
   }
 
   constructor(rateups: ItemRateMap, gala: Promotion, season?: Season, private catalogue: Cache = cache) {
-    if (!Object.values(Promotion).includes(gala)) throw new Error(`Unsupported promotion: ${gala}`)
-    if ([Promotion.CLASSIC, Promotion.CLASSIC_II, Promotion.CLASSIC_III].includes(gala) && season) throw new Error("Classic pools do not support seasonal filters")
+    if (!Object.values(Promotion).includes(gala)) throw new SimulationValidationError(`Unsupported promotion: ${gala}`)
+    if ([Promotion.CLASSIC, Promotion.CLASSIC_II, Promotion.CLASSIC_III].includes(gala) && season) throw new SimulationValidationError("Classic pools do not support seasonal filters")
     this.gala = gala
     this.season = season
 
@@ -42,18 +45,31 @@ export default class Gacha {
     const identities = new Set<string>()
     let budget = 0
     for (const rateup of this.rateups) {
+      if (rateup.item.rarity !== Rarity.SSR) throw new SimulationValidationError("Only SSR items support custom rate-ups")
       const identity = `${rateup.item.type}:${rateup.item.item_id}`
-      if (identities.has(identity)) throw new Error("Duplicate rate-up drawable identity")
+      if (identities.has(identity)) throw new SimulationValidationError("Duplicate rate-up drawable identity")
       identities.add(identity)
-      if (!Number.isFinite(rateup.rate) || rateup.rate < 0) throw new Error("Rate-up rates must be finite and nonnegative")
+      if (!Number.isFinite(rateup.rate) || rateup.rate < 0) throw new SimulationValidationError("Rate-up rates must be finite and nonnegative")
       budget += rateup.rate
     }
+    this.zeroRateIdentities = new Set(this.rateups.filter(rateup => rateup.rate === 0).map(rateup => `${rateup.item.type}:${rateup.item.item_id}`))
     const ssrBudget = [Promotion.FLASH, Promotion.LEGEND].includes(gala) ? SSR_RATE * 2 : SSR_RATE
-    if (budget > ssrBudget) throw new Error(`Rate-up rates exceed the ${ssrBudget}% SSR budget`)
+    if (budget > ssrBudget) throw new SimulationValidationError(`Rate-up rates exceed the ${ssrBudget}% SSR budget`)
     for (const rarity of [Rarity.R, Rarity.SR, Rarity.SSR]) {
-      if (this.catalogue.characterWeapons(rarity, gala, season).length + this.catalogue.summons(rarity, gala, season).length === 0) throw new Error(`Catalogue pool ${gala} has no rarity ${rarity} items; deploy complete promotion metadata before simulation`)
+      if (this.catalogue.characterWeapons(rarity, gala, season).length + this.catalogue.summons(rarity, gala, season).length === 0) throw new SimulationValidationError(`Catalogue pool ${gala} has no rarity ${rarity} items; deploy complete promotion metadata before simulation`)
     }
     this.rates = this.ssrRates()
+  }
+
+  public canDraw(item: DrawableItem) {
+    const identity = `${item.type}:${item.item_id}`
+    if (this.zeroRateIdentities.has(identity)) return false
+    const pool = [...this.catalogue.characterWeapons(item.rarity, this.gala, this.season), ...this.catalogue.summons(item.rarity, this.gala, this.season)]
+    if (!pool.some(candidate => candidate.type === item.type && candidate.item_id === item.item_id)) return false
+    if (item.rarity !== Rarity.SSR) return true
+    if (this.rateups.some(rateup => rateup.item.type === item.type && rateup.item.item_id === item.item_id)) return true
+    const category = item.type === DrawableItemType.SUMMON ? this.rates.summon : this.rates.weapon
+    return category.rate > 0
   }
 
   public singleRoll() {
@@ -169,7 +185,7 @@ export default class Gacha {
     // Divide the difference evenly among all other items in the pool.
     // The quotient is the summon rate.
     const remainingCount = remainingWeapons + remainingSummons
-    if (remainingCount === 0 && rate > 0) throw new Error("No eligible items remain for the residual SSR budget")
+    if (remainingCount === 0 && rate > 0) throw new SimulationValidationError("No eligible items remain for the residual SSR budget")
     const summonRate = remainingCount === 0 ? 0 : rate / remainingCount
 
     // Remove the combined rate of all summons in the pool from the total rate.
@@ -326,49 +342,14 @@ export default class Gacha {
   }
 
   private determineSSRBucket(rates: CategoryMap) {
-    let allRateups: number
-    let bucketKeys: number[]
-    let bucketRates: number[]
-
     const limitedRate = rates.limited.rate * rates.limited.count
     const summonRate = rates.summon.rate * rates.summon.count
     const weaponRate = rates.weapon.rate * rates.weapon.count
-
-    if (this.rateups.length > 0) {
-      allRateups = 0
-
-      for (const i in this.rateups) {
-        const item = this.rateups[i]
-        allRateups = allRateups + item.rate
-      }
-
-      bucketKeys = [
-        GachaBucket.RATEUP,
-        GachaBucket.LIMITED,
-        GachaBucket.SUMMON,
-        GachaBucket.WEAPON,
-      ]
-
-      bucketRates = [
-        1,
-        limitedRate / allRateups,
-        summonRate / allRateups,
-        weaponRate / allRateups,
-      ]
-    } else {
-      allRateups = 1
-
-      bucketKeys = [GachaBucket.LIMITED, GachaBucket.SUMMON, GachaBucket.WEAPON]
-
-      bucketRates = [
-        limitedRate / allRateups,
-        summonRate / allRateups,
-        weaponRate / allRateups,
-      ]
-    }
-
-    // Use chance.js to determine a bucket
-    return chance.weighted(bucketKeys, bucketRates)
+    const allRateups = this.rateups.reduce((total, rateup) => total + rateup.rate, 0)
+    const keys = [GachaBucket.RATEUP, GachaBucket.LIMITED, GachaBucket.SUMMON, GachaBucket.WEAPON]
+    const weights = [allRateups, limitedRate, summonRate, weaponRate]
+    const eligible = keys.map((key, index) => ({key, weight: weights[index]})).filter(entry => entry.weight > 0)
+    return chance.weighted(eligible.map(entry => entry.key), eligible.map(entry => entry.weight))
   }
 
   private filterItems(item: DrawableItem, gala?: Promotion, season?: Season) {

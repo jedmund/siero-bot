@@ -1,4 +1,4 @@
-import Api from "./api.js"
+import Api, { CatalogueValidationError } from "./api.js"
 import type { ItemRateMap, RateMap } from "../utils/types.js"
 import isGranblueID from "../utils/isGranblueID.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
@@ -139,7 +139,7 @@ class Rateup {
             time: INTERACTION_TIMEOUT,
           })
 
-          const result = await Api.fetchItemInfoFromID(collected.values[0])
+          const result = await Api.fetchItemInfoFromReference(collected.values[0])
           if (result) {
             this.rates.push({ item: result, rate: conflict.rate })
           }
@@ -184,7 +184,7 @@ class Rateup {
 
   private async handleExecuteError(error: unknown) {
     const errorMessage =
-      error instanceof Error ? error.message : "There was an error processing your rate-up request. Please try again."
+      error instanceof CatalogueValidationError ? error.message : "There was an error processing your rate-up request. Please try again."
 
     try {
       if (this.interaction.replied || this.interaction.deferred) {

@@ -3,6 +3,8 @@ import test from "node:test"
 import type { Kysely } from "kysely"
 import type { Database } from "../src/services/connection.js"
 import { loadCatalogue } from "../src/services/catalogue.js"
+import { generateConflictOptions } from "../src/utils/selectMenu.js"
+import { rollUntilTarget } from "../src/services/until.js"
 import Gacha from "../src/services/gacha.js"
 import Api from "../src/services/api.js"
 import Cache from "../src/services/cache.js"
@@ -156,6 +158,64 @@ void test("same Gacha engine draws all Classic modes with UUID exclusions and 3%
         ),
       /Duplicate/,
     )
+    assert.throws(
+      () => new Gacha([{ item, rate: 0 }], mode, undefined, cache),
+      /No eligible/,
+    )
+    assert.equal(engine.canDraw({ ...item, item_id: "unavailable" }), false)
+    assert.throws(
+      () =>
+        new Gacha(
+          [{ item: { ...item, rarity: Rarity.SR }, rate: 1 }],
+          mode,
+          undefined,
+          cache,
+        ),
+      /Only SSR/,
+    )
+    cache._characterWeapons[Rarity.SSR].push({
+      ...item,
+      item_id: `${item.item_id}-other`,
+    })
+    const zero = new Gacha([{ item, rate: 0 }], mode, undefined, cache)
+    assert.equal(zero.canDraw(item), false)
+    assert.ok(
+      zero
+        .tenPartRoll(100)
+        .items.filter((draw) => draw.rarity === Rarity.SSR)
+        .every((draw) => draw.item_id !== item.item_id),
+    )
+    cache._characterWeapons[Rarity.SSR].pop()
+    assert.throws(
+      () =>
+        rollUntilTarget(
+          {
+            canDraw: () => false,
+            tenPartRoll: () => {
+              throw new Error("Must not draw")
+            },
+          },
+          item,
+        ),
+      /unavailable/,
+    )
+    assert.throws(
+      () =>
+        rollUntilTarget(
+          {
+            canDraw: () => true,
+            tenPartRoll: () => ({ items: [], count: { R: 0, SR: 0, SSR: 0 } }),
+          },
+          item,
+          20,
+        ),
+      /Stopped after 20/,
+    )
+    const selector = generateConflictOptions([
+      item,
+      { ...item, item_id: "second", type: 1 },
+    ]).map((option) => option.toJSON().value)
+    assert.deepEqual(selector, [`Weapon:${item.item_id}`, "Summon:second"])
     const full = new Gacha([{ item, rate: 3 }], mode, undefined, cache)
     assert.ok(Number.isFinite(full.rates.weapon.rate))
     assert.equal(full.rates.weapon.rate, 0)

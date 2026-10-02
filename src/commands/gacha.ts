@@ -9,7 +9,7 @@ import { Subcommand } from "@sapphire/plugin-subcommands"
 import { ApplyOptions } from "@sapphire/decorators"
 import { isMessageInstance } from "@sapphire/discord.js-utilities"
 
-import Gacha from "../services/gacha.js"
+import Gacha, { SimulationValidationError } from "../services/gacha.js"
 import Until from "../services/until.js"
 
 import { Promotion, Season } from "../utils/enums.js"
@@ -341,7 +341,7 @@ export class GachaCommand extends Subcommand {
     } catch (error) {
       console.error("Error in command execution:", error)
       await interaction.editReply(
-        error instanceof Error ? error.message : "An error occurred while processing your request"
+        error instanceof SimulationValidationError ? error.message : "An error occurred while processing your request"
       )
     }
   }
