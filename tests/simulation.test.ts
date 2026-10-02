@@ -223,3 +223,22 @@ void test("typed identity keeps same UUID weapon and summon distinct; RNG bounda
     )
   }
 })
+
+void test("captured distributions survive caller mutation and all seasonal selections", () => {
+  for (const season of Object.values(Season)) {
+    const seasonal = item(season, Rarity.SSR, Promotion.FLASH)
+    seasonal.promotions.flash = false
+    seasonal.seasons[season] = true
+    const items = [item("r", Rarity.R), item("sr", Rarity.SR), seasonal]
+    const compiled = compileSimulation(snapshot(items), {
+      gala: Promotion.PREMIUM,
+      season,
+      rateups: [],
+    })
+    seasonal.name.en = "changed"
+    seasonal.seasons[season] = false
+    assert.equal(compiled.ordinary[2].item.name.en, "same")
+    assert.equal(compiled.ordinary[2].item.seasons[season], true)
+    assert.equal(Object.isFrozen(compiled.ordinary[2].item), true)
+  }
+})
