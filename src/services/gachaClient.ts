@@ -59,16 +59,35 @@ export class GachaClient {
     path: string,
     body?: unknown,
   ): Promise<Record<string, unknown>> {
-    const response = await this.request(
-      `${this.base.replace(/\/$/, "")}/gacha/${path}`,
-      {
-        method: body === undefined ? "GET" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: body === undefined ? undefined : JSON.stringify(body),
-        signal: AbortSignal.timeout(60_000),
-      },
-    )
-    const value = (await response.json()) as Record<string, unknown>
+    let response: Response
+    try {
+      response = await this.request(
+        `${this.base.replace(/\/$/, "")}/gacha/${path}`,
+        {
+          method: body === undefined ? "GET" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: body === undefined ? undefined : JSON.stringify(body),
+          signal: AbortSignal.timeout(60_000),
+        },
+      )
+    } catch (cause) {
+      throw new GachaApiError(
+        "Cannot reach the gacha service. Please try again later; the bot operator should check HENSEI_API_URL and API availability.",
+        { cause },
+      )
+    }
+    let value: Record<string, unknown>
+    try {
+      const parsed: unknown = await response.json()
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed))
+        throw new Error("Expected an object")
+      value = parsed as Record<string, unknown>
+    } catch (cause) {
+      throw new GachaApiError(
+        `The gacha service returned an invalid response (HTTP ${response.status}). Please try again later; the bot operator should check HENSEI_API_URL.`,
+        { cause },
+      )
+    }
     if (!response.ok)
       throw new GachaApiError(
         `${String(value.error ?? "Gacha API request failed")}${response.status === 429 ? ` (retry after ${response.headers.get("Retry-After") ?? "60"} seconds)` : ""}`,

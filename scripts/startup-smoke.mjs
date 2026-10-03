@@ -47,3 +47,5 @@ SapphireClient.prototype.login = function (token) {
 
 process.env.DISCORD_TOKEN = "smoke-token"
 process.env.DATABASE_URL = "postgresql://smoke:smoke@localhost/smoke"
+
+process.env.HENSEI_API_URL = "https://api.example.test/v1"
