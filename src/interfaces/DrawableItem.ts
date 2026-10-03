@@ -3,7 +3,6 @@ import type { Character } from "./Character.js"
 
 export default interface DrawableItem {
   drawCategory?: "characterWeapon" | "weapon" | "summon"
-  legacyGachaId?: string
   drawableId?: string
   drawableType?: "Weapon" | "Summon"
   promotionIds?: number[]

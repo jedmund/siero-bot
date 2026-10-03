@@ -12,34 +12,17 @@ export class RateupStore {
     db: Kysely<Database> | Transaction<Database> = this.db,
   ): Promise<ItemRateMap> {
     const rows = await db
-      .selectFrom("gacha_rateups as r")
-      .leftJoin("gacha as g", "g.id", "r.gacha_id")
-      .select([
-        "r.drawable_type as type",
-        "r.drawable_id as itemId",
-        "r.gacha_id as legacyId",
-        "g.drawable_type as legacyType",
-        "g.drawable_id as legacyItemId",
-        "r.rate",
-      ])
-      .where("r.user_id", "=", userId)
+      .selectFrom("gacha_rateups")
+      .select(["drawable_type as type", "drawable_id as itemId", "rate"])
+      .where("user_id", "=", userId)
       .execute()
     const items = await loadCatalogue(db)
     return rows.map((row) => {
-      if ((row.type === null) !== (row.itemId === null))
-        throw new Error("Incomplete typed rate-up reference")
-      if (row.legacyId && (!row.legacyType || !row.legacyItemId))
-        throw new Error("Missing legacy rate-up reference")
-      if (
-        row.type &&
-        row.legacyId &&
-        (row.type !== row.legacyType || row.itemId !== row.legacyItemId)
-      )
-        throw new Error("Conflicting typed and legacy rate-up references")
-      const type = row.type ?? row.legacyType
-      const id = row.itemId ?? row.legacyItemId
+      if (!row.type || !row.itemId)
+        throw new Error("Rate-up has no typed item reference")
       const item = items.find(
-        (item) => item.drawableType === type && item.item_id === id,
+        (item) =>
+          item.drawableType === row.type && item.item_id === row.itemId,
       )
       if (!item)
         throw new Error("Rate-up references an unavailable catalogue item")
@@ -73,12 +56,6 @@ export class RateupStore {
             rate,
             drawable_type: item.drawableType!,
             drawable_id: item.item_id,
-            gacha_id:
-              items.find(
-                (value) =>
-                  value.drawableType === item.drawableType &&
-                  value.item_id === item.item_id,
-              )?.legacyGachaId ?? null,
           })),
         )
         .execute()

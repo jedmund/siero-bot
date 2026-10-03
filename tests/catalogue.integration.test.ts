@@ -29,8 +29,7 @@ void test(
       await observer.connect()
       await observer.query(`CREATE TABLE weapons (id uuid PRIMARY KEY, granblue_id varchar, name_en varchar, name_jp varchar, element integer, rarity integer, recruits varchar, promotions integer[] NOT NULL);
       CREATE TABLE summons (id uuid PRIMARY KEY, granblue_id varchar, name_en varchar, name_jp varchar, element integer, rarity integer, promotions integer[] NOT NULL);
-      CREATE TABLE characters (id uuid PRIMARY KEY, granblue_id varchar, name_en varchar, name_jp varchar, element integer);
-      CREATE TABLE gacha (id uuid PRIMARY KEY, drawable_id uuid, drawable_type varchar);`)
+      CREATE TABLE characters (id uuid PRIMARY KEY, granblue_id varchar, name_en varchar, name_jp varchar, element integer);`)
       const ids = [randomUUID(), randomUUID(), randomUUID()]
       for (const [index, promotion] of [2, 3, 12].entries())
         await observer.query(
@@ -45,7 +44,7 @@ void test(
       const items = await loadCatalogue(db)
       assert.equal(items.length, 3)
       assert.ok(items.every((item) => item.drawCategory === "characterWeapon"))
-      assert.ok(items.every((item) => !item.recruits && !item.legacyGachaId))
+      assert.ok(items.every((item) => !item.recruits))
       const cache = new Cache()
       cache._characterWeapons[Rarity.SSR] = items
       cache._summons[Rarity.SSR] = []

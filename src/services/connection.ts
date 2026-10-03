@@ -2,7 +2,6 @@ import { Kysely, PostgresDialect } from "kysely"
 import { Pool } from "pg"
 
 import type {
-  GachaTable,
   GachaRateupTable,
   SparkTable,
   CharacterTable,
@@ -15,7 +14,6 @@ export interface Database {
   characters: CharacterTable
   summons: SummonTable
   weapons: WeaponTable
-  gacha: GachaTable
   gacha_rateups: GachaRateupTable
 }
 

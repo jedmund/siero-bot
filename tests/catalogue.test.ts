@@ -41,7 +41,6 @@ void test("direct catalogue adapter selects each Classic pool and duplicate recr
       element: 1,
       rarity: 3,
     })),
-    gacha: [],
   }
   const db = {
     selectFrom: (table: keyof typeof tables) => ({
@@ -55,11 +54,7 @@ void test("direct catalogue adapter selects each Classic pool and duplicate recr
     items.map((item) => item.drawCategory),
     ["characterWeapon", "characterWeapon", "characterWeapon", "summon"],
   )
-  assert.ok(
-    items.every(
-      (item) => !item.recruits && !item.legacyGachaId && item.id === "",
-    ),
-  )
+  assert.ok(items.every((item) => !item.recruits && item.id === ""))
   assert.deepEqual(items[0].promotionIds, [2, 99])
   const cache = new Cache()
   cache._characterWeapons[Rarity.SSR] = items.filter(
@@ -246,7 +241,7 @@ void test("same Gacha engine draws all Classic modes with UUID exclusions and 3%
           [item],
           [
             {
-              item: { ...item, rarity: Rarity.SR, legacyGachaId: "legacy" },
+              item: { ...item, rarity: Rarity.SR },
               rate: 1,
             },
           ],
