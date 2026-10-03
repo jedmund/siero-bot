@@ -6,6 +6,8 @@ import { DrawableItemType, Promotion, Rarity, Season } from "../utils/enums.js"
 import type DrawableItem from "../interfaces/DrawableItem.js"
 import type { ItemMap } from "../utils/types.js"
 
+export class CatalogueUnavailableError extends Error {}
+
 class Cache {
   _characterWeapons: ItemMap = {}
   _nonCharacterWeapons: ItemMap = {}
@@ -17,8 +19,16 @@ class Cache {
   constructor(private loader: () => Promise<DrawableItem[]> = () => loadCatalogue(Client), private now = Date.now, public maximumAgeMs = 60 * 60 * 1000) {}
 
   public get snapshot(): CatalogueSnapshot {
-    if (!this.current || this.ageMs > this.maximumAgeMs) throw new Error("Catalogue is unavailable or stale; please try again later")
+    if (!this.current || this.ageMs > this.maximumAgeMs) throw new CatalogueUnavailableError("Catalogue is unavailable or stale; please try again later")
     return this.current
+  }
+  public async read(): Promise<readonly DrawableItem[]> {
+    try {
+      await this.load()
+      return this.snapshot.items
+    } catch (cause) {
+      throw new CatalogueUnavailableError("Catalogue is unavailable or stale; please try again later", { cause })
+    }
   }
   public get ageMs() { return this.current ? this.now() - Date.parse(this.current.loadedAt) : Infinity }
   public load(): Promise<void> { return this.current ? Promise.resolve() : this.refresh() }

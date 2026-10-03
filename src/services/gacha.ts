@@ -3,6 +3,7 @@ import type { ItemRateMap } from "../utils/types.js"
 import { DrawableItemType, Promotion, Season } from "../utils/enums.js"
 import { drawableIdentity } from "./simulation.js"
 import { GachaClient, type CatalogueItem } from "./gachaClient.js"
+import { runtime } from "./lifecycle.js"
 export { SimulationValidationError } from "./simulation.js"
 
 export function drawable(item: CatalogueItem): DrawableItem {
@@ -48,7 +49,7 @@ export default class Gacha {
     readonly rateups: ItemRateMap,
     public gala: Promotion,
     public season?: Season,
-    private client = new GachaClient(),
+    private client = new GachaClient(undefined, undefined, runtime.signal),
   ) {}
   static create(rateups: ItemRateMap, gala: Promotion, season?: Season) {
     return Promise.resolve(new Gacha(rateups, gala, season))

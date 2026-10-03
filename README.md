@@ -48,6 +48,10 @@ and read-only preflight, and require a clean report before starting this build.
 An old bot cannot read selections that have only the new typed reference;
 retain a compatible build for rollback rather than deleting those selections.
 
+Item lookups and ordinary saved-rate reads share the bot catalogue cache; empty
+saved-rate lists do not load catalogue data. Rate-up writes and copies still
+validate fresh catalogue data inside their database transaction.
+
 The catalogue refreshes every 15 minutes. Failed refreshes retain the last
 complete snapshot, but simulations refuse snapshots older than one hour.
 Missing positive-probability categories produce an explicit incomplete-catalogue
@@ -98,7 +102,11 @@ conversion charges. Quotes older than seven days omit USD. These are hypothetica
 catalogue simulations, not verified current banners; spark exchanges are excluded.
 
 Discord uses the same API for `/gacha yolo`, `ten`, `spark`, `until` and `odds`.
-Until and Odds accept optional copy counts. Existing typed saved rate-ups are
+Until and Odds accept optional copy counts. Their search and item selection
+only include targets eligible for the chosen pool and season. Discord results
+use grouped numbers and compact cost notes; Odds attainment thresholds always
+mean at least the requested copies, including for exactly comparisons.
+Gacha requests and queued-job polling are cancelled when the bot shuts down. Existing typed saved rate-ups are
 submitted explicitly; no identity or ownership migration is introduced. Deploy
 the API before switching bot clients. The TypeScript compiler is retained only
 under `tests/reference` for parity testing. Run all tests, including cross-language

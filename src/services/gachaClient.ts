@@ -53,12 +53,22 @@ export class GachaClient {
   constructor(
     private base = process.env.HENSEI_API_URL ?? "http://localhost:3000/api/v1",
     private request: typeof fetch = fetch,
+    private signal?: AbortSignal,
   ) {}
+
+  private assertActive(cause?: unknown) {
+    if (this.signal?.aborted)
+      throw new GachaApiError(
+        "The gacha request was cancelled. The bot may be restarting; please try again.",
+        { cause },
+      )
+  }
 
   private async json(
     path: string,
     body?: unknown,
   ): Promise<Record<string, unknown>> {
+    this.assertActive()
     let response: Response
     try {
       response = await this.request(
@@ -67,10 +77,13 @@ export class GachaClient {
           method: body === undefined ? "GET" : "POST",
           headers: { "Content-Type": "application/json" },
           body: body === undefined ? undefined : JSON.stringify(body),
-          signal: AbortSignal.timeout(60_000),
+          signal: this.signal
+            ? AbortSignal.any([this.signal, AbortSignal.timeout(60_000)])
+            : AbortSignal.timeout(60_000),
         },
       )
     } catch (cause) {
+      this.assertActive(cause)
       throw new GachaApiError(
         "Cannot reach the gacha service. Please try again later; the bot operator should check HENSEI_API_URL and API availability.",
         { cause },
@@ -83,11 +96,13 @@ export class GachaClient {
         throw new Error("Expected an object")
       value = parsed as Record<string, unknown>
     } catch (cause) {
+      this.assertActive(cause)
       throw new GachaApiError(
         `The gacha service returned an invalid response (HTTP ${response.status}). Please try again later; the bot operator should check HENSEI_API_URL.`,
         { cause },
       )
     }
+    this.assertActive()
     if (!response.ok)
       throw new GachaApiError(
         `${String(value.error ?? "Gacha API request failed")}${response.status === 429 ? ` (retry after ${response.headers.get("Retry-After") ?? "60"} seconds)` : ""}`,
@@ -124,7 +139,13 @@ export class GachaClient {
       const token = data.token
       const deadline = Date.now() + 10 * 60_000
       while (Date.now() < deadline) {
-        await delay(1000)
+        this.assertActive()
+        try {
+          await delay(1000, undefined, { signal: this.signal })
+        } catch (cause) {
+          this.assertActive(cause)
+          throw cause
+        }
         data = await this.json(`jobs/${encodeURIComponent(token)}`)
         if (data.status === "complete") return data.result as GachaResult
         if (data.status === "failed")

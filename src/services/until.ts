@@ -3,6 +3,7 @@ import { ComponentType, StringSelectMenuInteraction } from "discord.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
 
 import Api from "./api.js"
+import { CatalogueUnavailableError } from "./cache.js"
 import Gacha, { SimulationValidationError } from "./gacha.js"
 
 import { Promotion, Season } from "../utils/enums.js"
@@ -12,6 +13,7 @@ import type DrawableItem from "../interfaces/DrawableItem.js"
 import isGranblueID from "../utils/isGranblueID.js"
 import fetchRateups from "../utils/fetchRateups.js"
 import { GachaClient, GachaApiError, type GachaResult } from "./gachaClient.js"
+import { oddsMessage } from "./oddsMessage.js"
 import { untilMessage } from "./untilMessage.js"
 import { drawableIdentity } from "./simulation.js"
 
@@ -49,7 +51,7 @@ class Until {
       await this.fetchItemAndSimulate()
     } else {
       // Find possible items via provided string
-      const options = await Api.findItem(this.identifier)
+      const options = await Api.findItem(this.identifier, 10, 0, this)
 
       if (options.length > 1) {
         // Present options to the user if there's more than one option
@@ -63,7 +65,7 @@ class Until {
       } else {
         // Inform the user no options could be found
         await this.interaction.editReply(
-          `No items were found for \`${this.identifier}\``,
+          `No items were found in the selected pool for \`${this.identifier}\``,
         )
       }
     }
@@ -72,14 +74,14 @@ class Until {
   private async fetchItemAndSimulate() {
     try {
       // Fetch the item's info via Granblue ID
-      const fetchedItem = await Api.fetchItemInfoFromID(this.identifier)
+      const fetchedItem = await Api.fetchItemInfoFromID(this.identifier, this)
 
       // Convert null to undefined for type compatibility
       this.item = fetchedItem || undefined
 
       if (!this.item) {
         await this.interaction.editReply(
-          `No item found with ID \`${this.identifier}\``,
+          `No item found in the selected pool with ID \`${this.identifier}\``,
         )
         return
       }
@@ -89,7 +91,8 @@ class Until {
     } catch (error) {
       console.error(`Error fetching item:`, error)
       await this.interaction.editReply(
-        error instanceof SimulationValidationError ||
+        error instanceof CatalogueUnavailableError ||
+          error instanceof SimulationValidationError ||
           error instanceof GachaApiError
           ? error.message
           : "Error fetching item information",
@@ -140,14 +143,14 @@ class Until {
     try {
       await input.deferUpdate()
       const selection = input.values[0]
-      const fetchedItem = await Api.fetchItemInfoFromReference(selection)
+      const fetchedItem = await Api.fetchItemInfoFromReference(selection, that)
 
       // Convert null to undefined for type compatibility
       that.item = fetchedItem || undefined
 
       if (!that.item) {
         await input.editReply({
-          content: `No item found with ID \`${selection}\``,
+          content: `No item found in the selected pool with ID \`${selection}\``,
           components: [],
         })
         return
@@ -162,6 +165,7 @@ class Until {
       console.error(`Error processing selection:`, error)
       await input.editReply({
         content:
+          error instanceof CatalogueUnavailableError ||
           error instanceof SimulationValidationError ||
           error instanceof GachaApiError
             ? error.message
@@ -175,7 +179,7 @@ class Until {
     const rateups = await fetchRateups(this.interaction.user.id)
     if (!this.item) throw new SimulationValidationError("No target selected")
     const gacha = await Gacha.create(rateups, this.promotion, this.season)
-    return new GachaClient().run(this.operation, {
+    return new GachaClient(undefined, undefined, runtime.signal).run(this.operation, {
       ...gacha.configuration(),
       purchase: "ten",
       target: drawableIdentity(this.item),
@@ -186,20 +190,11 @@ class Until {
   }
 
   private async generateResponse(result: GachaResult) {
-    if (this.operation === "until") {
-      await this.interaction.editReply({
-        content: untilMessage(result, this.item?.name.en || this.item?.name.jp || this.identifier, this.currency),
-        components: [],
-      })
-      return
-    }
-    const summary = `**${((result.probability ?? 0) * 100).toPrecision(8)}%** ${this.comparison.replace("_", " ")} ${this.copies} copies in ${result.draws} draws. Expected copies: ${result.expected_copies}.\n50% / 90% / 95% attainment: ${["50", "90", "95"].map((key) => result.thresholds?.[key] ?? ">1 trillion").join(" / ")} draws.`
-    const quote = result.cost.exchange_rate
-    const usd = result.cost.usd
-      ? ` / $${result.cost.usd} USD (${quote?.provider}, ${quote?.date}${quote?.stale ? ", stale" : ""})`
-      : ""
+    const name = this.item?.name.en || this.item?.name.jp || this.identifier
     await this.interaction.editReply({
-      content: `${summary}\n${result.cost.crystals} crystals / ¥${result.cost.jpy}${this.currency === "usd" ? usd : ""}.\n${result.cost.label}\n${result.label}`,
+      content: this.operation === "until"
+        ? untilMessage(result, name, this.currency)
+        : oddsMessage(result, name, this.currency),
       components: [],
     })
   }

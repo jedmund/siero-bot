@@ -1,31 +1,40 @@
-import { loadCatalogue } from "./catalogue.js"
+import { catalogueCache } from "./cache.js"
+import { Promotion, Season } from "../utils/enums.js"
 import { SparkService } from "./sparks.js"
 import DrawableItem from "../interfaces/DrawableItem.js"
 import type { Spark } from "../interfaces/Spark.js"
 import { ItemRateMap } from "../utils/types.js"
 import { Client } from "./connection.js"
 import { RateupStore } from "./rateupStore.js"
-import { validateRateups } from "./simulation.js"
+import { drawableIdentity, isEligibleItem, validateRateups } from "./simulation.js"
 
 export class CatalogueValidationError extends Error {}
 
+export interface CatalogueScope { promotion: Promotion; season?: Season }
+
 class Api {
+  private static async items(scope?: CatalogueScope) {
+    const items = await catalogueCache.read()
+    return scope ? items.filter(item => isEligibleItem(item, scope.promotion, scope.season)) : items
+  }
   // Methods: Fetching methods
 
   public static async fetchItemInfoFromReference(
     reference: string,
+    scope?: CatalogueScope,
   ): Promise<DrawableItem | null> {
     return (
-      (await loadCatalogue(Client)).find(
-        (item) => `${item.drawableType}:${item.item_id}` === reference,
+      (await this.items(scope)).find(
+        (item) => drawableIdentity(item) === reference,
       ) ?? null
     )
   }
 
   public static async fetchItemInfoFromID(
     id: string,
+    scope?: CatalogueScope,
   ): Promise<DrawableItem | null> {
-    const matches = (await loadCatalogue(Client)).filter(
+    const matches = (await this.items(scope)).filter(
       (item) => item.granblue_id === id || item.recruits?.granblue_id === id,
     )
     if (matches.length > 1)
@@ -39,9 +48,10 @@ class Api {
     name: string,
     limit = 10,
     offset = 0,
+    scope?: CatalogueScope,
   ): Promise<DrawableItem[]> {
     const search = name.toLocaleLowerCase()
-    return (await loadCatalogue(Client))
+    return (await this.items(scope))
       .filter((item) =>
         [
           item.name.en,
@@ -59,7 +69,7 @@ class Api {
   // Methods: Rateup methods
 
   public static async validateRateups(rateups: ItemRateMap) {
-    validateRateups(await loadCatalogue(Client), rateups)
+    validateRateups(await catalogueCache.read(), rateups)
   }
 
   public static async addRateups(userId: string, rateups: ItemRateMap) {
@@ -67,7 +77,7 @@ class Api {
   }
 
   public static async fetchRateups(userId: string): Promise<ItemRateMap> {
-    return new RateupStore(Client).read(userId)
+    return new RateupStore(Client, () => catalogueCache.read()).read(userId)
   }
 
   public static async copyRateups(
