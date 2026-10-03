@@ -10,6 +10,7 @@ import { ApplyOptions } from "@sapphire/decorators"
 import { acknowledge } from "../services/interaction.js"
 
 import Gacha, { SimulationValidationError } from "../services/gacha.js"
+import { CatalogueUnavailableError } from "../services/cache.js"
 import { GachaApiError } from "../services/gachaClient.js"
 import Until from "../services/until.js"
 
@@ -305,6 +306,7 @@ export class GachaCommand extends Subcommand {
     const season = this.getSeason(interaction.options.getString("season"))
     const identifier = interaction.options.getString("name")
     const currency = interaction.options.getString("currency") ?? "usd"
+    const operation = interaction.options.getSubcommand() === "odds" ? "odds" : "until"
 
     if (!identifier) {
       await interaction.reply({
@@ -315,7 +317,9 @@ export class GachaCommand extends Subcommand {
     }
 
     await interaction.reply({
-      content: `Simulating the gacha until \`${identifier}\` is drawn...`,
+      content: operation === "odds"
+        ? `Calculating draw odds for \`${identifier}\`...`
+        : `Simulating the gacha until \`${identifier}\` is drawn...`,
       fetchReply: true,
     })
 
@@ -326,7 +330,7 @@ export class GachaCommand extends Subcommand {
       promotion,
       season,
       interaction.options.getInteger("copies") ?? 1,
-      interaction.options.getSubcommand() === "odds" ? "odds" : "until",
+      operation,
       interaction.options.getInteger("draws") ?? 300,
       interaction.options.getString("comparison") ?? "at_least",
     )
@@ -335,7 +339,7 @@ export class GachaCommand extends Subcommand {
     } catch (error) {
       console.error("Until command failed", error)
       await interaction.editReply(
-        error instanceof GachaApiError
+        error instanceof GachaApiError || error instanceof CatalogueUnavailableError || error instanceof SimulationValidationError
           ? error.message
           : "An error occurred while processing your request",
       )
@@ -403,7 +407,8 @@ export class GachaCommand extends Subcommand {
       console.error("Error in command execution:", error)
       await interaction.editReply(
         error instanceof SimulationValidationError ||
-          error instanceof GachaApiError
+          error instanceof GachaApiError ||
+          error instanceof CatalogueUnavailableError
           ? error.message
           : "An error occurred while processing your request",
       )

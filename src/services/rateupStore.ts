@@ -1,11 +1,15 @@
 import { sql, type Kysely, type Transaction } from "kysely"
 import type { Database } from "./connection.js"
+import type DrawableItem from "../interfaces/DrawableItem.js"
 import { loadCatalogue } from "./catalogue.js"
 import type { ItemRateMap } from "../utils/types.js"
 import { validateRateups } from "./simulation.js"
 
 export class RateupStore {
-  constructor(private readonly db: Kysely<Database>) {}
+  constructor(
+    private readonly db: Kysely<Database>,
+    private readonly readCatalogue?: () => Promise<readonly DrawableItem[]>,
+  ) {}
 
   async read(
     userId: string,
@@ -16,7 +20,12 @@ export class RateupStore {
       .select(["drawable_type as type", "drawable_id as itemId", "rate"])
       .where("user_id", "=", userId)
       .execute()
-    const items = await loadCatalogue(db)
+    if (!rows.length) return []
+    // Transactions deliberately read their own catalogue to validate mutations
+    // against current database state, even when normal reads use the cache.
+    const items = db === this.db && this.readCatalogue
+      ? await this.readCatalogue()
+      : await loadCatalogue(db)
     return rows.map((row) => {
       if (!row.type || !row.itemId)
         throw new Error("Rate-up has no typed item reference")
