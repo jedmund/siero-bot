@@ -12,6 +12,7 @@ import type DrawableItem from "../interfaces/DrawableItem.js"
 import isGranblueID from "../utils/isGranblueID.js"
 import fetchRateups from "../utils/fetchRateups.js"
 import { GachaClient, GachaApiError, type GachaResult } from "./gachaClient.js"
+import { untilMessage } from "./untilMessage.js"
 import { drawableIdentity } from "./simulation.js"
 
 class Until {
@@ -185,16 +186,20 @@ class Until {
   }
 
   private async generateResponse(result: GachaResult) {
-    const summary =
-      this.operation === "until"
-        ? `**${result.draws} draws** to obtain ${result.copies} copies of ${this.item?.name.en}.`
-        : `**${((result.probability ?? 0) * 100).toPrecision(8)}%** ${this.comparison.replace("_", " ")} ${this.copies} copies in ${result.draws} draws. Expected copies: ${result.expected_copies}.\n50% / 90% / 95% attainment: ${["50", "90", "95"].map((key) => result.thresholds?.[key] ?? ">1 trillion").join(" / ")} draws.`
+    if (this.operation === "until") {
+      await this.interaction.editReply({
+        content: untilMessage(result, this.item?.name.en || this.item?.name.jp || this.identifier, this.currency),
+        components: [],
+      })
+      return
+    }
+    const summary = `**${((result.probability ?? 0) * 100).toPrecision(8)}%** ${this.comparison.replace("_", " ")} ${this.copies} copies in ${result.draws} draws. Expected copies: ${result.expected_copies}.\n50% / 90% / 95% attainment: ${["50", "90", "95"].map((key) => result.thresholds?.[key] ?? ">1 trillion").join(" / ")} draws.`
     const quote = result.cost.exchange_rate
     const usd = result.cost.usd
       ? ` / $${result.cost.usd} USD (${quote?.provider}, ${quote?.date}${quote?.stale ? ", stale" : ""})`
       : ""
     await this.interaction.editReply({
-      content: `${summary}\n${result.cost.crystals} crystals / ¥${result.cost.jpy}${this.currency === "usd" ? usd : ""}.\n${result.cost.label}\n${result.label}\nSeed: ${result.seed}`,
+      content: `${summary}\n${result.cost.crystals} crystals / ¥${result.cost.jpy}${this.currency === "usd" ? usd : ""}.\n${result.cost.label}\n${result.label}`,
       components: [],
     })
   }
