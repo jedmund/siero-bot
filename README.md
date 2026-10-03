@@ -26,7 +26,11 @@ SPARK_TEST_ADMIN_URL=postgres://postgres:postgres@localhost:5432/postgres pnpm t
 ```
 
 Copy `env.sample` to `.env` and configure the bot credentials and database URL for
-actual development. `pnpm dev` watches TypeScript. `pnpm start` runs the compiled
+actual development. The Discord bot requires `HENSEI_API_URL` to be set explicitly:
+use `https://api.granblue.team/v1` on the deployed bot, or
+`http://localhost:3000/api/v1` with a running local API. On Railway, set this on the
+**siero-bot** service; merging code does not add environment variables. Missing or
+invalid API configuration stops startup. `pnpm dev` watches TypeScript. `pnpm start` runs the compiled
 `build/dist/index.js`; it requires a prior `pnpm build`. `pnpm serve` is an alias
 for production start. Installation does not implicitly compile or start the bot.
 
@@ -54,7 +58,7 @@ from supplied in-game tables reproduce their displayed rates, but the tables do
 not uniquely reveal unrounded probabilities or establish rules for every banner.
 SR-or-higher slots preserve SSR probabilities and allocate the remainder to SR.
 Featured percentages are absolute per-draw chances. Roll-until counts complete
-ten-draw purchases, yields every 1,000 draws, and stops after 100,000 draws.
+ten-draw purchases and samples waiting times directly without a draw ceiling.
 
 ## Local simulation CLI
 

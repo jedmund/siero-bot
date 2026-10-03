@@ -1,7 +1,7 @@
 import assert from "node:assert/strict"
 import test from "node:test"
 import Gacha from "../src/services/gacha.js"
-import { GachaClient } from "../src/services/gachaClient.js"
+import { GachaClient, GachaApiError } from "../src/services/gachaClient.js"
 import { Promotion, Season } from "../src/utils/enums.js"
 
 await test("Discord gacha adapter delegates fixed draws and maps immutable API display data", async () => {
@@ -41,4 +41,50 @@ await test("Discord gacha adapter delegates fixed draws and maps immutable API d
     purchase: "ten",
     draws: "300",
   })
+})
+
+await test("connection failures become actionable gacha errors without exposing connection details", async () => {
+  const cause = new TypeError("fetch failed: private connection details")
+  const client = new GachaClient("http://localhost:3000/api/v1", async () => {
+    throw cause
+  })
+  await assert.rejects(
+    client.run("until", { mode: "premium", target: "Weapon:uuid" }),
+    (error: unknown) => {
+      assert.ok(error instanceof GachaApiError)
+      assert.match(error.message, /Cannot reach the gacha service/)
+      assert.match(error.message, /HENSEI_API_URL/)
+      assert.doesNotMatch(error.message, /private connection/)
+      assert.equal(error.cause, cause)
+      return true
+    },
+  )
+})
+
+await test("non-JSON gateway responses become actionable gacha errors", async () => {
+  const client = new GachaClient(
+    "http://test",
+    async () => new Response("<html>Bad Gateway</html>", { status: 502 }),
+  )
+  await assert.rejects(
+    client.run("until", { mode: "premium" }),
+    (error: unknown) => {
+      assert.ok(error instanceof GachaApiError)
+      assert.match(error.message, /invalid response \(HTTP 502\)/)
+      return true
+    },
+  )
+})
+
+await test("API validation and retry guidance survive error handling", async () => {
+  const client = new GachaClient("http://test", async () =>
+    Response.json(
+      { error: "Too many requests" },
+      { status: 429, headers: { "Retry-After": "12" } },
+    ),
+  )
+  await assert.rejects(
+    client.run("until", { mode: "premium" }),
+    /Too many requests \(retry after 12 seconds\)/,
+  )
 })

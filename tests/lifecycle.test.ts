@@ -75,6 +75,7 @@ void test("configuration errors name fields without exposing secrets", () => {
   validateConfiguration({
     DATABASE_URL: "postgresql://localhost/test",
     DISCORD_TOKEN: "token",
+    HENSEI_API_URL: "https://api.example.test/v1",
   })
 })
 void test("acknowledgement happens once before slow work and response edits it", async () => {
@@ -127,4 +128,25 @@ void test("bounded until yields to other work and returns actual draw count", as
   assert.equal(batches, 100)
   assert.equal(otherWorkRan, true)
   await otherWork
+})
+
+void test("bot startup requires an explicit HTTP API endpoint", () => {
+  const base = {
+    DATABASE_URL: "postgresql://localhost/test",
+    DISCORD_TOKEN: "token",
+  }
+  assert.throws(
+    () => validateConfiguration(base),
+    /Missing required configuration: HENSEI_API_URL/,
+  )
+  for (const value of ["", "   ", "not-a-url", "file:///private/secret"]) {
+    assert.throws(
+      () => validateConfiguration({ ...base, HENSEI_API_URL: value }),
+      /HENSEI_API_URL/,
+    )
+  }
+  validateConfiguration({
+    ...base,
+    HENSEI_API_URL: "http://localhost:3000/api/v1",
+  })
 })

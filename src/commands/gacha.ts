@@ -86,8 +86,8 @@ export class GachaCommand extends Subcommand {
                   .setMinValue(1)
                   .setMaxValue(1000),
               )
-              .addStringOption(this.promotionOption())
-              .addStringOption(this.seasonOption())
+              .addStringOption((option) => this.promotionOption(option))
+              .addStringOption((option) => this.seasonOption(option))
               .addStringOption((option) =>
                 option
                   .setName("currency")
@@ -131,8 +131,8 @@ export class GachaCommand extends Subcommand {
                     { name: "Exactly", value: "exactly" },
                   ),
               )
-              .addStringOption(this.promotionOption())
-              .addStringOption(this.seasonOption()),
+              .addStringOption((option) => this.promotionOption(option))
+              .addStringOption((option) => this.seasonOption(option)),
           )
       },
       {
@@ -150,13 +150,13 @@ export class GachaCommand extends Subcommand {
     return command
       .setName(name)
       .setDescription(description)
-      .addStringOption(this.promotionOption())
-      .addStringOption(this.seasonOption())
+      .addStringOption((option) => this.promotionOption(option))
+      .addStringOption((option) => this.seasonOption(option))
   }
 
-  private promotionOption(): SlashCommandStringOption {
+  private promotionOption(option: SlashCommandStringOption): SlashCommandStringOption {
     const optionBuilder: SlashCommandStringOption =
-      new SlashCommandStringOption()
+      option
         .setName("promotion")
         .setDescription(
           "The promotion to simulate (Premium, Classic I/II/III, Flash, Legend)",
@@ -185,8 +185,8 @@ export class GachaCommand extends Subcommand {
     return optionBuilder
   }
 
-  private seasonOption(): SlashCommandStringOption {
-    const optionBuilder = new SlashCommandStringOption()
+  private seasonOption(option: SlashCommandStringOption): SlashCommandStringOption {
+    const optionBuilder = option
       .setName("season")
       .setDescription(
         "The season to simulate (Normal, Valentines, Summer, Halloween, Holiday)",

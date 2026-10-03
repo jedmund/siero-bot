@@ -63,8 +63,8 @@ export class RateupCommand extends Subcommand {
 
             for (let i = 0; i < NUM_MAX_RATEUPS; i++) {
               const required = i === 0 ? true : false
-              generated.addStringOption(this.rateupItemOption(i + 1, required))
-              generated.addStringOption(this.rateupRateOption(i + 1, required))
+              generated.addStringOption((option) => this.rateupItemOption(option, i + 1, required))
+              generated.addStringOption((option) => this.rateupRateOption(option, i + 1, required))
             }
 
             return generated
@@ -117,10 +117,11 @@ export class RateupCommand extends Subcommand {
   }
 
   private rateupItemOption(
+    option: SlashCommandStringOption,
     number: number,
     required: boolean = false,
   ): SlashCommandStringOption {
-    const optionBuilder = new SlashCommandStringOption()
+    const optionBuilder = option
       .setName(`item${number}`)
       .setDescription("The name or Granblue ID of the item to rateup")
       .setRequired(required)
@@ -129,10 +130,11 @@ export class RateupCommand extends Subcommand {
   }
 
   private rateupRateOption(
+    option: SlashCommandStringOption,
     number: number,
     required: boolean = false,
   ): SlashCommandStringOption {
-    const optionBuilder = new SlashCommandStringOption()
+    const optionBuilder = option
       .setName(`rate${number}`)
       .setDescription("The appearance rate of the item (in decimals)")
       .setRequired(required)
