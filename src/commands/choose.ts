@@ -23,7 +23,7 @@ export class ChooseCommand extends Command {
 
         for (let i = 0; i < NUM_MAX_CHOICES; i++) {
           generated.addStringOption(
-            this.choiceOption(i + 1, i === 0 || i === 1)
+            (option) => this.choiceOption(option, i + 1, i === 0 || i === 1)
           )
         }
 
@@ -44,10 +44,11 @@ export class ChooseCommand extends Command {
   }
 
   private choiceOption(
+    option: SlashCommandStringOption,
     number: number,
     required = false
   ): SlashCommandStringOption {
-    const optionBuilder = new SlashCommandStringOption()
+    const optionBuilder = option
       .setName(`option${number}`)
       .setDescription("An option to choose from")
       .setRequired(required)
