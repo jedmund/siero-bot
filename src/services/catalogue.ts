@@ -17,7 +17,7 @@ export const promotionIds = {
 export async function loadCatalogue(
   db: Kysely<Database>,
 ): Promise<DrawableItem[]> {
-  const [weapons, summons, characters, legacy] = await Promise.all([
+  const [weapons, summons, characters] = await Promise.all([
     db
       .selectFrom("weapons")
       .select([
@@ -47,10 +47,6 @@ export async function loadCatalogue(
       .selectFrom("characters")
       .select(["id", "granblue_id", "name_en", "name_jp", "element"])
       .execute(),
-    db
-      .selectFrom("gacha")
-      .select(["id", "drawable_id", "drawable_type"])
-      .execute(),
   ])
   const characterMap = new Map<string, typeof characters>()
   for (const character of characters)
@@ -58,11 +54,6 @@ export async function loadCatalogue(
       ...(characterMap.get(character.granblue_id) ?? []),
       character,
     ])
-  const legacyMap = new Map<string, typeof legacy>()
-  for (const mapping of legacy) {
-    const key = `${mapping.drawable_type}:${mapping.drawable_id}`
-    legacyMap.set(key, [...(legacyMap.get(key) ?? []), mapping])
-  }
   const result: DrawableItem[] = []
   for (const [type, rows] of [
     [DrawableItemType.WEAPON, weapons],
@@ -71,13 +62,8 @@ export async function loadCatalogue(
     for (const row of rows) {
       const ids = row.promotions ?? []
       if (![Rarity.R, Rarity.SR, Rarity.SSR].includes(row.rarity)) continue
-      const mappings =
-        legacyMap.get(
-          `${type === DrawableItemType.WEAPON ? "Weapon" : "Summon"}:${row.id}`,
-        ) ?? []
       const item: DrawableItem = {
-        id: mappings.length === 1 ? mappings[0].id : "",
-        legacyGachaId: mappings.length === 1 ? mappings[0].id : undefined,
+        id: "",
         item_id: row.id,
         drawableId: row.id,
         drawableType: type === DrawableItemType.WEAPON ? "Weapon" : "Summon",

@@ -1,22 +1,7 @@
 import type { ColumnType, Generated } from "kysely"
 
-export interface GachaTable {
-  id: Generated<string>
-  drawable_id: string // Weapon | Summon
-  drawable_type: "Weapon" | "Summon"
-  premium: boolean
-  classic: boolean
-  flash: boolean
-  legend: boolean
-  valentines: boolean
-  summer: boolean
-  halloween: boolean
-  holiday: boolean
-}
-
 export interface GachaRateupTable {
   id: Generated<string>
-  gacha_id: string | null
   drawable_type: "Weapon" | "Summon" | null
   drawable_id: string | null
   user_id: string

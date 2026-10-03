@@ -8,7 +8,7 @@ import { loadCatalogue } from "../src/services/catalogue.js"
 import { RateupStore } from "../src/services/rateupStore.js"
 
 void test(
-  "typed rate-ups preserve atomicity, legacy compatibility and concurrent empty-user updates",
+  "typed rate-ups preserve atomicity, reject untyped rows and serialize concurrent empty-user updates",
   { skip: !process.env.SPARK_TEST_ADMIN_URL },
   async () => {
     const url = new URL(process.env.SPARK_TEST_ADMIN_URL!)
@@ -29,48 +29,27 @@ void test(
       await observer.query(`CREATE TABLE weapons (id uuid PRIMARY KEY, granblue_id varchar, name_en varchar, name_jp varchar, element integer, rarity integer, recruits varchar, promotions integer[] NOT NULL);
       CREATE TABLE summons (id uuid PRIMARY KEY, granblue_id varchar, name_en varchar, name_jp varchar, element integer, rarity integer, promotions integer[] NOT NULL);
       CREATE TABLE characters (id uuid PRIMARY KEY, granblue_id varchar, name_en varchar, name_jp varchar, element integer);
-      CREATE TABLE gacha (id uuid PRIMARY KEY, drawable_id uuid, drawable_type varchar);
-      CREATE TABLE gacha_rateups (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), user_id varchar NOT NULL, rate numeric NOT NULL, gacha_id uuid REFERENCES gacha(id), drawable_type varchar, drawable_id uuid, CHECK ((drawable_type IS NULL) = (drawable_id IS NULL)));`)
+      CREATE TABLE gacha_rateups (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), user_id varchar NOT NULL, rate numeric NOT NULL, drawable_type varchar, drawable_id uuid, CHECK ((drawable_type IS NULL) = (drawable_id IS NULL)));`)
       const ids = [randomUUID(), randomUUID()]
-      const legacy = randomUUID()
       for (const [i, id] of ids.entries())
         await observer.query(
           "INSERT INTO weapons VALUES ($1,$2,$3,NULL,1,3,NULL,'{1}')",
           [id, `${i}`, `Item ${i}`],
         )
-      await observer.query("INSERT INTO gacha VALUES ($1,$2,'Weapon')", [
-        legacy,
-        ids[0],
-      ])
       const store = new RateupStore(db)
       const items = await loadCatalogue(db)
       const a = [{ item: items[0], rate: 0.3 }]
       const b = [{ item: items[1], rate: 0.4 }]
       await observer.query(
-        "INSERT INTO gacha_rateups (user_id,rate,gacha_id) VALUES ('legacy',0.3,$1)",
-        [legacy],
+        "INSERT INTO gacha_rateups (user_id,rate) VALUES ('untyped',0.3)",
       )
-      assert.equal((await store.read("legacy"))[0].item.item_id, ids[0])
+      await assert.rejects(store.read("untyped"), /no typed item reference/)
       await store.replace("new", b)
       assert.equal((await store.read("new"))[0].item.item_id, ids[1])
-      assert.equal(
-        (
-          await observer.query(
-            "SELECT gacha_id FROM gacha_rateups WHERE user_id='new'",
-          )
-        ).rows[0].gacha_id,
-        null,
-      )
       await store.replace("dual", a)
       assert.equal((await store.read("dual"))[0].item.item_id, ids[0])
       await store.copy("dual", "dual")
       assert.equal((await store.read("dual")).length, 1)
-      await observer.query(
-        "UPDATE gacha_rateups SET drawable_id=$1 WHERE user_id='dual'",
-        [ids[1]],
-      )
-      await assert.rejects(store.read("dual"), /Conflicting/)
-      await store.replace("dual", a)
       await observer.query(
         "ALTER TABLE gacha_rateups ADD CONSTRAINT fail_insert CHECK (user_id <> 'dual' OR rate <> 0.4)",
       )
