@@ -13,6 +13,8 @@ export enum GachaBucket {
 export enum Promotion {
   PREMIUM = "premium",
   CLASSIC = "classic",
+  CLASSIC_II = "classic_ii",
+  CLASSIC_III = "classic_iii",
   LEGEND = "legend",
   FLASH = "flash",
 }
@@ -34,6 +36,7 @@ export enum Element {
 }
 
 export enum Season {
+  FORMAL = "formal",
   VALENTINES = "valentines",
   SUMMER = "summer",
   HALLOWEEN = "halloween",

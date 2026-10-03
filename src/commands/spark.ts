@@ -1,8 +1,16 @@
+import { acknowledge } from "../services/interaction.js"
+import { replyAfterSparkMutation } from "../services/spark-interaction.js"
 import { EmbedBuilder, SlashCommandSubcommandBuilder, User } from "discord.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
 import { ApplyOptions } from "@sapphire/decorators"
 import pluralize from "pluralize"
 
+import { Client } from "../services/connection.js"
+import {
+  SparkService,
+  type SparkCurrencies,
+  type SparkOperation,
+} from "../services/sparks.js"
 import Api from "../services/api.js"
 import Leaderboard from "../services/leaderboard.js"
 import type { Spark } from "../interfaces/Spark.js"
@@ -10,18 +18,6 @@ import { calculateDraws } from "../utils/draws.js"
 import { DRAWS_PER_SPARK } from "../utils/constants.js"
 
 const COMMAND_ID = process.env.SPARK_COMMAND_ID ?? ""
-
-type SparkCurrencies = {
-  crystals?: number
-  tickets?: number
-  ten_tickets?: number
-}
-
-type SparkType = {
-  crystals: number
-  tickets: number
-  ten_tickets: number
-}
 
 @ApplyOptions<Subcommand.Options>({
   description: "Keep track of your spark progress",
@@ -57,21 +53,21 @@ export class SparkCommand extends Subcommand {
             const description = "Add currency to your spark progress"
             return this.addSparkOptions(
               this.sparkCommand(command, "add", description),
-              "to add"
+              "to add",
             )
           })
           .addSubcommand((command) => {
             const description = "Remove currency from your spark progress"
             return this.addSparkOptions(
               this.sparkCommand(command, "remove", description),
-              "to remove"
+              "to remove",
             )
           })
           .addSubcommand((command) => {
             const description = "Update your spark progress"
             return this.addSparkOptions(
               this.sparkCommand(command, "update", description),
-              "you have"
+              "you have",
             )
           })
           .addSubcommand((command) => {
@@ -80,11 +76,13 @@ export class SparkCommand extends Subcommand {
             return this.sparkCommand(
               command,
               "progress",
-              description
+              description,
             ).addUserOption((option) =>
               option
                 .setName("user")
-                .setDescription("The user whose spark progress you want to see")
+                .setDescription(
+                  "The user whose spark progress you want to see",
+                ),
             )
           })
           .addSubcommand((command) => {
@@ -98,7 +96,7 @@ export class SparkCommand extends Subcommand {
       },
       {
         idHints: [COMMAND_ID],
-      }
+      },
     )
   }
 
@@ -107,14 +105,14 @@ export class SparkCommand extends Subcommand {
   private sparkCommand(
     command: SlashCommandSubcommandBuilder,
     name: string,
-    description: string
+    description: string,
   ) {
     return command.setName(name).setDescription(description)
   }
 
   private addSparkOptions(
     command: SlashCommandSubcommandBuilder,
-    actionString: string
+    actionString: string,
   ) {
     return command
       .addIntegerOption((option) =>
@@ -122,112 +120,108 @@ export class SparkCommand extends Subcommand {
           .setName("crystals")
           .setDescription(`The amount of crystals ${actionString}`)
           .setMinValue(0)
-          .setMaxValue(999999)
+          .setMaxValue(999999),
       )
       .addIntegerOption((option) =>
         option
           .setName("tickets")
           .setDescription(`The amount of single draw tickets ${actionString}`)
           .setMinValue(0)
-          .setMaxValue(9999)
+          .setMaxValue(9999),
       )
       .addIntegerOption((option) =>
         option
           .setName("ten_tickets")
           .setDescription(`The amount of ten-part draw tickets ${actionString}`)
           .setMinValue(0)
-          .setMaxValue(9999)
+          .setMaxValue(9999),
       )
   }
 
   // Methods: Command Handlers
 
   public async chatInputAdd(
-    interaction: Subcommand.ChatInputCommandInteraction
+    interaction: Subcommand.ChatInputCommandInteraction,
   ): Promise<void> {
     await this.chatInputArithmetic(interaction, "+")
   }
 
   public async chatInputRemove(
-    interaction: Subcommand.ChatInputCommandInteraction
+    interaction: Subcommand.ChatInputCommandInteraction,
   ): Promise<void> {
     await this.chatInputArithmetic(interaction, "-")
   }
 
   private async chatInputArithmetic(
     interaction: Subcommand.ChatInputCommandInteraction,
-    operation: "+" | "-"
+    operation: "+" | "-",
   ): Promise<void> {
-    const currentProgress = await Api.fetchSpark(interaction.user.id)
-    const inputCurrencies = this.getCurrencies(interaction)
-
-    // Calculate new values
-    const progress = this.calculateNewValues(
-      currentProgress?.spark,
-      inputCurrencies,
-      operation
-    )
-
-    // Update spark data
-    const progressResponse = await this.updateSparkData(
-      interaction.user.id,
-      progress,
-      currentProgress?.guildIds,
-      interaction.guild?.id
-    )
-
-    if (progressResponse) {
-      await this.replyWithSparkUpdate(
-        interaction,
-        currentProgress?.spark,
-        progressResponse
-      )
-    }
+    await this.mutateSpark(interaction, operation === "+" ? "add" : "remove")
   }
 
   public async chatInputUpdate(
-    interaction: Subcommand.ChatInputCommandInteraction
+    interaction: Subcommand.ChatInputCommandInteraction,
   ): Promise<void> {
-    const currentProgress = await Api.fetchSpark(interaction.user.id)
-    const updatedProgress = this.getCurrencies(interaction)
+    await this.mutateSpark(interaction, "update")
+  }
 
-    // Update spark data (direct replacement, not arithmetic)
-    const progressResponse = await this.updateSparkData(
-      interaction.user.id,
-      updatedProgress,
-      currentProgress?.guildIds,
-      interaction.guild?.id
+  private async mutateSpark(
+    interaction: Subcommand.ChatInputCommandInteraction,
+    operation: SparkOperation,
+  ): Promise<void> {
+    await interaction.deferReply({ ephemeral: operation === "reset" })
+    await replyAfterSparkMutation(
+      () =>
+        new SparkService(Client).mutate(
+          interaction.user.id,
+          operation,
+          operation === "reset" ? {} : this.getCurrencies(interaction),
+          interaction.guildId ? [interaction.guildId] : [],
+        ),
+      async (result) => {
+        if (operation === "reset") {
+          await interaction.editReply({
+            content: "Your spark was successfully reset",
+          })
+        } else {
+          await this.replyWithSparkUpdate(
+            interaction,
+            result.previous,
+            result.current,
+          )
+        }
+      },
+      async (content) => {
+        await interaction.editReply({ content })
+      },
     )
-
-    if (progressResponse) {
-      await this.replyWithSparkUpdate(
-        interaction,
-        currentProgress?.spark,
-        progressResponse
-      )
-    }
   }
 
   public async chatInputProgress(
-    interaction: Subcommand.ChatInputCommandInteraction
+    interaction: Subcommand.ChatInputCommandInteraction,
   ): Promise<void> {
     const providedUser = interaction.options.getUser("user")
     const user = providedUser ?? interaction.user
     const isSelf = providedUser === null
 
+    await acknowledge(interaction)
+    try {
     const progress = await Api.fetchSpark(user.id)
 
-    await interaction.reply({
+    await interaction.editReply({
       content: this.formatDescription(user, isSelf, progress !== undefined),
       embeds: progress ? [this.generateEmbed(user, progress.spark)] : [],
-      fetchReply: true,
     })
+    } catch (error) {
+      console.error("Spark progress failed", error)
+      await interaction.editReply("An error occurred while processing your request")
+    }
   }
 
   public async chatInputLeaderboard(
-    interaction: Subcommand.ChatInputCommandInteraction
+    interaction: Subcommand.ChatInputCommandInteraction,
   ): Promise<void> {
-    if (!interaction.channel) {
+    if (!interaction.guild) {
       await interaction.reply({
         content:
           "Sorry, I can't show leaderboards in direct messages. Please send the command from a server that we're both in!",
@@ -239,73 +233,25 @@ export class SparkCommand extends Subcommand {
     const guild = interaction.guild
     if (!guild) return
 
+    await acknowledge(interaction)
+    try {
     const leaderboard = new Leaderboard(guild.id, "desc")
     const embed = await leaderboard.execute()
 
-    await interaction.reply({
+    await interaction.editReply({
       content: `Here is the current leaderboard for ${guild.name}:`,
       embeds: [embed],
     })
+    } catch (error) {
+      console.error("Spark leaderboard failed", error)
+      await interaction.editReply("An error occurred while processing your request")
+    }
   }
 
   public async chatInputReset(
-    interaction: Subcommand.ChatInputCommandInteraction
+    interaction: Subcommand.ChatInputCommandInteraction,
   ): Promise<void> {
-    await Api.resetSpark(interaction.user.id)
-
-    await interaction.reply({
-      content: "Your spark was successfully reset",
-      ephemeral: true,
-    })
-  }
-
-  // Methods: Data Processing
-
-  private calculateNewValues(
-    current: Spark | undefined,
-    input: SparkCurrencies,
-    operation: "+" | "-"
-  ): SparkCurrencies {
-    const progress: SparkCurrencies = {}
-    const defaultSpark: SparkType = { crystals: 0, tickets: 0, ten_tickets: 0 }
-    const currentValues = current ?? defaultSpark
-
-    // Process each currency with type-safe approach
-    if ("crystals" in input && input.crystals !== undefined) {
-      progress.crystals =
-        operation === "+"
-          ? currentValues.crystals + input.crystals
-          : Math.max(currentValues.crystals - input.crystals, 0)
-    }
-
-    if ("tickets" in input && input.tickets !== undefined) {
-      progress.tickets =
-        operation === "+"
-          ? currentValues.tickets + input.tickets
-          : Math.max(currentValues.tickets - input.tickets, 0)
-    }
-
-    if ("ten_tickets" in input && input.ten_tickets !== undefined) {
-      progress.ten_tickets =
-        operation === "+"
-          ? currentValues.ten_tickets + input.ten_tickets
-          : Math.max(currentValues.ten_tickets - input.ten_tickets, 0)
-    }
-
-    return progress
-  }
-
-  private async updateSparkData(
-    userId: string,
-    progress: SparkCurrencies,
-    currentGuildIds: string[] = [],
-    guildId?: string
-  ): Promise<Spark | undefined> {
-    return await Api.updateSpark({
-      userId,
-      guildIds: this.updateGuildIds(currentGuildIds, guildId),
-      ...progress,
-    })
+    await this.mutateSpark(interaction, "reset")
   }
 
   private calculateDifference(previous: Spark, current: Spark): Spark {
@@ -321,7 +267,7 @@ export class SparkCommand extends Subcommand {
   }
 
   private getCurrencies(
-    interaction: Subcommand.ChatInputCommandInteraction
+    interaction: Subcommand.ChatInputCommandInteraction,
   ): SparkCurrencies {
     const progress: SparkCurrencies = {}
 
@@ -337,23 +283,12 @@ export class SparkCommand extends Subcommand {
     return progress
   }
 
-  private updateGuildIds(
-    currentGuildIds: string[],
-    guildId?: string
-  ): string[] {
-    if (!guildId || currentGuildIds.includes(guildId)) {
-      return currentGuildIds
-    }
-
-    return [guildId, ...currentGuildIds]
-  }
-
   // Methods: Response Generation
 
   private async replyWithSparkUpdate(
     interaction: Subcommand.ChatInputCommandInteraction,
     previousSpark: Spark | undefined,
-    currentSpark: Spark
+    currentSpark: Spark,
   ): Promise<void> {
     const defaultSpark = { crystals: 0, tickets: 0, ten_tickets: 0 }
     const previousValues = previousSpark ?? defaultSpark
@@ -361,25 +296,23 @@ export class SparkCommand extends Subcommand {
     const difference = this.calculateDifference(previousValues, currentSpark)
     const differenceString = this.formatDifference(difference)
 
-    await interaction.reply(
+    await interaction.editReply(
       this.generateResponseBlock(
         interaction.user,
         currentSpark,
-        differenceString
-      )
+        differenceString,
+      ),
     )
   }
 
   private generateResponseBlock(
     user: User,
     spark: Spark,
-    differenceString?: string
+    differenceString?: string,
   ) {
     return {
       content: `Your spark has been updated! ${differenceString ?? ""}`,
       embeds: [this.generateEmbed(user, spark)],
-      ephemeral: false,
-      fetchReply: true,
     }
   }
 
@@ -430,7 +363,7 @@ export class SparkCommand extends Subcommand {
   private formatDescription(
     user: User,
     isSelf: boolean,
-    hasSpark: boolean = true
+    hasSpark: boolean = true,
   ): string {
     const possessive = isSelf ? "Your" : `<@${user.id}>'s`
     const pronoun = isSelf ? "you haven't" : `<@${user.id}> hasn't`

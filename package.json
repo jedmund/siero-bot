@@ -9,33 +9,47 @@
   "dependencies": {
     "@sapphire/decorators": "^6.2.0",
     "@sapphire/discord.js-utilities": "^7.3.3",
-    "@sapphire/framework": "^5.5.0",
+    "@sapphire/framework": "^5.5.1",
     "@sapphire/plugin-subcommands": "^7.0.1",
-    "@types/node": "^22.13.13",
-    "chance": "^1.1.12",
-    "discord.js": "^14.26.0",
-    "dotenv": "^16.4.1",
-    "kysely": "^0.27.2",
-    "pg": "^8.11.3",
-    "pluralize": "^8.0.0",
-    "typescript": "^5.8.0"
+    "chance": "^1.1.13",
+    "discord.js": "^14.27.0",
+    "dotenv": "^16.6.1",
+    "kysely": "^0.28.17",
+    "pg": "^8.23.1",
+    "pluralize": "^8.0.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.23.0",
-    "@types/chance": "^1.1.6",
-    "@types/pg": "^8.11.11",
+    "@eslint/js": "^10.0.1",
+    "@types/chance": "^1.1.8",
+    "@types/pg": "^8.23.1",
     "@types/pluralize": "^0.0.33",
-    "eslint": "^9.23.0",
-    "globals": "^16.0.0",
-    "prettier": "^3.5.3",
-    "tsx": "^4.19.0",
-    "typescript-eslint": "^8.28.0"
+    "eslint": "^10.11.0",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.9",
+    "tsx": "^4.23.15",
+    "typescript-eslint": "^8.71.0",
+    "typescript": "^5.9.3",
+    "@types/node": "^24.19.1"
   },
   "scripts": {
-    "build-ts": "rm -rf build/dist && tsc",
-    "postinstall": "pnpm build-ts",
-    "start": "tsx watch src/index.ts",
-    "serve": "node build/dist/index.js",
-    "purge-commands": "tsx src/scripts/purge-commands.ts"
+    "build": "rm -rf build/dist && tsc --incremental false",
+    "build-ts": "pnpm build",
+    "typecheck": "tsc --noEmit --incremental false && tsc -p tsconfig.test.json --noEmit --incremental false",
+    "lint": "eslint . --max-warnings 0",
+    "format-check": "prettier --check package.json tsconfig.json tsconfig.eslint.json tsconfig.test.json eslint.config.mjs .prettierrc.json .github/workflows/ci.yml scripts tests README.md",
+    "format": "prettier --write package.json tsconfig.json tsconfig.eslint.json tsconfig.test.json eslint.config.mjs .prettierrc.json .github/workflows/ci.yml scripts tests README.md",
+    "test": "tsx --test tests/*.test.ts",
+    "test:integration": "node scripts/test-integration.mjs",
+    "start": "node build/dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "serve": "pnpm start",
+    "purge-commands": "tsx src/scripts/purge-commands.ts",
+    "check": "pnpm typecheck && pnpm build && pnpm lint && pnpm format-check && pnpm test",
+    "simulate": "tsx src/scripts/simulate.ts"
+  },
+  "packageManager": "pnpm@10.34.6",
+  "engines": {
+    "node": "24.21.0",
+    "pnpm": "10.34.6"
   }
 }

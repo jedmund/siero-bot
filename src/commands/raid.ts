@@ -1,3 +1,5 @@
+import { runtime } from "../services/lifecycle.js"
+import { acknowledge } from "../services/interaction.js"
 import {
   EmbedBuilder,
   ChatInputCommandInteraction,
@@ -104,6 +106,11 @@ export class RaidCommand extends Subcommand {
   }
 
   public async chatInputCreate(interaction: ChatInputCommandInteraction) {
+    await acknowledge(interaction)
+    if (!interaction.guild || !(interaction.channel instanceof TextChannel)) {
+      await interaction.editReply("Raid signup is available in server text channels.")
+      return
+    }
     // Get raid parameters
     const raidType = interaction.options.getString("raid", true)
     const hours = interaction.options.getInteger("hours") ?? 0
@@ -137,8 +144,7 @@ export class RaidCommand extends Subcommand {
       discordRelativeTime
     )
 
-    await interaction.deferReply()
-    const channel = interaction.channel as TextChannel
+    const channel = interaction.channel
     const message = await channel.send({
       content: pingMessage,
       embeds: [embed],
@@ -320,12 +326,12 @@ export class RaidCommand extends Subcommand {
 
       // If more reactions came in while processing, process them too
       if (pendingReactions.length > 0) {
-        setTimeout(processBatch, 0)
+        runtime.background(processBatch(), "Raid batch failed")
       }
     }
 
     // Schedule processing every 250ms to batch reactions
-    const batchInterval = setInterval(processBatch, 250)
+    const batchInterval = setInterval(() => { runtime.background(processBatch(), "Raid batch failed") }, 250)
 
     collector.on("collect", (reaction, user) => {
       // Add to batch instead of processing immediately
@@ -337,7 +343,10 @@ export class RaidCommand extends Subcommand {
       pendingReactions.push({ reaction, user, isAdd: false })
     })
 
-    collector.on("end", async () => {
+    const unregister = runtime.registerCleanup(() => { clearInterval(batchInterval); collector.stop("shutdown") })
+    collector.on("end", (_collected, reason) => {
+      unregister()
+      runtime.background((async () => {
       clearInterval(batchInterval)
 
       // Process any remaining reactions in the batch
@@ -346,7 +355,8 @@ export class RaidCommand extends Subcommand {
         await processBatch()
       }
 
-      await this.handleRaidEnd(message, raid, discordRelativeTime)
+      if (reason !== "shutdown") await this.handleRaidEnd(message, raid, discordRelativeTime)
+      })(), "Raid collector cleanup failed")
     })
   }
 

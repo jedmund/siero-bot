@@ -2,7 +2,6 @@ import { Events, Listener } from "@sapphire/framework"
 import { ButtonInteraction } from "discord.js"
 
 import Gacha from "../services/gacha.js"
-import Api from "../services/api.js"
 
 import { Promotion, Season } from "../utils/enums.js"
 import fetchRateups from "../utils/fetchRateups.js"
@@ -23,33 +22,34 @@ export class HandleSparkButtonInteractionListener extends Listener<
 
     // Ensure we have all parts: action, userId, gala, and season
     const parts = interaction.customId.split(":")
-    if (parts.length < 4) return 
+    if (parts.length < 4) return
 
     const [, sourceUserId, galaString, seasonString] = parts
-    const destinationUserId = interaction.user.id
 
     const gala = Promotion[galaString.toUpperCase() as keyof typeof Promotion]
     const season = Season[seasonString.toUpperCase() as keyof typeof Season]
 
     try {
-      // Copy rateups from source to destination user
-      await Api.copyRateups(sourceUserId, destinationUserId)
-
-      // Fetch the copied rateups for the destination user
-      const rateups = await fetchRateups(destinationUserId)
+      await interaction.deferReply()
+      const rateups = await fetchRateups(sourceUserId)
 
       // Use the provided Gala for the Gacha instance
-      const gacha = new Gacha(rateups, gala, season) // Ensure proper type for gala
-      const result = gacha.spark()
+      const gacha = await Gacha.create(rateups, gala, season) // Ensure proper type for gala
+      const result = await gacha.spark()
 
       const embed = RenderingUtils.renderSpark(result, rateups)
-      await interaction.reply({ embeds: [embed] })
+      await interaction.editReply({
+        content: `Simulation using <@${sourceUserId}>’s current settings (including configured defaults).`,
+        embeds: [embed],
+      })
     } catch (error) {
       console.error("Error handling spark button interaction:", error)
-      await interaction.reply({
+      const payload = {
         content: "There was an error processing your request.",
-        ephemeral: true,
-      })
+      }
+      if (interaction.deferred || interaction.replied)
+        await interaction.editReply(payload)
+      else await interaction.reply({ ...payload, ephemeral: true })
     }
   }
 }

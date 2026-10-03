@@ -1,31 +1,71 @@
+import { randomUUID } from "node:crypto"
+import { loadCatalogue } from "./catalogue.js"
 import { Client } from "./connection.js"
 
-import { DrawableItemType, Element, Promotion, Rarity, Season } from "../utils/enums.js"
+import { DrawableItemType, Promotion, Rarity, Season } from "../utils/enums.js"
 import type DrawableItem from "../interfaces/DrawableItem.js"
-import type { GachaItemRecord } from "../interfaces/GachaItemRecord.js"
 import type { ItemMap } from "../utils/types.js"
 
 class Cache {
   _characterWeapons: ItemMap = {}
   _nonCharacterWeapons: ItemMap = {}
   _summons: ItemMap = {}
+  private current?: CatalogueSnapshot
+  private pending?: Promise<void>
+  private timer?: ReturnType<typeof setInterval>
+  public lastError?: unknown
+  constructor(private loader: () => Promise<DrawableItem[]> = () => loadCatalogue(Client), private now = Date.now, public maximumAgeMs = 60 * 60 * 1000) {}
 
-  public constructor() {
-    this.fetchAllCharacterWeapons()
-    this.fetchAllNonCharacterWeapons()
-    this.fetchAllSummons()
+  public get snapshot(): CatalogueSnapshot {
+    if (!this.current || this.ageMs > this.maximumAgeMs) throw new Error("Catalogue is unavailable or stale; please try again later")
+    return this.current
   }
+  public get ageMs() { return this.current ? this.now() - Date.parse(this.current.loadedAt) : Infinity }
+  public load(): Promise<void> { return this.current ? Promise.resolve() : this.refresh() }
+  public refresh(): Promise<void> {
+    if (this.pending) return this.pending
+    this.pending = this.loader().then(items => {
+      if (!items.length) throw new Error("Catalogue contains no drawable items")
+      const identities = new Set<string>()
+      for (const item of items) {
+        const identity = `${item.type}:${item.item_id}`
+        if (!item.item_id || ![DrawableItemType.WEAPON, DrawableItemType.SUMMON].includes(item.type) || ![Rarity.R, Rarity.SR, Rarity.SSR].includes(item.rarity) || identities.has(identity)) throw new Error("Catalogue contains invalid or duplicate drawable identities")
+        identities.add(identity)
+      }
+      const immutable = deepFreeze(structuredClone(items))
+      const snapshot = Object.freeze({ id: randomUUID(), loadedAt: new Date(this.now()).toISOString(), items: immutable })
+      const weapons: ItemMap = {}, summons: ItemMap = {}, other: ItemMap = {}
+      for (const rarity of [Rarity.R, Rarity.SR, Rarity.SSR]) {
+        weapons[rarity] = immutable.filter(item => item.rarity === rarity && item.type === DrawableItemType.WEAPON)
+        summons[rarity] = immutable.filter(item => item.rarity === rarity && item.type === DrawableItemType.SUMMON)
+        other[rarity] = []
+      }
+      this._characterWeapons = weapons
+      this._summons = summons
+      this._nonCharacterWeapons = other
+      this.current = snapshot
+      this.lastError = undefined
+    }).catch((error: unknown) => { this.lastError = error; throw error }).finally(() => { this.pending = undefined })
+    return this.pending
+  }
+  public startRefresh(intervalMs = 15 * 60 * 1000) {
+    this.stopRefresh()
+    this.timer = setInterval(() => { void this.refresh().catch(error => console.error("Catalogue refresh failed", error)) }, intervalMs)
+    this.timer.unref()
+  }
+  public stopRefresh() { if (this.timer) clearInterval(this.timer); this.timer = undefined }
+  public async close() { this.stopRefresh(); await this.pending?.catch(() => undefined) }
 
   // Subset retrieval methods
   public characterWeapons(rarity: Rarity, gala?: Promotion, season?: Season) {
     return this._characterWeapons[rarity].filter((item: DrawableItem) =>
-      this.filterItem(item, gala, season)
+      this.filterItem(item, gala, season),
     )
   }
 
   public summons(rarity: Rarity, gala?: Promotion, season?: Season) {
     return this._summons[rarity].filter((item: DrawableItem) =>
-      this.filterItem(item, gala, season)
+      this.filterItem(item, gala, season),
     )
   }
 
@@ -35,12 +75,12 @@ class Cache {
     if (gala === Promotion.FLASH) {
       limitedWeapons = this._characterWeapons[Rarity.SSR].filter(
         (item: DrawableItem) =>
-          item.promotions.flash && !item.promotions.premium
+          item.promotions.flash && !item.promotions.premium,
       )
     } else if (gala === Promotion.LEGEND) {
       limitedWeapons = this._characterWeapons[Rarity.SSR].filter(
         (item: DrawableItem) =>
-          item.promotions.legend && !item.promotions.premium
+          item.promotions.legend && !item.promotions.premium,
       )
     }
 
@@ -48,47 +88,34 @@ class Cache {
   }
 
   public filterItem(item: DrawableItem, gala?: Promotion, season?: Season) {
-    const hasPromotion =
-      gala !== undefined && gala !== Promotion.PREMIUM ? true : false
-    const hasSeason = season !== undefined ? true : false
-
-    if (hasPromotion && hasSeason && gala && season)
-      return item.seasons[season] && item.promotions[gala]
-    else if (hasPromotion && !hasSeason && gala) return item.promotions[gala]
-    else if (!hasPromotion && hasSeason && season) return item.seasons[season]
-    else return item.promotions.premium
-  }
-
-  // Batch fetching methods
-  private async fetchAllCharacterWeapons() {
-    await this.fetchCharacterWeapons(Rarity.R)
-    await this.fetchCharacterWeapons(Rarity.SR)
-    await this.fetchCharacterWeapons(Rarity.SSR)
-  }
-
-  private async fetchAllNonCharacterWeapons() {
-    await this.fetchNonCharacterWeapons(Rarity.R)
-    await this.fetchNonCharacterWeapons(Rarity.SR)
-    await this.fetchNonCharacterWeapons(Rarity.SSR)
-  }
-
-  private async fetchAllSummons() {
-    await this.fetchSummons(Rarity.R)
-    await this.fetchSummons(Rarity.SR)
-    await this.fetchSummons(Rarity.SSR)
+    if (gala && !Object.values(Promotion).includes(gala))
+      throw new Error(`Unsupported promotion: ${gala}`)
+    const classic =
+      gala === Promotion.CLASSIC ||
+      gala === Promotion.CLASSIC_II ||
+      gala === Promotion.CLASSIC_III
+    if (classic && season)
+      throw new Error("Classic pools do not support seasonal filters")
+    if (classic) return !!item.promotions[gala!]
+    const hasPromotion = gala !== undefined && gala !== Promotion.PREMIUM
+    if (hasPromotion && season)
+      return item.seasons[season] && !!item.promotions[gala!]
+    if (hasPromotion) return !!item.promotions[gala!]
+    if (season) return item.seasons[season]
+    return item.promotions.premium
   }
 
   // Single fetching methods
   public fetchItem(rarity: Rarity, gala?: Promotion, season?: Season) {
     const set = [
       ...this._characterWeapons[rarity].filter((item: DrawableItem) =>
-        this.filterItem(item, gala, season)
+        this.filterItem(item, gala, season),
       ),
       ...this._nonCharacterWeapons[rarity].filter((item: DrawableItem) =>
-        this.filterItem(item, gala, season)
+        this.filterItem(item, gala, season),
       ),
       ...this._summons[rarity].filter((item: DrawableItem) =>
-        this.filterItem(item, gala, season)
+        this.filterItem(item, gala, season),
       ),
     ]
 
@@ -99,10 +126,15 @@ class Cache {
   public fetchWeapon(
     rarity: Rarity,
     exclusions: DrawableItem[],
-    season?: Season
+    season?: Season,
+    gala?: Promotion,
   ) {
-    const list = this.characterWeapons(rarity, undefined, season).filter(
-      (item: DrawableItem) => !exclusions.includes(item)
+    const list = this.characterWeapons(rarity, gala, season).filter(
+      (item: DrawableItem) =>
+        !exclusions.some(
+          (excluded) =>
+            excluded.type === item.type && excluded.item_id === item.item_id,
+        ),
     )
     const r = Math.floor(Math.random() * list.length)
     return list[r]
@@ -111,10 +143,15 @@ class Cache {
   public fetchSummon(
     rarity: Rarity,
     exclusions: DrawableItem[],
-    season?: Season
+    season?: Season,
+    gala?: Promotion,
   ) {
-    const list = this.summons(rarity, undefined, season).filter(
-      (item: DrawableItem) => !exclusions.includes(item)
+    const list = this.summons(rarity, gala, season).filter(
+      (item: DrawableItem) =>
+        !exclusions.some(
+          (excluded) =>
+            excluded.type === item.type && excluded.item_id === item.item_id,
+        ),
     )
     const r = Math.floor(Math.random() * list.length)
     return list[r]
@@ -122,170 +159,24 @@ class Cache {
 
   public fetchLimited(gala: Promotion, exclusions: DrawableItem[]) {
     const list = this.limitedWeapons(gala).filter(
-      (item: DrawableItem) => !exclusions.includes(item)
+      (item: DrawableItem) =>
+        !exclusions.some(
+          (excluded) =>
+            excluded.type === item.type && excluded.item_id === item.item_id,
+        ),
     )
     const r = Math.floor(Math.random() * list.length)
     return list[r]
   }
-
-  // Transformation methods
-  private transformIntoDrawableItems(
-    items: GachaItemRecord[],
-    type: DrawableItemType
-  ) {
-    return items.map((item: GachaItemRecord) =>
-      this.transformIntoDrawableItem(item, type)
-    )
-  }
-
-  private transformIntoDrawableItem(
-    item: GachaItemRecord,
-    type: DrawableItemType
-  ) {
-    const drawableItem: DrawableItem = {
-      id: item.id || "",
-      item_id: item.item_id || "",
-      granblue_id: item.granblue_id || "",
-      name: {
-        en: item.name_en || "",
-        jp: item.name_jp || "",
-      },
-      type: type,
-      rarity: item.rarity || 0,
-      element: item.element ?? Element.NULL,
-      promotions: {
-        premium: item.premium || false,
-        classic: item.classic || false,
-        flash: item.flash || false,
-        legend: item.legend || false,
-      },
-      seasons: {
-        halloween: item.halloween || false,
-        holiday: item.holiday || false,
-        summer: item.summer || false,
-        valentines: item.valentines || false,
-      },
-    }
-
-    if (item.character_id) {
-      drawableItem.recruits = {
-        id: item.character_id || "",
-        granblue_id: item.character_granblue_id || "",
-        name: {
-          en: item.character_name_en || "",
-          jp: item.character_name_jp || "",
-        },
-      }
-    }
-
-    if (
-      type === DrawableItemType.WEAPON &&
-      item.character_element !== undefined &&
-      item.character_element !== null
-    ) {
-      drawableItem.element = item.character_element
-    }
-
-    return drawableItem
-  }
-
-  // Fetching methods
-  private async fetchCharacterWeapons(rarity: Rarity) {
-    const items = await Client.selectFrom("gacha")
-      .leftJoin("weapons", "weapons.id", "gacha.drawable_id")
-      .leftJoin("characters", "characters.granblue_id", "weapons.recruits")
-      .select([
-        "gacha.id",
-        "weapons.id as item_id",
-        "weapons.granblue_id",
-        "weapons.name_en",
-        "weapons.name_jp",
-        "weapons.rarity",
-        "weapons.element",
-        "weapons.recruits",
-        "characters.id as character_id",
-        "characters.granblue_id as character_granblue_id",
-        "characters.name_en as character_name_en",
-        "characters.name_jp as character_name_jp",
-        "characters.element as character_element",
-        "gacha.premium",
-        "gacha.classic",
-        "gacha.flash",
-        "gacha.legend",
-        "gacha.valentines",
-        "gacha.summer",
-        "gacha.halloween",
-        "gacha.holiday",
-      ])
-      .where("recruits", "is not", null)
-      .where("weapons.rarity", "=", rarity)
-      .execute()
-
-    this._characterWeapons[rarity] = this.transformIntoDrawableItems(
-      items,
-      DrawableItemType.WEAPON
-    )
-  }
-
-  private async fetchNonCharacterWeapons(rarity: Rarity) {
-    const items = await Client.selectFrom("gacha")
-      .leftJoin("weapons", "weapons.id", "gacha.drawable_id")
-      .select([
-        "gacha.id",
-        "weapons.id as item_id",
-        "weapons.granblue_id",
-        "weapons.name_en",
-        "weapons.name_jp",
-        "weapons.rarity",
-        "weapons.element",
-        "weapons.recruits",
-        "gacha.premium",
-        "gacha.classic",
-        "gacha.flash",
-        "gacha.legend",
-        "gacha.valentines",
-        "gacha.summer",
-        "gacha.halloween",
-        "gacha.holiday",
-      ])
-      .where("recruits", "is", null)
-      .where("rarity", "=", rarity)
-      .execute()
-
-    this._nonCharacterWeapons[rarity] = this.transformIntoDrawableItems(
-      items,
-      DrawableItemType.WEAPON
-    )
-  }
-
-  private async fetchSummons(rarity: Rarity) {
-    const items = await Client.selectFrom("gacha")
-      .leftJoin("summons", "summons.id", "gacha.drawable_id")
-      .select([
-        "gacha.id",
-        "summons.id as item_id",
-        "summons.granblue_id",
-        "summons.name_en",
-        "summons.name_jp",
-        "summons.rarity",
-        "summons.element",
-        "gacha.premium",
-        "gacha.classic",
-        "gacha.flash",
-        "gacha.legend",
-        "gacha.valentines",
-        "gacha.summer",
-        "gacha.halloween",
-        "gacha.holiday",
-      ])
-      .where("rarity", "=", rarity)
-      .execute()
-
-    this._summons[rarity] = this.transformIntoDrawableItems(
-      items,
-      DrawableItemType.SUMMON
-    )
-  }
 }
 
+export interface CatalogueSnapshot { readonly id: string; readonly loadedAt: string; readonly items: readonly DrawableItem[] }
+function deepFreeze<T>(value: T): T {
+  if (value && typeof value === "object") {
+    Object.freeze(value)
+    for (const child of Object.values(value)) deepFreeze(child)
+  }
+  return value
+}
+export const catalogueCache = new Cache()
 export default Cache

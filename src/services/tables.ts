@@ -1,4 +1,4 @@
-import type { Generated } from "kysely"
+import type { ColumnType, Generated } from "kysely"
 
 export interface GachaTable {
   id: Generated<string>
@@ -16,9 +16,11 @@ export interface GachaTable {
 
 export interface GachaRateupTable {
   id: Generated<string>
-  gacha_id: string
+  gacha_id: string | null
+  drawable_type: "Weapon" | "Summon" | null
+  drawable_id: string | null
   user_id: string
-  rate: number
+  rate: ColumnType<number | string, number, number>
 }
 
 export interface CharacterTable {
@@ -35,12 +37,14 @@ export interface WeaponTable {
   granblue_id: string
   name_en: string
   name_jp: string
-  recruits: Generated<string>
+  promotions: number[]
+  recruits: string | null
   rarity: number
   element: number
 }
 
 export interface SummonTable {
+  promotions: number[]
   id: Generated<string>
   granblue_id: string
   name_en: string
@@ -50,15 +54,26 @@ export interface SummonTable {
 }
 
 export interface SparkTable {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any
   id: Generated<string>
   user_id: string
   guild_ids: string[]
-  crystals: number
-  tickets: number
-  ten_tickets: number
-  target_id: Generated<string>
-  target_type: string
-  updated_at: Date
+  crystals: Generated<number | null>
+  tickets: Generated<number | null>
+  ten_tickets: Generated<number | null>
+  target_id: ColumnType<
+    string | null,
+    string | bigint | null | undefined,
+    string | bigint | null
+  >
+  target_type: ColumnType<
+    string | null,
+    string | null | undefined,
+    string | null
+  >
+  target_memo: ColumnType<
+    string | null,
+    string | null | undefined,
+    string | null
+  >
+  updated_at: Generated<Date>
 }

@@ -1,7 +1,8 @@
 import { EmbedBuilder } from "discord.js"
-import { sql } from "kysely"
+import { sql, type SqlBool } from "kysely"
 import { container } from "@sapphire/framework"
 
+import { normalizeSpark } from "./sparks.js"
 import { Client } from "./connection.js"
 import { spacedString } from "../utils/formatting.js"
 import { calculateDraws } from "../utils/draws.js"
@@ -30,15 +31,17 @@ class Leaderboard {
 
   public async execute() {
     const data = await this.fetchData()
-    return await this.render(data)
+    return await this.render(
+      data.map((row) => ({ ...row, ...normalizeSpark(row) })),
+    )
   }
 
   public async fetchData() {
     return await Client.selectFrom("sparks")
       .select(["crystals", "tickets", "ten_tickets", "user_id"])
       .where((eb) => {
-        const guildCheck = sql`${this.guildId} = ANY(sparks.guild_ids)`
-        const dateCheck = sql`updated_at > NOW() - INTERVAL '14 days'`
+        const guildCheck = sql<SqlBool>`${this.guildId} = ANY(sparks.guild_ids)`
+        const dateCheck = sql<SqlBool>`updated_at > (NOW() AT TIME ZONE 'UTC') - INTERVAL '14 days'`
         return eb.and([guildCheck, dateCheck])
       })
       .execute()
@@ -54,7 +57,7 @@ class Leaderboard {
       return new EmbedBuilder()
         .setTitle("No sparks")
         .setDescription(
-          "No one has updated their sparks in the last two weeks!"
+          "No one has updated their sparks in the last two weeks!",
         )
     } else {
       const rows =
@@ -85,12 +88,12 @@ class Leaderboard {
         const numDraws = calculateDraws(
           rows[i].crystals,
           rows[i].tickets,
-          rows[i].ten_tickets
+          rows[i].ten_tickets,
         )
 
         const spacedUsername = spacedString(
           user ? user.username : rows[i].user_id,
-          usernameMaxChars
+          usernameMaxChars,
         )
         const spacedDraws = spacedString(`${numDraws} draws`, numDrawsMaxChars)
 
@@ -100,7 +103,7 @@ class Leaderboard {
 
       return new EmbedBuilder()
         .setTitle(
-          this.order == Sort.Descending ? leaderboardTitle : loserboardTitle
+          this.order == Sort.Descending ? leaderboardTitle : loserboardTitle,
         )
         .setDescription(`\`\`\`html\n${result}\n\`\`\``)
         .setColor(0xb58900)

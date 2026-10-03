@@ -7,9 +7,10 @@ import {
 } from "discord.js"
 import { Subcommand } from "@sapphire/plugin-subcommands"
 import { ApplyOptions } from "@sapphire/decorators"
-import { isMessageInstance } from "@sapphire/discord.js-utilities"
+import { acknowledge } from "../services/interaction.js"
 
-import Gacha from "../services/gacha.js"
+import Gacha, { SimulationValidationError } from "../services/gacha.js"
+import { GachaApiError } from "../services/gachaClient.js"
 import Until from "../services/until.js"
 
 import { Promotion, Season } from "../utils/enums.js"
@@ -35,6 +36,7 @@ const COMMAND_ID = process.env.GACHA_COMMAND_ID ?? ""
       name: "spark",
       chatInputRun: "chatInputSpark",
     },
+    { name: "odds", chatInputRun: "chatInputOdds" },
     {
       name: "until",
       chatInputRun: "chatInputUntil",
@@ -42,12 +44,10 @@ const COMMAND_ID = process.env.GACHA_COMMAND_ID ?? ""
   ],
 })
 export class GachaCommand extends Subcommand {
-  rateups: ItemRateMap = []
-
   // Methods: Register application commands
 
   public override registerApplicationCommands(
-    registry: Subcommand.Registry
+    registry: Subcommand.Registry,
   ): void {
     registry.registerChatInputCommand(
       (builder) => {
@@ -77,7 +77,14 @@ export class GachaCommand extends Subcommand {
                 option
                   .setName("name")
                   .setDescription("The name of the item or its Granblue ID")
-                  .setRequired(true)
+                  .setRequired(true),
+              )
+              .addIntegerOption((option) =>
+                option
+                  .setName("copies")
+                  .setDescription("Requested copies (default 1)")
+                  .setMinValue(1)
+                  .setMaxValue(1000),
               )
               .addStringOption(this.promotionOption())
               .addStringOption(this.seasonOption())
@@ -87,14 +94,50 @@ export class GachaCommand extends Subcommand {
                   .setDescription("The currency to see the damage in")
                   .addChoices(
                     { name: "USD", value: "usd" },
-                    { name: "JPY", value: "jpy" }
-                  )
+                    { name: "JPY", value: "jpy" },
+                  ),
               )
           })
+          .addSubcommand((command) =>
+            command
+              .setName("odds")
+              .setDescription("Analytical odds for natural drops")
+              .addStringOption((option) =>
+                option
+                  .setName("name")
+                  .setDescription("Item name or Granblue ID")
+                  .setRequired(true),
+              )
+              .addIntegerOption((option) =>
+                option
+                  .setName("copies")
+                  .setDescription("Requested copies (default 1)")
+                  .setMinValue(1)
+                  .setMaxValue(1000),
+              )
+              .addIntegerOption((option) =>
+                option
+                  .setName("draws")
+                  .setDescription("Draw count, multiple of ten")
+                  .setMinValue(10)
+                  .setMaxValue(1000000000000),
+              )
+              .addStringOption((option) =>
+                option
+                  .setName("comparison")
+                  .setDescription("Comparison")
+                  .addChoices(
+                    { name: "At least", value: "at_least" },
+                    { name: "Exactly", value: "exactly" },
+                  ),
+              )
+              .addStringOption(this.promotionOption())
+              .addStringOption(this.seasonOption()),
+          )
       },
       {
         idHints: [COMMAND_ID],
-      }
+      },
     )
   }
 
@@ -102,7 +145,7 @@ export class GachaCommand extends Subcommand {
   private gachaCommand(
     command: SlashCommandSubcommandBuilder,
     name: string,
-    description: string
+    description: string,
   ): SlashCommandSubcommandBuilder {
     return command
       .setName(name)
@@ -116,7 +159,7 @@ export class GachaCommand extends Subcommand {
       new SlashCommandStringOption()
         .setName("promotion")
         .setDescription(
-          "The promotion to simulate (Premium, Classic, Flash, Legend)"
+          "The promotion to simulate (Premium, Classic I/II/III, Flash, Legend)",
         )
         .addChoices(
           {
@@ -124,9 +167,11 @@ export class GachaCommand extends Subcommand {
             value: "premium",
           },
           {
-            name: "Classic",
+            name: "Classic I",
             value: "classic",
           },
+          { name: "Classic II", value: "classic_ii" },
+          { name: "Classic III", value: "classic_iii" },
           {
             name: "Flash Gala",
             value: "flash",
@@ -134,7 +179,7 @@ export class GachaCommand extends Subcommand {
           {
             name: "Legend Festival",
             value: "legend",
-          }
+          },
         )
 
     return optionBuilder
@@ -144,9 +189,10 @@ export class GachaCommand extends Subcommand {
     const optionBuilder = new SlashCommandStringOption()
       .setName("season")
       .setDescription(
-        "The season to simulate (Normal, Valentines, Summer, Halloween, Holiday)"
+        "The season to simulate (Normal, Valentines, Summer, Halloween, Holiday)",
       )
       .addChoices(
+        { name: "Formal", value: "formal" },
         {
           name: "None (Default)",
           value: "none",
@@ -166,7 +212,7 @@ export class GachaCommand extends Subcommand {
         {
           name: "Holiday",
           value: "holiday",
-        }
+        },
       )
 
     return optionBuilder
@@ -175,70 +221,72 @@ export class GachaCommand extends Subcommand {
   // Methods: Instantiation
 
   private async createGacha(
-    interaction: Subcommand.ChatInputCommandInteraction
+    interaction: Subcommand.ChatInputCommandInteraction,
   ): Promise<Gacha> {
     const promotion = this.getPromotion(
-      interaction.options.getString("promotion")
+      interaction.options.getString("promotion"),
     )
     const season = this.getSeason(interaction.options.getString("season"))
 
-    this.rateups = await fetchRateups(interaction.user.id)
-    return new Gacha(this.rateups, promotion, season)
+    const rateups: ItemRateMap = await fetchRateups(interaction.user.id)
+    return await Gacha.create(rateups, promotion, season)
   }
 
   // Methods: Slash Commands
 
   public async chatInputSingle(
-    interaction: Subcommand.ChatInputCommandInteraction
+    interaction: Subcommand.ChatInputCommandInteraction,
   ): Promise<void> {
     await this.safeReply(
       interaction,
       "Simulating a single draw...",
       async () => {
         const gacha = await this.createGacha(interaction)
-        const item = gacha.singleRoll()
-        await interaction.editReply(RenderingUtils.renderItem(item))
-      }
+        const item = await gacha.singleRoll()
+        await interaction.editReply(
+          `${RenderingUtils.renderItem(item)}\n${RenderingUtils.simulationNotice}`,
+        )
+      },
     )
   }
 
   public async chatInputTen(
-    interaction: Subcommand.ChatInputCommandInteraction
+    interaction: Subcommand.ChatInputCommandInteraction,
   ): Promise<void> {
     await this.safeReply(
       interaction,
       "Simulating a ten-part draw...",
       async () => {
         const gacha = await this.createGacha(interaction)
-        const result = gacha.tenPartRoll()
+        const result = await gacha.tenPartRoll()
         await interaction.editReply(
-          renderHtmlBlock(RenderingUtils.renderItems(result.items))
+          `${renderHtmlBlock(RenderingUtils.renderItems(result.items))}\n${RenderingUtils.simulationNotice}`,
         )
-      }
+      },
     )
   }
 
   public async chatInputSpark(
-    interaction: Subcommand.ChatInputCommandInteraction
+    interaction: Subcommand.ChatInputCommandInteraction,
   ): Promise<void> {
     await this.safeReply(interaction, "Simulating a spark...", async () => {
       const promotion = this.getPromotion(
-        interaction.options.getString("promotion")
+        interaction.options.getString("promotion"),
       )
       const season = this.getSeason(interaction.options.getString("season"))
 
       const gacha = await this.createGacha(interaction)
-      const result = gacha.spark()
+      const result = await gacha.spark()
 
       const sparkButton = new ButtonBuilder()
         .setCustomId(`copySpark:${interaction.user.id}:${promotion}:${season}`)
-        .setLabel("Spark with these rates")
+        .setLabel("Spark using current source rates")
         .setStyle(ButtonStyle.Primary)
 
       const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-        sparkButton
+        sparkButton,
       )
-      const embed = RenderingUtils.renderSpark(result, this.rateups)
+      const embed = RenderingUtils.renderSpark(result, gacha.rateups)
 
       await interaction.editReply({
         content: "This is your spark",
@@ -249,10 +297,10 @@ export class GachaCommand extends Subcommand {
   }
 
   public async chatInputUntil(
-    interaction: Subcommand.ChatInputCommandInteraction
+    interaction: Subcommand.ChatInputCommandInteraction,
   ): Promise<void> {
     const promotion = this.getPromotion(
-      interaction.options.getString("promotion")
+      interaction.options.getString("promotion"),
     )
     const season = this.getSeason(interaction.options.getString("season"))
     const identifier = interaction.options.getString("name")
@@ -276,9 +324,28 @@ export class GachaCommand extends Subcommand {
       identifier,
       currency,
       promotion,
-      season
+      season,
+      interaction.options.getInteger("copies") ?? 1,
+      interaction.options.getSubcommand() === "odds" ? "odds" : "until",
+      interaction.options.getInteger("draws") ?? 300,
+      interaction.options.getString("comparison") ?? "at_least",
     )
-    await until.execute()
+    try {
+      await until.execute()
+    } catch (error) {
+      console.error("Until command failed", error)
+      await interaction.editReply(
+        error instanceof GachaApiError
+          ? error.message
+          : "An error occurred while processing your request",
+      )
+    }
+  }
+
+  public async chatInputOdds(
+    interaction: Subcommand.ChatInputCommandInteraction,
+  ) {
+    await this.chatInputUntil(interaction)
   }
 
   // Methods: Transformers
@@ -287,17 +354,26 @@ export class GachaCommand extends Subcommand {
     switch (input) {
       case "classic":
         return Promotion.CLASSIC
+      case "classic_ii":
+        return Promotion.CLASSIC_II
+      case "classic_iii":
+        return Promotion.CLASSIC_III
       case "flash":
         return Promotion.FLASH
       case "legend":
         return Promotion.LEGEND
-      default:
+      case null:
+      case "premium":
         return Promotion.PREMIUM
+      default:
+        throw new Error(`Unsupported promotion: ${input}`)
     }
   }
 
   private getSeason(input: string | null): Season | undefined {
     switch (input) {
+      case "formal":
+        return Season.FORMAL
       case "valentines":
         return Season.VALENTINES
       case "summer":
@@ -316,25 +392,21 @@ export class GachaCommand extends Subcommand {
   private async safeReply(
     interaction: Subcommand.ChatInputCommandInteraction,
     initialMessage: string,
-    callback: () => Promise<unknown>
+    callback: () => Promise<unknown>,
   ): Promise<void> {
-    const msg = await interaction.reply({
-      content: initialMessage,
-      fetchReply: true,
-    })
+    await acknowledge(interaction)
+    await interaction.editReply(initialMessage)
 
     try {
-      if (isMessageInstance(msg)) {
-        await callback()
-      } else {
-        await interaction.reply("There was an error")
-      }
+      await callback()
     } catch (error) {
       console.error("Error in command execution:", error)
       await interaction.editReply(
-        "An error occurred while processing your request"
+        error instanceof SimulationValidationError ||
+          error instanceof GachaApiError
+          ? error.message
+          : "An error occurred while processing your request",
       )
     }
   }
-
 }

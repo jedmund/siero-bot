@@ -17,9 +17,9 @@ export function generateConflictOptions(items: DrawableItem[]) {
     }
 
     return new StringSelectMenuOptionBuilder()
-      .setLabel(item.name.en)
+      .setLabel(item.name.en || item.name.jp || item.granblue_id || item.item_id)
       .setDescription(description)
-      .setValue(item.granblue_id)
+      .setValue(`${item.drawableType ?? (item.type === 0 ? "Weapon" : "Summon")}:${item.item_id}`)
   })
 }
 
