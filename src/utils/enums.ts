@@ -25,14 +25,15 @@ export enum Rarity {
   SSR = 3,
 }
 
+// The game's element numbers, as stored in Hensei's database
 export enum Element {
   NULL = 0,
-  WIND = 1,
-  FIRE = 2,
-  WATER = 3,
-  EARTH = 4,
-  DARK = 5,
-  LIGHT = 6,
+  FIRE = 1,
+  WATER = 2,
+  EARTH = 3,
+  WIND = 4,
+  LIGHT = 5,
+  DARK = 6,
 }
 
 export enum Season {
